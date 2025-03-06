@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{4946928f-82c2-415b-9c24-b95e292c56a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interface">
+      <UniqueIdentifier>{4116e269-a4e2-4b1b-98a0-9311ac992fbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{aa92f4b5-d801-4ea0-9f08-291dd89b7354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{52f03d11-10e8-40f5-b137-204a4e38e0b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{4420f5d6-4ea0-48a8-a128-87f558137821}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\obj">
+      <UniqueIdentifier>{2c2003a4-484e-4bba-9d84-aa800c06e15c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\mgr">
+      <UniqueIdentifier>{ed469245-10a5-41be-9354-64ffc952f215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\entry">
+      <UniqueIdentifier>{1bbd0315-a260-4812-af14-278b319a86a0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Renderer.def" />
+    <None Include="..\..\shader\Common.hlsli">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\shader\SamplerState.hlsli">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\shader\IBLTexture.hlsli">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\shader\GlobalConsts.hlsli">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\..\shader\DiskSample.hlsli">
+      <Filter>shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferPool.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandListPool.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DUtils.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorPool.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorAllocator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\HashTable.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\LinkedList.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\IndexGenerator.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderThread.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderQueue.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\ProcessInfo.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicMeshObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedMeshObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferManager.cpp">
+      <Filter>src\mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="FontManager.cpp">
+      <Filter>src\mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>src\entry</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>src\mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>src\mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="LineObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcess.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\Queue.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\utils\Stack.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Renderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\interface\IRenderer.h">
+      <Filter>interface</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererType.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferPool.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandListPool.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DUtils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\AkMacro.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\AkType.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\AkVertex.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\AkMeshData.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorPool.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorAllocator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\HashTable.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\LinkedList.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\IndexGenerator.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderThread.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderQueue.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\ProcessInfo.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicMeshObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedMeshObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferManager.h">
+      <Filter>src\mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>src\mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>src\mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>src\mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="LineObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcess.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\Queue.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\Stack.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\shader\BasicShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\SpriteShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\SkyboxShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\LineShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\NormalShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\PostProcessShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\DepthOnlyShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

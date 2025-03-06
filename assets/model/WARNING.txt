@@ -1,0 +1,2 @@
+이미지 파일 PNG 에서 DDS 로 변경 후 사용
+https://convertio.co/kr/dds-converter/

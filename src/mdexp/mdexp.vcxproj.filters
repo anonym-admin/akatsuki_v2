@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="AnimationClip.h" />
+    <ClInclude Include="ModelExporter.h" />
+    <ClInclude Include="ModelImporter.h" />
+    <ClInclude Include="Type.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="SkinnedModel.h" />
+    <ClInclude Include="GeometryGenerator.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ModelExporter.cpp" />
+    <ClCompile Include="ModelImporter.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="SkinnedModel.cpp" />
+    <ClCompile Include="GeometryGenerator.cpp" />
+  </ItemGroup>
+</Project>
