@@ -23,24 +23,24 @@ CollisionManager
 =================
 */
 
-class UApplication;
-class ULandScape;
-class UCollider;
-class UWorldMapContainer;
+class Application;
+class LandScape;
+class Collider;
+class WorldMapContainer;
 struct KDTreeNode_t;
 struct RbTreeNode_t;
 
 // #include <map>
 
-class UCollisionManager
+class CollisionManager
 {
 public:
-	UCollisionManager();
-	~UCollisionManager();
+	CollisionManager();
+	~CollisionManager();
 
-	AkBool Initialize(UApplication* pApp);
+	AkBool Initialize();
 	void CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE eLeft, GAME_OBJECT_GROUP_TYPE eRight);
-	void AttachMap(UWorldMapContainer* pMap) { _pMap = pMap; }
+	void AttachMap(WorldMapContainer* pMap) { _pMap = pMap; }
 
 	void Update();
 
@@ -50,19 +50,19 @@ private:
 	void CollisionStaticObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft);
 	void CollisionDynamicObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft, GAME_OBJECT_GROUP_TYPE eRight);
 	void CollisionLandScapeUpdate(GAME_OBJECT_GROUP_TYPE eType);
-	void TraversKDTree(KDTreeNode_t* pNode, UCollider* pCollider);
-	AkBool IsCollision(UCollider* pLeft, UCollider* pRight);
+	void TraversKDTree(KDTreeNode_t* pNode, Collider* pCollider);
+	AkBool IsCollision(Collider* pLeft, Collider* pRight);
 
 private:
-	UApplication* _pApp = nullptr;
+	Application* _pApp = nullptr;
 	AkU32 _pCollisionCheckBitsTable[(AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT] = {};
 
 	RbTreeNode_t* _pRBTree = nullptr;
 
 	// LandScape
-	ULandScape* _pLandScape = nullptr;
+	LandScape* _pLandScape = nullptr;
 
 	// Map.
-	UWorldMapContainer* _pMap = nullptr;
+	WorldMapContainer* _pMap = nullptr;
 };
 

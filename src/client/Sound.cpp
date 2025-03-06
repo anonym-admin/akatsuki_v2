@@ -7,16 +7,20 @@ Sound Manager
 ===================
 */
 
-USoundManager::USoundManager()
+SoundManager::SoundManager()
 {
+	if (!Initialize())
+	{
+		__debugbreak();
+	}
 }
 
-USoundManager::~USoundManager()
+SoundManager::~SoundManager()
 {
 	CleanUp();
 }
 
-AkBool USoundManager::Initialize()
+AkBool SoundManager::Initialize()
 {
 	FMOD_RESULT tRet;
 
@@ -35,20 +39,20 @@ AkBool USoundManager::Initialize()
 	return AK_TRUE;
 }
 
-void USoundManager::Update(const AkF32 fDeltaTime)
+void SoundManager::Update()
 {
 	_pSystem->update();
 }
 
-void USoundManager::Render()
+void SoundManager::Render()
 {
 }
 
-USound* USoundManager::LoadSound(const char* pFilename)
+Sound* SoundManager::LoadSound(const char* pFilename)
 {
 	FMOD_RESULT tRet;
 
-	USound* pSound = new USound;
+	Sound* pSound = new Sound;
 	if (!pSound->Initialize(_pSystem))
 	{
 		__debugbreak();
@@ -72,7 +76,7 @@ USound* USoundManager::LoadSound(const char* pFilename)
 	return pSound;
 }
 
-void USoundManager::CleanUp()
+void SoundManager::CleanUp()
 {
 	if (_pSound)
 	{
@@ -93,31 +97,31 @@ Sound
 ===========
 */
 
-USound::USound()
+Sound::Sound()
 {
 }
 
-USound::~USound()
+Sound::~Sound()
 {
 	CleanUp();
 }
 
-AkBool USound::Initialize(FMOD::System* pSys)
+AkBool Sound::Initialize(FMOD::System* pSys)
 {
 	_pSystem = pSys;
 
 	return AK_TRUE;
 }
 
-void USound::Update(const AkF32 fDeltaTime)
+void Sound::Update()
 {
 }
 
-void USound::Render()
+void Sound::Render()
 {
 }
 
-AkBool USound::Play(AkBool bLoop)
+AkBool Sound::Play(AkBool bLoop)
 {
 	if (_pChannel)
 	{
@@ -142,29 +146,29 @@ AkBool USound::Play(AkBool bLoop)
 	return true;
 }
 
-void USound::PlayOnce()
+void Sound::PlayOnce()
 {
 	FMOD::Channel* pChannel = nullptr;
 	FMOD_RESULT eRet = _pSystem->playSound(_pSound, nullptr, AK_FALSE, &pChannel);
 }
 
-void USound::Stop()
+void Sound::Stop()
 {
 }
 
-void USound::Pause()
+void Sound::Pause()
 {
 }
 
-void USound::VolumeUp()
+void Sound::VolumeUp()
 {
 }
 
-void USound::VolumeDown()
+void Sound::VolumeDown()
 {
 }
 
-void USound::CleanUp()
+void Sound::CleanUp()
 {
 	if (_pSound)
 	{
@@ -173,6 +177,6 @@ void USound::CleanUp()
 	}
 }
 
-void USound::VolumeControl()
+void Sound::VolumeControl()
 {
 }

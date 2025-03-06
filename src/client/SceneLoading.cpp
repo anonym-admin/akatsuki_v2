@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "GeometryGenerator.h"
 #include "SceneManager.h"
-#include "Animation.h"
+#include "Animator.h"
 #include "LandScape.h"
 #include "AssetManager.h"
 #include "EventManager.h"
@@ -14,38 +14,13 @@ Loading Scene
 ===============
 */
 
-USceneLoading::USceneLoading()
-{
-}
-
 USceneLoading::~USceneLoading()
 {
-}
-
-AkBool USceneLoading::Initialize(UApplication* pApp)
-{
-	if (!UScene::Initialize(pApp))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	return AK_TRUE;
+	EndScene();
 }
 
 AkBool USceneLoading::BeginScene()
 {
-	_pApp = GetApp();
-
-	_pRenderer = GetRenderer();
-
-	HWND hWnd = _pApp->GetHwnd();
-
-	USceneManager* pSceneManager = _pApp->GetSceneManager();
-	UAssetManager* pAssetManager = _pApp->GetAssetManager();
-	UGameEventManager* pEventManager = _pApp->GetGameEventManager();
-	UAnimator* pAnimator = _pApp->GetAnimator();
-
 	// Create Font.
 	CreateCommonFontObject(L"Consolas", 12.0f);
 
@@ -54,7 +29,7 @@ AkBool USceneLoading::BeginScene()
 
 	// Create texture for loading screen text.
 	RECT tRect = {};
-	::GetClientRect(hWnd, &tRect);
+	::GetClientRect(GhWnd, &tRect);
 	_uScreenWidth = tRect.right - tRect.left;
 	_uScreenHeight = tRect.bottom - tRect.top;
 	_pScreenImage = (AkU8*)malloc(_uScreenWidth * _uScreenHeight * 4);
@@ -63,32 +38,32 @@ AkBool USceneLoading::BeginScene()
 
 	// Load MeshData.
 	{
-		pAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY, L"../../assets/model/", L"SwatGuy.md3d", 1.0f, AK_TRUE);
-		pAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER, L"../../assets/model/", L"Dancer.md3d", 1.0f, AK_TRUE);
-		pAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74, L"../../assets/model/", L"BRS-74.md3d", 1.0f, AK_FALSE);
+		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY, L"../../assets/model/", L"SwatGuy.md3d", 1.0f, AK_TRUE);
+		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER, L"../../assets/model/", L"Dancer.md3d", 1.0f, AK_TRUE);
+		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74, L"../../assets/model/", L"BRS-74.md3d", 1.0f, AK_FALSE);
 	}
 
 	// Load Animation clip.
 	{
-		AssetMeshDataContainer_t* pMeshDataContanier = pAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
+		AssetMeshDataContainer_t* pMeshDataContanier = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
 		AnimatorHandle_t tAnimatorHandle = {};
 		tAnimatorHandle.mDefaultMat = pMeshDataContanier->mDefaultMat;
 		tAnimatorHandle.pBoneOffsetMatList = pMeshDataContanier->pBoneOffsetMatList;
 		tAnimatorHandle.pBoneHierarchyList = pMeshDataContanier->pBoneHierarchyList;
 		tAnimatorHandle.uBoneNum = pMeshDataContanier->uBoneNum;
-		pAnimator->AddAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_PLAYER, GMAE_ANIM_FILE_BASE_PATH, GAME_ANIM_PLAYER_ANIM_FILE_NAME, _countof(GAME_ANIM_PLAYER_ANIM_FILE_NAME), &tAnimatorHandle);
+		GAnimator->AddAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_PLAYER, GMAE_ANIM_FILE_BASE_PATH, GAME_ANIM_PLAYER_ANIM_FILE_NAME, _countof(GAME_ANIM_PLAYER_ANIM_FILE_NAME), &tAnimatorHandle);
 	
-		pMeshDataContanier = pAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER);
+		pMeshDataContanier = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER);
 		tAnimatorHandle.mDefaultMat = pMeshDataContanier->mDefaultMat;
 		tAnimatorHandle.pBoneOffsetMatList = pMeshDataContanier->pBoneOffsetMatList;
 		tAnimatorHandle.pBoneHierarchyList = pMeshDataContanier->pBoneHierarchyList;
 		tAnimatorHandle.uBoneNum = pMeshDataContanier->uBoneNum;
-		pAnimator->AddAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_DANCER, GMAE_ANIM_FILE_BASE_PATH, GAME_ANIM_DANCER_ANIM_FILE_NAME, _countof(GAME_ANIM_DANCER_ANIM_FILE_NAME), &tAnimatorHandle);
+		GAnimator->AddAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_DANCER, GMAE_ANIM_FILE_BASE_PATH, GAME_ANIM_DANCER_ANIM_FILE_NAME, _countof(GAME_ANIM_DANCER_ANIM_FILE_NAME), &tAnimatorHandle);
 	}
 
 	// Image based lighting textures.
 	{
-		pAssetManager->AddCubeMapTexture(L"../../assets/skybox/", L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
+		GAssetManager->AddCubeMapTexture(L"../../assets/skybox/", L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
 	}
 
 	//// Create LandScape.
@@ -100,11 +75,11 @@ AkBool USceneLoading::BeginScene()
 
 	// pSceneManager->ChangeScene(GAME_SCENE_TYPE::SCENE_TYPE_INGANE);
 
-	GameEventHandle_t tEventHandle = {};
+	EventHandle_t tEventHandle = {};
 	tEventHandle.eEventType = GAME_EVENT_TYPE::GAME_EVENT_TYPE_SCENE_CHANGE;
-	tEventHandle.tSceneChangeParam.eBefore = GAME_SCENE_TYPE::SCENE_TYPE_LOADING;
-	tEventHandle.tSceneChangeParam.eAfter = GAME_SCENE_TYPE::SCENE_TYPE_INGANE;
-	pEventManager->AddEvent(&tEventHandle);
+	tEventHandle.tSceneChangeParam.eBefore = SCENE_TYPE::SCENE_TYPE_LOADING;
+	tEventHandle.tSceneChangeParam.eAfter = SCENE_TYPE::SCENE_TYPE_INGANE;
+	GEventManager->AddEvent(&tEventHandle);
 
 	return AK_TRUE;
 }

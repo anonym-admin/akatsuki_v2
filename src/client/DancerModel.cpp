@@ -13,7 +13,7 @@ UDancerModel::~UDancerModel()
     CleanUp();
 }
 
-AkBool UDancerModel::Initialize(UApplication* pApp)
+AkBool UDancerModel::Initialize(Application* pApp)
 {
     if (!UModel::Initialize(pApp))
     {
@@ -24,8 +24,8 @@ AkBool UDancerModel::Initialize(UApplication* pApp)
     _pApp = pApp;
     _pRenderer = pApp->GetRenderer();
 
-    UAssetManager* pAssetManager = _pApp->GetAssetManager();
-    UAnimator* pAnimator = _pApp->GetAnimator();
+    AssetManager* pAssetManager = _pApp->GetAssetManager();
+    Animator* pAnimator = _pApp->GetAnimator();
 
     if (CreateSkinnedMeshObject())
     {
@@ -44,7 +44,7 @@ AkBool UDancerModel::Initialize(UApplication* pApp)
         pMeshObj->UpdateMaterialBuffers(&vAlbedoFactor, fMetallicFactor, fRoughnessFactor, &vEmissiveFactor);
 
         // Animation.
-        UAnimation* pDancerAnim0 = pAnimator->GetAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_DANCER);
+        Animation* pDancerAnim0 = pAnimator->GetAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_DANCER);
 
         Matrix mWorldRow = Matrix();
         // Ref 0
@@ -110,7 +110,7 @@ void UDancerModel::Release()
 void UDancerModel::CleanUp()
 {
     ModelContext_t* pCurModelCtx = GetCurrentModelContext();
-    UAnimation* pAnimator = pCurModelCtx->pAnimation;
+    Animation* pAnimator = pCurModelCtx->pAnimation;
 
     pAnimator->DestroyAnimationClip(L"Dancing.anim");
 }

@@ -5,6 +5,7 @@
 #include "RigidBody.h"
 #include "Timer.h"
 #include "KDTree.h"
+#include "Transform.h"
 
 /*
 ===========
@@ -12,18 +13,18 @@ Collider
 ===========
 */
 
-AkU32 UCollider::sm_uID;
+AkU32 Collider::sm_uID;
 
-UCollider::UCollider()
+Collider::Collider()
 {
 }
 
-UCollider::~UCollider()
+Collider::~Collider()
 {
 	CleanUp();
 }
 
-AkBool UCollider::Initialize(UActor* pOwner, IRenderer* pRenderer)
+AkBool Collider::Initialize(Actor* pOwner, IRenderer* pRenderer)
 {
 	_pOwner = pOwner;
 
@@ -34,9 +35,9 @@ AkBool UCollider::Initialize(UActor* pOwner, IRenderer* pRenderer)
 	return AK_TRUE;
 }
 
-void UCollider::Update(const AkF32 fDeltaTime)
+void Collider::Update()
 {
-	Vector3 vOwnerPos = _pOwner->GetPosition();
+	Vector3 vOwnerPos = _pOwner->GetTransform()->Position;
 
 	if (_pBox)
 	{
@@ -53,7 +54,7 @@ void UCollider::Update(const AkF32 fDeltaTime)
 	_mWorldRow = Matrix::CreateTranslation(vOwnerPos);
 }
 
-void UCollider::Render()
+void Collider::Render()
 {
 	if (_pMeshObj)
 	{
@@ -61,7 +62,7 @@ void UCollider::Render()
 	}
 }
 
-void UCollider::CreateBoundingBox(const Vector3* pMin, const Vector3* pMax)
+void Collider::CreateBoundingBox(const Vector3* pMin, const Vector3* pMax)
 {
 	_pBox = new AkBox_t;
 	_pBox->vMin = *pMin;
@@ -76,7 +77,7 @@ void UCollider::CreateBoundingBox(const Vector3* pMin, const Vector3* pMax)
 		AkF32 fDepth = abs(_pBox->vMax.z - _pBox->vMin.z);
 		Vector3 pExtent = Vector3(fWidth, fHeight, fDepth) * 0.5f;
 		AkU32 uMeshDataNum = 0;
-		MeshData_t* pBoxMeshData = UGeometryGenerator::MakeCubeWidthExtent(&uMeshDataNum, &pExtent);
+		MeshData_t* pBoxMeshData = GeometryGenerator::MakeCubeWidthExtent(&uMeshDataNum, &pExtent);
 
 		Vector3 vAlbedo = Vector3(0.0f);
 		AkF32 fMetallic = 0.0f;
@@ -87,11 +88,11 @@ void UCollider::CreateBoundingBox(const Vector3* pMin, const Vector3* pMax)
 		_pMeshObj->EnableWireFrame();
 		_pMeshObj->UpdateMaterialBuffers(&vAlbedo, fMetallic, fRoughness, &vEmissive);
 
-		UGeometryGenerator::DestroyGeometry(pBoxMeshData, uMeshDataNum);
+		GeometryGenerator::DestroyGeometry(pBoxMeshData, uMeshDataNum);
 	}
 }
 
-void UCollider::CreateBoundingSphere(AkF32 fRadius, const Vector3* pCenter)
+void Collider::CreateBoundingSphere(AkF32 fRadius, const Vector3* pCenter)
 {
 	_pSphere = new AkSphere_t;
 	_pSphere->fRadius = fRadius;
@@ -102,7 +103,7 @@ void UCollider::CreateBoundingSphere(AkF32 fRadius, const Vector3* pCenter)
 	if (_pRenderer)
 	{
 		AkU32 uMeshDataNum = 0;
-		MeshData_t* pSphereMeshData = UGeometryGenerator::MakeSphere(&uMeshDataNum, fRadius, 16, 16);
+		MeshData_t* pSphereMeshData = GeometryGenerator::MakeSphere(&uMeshDataNum, fRadius, 16, 16);
 
 		Vector3 vAlbedo = Vector3(0.0f);
 		AkF32 fMetallic = 0.0f;
@@ -113,11 +114,11 @@ void UCollider::CreateBoundingSphere(AkF32 fRadius, const Vector3* pCenter)
 		_pMeshObj->EnableWireFrame();
 		_pMeshObj->UpdateMaterialBuffers(&vAlbedo, fMetallic, fRoughness, &vEmissive);
 
-		UGeometryGenerator::DestroyGeometry(pSphereMeshData, uMeshDataNum);
+		GeometryGenerator::DestroyGeometry(pSphereMeshData, uMeshDataNum);
 	}
 }
 
-void UCollider::CreateTriangle(const Vector3* pV0, const Vector3* pV1, const Vector3* pV2)
+void Collider::CreateTriangle(const Vector3* pV0, const Vector3* pV1, const Vector3* pV2)
 {
 	_pTriangle = new AkTriangle_t;
 
@@ -129,7 +130,7 @@ void UCollider::CreateTriangle(const Vector3* pV0, const Vector3* pV1, const Vec
 	_pTriangle->vNormal.Normalize();
 }
 
-void UCollider::DestroyBoundingBox()
+void Collider::DestroyBoundingBox()
 {
 	if (_pBox)
 	{
@@ -138,7 +139,7 @@ void UCollider::DestroyBoundingBox()
 	}
 }
 
-void UCollider::DestroyBoundingSphere()
+void Collider::DestroyBoundingSphere()
 {
 	if (_pSphere)
 	{
@@ -147,7 +148,7 @@ void UCollider::DestroyBoundingSphere()
 	}
 }
 
-void UCollider::DestroyTriangle()
+void Collider::DestroyTriangle()
 {
 	if (_pTriangle)
 	{
@@ -156,22 +157,22 @@ void UCollider::DestroyTriangle()
 	}
 }
 
-void UCollider::OnCollision(UCollider* pCollider)
+void Collider::OnCollision(Collider* pCollider)
 {
 	_pOwner->OnCollision(pCollider);
 }
 
-void UCollider::OnCollisionEnter(UCollider* pCollider)
+void Collider::OnCollisionEnter(Collider* pCollider)
 {
 	_pOwner->OnCollisionEnter(pCollider);
 }
 
-void UCollider::OnCollisionExit(UCollider* pCollider)
+void Collider::OnCollisionExit(Collider* pCollider)
 {
 	_pOwner->OnCollisionExit(pCollider);
 }
 
-void UCollider::CleanUp()
+void Collider::CleanUp()
 {
 	if (_pMeshObj)
 	{

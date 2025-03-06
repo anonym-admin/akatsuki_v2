@@ -86,7 +86,7 @@ static void GetFileNameFromFullPath(wchar_t* wcFullPath)
 	pCopyPath = nullptr;
 }
 
-AkBool UModelImporter::Load(UApplication* pApp, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bForAnim)
+AkBool UModelImporter::Load(const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bForAnim)
 {
 	FILE* pFp = nullptr;
 
@@ -133,7 +133,7 @@ AkBool UModelImporter::Load(UApplication* pApp, const wchar_t* wcBasePath, const
 	return AK_TRUE;
 }
 
-AkBool UModelImporter::LoadAnimation(UApplication* pApp, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkU32 uBoneNum)
+AkBool UModelImporter::LoadAnimation(const wchar_t* wcBasePath, const wchar_t* wcFilename, AkU32 uBoneNum)
 {
 	FILE* pFp = nullptr;
 

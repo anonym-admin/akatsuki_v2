@@ -8,7 +8,7 @@ public:
 	UBRS_74_Model();
 	~UBRS_74_Model();
 
-	virtual AkBool Initialize(UApplication* pApp);
+	virtual AkBool Initialize(Application* pApp);
 	virtual void Update(const AkF32 fDeltaTime);
 	virtual void RenderShadow() override;
 	virtual void Render() override;
@@ -29,7 +29,7 @@ private:
 	void SetMinMaxVertexPosition(MeshData_t* pMeshData, AkU32 uMeshDataNum);
 
 private:
-	UApplication* _pApp = nullptr;
+	Application* _pApp = nullptr;
 	IRenderer* _pRenderer = nullptr;
 
 	Vector3 _vRelativeRot = Vector3(0.0f);

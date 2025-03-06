@@ -6,14 +6,13 @@ ModelImporter
 ==================
 */
 
-class UAnimation;
-class UApplication;
+class Animation;
 
 class UModelImporter
 {
 public:
-	AkBool Load(UApplication* pApp, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bForAnim = false);
-	AkBool LoadAnimation(UApplication* pApp, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkU32 uBoneNum);
+	AkBool Load( const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bForAnim = false);
+	AkBool LoadAnimation(const wchar_t* wcBasePath, const wchar_t* wcFilename, AkU32 uBoneNum);
 	MeshData_t* GetMeshData() { return _pMeshData; }
 	AkU32 GetMeshDataNum() { return _uMeshDataNum; }
 	const Matrix* GetBoneOffsetTransformList();

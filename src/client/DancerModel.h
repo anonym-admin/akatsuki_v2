@@ -8,7 +8,7 @@ public:
 	UDancerModel();
 	~UDancerModel();
 
-	virtual AkBool Initialize(UApplication* pApp);
+	virtual AkBool Initialize(Application* pApp);
 	virtual void RenderShadow() override;
 	virtual void Render() override;
 	virtual void RenderNormal() override;
@@ -18,7 +18,7 @@ private:
 	void CleanUp();
 
 private:
-	UApplication* _pApp = nullptr;
+	Application* _pApp = nullptr;
 	IRenderer* _pRenderer = nullptr;
 };
 

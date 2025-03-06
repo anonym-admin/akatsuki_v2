@@ -12,27 +12,14 @@ Asset Manager
 ================
 */
 
-UAssetManager::UAssetManager()
-{
-}
-
-UAssetManager::~UAssetManager()
+AssetManager::~AssetManager()
 {
 	CleanUp();
 }
 
-AkBool UAssetManager::Initialize(UApplication* pApp)
+void AssetManager::AddMeshData(ASSET_MESH_DATA_TYPE eType, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
 {
-	_pApp = pApp;
-	_pRenderer = pApp->GetRenderer();
-
-	return AK_TRUE;
-}
-
-void UAssetManager::AddMeshData(ASSET_MESH_DATA_TYPE eType, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
-{
-	USceneManager* pSceneManager = _pApp->GetSceneManager();
-	USceneLoading* pSceneLoading = (USceneLoading*)pSceneManager->GetCurrentScene();
+	USceneLoading* pSceneLoading = (USceneLoading*)GSceneManager->GetCurrentScene();
 	AssetMeshDataContainer_t* pAssetMeshDataContainer = nullptr;
 
 	pAssetMeshDataContainer = AllocMeshDataContainer();
@@ -49,10 +36,9 @@ void UAssetManager::AddMeshData(ASSET_MESH_DATA_TYPE eType, const wchar_t* wcBas
 	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 }
 
-void UAssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* wcEnvFilename, const wchar_t* wcIrradianceFilename, const wchar_t* wcSpecularFilename, const wchar_t* wcBrdfFilaename)
+void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* wcEnvFilename, const wchar_t* wcIrradianceFilename, const wchar_t* wcSpecularFilename, const wchar_t* wcBrdfFilaename)
 {
-	USceneManager* pSceneManager = _pApp->GetSceneManager();
-	USceneLoading* pSceneLoading = (USceneLoading*)pSceneManager->GetCurrentScene();
+	USceneLoading* pSceneLoading = (USceneLoading*)GSceneManager->GetCurrentScene();
 	AssetTextureContainer_t* pAssetTexContainer = nullptr;
 	void* pTexHandle = nullptr;
 
@@ -113,11 +99,11 @@ void UAssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* 
 	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 }
 
-void UAssetManager::AddDynamicTexture()
+void AssetManager::AddDynamicTexture()
 {
 }
 
-void UAssetManager::DeleteMeshData(ASSET_MESH_DATA_TYPE eType)
+void AssetManager::DeleteMeshData(ASSET_MESH_DATA_TYPE eType)
 {
 	AkU32 uType = (AkU32)eType;
 
@@ -153,7 +139,7 @@ void UAssetManager::DeleteMeshData(ASSET_MESH_DATA_TYPE eType)
 	}
 }
 
-void UAssetManager::DeleteTexture(ASSET_TEXTURE_TYPE eType)
+void AssetManager::DeleteTexture(ASSET_TEXTURE_TYPE eType)
 {
 	AkU32 uType = (AkU32)eType;
 
@@ -167,17 +153,17 @@ void UAssetManager::DeleteTexture(ASSET_TEXTURE_TYPE eType)
 	}
 }
 
-MeshData_t* UAssetManager::ReadFromFile(AssetMeshDataContainer_t* pAassetMeshDataContainer, AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
+MeshData_t* AssetManager::ReadFromFile(AssetMeshDataContainer_t* pAassetMeshDataContainer, AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
 {
 	UModelImporter tModelImporter = {};
 	MeshData_t* pMeshData = nullptr;
 
-	tModelImporter.Load(_pApp, wcBasePath, wcModelFilename, bForAnim);
+	tModelImporter.Load(wcBasePath, wcModelFilename, bForAnim);
 
 	pMeshData = tModelImporter.GetMeshData();
 	*pMeshDataNum = tModelImporter.GetMeshDataNum();
 
-	UGeometryGenerator::NormalizeMeshData(pMeshData, *pMeshDataNum, fScaleLength, bForAnim, &pAassetMeshDataContainer->mDefaultMat);
+	GeometryGenerator::NormalizeMeshData(pMeshData, *pMeshDataNum, fScaleLength, bForAnim, &pAassetMeshDataContainer->mDefaultMat);
 
 	if (bForAnim)
 	{
@@ -189,7 +175,7 @@ MeshData_t* UAssetManager::ReadFromFile(AssetMeshDataContainer_t* pAassetMeshDat
 	return pMeshData;
 }
 
-void UAssetManager::CleanUp()
+void AssetManager::CleanUp()
 {
 	for (AkU32 i = 0; i < (AkU32)ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_COUNT; i++)
 	{
@@ -201,21 +187,21 @@ void UAssetManager::CleanUp()
 	}
 }
 
-AssetTextureContainer_t* UAssetManager::AllocTextureContainer()
+AssetTextureContainer_t* AssetManager::AllocTextureContainer()
 {
 	AssetTextureContainer_t* pAssetTexContainer = new AssetTextureContainer_t;
 	memset(pAssetTexContainer, 0, sizeof(AssetTextureContainer_t));
 	return pAssetTexContainer;
 }
 
-AssetMeshDataContainer_t* UAssetManager::AllocMeshDataContainer()
+AssetMeshDataContainer_t* AssetManager::AllocMeshDataContainer()
 {
 	AssetMeshDataContainer_t* pAssetMeshDataContainer = new AssetMeshDataContainer_t;
 	memset(pAssetMeshDataContainer, 0, sizeof(AssetMeshDataContainer_t));
 	return pAssetMeshDataContainer;
 }
 
-void UAssetManager::FreeTextureContainer(AssetTextureContainer_t* pAssetTextureContainer)
+void AssetManager::FreeTextureContainer(AssetTextureContainer_t* pAssetTextureContainer)
 {
 	if (pAssetTextureContainer)
 	{
@@ -224,7 +210,7 @@ void UAssetManager::FreeTextureContainer(AssetTextureContainer_t* pAssetTextureC
 	}
 }
 
-void UAssetManager::FreeMeshDataContainer(AssetMeshDataContainer_t* pAssetMeshDataContainer)
+void AssetManager::FreeMeshDataContainer(AssetMeshDataContainer_t* pAssetMeshDataContainer)
 {
 	if (pAssetMeshDataContainer)
 	{

@@ -1,107 +1,57 @@
 #pragma once
 
-struct GameEventCreateGameObjectParam_t
+struct EventCreateGameObjectParam_t
 {
 
 };
 
-struct GameEventSceneChangeParam_t
+struct EventSceneChangeParam_t
 {
-	GAME_SCENE_TYPE eBefore = {};
-	GAME_SCENE_TYPE eAfter = {};
+	SCENE_TYPE eBefore = {};
+	SCENE_TYPE eAfter = {};
 };
 
-struct GameEventHandle_t
+struct EventHandle_t
 {
 	GAME_EVENT_TYPE eEventType = {};
 	void* pObj = nullptr;
 
 	union
 	{
-		GameEventCreateGameObjectParam_t tCreateGameObjParam;
-		GameEventSceneChangeParam_t tSceneChangeParam;
+		EventCreateGameObjectParam_t tCreateGameObjParam;
+		EventSceneChangeParam_t tSceneChangeParam;
 	};
 };
 
 /*
 ==================
-GameEventManager
+EventManager
 ==================
 */
 
-class UApplication;
+class Application;
 
-class UGameEventManager
+class EventManager
 {
 public:
 	static const AkU32 MAX_EVENT_HANDLE_LIST_COUNT = 1024;
 
-	UGameEventManager();
-	~UGameEventManager();
+	~EventManager();
 
-	AkBool Initialize(UApplication* pApp);
 	void Excute(AkF32 fDeltaTime);
 	void Reset();
 
-	void AddEvent(GameEventHandle_t* pEventHandle);
+	void AddEvent(EventHandle_t* pEventHandle);
 
 private:
 	void CleanUp();
 
-	GameEventHandle_t* Dispatch();
+	EventHandle_t* Dispatch();
 
 private:
-	UApplication* _pApp = nullptr;
-	GameEventHandle_t _pEventHandleList[MAX_EVENT_HANDLE_LIST_COUNT] = {};
+	Application* _pApp = nullptr;
+	EventHandle_t _pEventHandleList[MAX_EVENT_HANDLE_LIST_COUNT] = {};
 	AkU32 _uReadPos = 0;
 	AkU32 _uWritePos = 0;
 };
 
-struct EditorEventEditorChangeParam_t
-{
-	EDITOR_TYPE eBefore = {};
-	EDITOR_TYPE eAfter = {};
-};
-
-struct EditorEventHandle_t
-{
-	EDITOR_EVENT_TYPE eEventType = {};
-	void* pObj = nullptr;
-
-	union
-	{
-		EditorEventEditorChangeParam_t tEditorChangeParam;
-	};
-};
-
-/*
-==================
-EditorEventManager
-==================
-*/
-
-class UEditorEvenetManager
-{
-public:
-	static const AkU32 MAX_EVENT_HANDLE_LIST_COUNT = 1024;
-
-	UEditorEvenetManager();
-	~UEditorEvenetManager();
-
-	AkBool Initialize(UApplication* pApp);
-	void Excute(AkF32 fDeltaTime);
-	void Reset();
-
-	void AddEvent(EditorEventHandle_t* pEventHandle);
-
-private:
-	void CleanUp();
-
-	EditorEventHandle_t* Dispatch();
-
-private:
-	UApplication* _pApp = nullptr;
-	EditorEventHandle_t _pEventHandleList[MAX_EVENT_HANDLE_LIST_COUNT] = {};
-	AkU32 _uReadPos = 0;
-	AkU32 _uWritePos = 0;
-};

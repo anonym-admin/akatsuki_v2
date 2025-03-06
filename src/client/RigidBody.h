@@ -6,12 +6,12 @@ URigidBody
 ==============
 */
 
-class UActor;
+class Actor;
 
-class URigidBody
+class RigidBody
 {
 public:
-	AkBool Initialize(UActor* pOwner);
+	AkBool Initialize(Actor* pOwner);
 	void Update(const AkF32 fDeltaTime);
 
 	void AddForce(Vector3 vForce) { _vForce += vForce; }
@@ -28,7 +28,7 @@ private:
 	void Move(const AkF32 fDeltaTime);
 
 private:
-	UActor* _pOwner = nullptr;
+	Actor* _pOwner = nullptr;
 	Vector3 _vForce = Vector3(0.0f);
 	Vector3 _vVelocity = Vector3(0.0f);
 	AkF32 _fMaxVelocity = 100.0f;

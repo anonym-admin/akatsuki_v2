@@ -3,7 +3,6 @@
 #include "UI.h"
 #include "TextUI.h"
 #include "GameInput.h"
-#include "Application.h"
 
 /*
 ==============
@@ -11,34 +10,23 @@ UI Manager
 ==============
 */
 
-UUIManager::UUIManager()
-{
-}
-
-UUIManager::~UUIManager()
+UIManager::~UIManager()
 {
     CleanUp();
 }
 
-AkBool UUIManager::Initialize(UApplication* pApp)
-{
-    _pApp = pApp;
-
-    return AK_TRUE;
-}
-
-void UUIManager::Update(const AkF32 fDeltaTime)
+void UIManager::Update()
 {
     for (AkU32 i = 0; i < (AkU32)UI_OBJECT_TYPE::UI_OBJ_TYPE_COUNT; i++)
     {
         if(_pOnFlag[i])
-            _ppUIList[i]->Update(fDeltaTime);
+            _ppUIList[i]->Update();
     }
 
     ProcessMouseControl();
 }
 
-void UUIManager::Render()
+void UIManager::Render()
 {
     for (AkU32 i = 0; i < (AkU32)UI_OBJECT_TYPE::UI_OBJ_TYPE_COUNT; i++)
     {
@@ -47,27 +35,27 @@ void UUIManager::Render()
     }
 }
 
-void UUIManager::AddUI(UUI* pUI, UI_OBJECT_TYPE eType)
+void UIManager::AddUI(UUI* pUI, UI_OBJECT_TYPE eType)
 {
     _ppUIList[(AkU32)eType] = pUI;
 }
 
-void UUIManager::OnUI(UI_OBJECT_TYPE eType)
+void UIManager::OnUI(UI_OBJECT_TYPE eType)
 {
     _pOnFlag[(AkU32)eType] = AK_TRUE;
 }
 
-void UUIManager::OffUI(UI_OBJECT_TYPE eType)
+void UIManager::OffUI(UI_OBJECT_TYPE eType)
 {
     _pOnFlag[(AkU32)eType] = AK_FALSE;
 }
 
-void UUIManager::ToggleUI(UI_OBJECT_TYPE eType)
+void UIManager::ToggleUI(UI_OBJECT_TYPE eType)
 {
     _pOnFlag[(AkU32)eType] = !_pOnFlag[(AkU32)eType];
 }
 
-void UUIManager::CleanUp()
+void UIManager::CleanUp()
 {
     for (AkU32 i = 0; i < (AkU32)UI_OBJECT_TYPE::UI_OBJ_TYPE_COUNT; i++)
     {
@@ -76,10 +64,8 @@ void UUIManager::CleanUp()
     }
 }
 
-void UUIManager::ProcessMouseControl()
+void UIManager::ProcessMouseControl()
 {
-    UGameInput* pGameInput = _pApp->GetGameInput();
-
     for (AkU32 i = 0; i < (AkU32)UI_OBJECT_TYPE::UI_OBJ_TYPE_COUNT; i++)
     {
         UUI* pUI = (UUI*)_ppUIList[i];
@@ -97,11 +83,11 @@ void UUIManager::ProcessMouseControl()
             {
                 pUI->MouseOn();
 
-                if (pGameInput->LeftBtnDown())
+                if (LBTN_DOWN)
                 {
                     pUI->MouseLBtnDown();
                 }
-                else if (pGameInput->LeftBtnUp())
+                else if (LBTN_UP)
                 {
                     if (pUI->IsMouseLBtnDown())
                     {
@@ -123,7 +109,7 @@ void UUIManager::ProcessMouseControl()
     }
 }
 
-UUI* UUIManager::GetTargetedUI(UUI* pRootUI)
+UUI* UIManager::GetTargetedUI(UUI* pRootUI)
 {
     Queue_t* pQueue = nullptr;
 

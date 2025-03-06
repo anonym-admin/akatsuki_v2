@@ -1,209 +1,57 @@
 #include "pch.h"
 #include "Model.h"
-#include "Animation.h"
-#include "Application.h"
-#include "GeometryGenerator.h"
+#include "AssetManager.h"
 
-/*
-==========
-Model
-==========
-*/
-
-UModel::UModel()
+Model::Model(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 {
+	if (!Initialize(pMeshDataContainer, pAlbedo, fMetallic, fRoughness, pEmissive))
+	{
+		__debugbreak();
+	}
 }
 
-UModel::~UModel()
+Model::~Model()
 {
 	CleanUp();
 }
 
-AkBool UModel::Initialize(UApplication* pApp)
+AkBool Model::Initialize(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 {
-	_pApp = pApp;
-
-	_pRenderer = _pApp->GetRenderer();
+	CreateMeshObject(pMeshDataContainer->pMeshData, pMeshDataContainer->uMeshDataNum);
+	CreateMaterial(pAlbedo, fMetallic, fRoughness, pEmissive);
 
 	return AK_TRUE;
 }
 
-void UModel::Render()
+void Model::Render()
 {
-	if (_pMeshObj)
-	{
-		switch (_eType)
-		{
-		case MODEL_RENDER_OBJECT_TYPE::BASIC_MESH_OBJ:
-			_pRenderer->RenderBasicMeshObject(_pMeshObj, &_pModelContextTable[_uModelCtxTableIndex]->mWorldRow);
-			
-			break;
-		case MODEL_RENDER_OBJECT_TYPE::SKINNED_MESH_OBJ:
-			_pRenderer->RenderSkinnedMeshObject(_pMeshObj, &_pModelContextTable[_uModelCtxTableIndex]->mWorldRow, _pModelContextTable[_uModelCtxTableIndex]->pAnimation->GetFinalTransforms());
-			break;
-		default:
-			__debugbreak();
-			break;
-		}
-	}
+	GRenderer->RenderBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
-void UModel::RenderNormal()
+void Model::RenderNormal()
 {
-	if (_pMeshObj)
-	{
-		switch (_eType)
-		{
-		case MODEL_RENDER_OBJECT_TYPE::BASIC_MESH_OBJ:
-			_pRenderer->RenderNormalOfBasicMeshObject(_pMeshObj, &_pModelContextTable[_uModelCtxTableIndex]->mWorldRow);
-			break;
-		case MODEL_RENDER_OBJECT_TYPE::SKINNED_MESH_OBJ:
-			_pRenderer->RenderNormalOfSkinnedMeshObject(_pMeshObj, &_pModelContextTable[_uModelCtxTableIndex]->mWorldRow, _pModelContextTable[_uModelCtxTableIndex]->pAnimation->GetFinalTransforms());
-			break;
-		default:
-			__debugbreak();
-			break;
-		}
-	}
+	GRenderer->RenderNormalOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
-void UModel::RenderShadow()
+void Model::RenderShadow()
 {
-	if (_pMeshObj)
-	{
-		switch (_eType)
-		{
-		case MODEL_RENDER_OBJECT_TYPE::BASIC_MESH_OBJ:
-			_pRenderer->RenderShadowOfBasicMeshObject(_pMeshObj, &_pModelContextTable[_uModelCtxTableIndex]->mWorldRow);
-			break;
-		case MODEL_RENDER_OBJECT_TYPE::SKINNED_MESH_OBJ:
-			_pRenderer->RenderShadowOfSkinnedMeshObject(_pMeshObj, &_pModelContextTable[_uModelCtxTableIndex]->mWorldRow, _pModelContextTable[_uModelCtxTableIndex]->pAnimation->GetFinalTransforms());
-			break;
-		default:
-			__debugbreak();
-			break;
-		}
-	}
+	GRenderer->RenderShadowOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
-void UModel::Release()
+void Model::UpdateWorldRow(const Matrix* pWorldRow)
 {
-	AkU32 uRefCount = --_uRefCount;
-	if (!uRefCount)
-	{
-		delete this;
-	}
+	_mWorldRow = *pWorldRow;
 }
 
-AkU32 UModel::AddRef()
+void Model::SetWireFrame(AkBool bDrawWire)
 {
-	AkU32 uRefCount = _uRefCount++;
-	return uRefCount;
-}
-
-void UModel::SetWorldMatrix(AkU32 uModelCtxTableIndex, const Matrix* pWorld)
-{
-	_pModelContextTable[uModelCtxTableIndex]->mWorldRow = *pWorld;
-}
-
-void UModel::SetRenderObject(IMeshObject* pMeshObj, MODEL_RENDER_OBJECT_TYPE eType)
-{
-	_pMeshObj = pMeshObj;
-	_eType = eType;
-}
-
-const Matrix* UModel::GetWorldMatrix()
-{
-	return &_pModelContextTable[_uModelCtxTableIndex]->mWorldRow;
-}
-
-AkBool UModel::PlayAnimation(const AkF32 fDeltaTime, const wchar_t* wcClipName, AkBool bInPlace)
-{
-	AkBool bIsEnd = AK_FALSE;
-
-	ModelContext_t* pCurModelCtx = GetCurrentModelContext();
-	UAnimation* pAnimation = pCurModelCtx->pAnimation;
-
-	return pAnimation->PlayAnimation(fDeltaTime, wcClipName, bInPlace);
-}
-
-AkBool UModel::CreateStaticMeshObject()
-{
-	if (_pMeshObj)
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pMeshObj = _pRenderer->CreateBasicMeshObject();
-
-	return AK_TRUE;;
-}
-
-AkBool UModel::CreateSkinnedMeshObject()
-{
-	if (_pMeshObj)
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pMeshObj = _pRenderer->CreateSkinnedMeshObject();
-
-	return AK_TRUE;
-}
-
-void UModel::CreateContextTable(Matrix* pWorldRow, UAnimation* pAnim)
-{
-	if (_uModelCtxNum >= MAX_MODEL_CONTEXT_NUM)
-	{
-		__debugbreak();
-		return;
-	}
-
-	ModelContext_t* pContext = new ModelContext_t;
-	pContext->mWorldRow = *pWorldRow;
-	pContext->pAnimation = pAnim;
-	if (pAnim)
-	{
-		pAnim->AddRef();
-	}
-
-	_pModelContextTable[_uModelCtxNum] = pContext;
-	_uModelCtxNum++;
-}
-
-void UModel::CreateMeshBuffersForDraw(MeshData_t* pMeshData, AkU32 uMeshDataNum)
-{
-	if (pMeshData && uMeshDataNum > 0)
-	{
-		_pMeshObj->CreateMeshBuffers(pMeshData, uMeshDataNum);
-	}
+	if (bDrawWire)
+		_pMeshObj->EnableWireFrame();
 	else
-	{
-		__debugbreak();
-	}
+		_pMeshObj->DisableWireFrame();
 }
 
-void UModel::DestroyContextTable()
-{
-	for (AkU32 i = 0; i < _uModelCtxNum; i++)
-	{
-		if (_pModelContextTable[i])
-		{
-			if (_pModelContextTable[i]->pAnimation)
-			{
-				_pModelContextTable[i]->pAnimation->Release();
-				_pModelContextTable[i]->pAnimation = nullptr;
-			}
-
-			delete _pModelContextTable[i];
-			_pModelContextTable[i] = nullptr;
-		}
-	}
-}
-
-void UModel::DestroyMeshObject()
+void Model::CleanUp()
 {
 	if (_pMeshObj)
 	{
@@ -212,22 +60,13 @@ void UModel::DestroyMeshObject()
 	}
 }
 
-void UModel::CleanUp()
+void Model::CreateMeshObject(MeshData_t* pMeshData, AkU32 uMeshDataNum)
 {
-	DestroyMeshObject();
-
-	DestroyContextTable();
+	_pMeshObj = GRenderer->CreateBasicMeshObject();
+	_pMeshObj->CreateMeshBuffers(pMeshData, uMeshDataNum);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+void Model::CreateMaterial(const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
+{
+	_pMeshObj->UpdateMaterialBuffers(pAlbedo, fMetallic, fRoughness, pEmissive);
+}

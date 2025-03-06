@@ -7,16 +7,20 @@ Game Timer Class
 ==================
 */
 
-UTimer::UTimer()
+Timer::Timer()
 {
+	if (!Initialize())
+	{
+		__debugbreak();
+	}
 }
 
-UTimer::~UTimer()
+Timer::~Timer()
 {
 	CleanUp();
 }
 
-AkBool UTimer::Initialize()
+AkBool Timer::Initialize()
 {
 	AkI64 i64CountsPerSecond = 0;
 	::QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&i64CountsPerSecond));
@@ -25,7 +29,7 @@ AkBool UTimer::Initialize()
 	return AK_TRUE;
 }
 
-void UTimer::Tick()
+void Timer::Tick()
 {
 	if (_bStopped)
 	{
@@ -50,31 +54,31 @@ void UTimer::Tick()
 	}
 }
 
-AkF32 UTimer::GetTotalTime() const
+AkF32 Timer::GetTotalTime() const
 {
 	AkF32 fTotalTime = static_cast<AkF32>(((_i64CurTime - _i64PausedTime) - _i64BaseTime) * _f64SecondPerCount);
 
 	return fTotalTime;
 }
 
-AkF32 UTimer::GetDeltaTime() const
+AkF32 Timer::GetDeltaTime() const
 {
 	return static_cast<AkF32>(_f64DeltaTime);
 }
 
-AkF64 UTimer::GetF64TotalTime() const
+AkF64 Timer::GetF64TotalTime() const
 {
 	AkF64 f64TotalTime = static_cast<AkF64>(((_i64CurTime - _i64PausedTime) - _i64BaseTime) * _f64SecondPerCount);
 
 	return f64TotalTime;
 }
 
-AkF64 UTimer::GetF64DeltaTime() const
+AkF64 Timer::GetF64DeltaTime() const
 {
 	return _f64DeltaTime;
 }
 
-void UTimer::Reset()
+void Timer::Reset()
 {
 	AkI64 i64StartTime = 0;
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&i64StartTime));
@@ -85,7 +89,7 @@ void UTimer::Reset()
 	_bStopped = AK_FALSE;
 }
 
-void UTimer::Start()
+void Timer::Start()
 {
 	AkI64 i64StartTime = 0;
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&i64StartTime));
@@ -99,7 +103,7 @@ void UTimer::Start()
 	}
 }
 
-void UTimer::Stop()
+void Timer::Stop()
 {
 	if (!_bStopped)
 	{
@@ -111,7 +115,7 @@ void UTimer::Stop()
 	}
 }
 
-void UTimer::CleanUp()
+void Timer::CleanUp()
 {
 
 }

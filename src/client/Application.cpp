@@ -6,7 +6,6 @@
 #include "GeometryGenerator.h"
 #include "CollisionManager.h"
 #include "SceneManager.h"
-#include "EditorManager.h"
 #include "AssetManager.h"
 #include "Animation.h"
 #include "EventManager.h"
@@ -27,155 +26,26 @@ Application
 ===============
 */
 
-UApplication::UApplication()
+Application::Application()
 {
 }
 
-UApplication::~UApplication()
+Application::~Application()
 {
 	CleanUp();
 }
 
-AkBool UApplication::InitApplication(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnableGBV)
+AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 {
 	srand((AkU32)time(nullptr));
 
-	const wchar_t* wcRendererDLLFilename = nullptr;
-
-#if defined(_M_AMD64)
-
-#if defined(_DEBUG) || defined(DEBUG)
-	wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
-#else
-	wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
-#endif
-
-#elif defined(_M_IX86)
-
-#if defined(_DEBUG) | defined(DEBUG)
-	wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
-#else
-	wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
-#endif
-
-#endif
-
-	wchar_t wcErrorText[128] = {};
-	AkU32 uErrorCode = 0;
-
-	_hRendererDLL = ::LoadLibrary(wcRendererDLLFilename);
-	if (!_hRendererDLL)
-	{
-		uErrorCode = ::GetLastError();
-		swprintf_s(wcErrorText, L"Failed LoadLibrary[%s] - Error Code: %u \n", wcRendererDLLFilename, uErrorCode);
-		::MessageBox(hWnd, wcErrorText, L"Error", MB_OK);
-		__debugbreak();
-	}
-
-	DLL_CreateInstanceFuncPtr pDLL_CreateInstance = reinterpret_cast<DLL_CreateInstanceFuncPtr>(::GetProcAddress(_hRendererDLL, "DLL_CreateInstance"));
-	pDLL_CreateInstance(reinterpret_cast<void**>(&_pRenderer));
-
-	if (!_pRenderer->Initialize(hWnd, bEnableDebugLayer, bEnableGBV))
-	{
-		__debugbreak();
-	}
-
-	_hWnd = hWnd;
-
-	RECT tRect = {};
-	::GetClientRect(_hWnd, &tRect);
-	_uScreenWidth = tRect.right - tRect.left;
-	_uScreenHeight = tRect.bottom - tRect.top;
-
-	_pTimer = new UTimer;
-	if (!_pTimer->Initialize())
+	if (!InitRenderer(bEnableDebugLayer, bEnableGBV))
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
-	_pGameInput = new UGameInput;
-	if (!_pGameInput->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pCollisionManager = new UCollisionManager;
-	if (!_pCollisionManager->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pAssetManager = new UAssetManager;
-	if (!_pAssetManager->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pAnimator = new UAnimator;
-	if (!_pAnimator->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pGameEventManager = new UGameEventManager;
-	if (!_pGameEventManager->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pEditorEventManager = new UEditorEvenetManager;
-	if (!_pEditorEventManager->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pModelManager = new UModelManager;
-	if (!_pModelManager->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pSceneManager = new USceneManager;
-	if (!_pSceneManager->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pEditorManager = new UEditorManager;
-	if (!_pEditorManager->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pUIManager = new UUIManager;
-	if (!_pUIManager->Initialize(this))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	/////////////////////////////////////////////////////////////
-	_pSoundManager = new USoundManager;
-	if (!_pSoundManager->Initialize())
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pTestSound = _pSoundManager->LoadSound("Fire_Continue.mp3");
-	/////////////////////////////////////////////////////////////
-
-	_pSysTextUI = new UTextUI;
+	_pSysTextUI = new TextUI;
 	if (!_pSysTextUI->Initialize(this, 256, 32, L"Consolas", 10))
 	{
 		__debugbreak();
@@ -188,7 +58,7 @@ AkBool UApplication::InitApplication(HWND hWnd, AkBool bEnableDebugLayer, AkBool
 	_pUIManager->AddUI(_pSysTextUI, UI_OBJECT_TYPE::UI_OBJ_SYS_INFO_TEXT);
 	_pUIManager->OnUI(UI_OBJECT_TYPE::UI_OBJ_SYS_INFO_TEXT);
 
-	_pDynamicTextUI = new UInputUI;
+	_pDynamicTextUI = new InputUI;
 	if (!_pDynamicTextUI->Initialize(this, 256, 32, L"Consolas", 10))
 	{
 		__debugbreak();
@@ -202,7 +72,7 @@ AkBool UApplication::InitApplication(HWND hWnd, AkBool bEnableDebugLayer, AkBool
 	_pUIManager->AddUI(_pDynamicTextUI, UI_OBJECT_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
 	_pUIManager->OnUI(UI_OBJECT_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
 
-	UTextUI* pStaticTextUI = new UTextUI;
+	TextUI* pStaticTextUI = new TextUI;
 	if (!pStaticTextUI->Initialize(this, 256, 32, L"Consolas", 10))
 	{
 		__debugbreak();
@@ -238,23 +108,23 @@ AkBool UApplication::InitApplication(HWND hWnd, AkBool bEnableDebugLayer, AkBool
 	pBtnUI->SetScale(1.0f, 1.0f);
 	pBtnUI->SetDrawBackGround(AK_TRUE);
 	pBtnUI->SetResolution(225, 49);
-	pBtnUI->SetClickFunc(&UApplication::ExitGame);
+	pBtnUI->SetClickFunc(&Application::ExitGame);
 
 	pTextureUI->AddChildUI(pBtnUI);
 
 	// Reset timer.
-	_pTimer->Reset();
+	GTimer->Reset();
 
 	return AK_TRUE;
 }
 
-void UApplication::RunApplication()
+void Application::RunApplication()
 {
-	_pTimer->Tick();
+	GTimer->Tick();
 
 	Update(_pTimer);
 
-	_pRenderer->UpdateCascadeOrthoProjMatrix();
+	GRenderer->UpdateCascadeOrthoProjMatrix();
 
 	// Shadow Pass.
 	for (AkU32 i = 0; i < 5; i++)
@@ -279,93 +149,31 @@ void UApplication::RunApplication()
 	_pEditorEventManager->Reset();
 }
 
-AkBool UApplication::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
+AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 {
 	AkBool bResult = AK_FALSE;
 
-	if (_pRenderer)
+	if (GRenderer)
 	{
-		bResult = _pRenderer->UpdateWindowSize(uScreenWidth, uScreenHeight);
-		_uScreenWidth = uScreenWidth;
-		_uScreenHeight = uScreenHeight;
+		bResult = GRenderer->UpdateWindowSize(uScreenWidth, uScreenHeight);
 	}
 
 	return bResult;
 }
 
-void UApplication::SetVSync(AkBool bUseVSync)
+void Application::SetVSync(AkBool bUseVSync)
 {
 	_bUseVSync = bUseVSync;
 
-	_pRenderer->SetVSync(_bUseVSync);
+	GRenderer->SetVSync(_bUseVSync);
 }
 
-void UApplication::CleanUp()
+void Application::CleanUp()
 {
-	if (_pSoundManager)
+	if (GRenderer)
 	{
-		delete _pSoundManager;
-		_pSoundManager = nullptr;
-	}
-	if (_pUIManager)
-	{
-		delete _pUIManager;
-		_pUIManager = nullptr;
-	}
-	if (_pEditorEventManager)
-	{
-		delete _pEditorEventManager;
-		_pEditorEventManager = nullptr;
-	}
-	if (_pGameEventManager)
-	{
-		delete _pGameEventManager;
-		_pGameEventManager = nullptr;
-	}
-	if (_pEditorManager)
-	{
-		delete _pEditorManager;
-		_pEditorManager = nullptr;
-	}
-	if (_pSceneManager)
-	{
-		delete _pSceneManager;
-		_pSceneManager = nullptr;
-	}
-	if (_pModelManager)
-	{
-		delete _pModelManager;
-		_pModelManager = nullptr;
-	}
-	if (_pAnimator)
-	{
-		delete _pAnimator;
-		_pAnimator = nullptr;
-	}
-	if (_pAssetManager)
-	{
-		delete _pAssetManager;
-		_pAssetManager = nullptr;
-	}
-	if (_pCollisionManager)
-	{
-		delete _pCollisionManager;
-		_pCollisionManager = nullptr;
-	}
-	if (_pGameInput)
-	{
-		delete _pGameInput;
-		_pGameInput = nullptr;
-	}
-	if (_pTimer)
-	{
-		delete _pTimer;
-		_pTimer = nullptr;
-	}
-	if (_pRenderer)
-	{
-		_pRenderer->Release();
-		_pRenderer = nullptr;
+		GRenderer->Release();
+		GRenderer = nullptr;
 	}
 	if (_hRendererDLL)
 	{
@@ -376,12 +184,61 @@ void UApplication::CleanUp()
 	}
 }
 
-void UApplication::Update(const UTimer* pTimer)
+AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV)
+{
+	const wchar_t* wcRendererDLLFilename = nullptr;
+
+#if defined(_M_AMD64)
+
+	#if defined(_DEBUG) || defined(DEBUG)
+		wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
+	#else
+		wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
+	#endif
+
+#elif defined(_M_IX86)
+
+	#if defined(_DEBUG) | defined(DEBUG)
+		wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
+	#else
+		wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
+	#endif
+
+#endif
+
+	IRenderer* pRenderer = nullptr;
+
+	wchar_t wcErrorText[128] = {};
+	AkU32 uErrorCode = 0;
+
+	_hRendererDLL = ::LoadLibrary(wcRendererDLLFilename);
+	if (!_hRendererDLL)
+	{
+		uErrorCode = ::GetLastError();
+		swprintf_s(wcErrorText, L"Failed LoadLibrary[%s] - Error Code: %u \n", wcRendererDLLFilename, uErrorCode);
+		::MessageBox(GhWnd, wcErrorText, L"Error", MB_OK);
+		__debugbreak();
+		return AK_FALSE;
+	}
+
+	DLL_CreateInstanceFuncPtr pDLL_CreateInstance = reinterpret_cast<DLL_CreateInstanceFuncPtr>(::GetProcAddress(_hRendererDLL, "DLL_CreateInstance"));
+	pDLL_CreateInstance(reinterpret_cast<void**>(&pRenderer));
+
+	if (!pRenderer->Initialize(GhWnd, bEnableDebugLayer, bEnableGBV))
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+
+	GRenderer = pRenderer;
+
+	return AK_TRUE;
+}
+
+void Application::Update()
 {
 	static AkF32 fTimeElapsed = 0.0f;
-	AkF32 fDeltaTime = pTimer->GetDeltaTime();
-
-	fTimeElapsed += fDeltaTime;
+	fTimeElapsed += DT;
 
 	// Not Vsync => 60fps 고정을 위한 처리
 	//if (fTimeElapsed < 0.016f)
@@ -390,85 +247,28 @@ void UApplication::Update(const UTimer* pTimer)
 	//}
 
 	// Update game input.
-	_pGameInput->Update();
+	GGameInput->Update();
 
 	// Update mouse ndc pos.
 	UpdateMouseNdcPos();
 
-	if (_pGameInput->KeyFirstDown(KEY_INPUT_RSHIFT))
-	{
-		if (_bUpdatedFirst)
-		{
-			_bEnableEditor = AK_TRUE;
-
-			_pEditorManager->GetCurrentEditor()->BeginEditor();
-		}
-		else
-		{
-			EDITOR_TYPE eEditorType = (EDITOR_TYPE)_uEditorType;
-
-			if (EDITOR_TYPE::EDITOR_TYPE_COUNT == eEditorType)
-			{
-				_bEnableEditor = AK_FALSE;
-
-				// 종료 타입 이전 단계의 에티터 타입을 종료
-				AkU32 uBeforeExitType = (AkU32)EDITOR_TYPE::EDITOR_TYPE_COUNT - 1;
-
-				_pEditorManager->GetEditor((EDITOR_TYPE)uBeforeExitType)->EndEditor();
-			}
-			else
-			{
-				_bEnableEditor = AK_TRUE;
-
-				EditorEventHandle_t tEditorEventHandle = {};
-				tEditorEventHandle.eEventType = EDITOR_EVENT_TYPE::EDITOR_EVENT_TYPE_EDITOR_CHANGE;
-				tEditorEventHandle.tEditorChangeParam.eAfter = eEditorType;
-
-				_pEditorEventManager->AddEvent(&tEditorEventHandle);
-
-				// _pEditorManager->ChangeEditor(eEditorType);
-			}
-		}
-
-		_uEditorType++;
-		_uEditorType %= ((AkU32)EDITOR_TYPE::EDITOR_TYPE_COUNT + 1);
-
-		_bUpdatedFirst = AK_FALSE;
-	}
-
-	if (_pGameInput->KeyFirstDown(KEY_INPUT_F5))
-	{
-		_bUseVSync = !_bUseVSync;
-
-		SetVSync(_bUseVSync);
-	}
-
-	// TODO!!
-	// 임시로 F1 버튼으로 설정.
-	if (_pGameInput->KeyFirstDown(KEY_INPUT_F1))
-	{
-		_pUIManager->ToggleUI(UI_OBJECT_TYPE::UI_OBJ_EXIT);
-	}
-
-	if (_bEnableEditor)
-	{
-		_pEditorManager->GetCurrentEditor()->Update(fDeltaTime);
-	}
+	// Update Game Env.
+	UpdateEnviroment();
 
 	// Update Scene list.
-	_pSceneManager->Update(fDeltaTime);
+	GSceneManager->Update();
 
 	// Final Update Scene list.
-	_pSceneManager->FinalUpdate(fDeltaTime);
+	GSceneManager->FinalUpdate();
 
 	// Update Collision manager.
-	_pCollisionManager->Update();
+	GCollisionManager->Update();
 
 	// Update status text
 	UpdateText();
 
 	// Update UI Manager.
-	_pUIManager->Update(fDeltaTime);
+	GUIManager->Update();
 
 	// Excute event manager.
 	_pGameEventManager->Excute(fDeltaTime);
@@ -487,7 +287,7 @@ void UApplication::Update(const UTimer* pTimer)
 	fTimeElapsed = 0.0f;
 }
 
-void UApplication::UpdateMouseNdcPos()
+void Application::UpdateMouseNdcPos()
 {
 	// AkI32 iMousePosX = _pGameInput->GetMouseX();
 	AkI32 iMousePosX = _pGameInput->GetReleasedMouseX();
@@ -500,9 +300,25 @@ void UApplication::UpdateMouseNdcPos()
 	_fClampNdcY = Clamp(_fNdcY, -1.0f, 1.0f);
 }
 
-void UApplication::UpdateText()
+void Application::UpdateEnviroment()
 {
-	USceneInGame* pSceneInGame = (USceneInGame*)_pSceneManager->GetScene(GAME_SCENE_TYPE::SCENE_TYPE_INGANE);
+	if (KEY_DOWN(KEY_INPUT_F10))
+	{
+		_bUseVSync = !_bUseVSync;
+
+		SetVSync(_bUseVSync);
+	}
+	// TODO!!
+	// 임시로 F1 버튼으로 설정.
+	if (KEY_DOWN(KEY_INPUT_F1))
+	{
+		GUIManager->ToggleUI(UI_OBJECT_TYPE::UI_OBJ_EXIT);
+	}
+}
+
+void Application::UpdateText()
+{
+	SceneInGame* pSceneInGame = (SceneInGame*)_pSceneManager->GetScene(SCENE_TYPE::SCENE_TYPE_INGANE);
 
 	AkI32 iTextWidth = 0;
 	AkI32 iTextHeight = 0;
@@ -512,7 +328,7 @@ void UApplication::UpdateText()
 	_pSysTextUI->WriteText(wcText);
 }
 
-void UApplication::Render(const UTimer* pTimer)
+void Application::Render(const Timer* pTimer)
 {
 	// Render editor.
 	if (_bEnableEditor)
@@ -531,7 +347,7 @@ void UApplication::Render(const UTimer* pTimer)
 	}
 }
 
-void UApplication::CalculateFrameRate()
+void Application::CalculateFrameRate()
 {
 	static AkU32 uFrameCount = 0;
 	static AkF32 fTimeElapsed = 0.0f;
@@ -549,7 +365,7 @@ void UApplication::CalculateFrameRate()
 	}
 }
 
-void UApplication::ExitGame()
+void Application::ExitGame()
 {
 	if (_bEnableEditor)
 	{

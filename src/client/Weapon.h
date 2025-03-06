@@ -10,21 +10,21 @@ Weapon
 
 class UPlayer;
 
-class UWeapon : public UActor
+class UWeapon : public Actor
 {
 public:
 	UWeapon();
 	virtual ~UWeapon();
 
-	virtual AkBool Initialize(UApplication* pApp) = 0;
-	virtual AkBool Initialize(UApplication* pApp, const Vector3* pExtent, const Vector3* pCenter) = 0;
+	virtual AkBool Initialize(Application* pApp) = 0;
+	virtual AkBool Initialize(Application* pApp, const Vector3* pExtent, const Vector3* pCenter) = 0;
 	virtual void Update(const AkF32 fDeltaTime) = 0;
 	virtual void FinalUpdate(const AkF32 fDeltaTime) = 0;
 	virtual void Render() = 0;
 
-	virtual void OnCollision(UCollider* pOther);
-	virtual void OnCollisionEnter(UCollider* pOther);
-	virtual void OnCollisionExit(UCollider* pOther);
+	virtual void OnCollision(Collider* pOther);
+	virtual void OnCollisionEnter(Collider* pOther);
+	virtual void OnCollisionExit(Collider* pOther);
 
 	void SetOwnerRotationY(AkF32 fRot);
 	void SetRelativeRotationX(AkF32 fRot);

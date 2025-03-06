@@ -14,9 +14,9 @@ UBuilding::~UBuilding()
 	CleanUp();
 }
 
-AkBool UBuilding::Initialize(UApplication* pApp)
+AkBool UBuilding::Initialize(Application* pApp)
 {
-	if (!UActor::Initialize(pApp))
+	if (!Actor::Initialize(pApp))
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -49,15 +49,15 @@ void UBuilding::Render()
 	}
 }
 
-void UBuilding::OnCollision(UCollider* pOther)
+void UBuilding::OnCollision(Collider* pOther)
 {
 }
 
-void UBuilding::OnCollisionEnter(UCollider* pOther)
+void UBuilding::OnCollisionEnter(Collider* pOther)
 {
 }
 
-void UBuilding::OnCollisionExit(UCollider* pOther)
+void UBuilding::OnCollisionExit(Collider* pOther)
 {
 }
 

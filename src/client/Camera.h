@@ -1,70 +1,49 @@
 #pragma once
 
-class UApplication;
-class UActor;
-
 /*
 ===================
 Camera base class
 ===================
 */
 
-class UCamera
+class Transform;
+class Actor;
+
+class Camera
 {
 public:
-	virtual AkBool Initialize(UApplication* pApp) = 0;
-	void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ);
-	void SetCameraDirection(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll);
-	Vector3 GetCameraPosition() { return _vCamPos; }
-	Vector3 GetCameraDirection() { return _vCamCurDir; }
-	
-protected:
-	UApplication* _pApp = nullptr;
-	IRenderer* _pRenderer = nullptr;
-	Vector3 _vCamInitDir = Vector3(0.0f, 0.0f, 1.0f);
-	Vector3 _vCamCurDir = Vector3(0.0f);
-	Vector3 _vCamPos = Vector3(0.0f);
-	AkF32 _fCamSpeed = 1.0f;
-};
+	Camera(const Vector3* pPos, const Vector3* pYawPirchRoll);
+	~Camera();
 
-/*
-===================
-EditorCamera
-===================
-*/
-
-class UEditorCamera : public UCamera
-{
-public:
-	virtual AkBool Initialize(UApplication* pApp) override;
-	
-	void Update(const AkF32 fDeltaTime);
-
-private:
-	AkBool _bMovaUpDown = AK_FALSE;
-};
-
-/*
-===================
-InGameCamera
-===================
-*/
-
-class UInGameCamera : public UCamera
-{
-public:
-	virtual AkBool Initialize(UApplication* pApp) override;
-	AkBool Initialize(UApplication* pApp, UActor* pOwner, Vector3 vRelativePos);
-	void Update(const AkF32 fDeltaTime);
+	AkBool Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll);
+	void Update();
 	void Render();
-
-	void SetOwner(UActor* pOwner) { _pOwner = pOwner; }
-	void SetRalativePosition(Vector3 vRelativePos);
+	void SetPosition(const Vector3* pPos);
+	void SetRotation(const Vector3* pYawPitchRoll);
+	void SetOwner(Actor* pOwner);
+	Vector3 GetPosition();
+	Vector3 GetDirection();
+	Transform* GetTransform() { return _pTransform; }
 
 private:
-	UActor* _pOwner = nullptr;
-	Vector3 _vRelativePos = Vector3(0.0f);
+	void CleanUp();
 
-	AkF32 _fOwnerInitRot = DirectX::XM_PI;
+	void MoveFree();
+	void MoveEditor();
+	void MoveFollow();
+	void RotateEditor();
+	void RotateFollow();
+	
+private:
+	Actor* _pOwner = nullptr;
+	Vector3 _vOwnerInitRot = Vector3(0.0f);
+	Vector3 _vCamInitPos = Vector3(0.0f);
+	Vector3 _vCamFollowPos = Vector3(0.0f);
+	Vector3 _vCamInitDir = Vector3(0.0f, 0.0f, 1.0f);
+	Transform* _pTransform = nullptr;
+	AkF32 _fCamSpeed = 1.0f;
+
+public:
+	CAMERA_MODE Mode = {};
 };
 

@@ -18,7 +18,7 @@ struct CHAT_THREAD_PARAM
 };
 
 AkU32 ProcessChatting(void* pChatParam);
-void ProcessChatInput(class UGameInput* pGameInput, wchar_t* wcBuf);
+void ProcessChatInput(class GameInput* pGameInput, wchar_t* wcBuf);
 
 /*
 ==========
@@ -26,14 +26,14 @@ Input UI
 ==========
 */
 
-class UInputUI : public UTextUI
+class InputUI : public TextUI
 {
 public:
-	UInputUI();
-	~UInputUI();
+	InputUI(AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
+	~InputUI();
 
-	AkBool Initialize(UApplication* pApp, AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
-	virtual void Update(const AkF32 fDeltaTime) override;
+	AkBool Initialize(AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
+	virtual void Update() override;
 
 private:
 	virtual void CleanUp() override;

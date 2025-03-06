@@ -8,20 +8,18 @@ Scene InGame
 =============
 */
 
-class UWorldMapContainer;
+class WorldMapContainer;
 
-class USceneInGame : public UScene
+class SceneInGame : public Scene
 {
 public:
-	USceneInGame();
-	~USceneInGame();
+	~SceneInGame();
 
-	virtual AkBool Initialize(UApplication* pApp) override;
 	virtual AkBool BeginScene() override;
 	virtual AkBool EndScene() override;
-	virtual void Update(const AkF32 fDeltaTime) override;
-	virtual void FinalUpdate(const AkF32 fDeltaTime) override;
-	virtual void RenderShadowPass() override;
+	virtual void Update() override;
+	virtual void FinalUpdate() override;
+	virtual void RenderShadow() override;
 	virtual void Render() override;
 
 	AkU32 GetTriangleCount();
@@ -29,9 +27,6 @@ public:
 	AkU32 GetRenderMapObjectCount() { return _uRenderMapObjCount; }
 
 private:
-	UApplication* _pApp = nullptr;
-	IRenderer* _pRenderer = nullptr;
-
 	// Mini map
 	ISpriteObject* _pMiniMapSprite = nullptr;
 	ISpriteObject* _pMiniMapOutlineSprite = nullptr;
@@ -49,10 +44,10 @@ private:
 	Matrix _mSkyboxTransform = Matrix();
 
 	// LandScape
-	class ULandScape* _pLandScape = nullptr;
+	class LandScape* _pLandScape = nullptr;
 
 	// World Map Container.
-	UWorldMapContainer* _pWorldMap = nullptr;
+	WorldMapContainer* _pWorldMap = nullptr;
 
 	// Frustum.
 	AkFrustum_t* _pFrustum = nullptr;

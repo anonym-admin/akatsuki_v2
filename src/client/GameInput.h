@@ -164,15 +164,15 @@ Game Input (keyboard, mouse)
 ============================
 */
 
-class UApplication;
+class Application;
 
-class UGameInput
+class GameInput
 {
 public:
-	UGameInput();
-	~UGameInput();
+	GameInput();
+	~GameInput();
 
-	AkBool Initialize(UApplication* pApp);
+	AkBool Initialize();
 	void Update();
 	bool LeftBtnDown();
 	bool RightBtnDown();
@@ -186,16 +186,20 @@ public:
 
 	AkI32 GetMouseX() { return _tMousePos.x; }
 	AkI32 GetMouseY() { return _tMousePos.y; }
-	AkI32 GetReleasedMouseX() { return _iReleasedMousePosX; }
-	AkI32 GetReleasedMouseY() { return _iReleasedMousePosY; }
+	AkI32 GetAccumulatedMouseX() { return _iAccMousePosX; }
+	AkI32 GetAccumulatedMouseY() { return _iAccMousePosY; }
+	AkF32 GetNdcX() { return _fNdcX; }
+	AkF32 GetNdcY() { return _fNdcY; }
+	AkF32 GetAccumulatedNdcX() { return _fAccNdcX; }
+	AkF32 GetAccumulatedNdcY() { return _fAccNdcY; }
 
 private:
 	void CleanUp();
 	void AcquireKeyboadrDevice();
 	void AcquireMouseDevice();
+	void UpdateNDCPosition();
 
 private:
-	HWND _hWnd = nullptr;
 	IDirectInput8* _pDirectInput = nullptr;
 	IDirectInputDevice8* _pKeyboardDevice = nullptr;
 	IDirectInputDevice8* _pMouseDevice = nullptr;
@@ -208,7 +212,11 @@ private:
 	AkI32 _iDx = 0;
 	AkI32 _iDy = 0;
 	AkI32 _iDz = 0;
-	AkI32 _iReleasedMousePosX = 0;
-	AkI32 _iReleasedMousePosY = 0;
+	AkI32 _iAccMousePosX = 0;
+	AkI32 _iAccMousePosY = 0;
+	AkF32 _fNdcX = 0.0f;
+	AkF32 _fNdcY = 0.0f;
+	AkF32 _fAccNdcX = 0.0f;
+	AkF32 _fAccNdcY = 0.0f;
 };
 

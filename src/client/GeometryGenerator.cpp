@@ -10,7 +10,7 @@ Geometry Generator
 ===================
 */
 
-void UGeometryGenerator::NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum, AkF32 fScaleLength)
+void GeometryGenerator::NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum, AkF32 fScaleLength)
 {
 	Vector3 vMax = Vector3(-1000.0f, -1000.0f, -1000.0f);
 	Vector3 vMin = Vector3(1000.0f, 1000.0f, 1000.0f);
@@ -64,7 +64,7 @@ void UGeometryGenerator::NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDat
 	}
 }
 
-void UGeometryGenerator::NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum, const AkF32 fScaleLength, AkBool bIsAnim, Matrix* pDefaultMatrix)
+void GeometryGenerator::NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum, const AkF32 fScaleLength, AkBool bIsAnim, Matrix* pDefaultMatrix)
 {
 	Vector3 vMax = Vector3(-1000.0f, -1000.0f, -1000.0f);
 	Vector3 vMin = Vector3(1000.0f, 1000.0f, 1000.0f);
@@ -123,7 +123,7 @@ void UGeometryGenerator::NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDat
 	}
 }
 
-MeshData_t* UGeometryGenerator::MakeTriangle(AkU32* pMeshDataNum)
+MeshData_t* GeometryGenerator::MakeTriangle(AkU32* pMeshDataNum)
 {
 	MeshData_t* pMeshData = nullptr;
 	AkU32 uMeshDataNum = 1;
@@ -153,7 +153,7 @@ MeshData_t* UGeometryGenerator::MakeTriangle(AkU32* pMeshDataNum)
 	return pMeshData;
 }
 
-MeshData_t* UGeometryGenerator::MakeSquare(AkU32* pMeshDataNum, const AkF32 fScale, const Vector2* pTexScale)
+MeshData_t* GeometryGenerator::MakeSquare(AkU32* pMeshDataNum, const AkF32 fScale, const Vector2* pTexScale)
 {
 	MeshData_t* pMeshData = nullptr;
 	AkU32 uMeshDataNum = 1;
@@ -189,7 +189,7 @@ MeshData_t* UGeometryGenerator::MakeSquare(AkU32* pMeshDataNum, const AkF32 fSca
 	return pMeshData;
 }
 
-MeshData_t* UGeometryGenerator::MakeSphere(AkU32* pMeshDataNum, const AkF32 uRadius, const AkU32 uNumSlices, const AkU32 uNumStacks, const Vector2* pTexScale)
+MeshData_t* GeometryGenerator::MakeSphere(AkU32* pMeshDataNum, const AkF32 uRadius, const AkU32 uNumSlices, const AkU32 uNumStacks, const Vector2* pTexScale)
 {
 	Vector2 vTexScale = Vector2(1.0f);
 
@@ -244,7 +244,7 @@ MeshData_t* UGeometryGenerator::MakeSphere(AkU32* pMeshDataNum, const AkF32 uRad
 	return pMeshData;
 }
 
-MeshData_t* UGeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
+MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 {
 	MeshData_t* pMeshData = nullptr;
 	AkU32 numMeshData = 6;
@@ -355,7 +355,7 @@ MeshData_t* UGeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale
 	return pMeshData;
 }
 
-MeshData_t* UGeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Vector3* pExtent)
+MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Vector3* pExtent)
 {
 	MeshData_t* pMeshData = nullptr;
 	AkU32 numMeshData = 6;
@@ -466,7 +466,7 @@ MeshData_t* UGeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const V
 	return pMeshData;
 }
 
-MeshData_t* UGeometryGenerator::MakeWireCube(AkU32* pMeshDataNum, const AkF32 fScale)
+MeshData_t* GeometryGenerator::MakeWireCube(AkU32* pMeshDataNum, const AkF32 fScale)
 {
 	MeshData_t* pMeshData = nullptr;
 	AkU32 uMeshDataNum = 1;
@@ -537,7 +537,7 @@ MeshData_t* UGeometryGenerator::MakeWireCube(AkU32* pMeshDataNum, const AkF32 fS
 	return pMeshData;
 }
 
-MeshData_t* UGeometryGenerator::MakeWireCubeWidthExtent(AkU32* pMeshDataNum, Vector3* vP0, Vector3* vP1, Vector3* vP2, Vector3* vP3, Vector3* vP4, Vector3* vP5, Vector3* vP6, Vector3* vP7)
+MeshData_t* GeometryGenerator::MakeWireCubeWidthExtent(AkU32* pMeshDataNum, Vector3* vP0, Vector3* vP1, Vector3* vP2, Vector3* vP3, Vector3* vP4, Vector3* vP5, Vector3* vP6, Vector3* vP7)
 {
 	MeshData_t* pMeshData = nullptr;
 	AkU32 uMeshDataNum = 1;
@@ -608,7 +608,7 @@ MeshData_t* UGeometryGenerator::MakeWireCubeWidthExtent(AkU32* pMeshDataNum, Vec
 	return pMeshData;
 }
 
-MeshData_t* UGeometryGenerator::MakeWireSphere(AkU32* pMeshDataNum, const AkF32 fScale)
+MeshData_t* GeometryGenerator::MakeWireSphere(AkU32* pMeshDataNum, const AkF32 fScale)
 {
 	MeshData_t* pMeshData = nullptr;
 	AkU32 uMeshDataNum = 1;
@@ -666,7 +666,7 @@ MeshData_t* UGeometryGenerator::MakeWireSphere(AkU32* pMeshDataNum, const AkF32 
 	return pMeshData;
 }
 
-MeshData_t* UGeometryGenerator::MakeGrid(AkU32* pMeshDataNum, const AkF32 fScale, const AkU32 uNumSlices, const AkU32 uNumStacks, const Vector2* pTexScale)
+MeshData_t* GeometryGenerator::MakeGrid(AkU32* pMeshDataNum, const AkF32 fScale, const AkU32 uNumSlices, const AkU32 uNumStacks, const Vector2* pTexScale)
 {
 	Vector2 vTexScale = Vector2(1.0f);
 
@@ -727,12 +727,12 @@ MeshData_t* UGeometryGenerator::MakeGrid(AkU32* pMeshDataNum, const AkF32 fScale
 }
 
 // 비동기 처리 필요!!
-MeshData_t* UGeometryGenerator::ReadFromFile(UApplication* pApp, AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bIsAnim, Matrix* pDefaultMat, Matrix const** pBoneOffsetMat, AkI32 const** pBoneHierarchy, AkU32* pBoneNum)
+MeshData_t* GeometryGenerator::ReadFromFile(AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bIsAnim, Matrix* pDefaultMat, Matrix const** pBoneOffsetMat, AkI32 const** pBoneHierarchy, AkU32* pBoneNum)
 {
 	UModelImporter tModelImporter;
 	MeshData_t* pMeshData = nullptr;
 
-	tModelImporter.Load(pApp, wcBasePath, wcFilename, bIsAnim);
+	tModelImporter.Load(wcBasePath, wcFilename, bIsAnim);
 
 	pMeshData = tModelImporter.GetMeshData();
 
@@ -750,7 +750,7 @@ MeshData_t* UGeometryGenerator::ReadFromFile(UApplication* pApp, AkU32* pMeshDat
 	return pMeshData;
 }
 
-void UGeometryGenerator::DestroyGeometry(MeshData_t* pMeshData, AkU32 uMeshDataNum)
+void GeometryGenerator::DestroyGeometry(MeshData_t* pMeshData, AkU32 uMeshDataNum)
 {
 	if (pMeshData)
 	{

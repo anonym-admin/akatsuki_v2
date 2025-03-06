@@ -9,59 +9,37 @@ USceneManager
 ===================
 */
 
-USceneManager::USceneManager()
-{
-}
 
-USceneManager::~USceneManager()
+SceneManager::~SceneManager()
 {
     CleanUp();
 }
 
-AkBool USceneManager::Initialize(UApplication* pApp)
-{
-    _pApp = pApp;
-    
-    {
-        UScene* pScene = CreateScene(GAME_SCENE_TYPE::SCENE_TYPE_LOADING);
-    }
-
-    {
-        UScene* pScene = CreateScene(GAME_SCENE_TYPE::SCENE_TYPE_INGANE);
-    }
-
-    _pCurScene = _pSceneList[(AkU32)GAME_SCENE_TYPE::SCENE_TYPE_LOADING];
-
-    _pCurScene->BeginScene();
-
-    return AK_TRUE;
-}
-
-void USceneManager::Update(const AkF32 fDeltaTime)
+void SceneManager::Update()
 {
     if (_pCurScene)
     {
-        _pCurScene->Update(fDeltaTime);
+        _pCurScene->Update();
     }
 }
 
-void USceneManager::FinalUpdate(const AkF32 fDeltaTime)
+void SceneManager::FinalUpdate()
 {
     if (_pCurScene)
     {
-        _pCurScene->FinalUpdate(fDeltaTime);
+        _pCurScene->FinalUpdate();
     }
 }
 
-void USceneManager::RenderShadowPass()
+void SceneManager::RenderShadow()
 {
     if (_pCurScene)
     {
-        _pCurScene->RenderShadowPass();
+        _pCurScene->RenderShadow();
     }
 }
 
-void USceneManager::Render()
+void SceneManager::Render()
 {
     if (_pCurScene)
     {
@@ -69,7 +47,7 @@ void USceneManager::Render()
     }
 }
 
-void USceneManager::ChangeScene(GAME_SCENE_TYPE eSceneType)
+void SceneManager::ChangeScene(SCENE_TYPE eSceneType)
 {
     if (!_pCurScene)
     {
@@ -82,9 +60,33 @@ void USceneManager::ChangeScene(GAME_SCENE_TYPE eSceneType)
     _pCurScene = _pSceneList[(AkU32)eSceneType];
 
     _pCurScene->BeginScene();
+
+    _eType = eSceneType;
 }
 
-void USceneManager::CleanUp()
+Scene* SceneManager::AddScene(SCENE_TYPE eType, Scene* pScene)
+{
+    if (nullptr != _pSceneList[(AkU32)eType])
+        return _pSceneList[(AkU32)eType];
+
+    _pSceneList[(AkU32)eType] = pScene;
+    _uSceneNum++;
+    return  _pSceneList[(AkU32)eType];
+}
+
+Scene* SceneManager::BindCurrentScene(SCENE_TYPE eType)
+{
+    _pCurScene = _pSceneList[(AkU32)eType];
+    _eType = eType;
+    return _pCurScene;
+}
+
+void SceneManager::UnBindCurrentScene()
+{
+    _pCurScene = nullptr;
+}
+
+void SceneManager::CleanUp()
 {
     for (AkU32 i = 0; i < _uSceneNum; i++)
     {
@@ -95,25 +97,3 @@ void USceneManager::CleanUp()
         }
     }
 }
-
-UScene* USceneManager::CreateScene(GAME_SCENE_TYPE eSceneType)
-{
-    UScene* pScene = nullptr;
-
-    switch (eSceneType)
-    {
-    case GAME_SCENE_TYPE::SCENE_TYPE_LOADING:
-        pScene = new USceneLoading;
-        break;
-    case GAME_SCENE_TYPE::SCENE_TYPE_INGANE:
-        pScene = new USceneInGame;
-        break;
-    }
-
-    pScene->Initialize(_pApp);
-    _pSceneList[(AkU32)eSceneType] = pScene;
-    _uSceneNum++;
-
-    return pScene;
-}
-

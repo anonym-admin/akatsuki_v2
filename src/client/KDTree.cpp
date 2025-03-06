@@ -11,8 +11,8 @@ KDTree Node
 
 AkI32 CompareX(const void* pTriA, const void* pTriB)
 {
-	AkTriangle_t* pTri01 = (*((UCollider**)pTriA))->GetTriangle();
-	AkTriangle_t* pTri02 = (*((UCollider**)pTriB))->GetTriangle();
+	AkTriangle_t* pTri01 = (*((Collider**)pTriA))->GetTriangle();
+	AkTriangle_t* pTri02 = (*((Collider**)pTriB))->GetTriangle();
 
 	Vector3 vCentroidA = Centroid(pTri01);
 	Vector3 vCentroidB = Centroid(pTri02);
@@ -29,8 +29,8 @@ AkI32 CompareX(const void* pTriA, const void* pTriB)
 
 AkI32 CompareY(const void* pTriA, const void* pTriB)
 {
-	AkTriangle_t* pTri01 = (*((UCollider**)pTriA))->GetTriangle();
-	AkTriangle_t* pTri02 = (*((UCollider**)pTriB))->GetTriangle();
+	AkTriangle_t* pTri01 = (*((Collider**)pTriA))->GetTriangle();
+	AkTriangle_t* pTri02 = (*((Collider**)pTriB))->GetTriangle();
 
 	Vector3 vCentroidA = Centroid(pTri01);
 	Vector3 vCentroidB = Centroid(pTri02);
@@ -47,8 +47,8 @@ AkI32 CompareY(const void* pTriA, const void* pTriB)
 
 AkI32 CompareZ(const void* pTriA, const void* pTriB)
 {
-	AkTriangle_t* pTri01 = (*((UCollider**)pTriA))->GetTriangle();
-	AkTriangle_t* pTri02 = (*((UCollider**)pTriB))->GetTriangle();
+	AkTriangle_t* pTri01 = (*((Collider**)pTriA))->GetTriangle();
+	AkTriangle_t* pTri02 = (*((Collider**)pTriB))->GetTriangle();
 
 	Vector3 vCentroidA = Centroid(pTri01);
 	Vector3 vCentroidB = Centroid(pTri02);
@@ -63,7 +63,7 @@ AkI32 CompareZ(const void* pTriA, const void* pTriB)
 	}
 }
 
-KDTreeNode_t* BuildKDTree(UActor* pOwner, UCollider** pTriList, AkU32 uTriNum, AkU32 uDepth)
+KDTreeNode_t* BuildKDTree(Actor* pOwner, Collider** pTriList, AkU32 uTriNum, AkU32 uDepth)
 {
 	if (0 == uTriNum)
 	{
@@ -74,15 +74,15 @@ KDTreeNode_t* BuildKDTree(UActor* pOwner, UCollider** pTriList, AkU32 uTriNum, A
 
 	if (0 == uAxis)
 	{
-		qsort(pTriList, uTriNum, sizeof(UCollider*), CompareX);
+		qsort(pTriList, uTriNum, sizeof(Collider*), CompareX);
 	}
 	else if (1 == uAxis)
 	{
-		qsort(pTriList, uTriNum, sizeof(UCollider*), CompareY);
+		qsort(pTriList, uTriNum, sizeof(Collider*), CompareY);
 	}
 	else
 	{
-		qsort(pTriList, uTriNum, sizeof(UCollider*), CompareZ);
+		qsort(pTriList, uTriNum, sizeof(Collider*), CompareZ);
 	}
 
 	AkU32 uMedianIndex = uTriNum / 2;
@@ -98,7 +98,7 @@ KDTreeNode_t* BuildKDTree(UActor* pOwner, UCollider** pTriList, AkU32 uTriNum, A
 
 	// Create node.
 	KDTreeNode_t* pNode = new KDTreeNode_t;
-	pNode->pBox = new UCollider;
+	pNode->pBox = new Collider;
 	pNode->pBox->Initialize(pOwner, nullptr);
 	pNode->pBox->CreateBoundingBox(&tBox.vMin, &tBox.vMax);
 	pNode->pTri = pTriList[uMedianIndex];

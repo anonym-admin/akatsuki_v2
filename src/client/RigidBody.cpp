@@ -8,14 +8,14 @@ URigidBody
 ==============
 */
 
-AkBool URigidBody::Initialize(UActor* pOwner)
+AkBool RigidBody::Initialize(Actor* pOwner)
 {
     _pOwner = pOwner;
 
     return AK_TRUE;
 }
 
-void URigidBody::Update(const AkF32 fDeltaTime)
+void RigidBody::Update(const AkF32 fDeltaTime)
 {
     AkF32 fForce = _vForce.Length();
 
@@ -57,7 +57,7 @@ void URigidBody::Update(const AkF32 fDeltaTime)
     _vForce = Vector3(0.0f);
 }
 
-void URigidBody::SetVelocity(Vector3 vVelocity)
+void RigidBody::SetVelocity(Vector3 vVelocity)
 {
     if (vVelocity.Length() > _fMaxVelocity)
     {
@@ -68,12 +68,12 @@ void URigidBody::SetVelocity(Vector3 vVelocity)
     _vVelocity = vVelocity;
 }
 
-void URigidBody::SetVelocity(AkF32 fX, AkF32 fY, AkF32 fZ)
+void RigidBody::SetVelocity(AkF32 fX, AkF32 fY, AkF32 fZ)
 {
     _vVelocity = Vector3(fX, fY, fZ);
 }
 
-void URigidBody::Move(const AkF32 fDeltaTime)
+void RigidBody::Move(const AkF32 fDeltaTime)
 {
     const AkF32 fSpeed = _vVelocity.Length();
 

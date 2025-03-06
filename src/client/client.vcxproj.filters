@@ -34,9 +34,6 @@
     <Filter Include="src\app">
       <UniqueIdentifier>{3b47a064-7380-42a4-900f-252e1b07cf19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\sys">
-      <UniqueIdentifier>{865d3123-8590-48f3-8d0c-372019d541ca}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\landscape">
       <UniqueIdentifier>{64bb799a-e6d5-4b38-a736-bb361d37d4e1}</UniqueIdentifier>
     </Filter>
@@ -63,6 +60,9 @@
     </Filter>
     <Filter Include="src\sound">
       <UniqueIdentifier>{9662ee57-404d-4177-aac5-b95bb07ce883}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\framework">
+      <UniqueIdentifier>{865d3123-8590-48f3-8d0c-372019d541ca}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -139,10 +139,10 @@
       <Filter>src\app</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
-      <Filter>src\sys</Filter>
+      <Filter>src\framework</Filter>
     </ClInclude>
     <ClInclude Include="GameInput.h">
-      <Filter>src\sys</Filter>
+      <Filter>src\framework</Filter>
     </ClInclude>
     <ClInclude Include="ModelImporter.h">
       <Filter>src\model</Filter>
@@ -165,23 +165,14 @@
     <ClInclude Include="EditorMap.h">
       <Filter>src\editor</Filter>
     </ClInclude>
-    <ClInclude Include="EditorManager.h">
-      <Filter>src\mgr</Filter>
-    </ClInclude>
     <ClInclude Include="BRS_74.h">
       <Filter>src\obj\weapon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\AkEnum.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>src\camera</Filter>
-    </ClInclude>
     <ClInclude Include="GeometryGenerator.h">
       <Filter>src\geometry</Filter>
-    </ClInclude>
-    <ClInclude Include="Type.h">
-      <Filter>src\entry</Filter>
     </ClInclude>
     <ClInclude Include="Weapon.h">
       <Filter>src\obj\weapon</Filter>
@@ -236,6 +227,48 @@
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>src\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>src\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>src\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>src\mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Macro.h">
+      <Filter>src\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Type.h">
+      <Filter>src\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Enum.h">
+      <Filter>src\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedModel.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>src\comp</Filter>
+    </ClInclude>
+    <ClInclude Include="Spawn.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="Swat.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="Player2.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>src\comp</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>src\camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -303,10 +336,10 @@
       <Filter>src\app</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
-      <Filter>src\sys</Filter>
+      <Filter>src\framework</Filter>
     </ClCompile>
     <ClCompile Include="GameInput.cpp">
-      <Filter>src\sys</Filter>
+      <Filter>src\framework</Filter>
     </ClCompile>
     <ClCompile Include="ModelImporter.cpp">
       <Filter>src\model</Filter>
@@ -329,14 +362,8 @@
     <ClCompile Include="EditorMap.cpp">
       <Filter>src\editor</Filter>
     </ClCompile>
-    <ClCompile Include="EditorManager.cpp">
-      <Filter>src\mgr</Filter>
-    </ClCompile>
     <ClCompile Include="BRS_74.cpp">
       <Filter>src\obj\weapon</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>src\camera</Filter>
     </ClCompile>
     <ClCompile Include="GeometryGenerator.cpp">
       <Filter>src\geometry</Filter>
@@ -394,6 +421,39 @@
     </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>src\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Global.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>src\mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinnedModel.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>src\comp</Filter>
+    </ClCompile>
+    <ClCompile Include="Spawn.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="Swat.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="Player2.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>src\comp</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>src\camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

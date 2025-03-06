@@ -18,15 +18,15 @@ ModelManager
 */
 
 class UModel;
-class UApplication;
+class Application;
 
-class UModelManager
+class ModelManager
 {
 public:
-	UModelManager();
-	~UModelManager();
+	ModelManager();
+	~ModelManager();
 
-	AkBool Initialize(UApplication* pApp);
+	AkBool Initialize(Application* pApp);
 	AkBool InitDefaultModels();
 	UModel* GetModel(MODEL_TYPE eType) { return _ppModelList[(AkU32)eType]; }
 
@@ -39,7 +39,7 @@ private:
 	void CleanUp();
 
 private:
-	UApplication* _pApp = nullptr;
+	Application* _pApp = nullptr;
 	UModel* _ppModelList[(AkU32)MODEL_TYPE::MODEL_TYPE_COUNT] = {};
 };
 

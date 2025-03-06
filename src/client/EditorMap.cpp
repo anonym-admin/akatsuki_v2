@@ -21,7 +21,7 @@ UEditorMap::~UEditorMap()
 	CleanUp();
 }
 
-AkBool UEditorMap::Initialize(UApplication* pApp)
+AkBool UEditorMap::Initialize(Application* pApp)
 {
 	if (!UEditor::Initialize(pApp))
 	{
@@ -31,7 +31,7 @@ AkBool UEditorMap::Initialize(UApplication* pApp)
 
 	CreateEditorCamera();
 
-	_pSystemTextUI = new UTextUI;
+	_pSystemTextUI = new TextUI;
 	if (!_pSystemTextUI->Initialize(pApp, 512, 32, L"Consolas", 12))
 	{
 		__debugbreak();
@@ -58,13 +58,13 @@ void UEditorMap::EndEditor()
 
 void UEditorMap::Update(const AkF32 fDeltaTime)
 {
-	USceneManager* pSceneManager = GetApp()->GetSceneManager();
-	UScene* pScene = pSceneManager->GetCurrentScene();
+	SceneManager* pSceneManager = GetApp()->GetSceneManager();
+	Scene* pScene = pSceneManager->GetCurrentScene();
 	AkU32 uGameObjNum = pScene->GetGameObjectNum();
-	ULandScape* uLandScapeCell = pScene->GetLandScape();
+	LandScape* uLandScapeCell = pScene->GetLandScape();
 	// AkU32 uLandScapeCellCount = uLandScapeCell->GetCellCount();
 	UEditorCamera* pEditorCam = GetEditorCamera();
-	UGameInput* pGameInput = GetApp()->GetGameInput();
+	GameInput* pGameInput = GetApp()->GetGameInput();
 
 	if (pGameInput->KeyFirstDown(KEY_INPUT_F))
 	{
@@ -98,9 +98,9 @@ void UEditorMap::CleanUp()
 
 void UEditorMap::UpdateMapObject()
 {
-	UApplication* pApp = GetApp();
+	Application* pApp = GetApp();
 	IRenderer* pRenderer = pApp->GetRenderer();
-	UGameInput* pGameInput = pApp->GetGameInput();
+	GameInput* pGameInput = pApp->GetGameInput();
 	AkF32 fNdcX = pApp->GetClampNdcX();
 	AkF32 fNdcY = pApp->GetClampNdcY();
 
@@ -128,8 +128,8 @@ void UEditorMap::UpdateMapObject()
 
 void UEditorMap::UpdateText()
 {
-	USceneManager* pSceneManager = GetApp()->GetSceneManager();
-	UScene* pScene = pSceneManager->GetCurrentScene();
+	SceneManager* pSceneManager = GetApp()->GetSceneManager();
+	Scene* pScene = pSceneManager->GetCurrentScene();
 	AkU32 uGameObjNum = pScene->GetGameObjectNum();
 	UEditorCamera* pEditorCam = GetEditorCamera();
 
@@ -144,8 +144,8 @@ void UEditorMap::UpdateText()
 
 void UEditorMap::CreateBox()
 {
-	USceneManager* pSceneManager = GetApp()->GetSceneManager();
-	UScene* pScene = pSceneManager->GetCurrentScene();
+	SceneManager* pSceneManager = GetApp()->GetSceneManager();
+	Scene* pScene = pSceneManager->GetCurrentScene();
 
 	AkF32 fScalsX = abs(_vRightBottomPos.x - _vLeftTopPos.x);
 	AkF32 fScaleZ = abs(_vRightBottomPos.z - _vLeftTopPos.z);
@@ -156,7 +156,7 @@ void UEditorMap::CreateBox()
 	vPos.y = 0.0f;
 
 	AkU32 uMeshDataNum = 0;
-	MeshData_t* pMeshData = UGeometryGenerator::MakeCube(&uMeshDataNum, 0.5f);
+	MeshData_t* pMeshData = GeometryGenerator::MakeCube(&uMeshDataNum, 0.5f);
 	for (AkU32 i = 0; i < uMeshDataNum; i++)
 	{
 		wcscpy_s(pMeshData[i].wcAlbedoTextureFilename, L"../../assets/asset_test_01.dds");

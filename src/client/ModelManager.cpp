@@ -10,23 +10,23 @@ ModelManager
 =================
 */
 
-UModelManager::UModelManager()
+ModelManager::ModelManager()
 {
 }
 
-UModelManager::~UModelManager()
+ModelManager::~ModelManager()
 {
     CleanUp();
 }
 
-AkBool UModelManager::Initialize(UApplication* pApp)
+AkBool ModelManager::Initialize(Application* pApp)
 {
     _pApp = pApp;
 
     return AK_TRUE;
 }
 
-AkBool UModelManager::InitDefaultModels()
+AkBool ModelManager::InitDefaultModels()
 {
     UModel* pModel = nullptr;
 
@@ -60,14 +60,14 @@ AkBool UModelManager::InitDefaultModels()
     return AK_TRUE;
 }
 
-void UModelManager::CleanUpDefaultModels()
+void ModelManager::CleanUpDefaultModels()
 {
 }
 
-void UModelManager::AddModel()
+void ModelManager::AddModel()
 {
 }
 
-void UModelManager::CleanUp()
+void ModelManager::CleanUp()
 {
 }

@@ -29,47 +29,47 @@ UPlayer::~UPlayer()
 	CleanUp();
 }
 
-AkBool UPlayer::Initialize(UApplication* pApp)
+AkBool UPlayer::Initialize(Application* pApp)
 {
-	if (!UActor::Initialize(pApp))
+	if (!Actor::Initialize(pApp))
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
 	// Bind Model.
-	UModelManager* pModelManager = pApp->GetModelManager();
+	ModelManager* pModelManager = pApp->GetModelManager();
 	UModel* pHeroModel = pModelManager->GetModel(MODEL_TYPE::BLENDER_MODEL_HERO);
 	BindModel(pHeroModel);
 
 	// Create Collider.
-	UCollider* pCollider = CreateCollider();
+	Collider* pCollider = CreateCollider();
 	Vector3 vCenter = Vector3(0.0f);
 	AkF32 fRadius = 0.5f;
 	pCollider->CreateBoundingSphere(fRadius, &vCenter);
 
 	// Create Gravity.
-	UGravity* pGravidy = CreateGravity();
+	Gravity* pGravidy = CreateGravity();
 
 	// Create Rigid Body.
-	URigidBody* pRigidBody = CreateRigidBody();
+	RigidBody* pRigidBody = CreateRigidBody();
 	pRigidBody->SetFrictionCoef(0.0f);
 	pRigidBody->SetMaxVeleocity(10.0f);
 
 	// Create Camera.
-	UInGameCamera* pCamera = CreateCamera();
+	InGameCamera* pCamera = CreateCamera();
 
 	return AK_TRUE;
 }
 
 void UPlayer::Update(const AkF32 fDeltaTime)
 {
-	UApplication* pApp = GetApp();
+	Application* pApp = GetApp();
 	UPlayerModel* pModel = (UPlayerModel*)GetModel(GetModelContextIndex());
-	UGameInput* pGameInput = pApp->GetGameInput();
-	URigidBody* pRigidBody = GetRigidBody();
-	UCollider* pCollider = GetCollider();
-	UInGameCamera* pCamera = GetCamera();
+	GameInput* pGameInput = pApp->GetGameInput();
+	RigidBody* pRigidBody = GetRigidBody();
+	Collider* pCollider = GetCollider();
+	InGameCamera* pCamera = GetCamera();
 
 	AkBool bEnableEditor = pApp->EnableEditor();
 
@@ -985,10 +985,10 @@ void UPlayer::Update(const AkF32 fDeltaTime)
 void UPlayer::FinalUpdate(const AkF32 fDeltaTime)
 {
 	UPlayerModel* pModel = (UPlayerModel*)GetModel(GetModelContextIndex());
-	UGravity* pGravity = GetGravity();
-	URigidBody* pRigidBody = GetRigidBody();
-	UCollider* pCollider = GetCollider();
-	UInGameCamera* pCamera = GetCamera();
+	Gravity* pGravity = GetGravity();
+	RigidBody* pRigidBody = GetRigidBody();
+	Collider* pCollider = GetCollider();
+	InGameCamera* pCamera = GetCamera();
 
 	// Gravity 업데이트
 	if (!_bGroundCollision)
@@ -1027,7 +1027,7 @@ void UPlayer::RenderShadow()
 
 void UPlayer::Render()
 {
-	UApplication* pApp = GetApp();
+	Application* pApp = GetApp();
 	IRenderer* pRenderer = pApp->GetRenderer();
 
 	// Render Model.
@@ -1041,16 +1041,16 @@ void UPlayer::Render()
 
 	if (pApp->EnableEditor())
 	{
-		UCollider* pCollider = GetCollider();
+		Collider* pCollider = GetCollider();
 
 		pCollider->Render();
 	}
 }
 
-void UPlayer::OnCollision(UCollider* pOther)
+void UPlayer::OnCollision(Collider* pOther)
 {
-	UActor* pOwner = pOther->GetOwner();
-	URigidBody* pRigidBody = GetRigidBody();
+	Actor* pOwner = pOther->GetOwner();
+	RigidBody* pRigidBody = GetRigidBody();
 	const wchar_t* wcName = pOwner->GetName();
 
 	if (!wcscmp(L"Map", wcName))
@@ -1080,10 +1080,10 @@ void UPlayer::OnCollision(UCollider* pOther)
 	}
 }
 
-void UPlayer::OnCollisionEnter(UCollider* pOther)
+void UPlayer::OnCollisionEnter(Collider* pOther)
 {
 	IRenderer* pRenderer = GetApp()->GetRenderer();
-	UActor* pOwner = pOther->GetOwner();
+	Actor* pOwner = pOther->GetOwner();
 	const wchar_t* wcName = pOwner->GetName();
 
 	if (!wcscmp(L"Map", wcName))
@@ -1116,10 +1116,10 @@ void UPlayer::OnCollisionEnter(UCollider* pOther)
 	}
 }
 
-void UPlayer::OnCollisionExit(UCollider* pOther)
+void UPlayer::OnCollisionExit(Collider* pOther)
 {
 	IRenderer* pRenderer = GetApp()->GetRenderer();
-	UActor* pOwner = pOther->GetOwner();
+	Actor* pOwner = pOther->GetOwner();
 	const wchar_t* wcName = pOwner->GetName();
 
 	if (!wcscmp(L"Map", wcName))

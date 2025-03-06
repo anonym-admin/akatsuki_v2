@@ -16,28 +16,28 @@ UDancer::~UDancer()
 	CleanUp();
 }
 
-AkBool UDancer::Initialize(UApplication* pApp)
+AkBool UDancer::Initialize(Application* pApp)
 {
-	if (!UActor::Initialize(pApp))
+	if (!Actor::Initialize(pApp))
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
 	// Bind Model.
-	UModelManager* pModelManager = pApp->GetModelManager();
+	ModelManager* pModelManager = pApp->GetModelManager();
 	UModel* pDancerModel = pModelManager->GetModel(MODEL_TYPE::BLENDER_MODEL_DANCER);
 	BindModel(pDancerModel);
 
 	// Create Collider.
-	UCollider* pCollider = CreateCollider();
+	Collider* pCollider = CreateCollider();
 	Vector3 vCenter = Vector3(0.0f);
 	AkF32 fRadius = 0.5f;
 	pCollider->CreateBoundingSphere(fRadius, &vCenter);
 
-	UGravity* pGravity = CreateGravity();
+	Gravity* pGravity = CreateGravity();
 	
-	URigidBody* pRigidBody = CreateRigidBody();
+	RigidBody* pRigidBody = CreateRigidBody();
 	pRigidBody->SetFrictionCoef(0.0f);
 	pRigidBody->SetMaxVeleocity(10.0f);
 
@@ -46,7 +46,7 @@ AkBool UDancer::Initialize(UApplication* pApp)
 
 void UDancer::Update(const AkF32 fDeltaTime)
 {
-	URigidBody* pRigidBody = GetRigidBody();
+	RigidBody* pRigidBody = GetRigidBody();
 
 	if (!_bGroundCollision)
 	{
@@ -68,9 +68,9 @@ void UDancer::Update(const AkF32 fDeltaTime)
 void UDancer::FinalUpdate(const AkF32 fDeltaTime)
 {
 	UDancerModel* pModel = (UDancerModel*)GetModel(GetModelContextIndex());
-	UGravity* pGravity = GetGravity();
-	URigidBody* pRigidBody = GetRigidBody();
-	UCollider* pCollider = GetCollider();
+	Gravity* pGravity = GetGravity();
+	RigidBody* pRigidBody = GetRigidBody();
+	Collider* pCollider = GetCollider();
 
 	// Gravity 업데이트
 	if (!_bGroundCollision)
@@ -105,7 +105,7 @@ void UDancer::RenderShadow()
 
 void UDancer::Render()
 {
-	UApplication* pApp = GetApp();
+	Application* pApp = GetApp();
 
 	// Render Model.
 	RenderModel();
@@ -119,15 +119,15 @@ void UDancer::Render()
 	// Render Collider.
 	if (pApp->EnableEditor())
 	{
-		UCollider* pCollider = GetCollider();
+		Collider* pCollider = GetCollider();
 
 		pCollider->Render();
 	}
 }
 
-void UDancer::OnCollision(UCollider* pOther)
+void UDancer::OnCollision(Collider* pOther)
 {
-	UActor* pOwner = pOther->GetOwner();
+	Actor* pOwner = pOther->GetOwner();
 	const wchar_t* wcName = pOwner->GetName();
 
 	if (!wcscmp(L"Map", wcName))
@@ -148,9 +148,9 @@ void UDancer::OnCollision(UCollider* pOther)
 	}
 }
 
-void UDancer::OnCollisionEnter(UCollider* pOther)
+void UDancer::OnCollisionEnter(Collider* pOther)
 {
-	UActor* pOwner = pOther->GetOwner();
+	Actor* pOwner = pOther->GetOwner();
 	const wchar_t* wcName = pOwner->GetName();
 
 	if (!wcscmp(L"Map", wcName))
@@ -171,7 +171,7 @@ void UDancer::OnCollisionEnter(UCollider* pOther)
 	}
 }
 
-void UDancer::OnCollisionExit(UCollider* pOther)
+void UDancer::OnCollisionExit(Collider* pOther)
 {
 }
 

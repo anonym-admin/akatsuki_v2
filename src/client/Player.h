@@ -52,21 +52,21 @@ Player
 
 class UWeapon;
 
-class UPlayer : public UActor
+class UPlayer : public Actor
 {
 public:
 	UPlayer();
 	~UPlayer();
 
-	virtual AkBool Initialize(UApplication* pApp);
+	virtual AkBool Initialize(Application* pApp);
 	virtual void Update(const AkF32 fDeltaTime);
 	virtual void FinalUpdate(const AkF32 fDeltaTime);
 	virtual void RenderShadow();
 	virtual void Render();
 
-	virtual void OnCollision(UCollider* pOther);
-	virtual void OnCollisionEnter(UCollider* pOther);
-	virtual void OnCollisionExit(UCollider* pOther);
+	virtual void OnCollision(Collider* pOther);
+	virtual void OnCollisionEnter(Collider* pOther);
+	virtual void OnCollisionExit(Collider* pOther);
 
 	void BindWeapon(UWeapon* pWeapon);
 

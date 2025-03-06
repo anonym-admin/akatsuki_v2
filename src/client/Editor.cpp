@@ -15,7 +15,7 @@ UEditor::~UEditor()
 	CleanUp();
 }
 
-AkBool UEditor::Initialize(UApplication* pApp)
+AkBool UEditor::Initialize(Application* pApp)
 {
 	_pApp = pApp;
 

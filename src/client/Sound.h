@@ -6,19 +6,19 @@ Sound Manager
 ===================
 */
 
-class USound;
+class Sound;
 
-class USoundManager
+class SoundManager
 {
 public:
-	USoundManager();
-	~USoundManager();
+	SoundManager();
+	~SoundManager();
 
 	AkBool Initialize();
-	void Update(const AkF32 fDeltaTime);
+	void Update();
 	void Render();
 
-	USound* LoadSound(const char* pFilename);
+	Sound* LoadSound(const char* pFilename);
 
 private:
 	void CleanUp();
@@ -27,7 +27,7 @@ private:
 	FMOD::System* _pSystem = nullptr;
 
 	// юс╫ц...
-	USound* _pSound = nullptr;
+	Sound* _pSound = nullptr;
 
 };
 
@@ -37,14 +37,14 @@ Sound
 ===========
 */
 
-class USound
+class Sound
 {
 public:
-	USound();
-	~USound();
+	Sound();
+	~Sound();
 	
 	AkBool Initialize(FMOD::System* pSys);
-	void Update(const AkF32 fDeltaTime);
+	void Update();
 	void Render();
 
 	AkBool Play(AkBool bLoop);

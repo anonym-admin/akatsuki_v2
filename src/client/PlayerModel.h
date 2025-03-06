@@ -8,7 +8,7 @@ public:
 	UPlayerModel();
 	~UPlayerModel();
 
-	virtual AkBool Initialize(UApplication* pApp);
+	virtual AkBool Initialize(Application* pApp);
 	virtual void Render() override;
 	virtual void RenderNormal() override;
 	virtual void RenderShadow() override;
@@ -18,6 +18,6 @@ private:
 	void CleanUp();
 
 private:
-	UApplication* _pApp = nullptr;
+	Application* _pApp = nullptr;
 	IRenderer* _pRenderer = nullptr;
 };

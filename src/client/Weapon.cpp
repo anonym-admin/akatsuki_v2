@@ -23,23 +23,23 @@ UWeapon::~UWeapon()
 	CleanUp();
 }
 
-AkBool UWeapon::Initialize(UApplication* pApp, const Vector3* pExtent, const Vector3* pCenter)
+AkBool UWeapon::Initialize(Application* pApp, const Vector3* pExtent, const Vector3* pCenter)
 {
-	if (!UActor::Initialize(pApp))
+	if (!Actor::Initialize(pApp))
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
 	// Create Collider.
-	UCollider* pCollider = CreateCollider();
+	Collider* pCollider = CreateCollider();
 
 	// Create Rigid Body.
-	URigidBody* pRigidBody = CreateRigidBody();
+	RigidBody* pRigidBody = CreateRigidBody();
 	pRigidBody->SetFrictionCoef(0.0f);
 
 	// Create Gravity.
-	UGravity* pGravity = CreateGravity();
+	Gravity* pGravity = CreateGravity();
 
 	return AK_TRUE;
 }
@@ -50,7 +50,7 @@ void UWeapon::Update(const AkF32 fDeltaTime)
 
 void UWeapon::FinalUpdate(const AkF32 fDeltaTime)
 {
-	UCollider* pCollider = GetCollider();
+	Collider* pCollider = GetCollider();
 
 	pCollider->Update(fDeltaTime);
 
@@ -59,8 +59,8 @@ void UWeapon::FinalUpdate(const AkF32 fDeltaTime)
 
 void UWeapon::Render()
 {
-	UApplication* pApp = GetApp();
-	UCollider* pCollider = GetCollider();
+	Application* pApp = GetApp();
+	Collider* pCollider = GetCollider();
 
 	// Render Model.
 	RenderModel();
@@ -77,15 +77,15 @@ void UWeapon::Render()
 	}
 }
 
-void UWeapon::OnCollision(UCollider* pOther)
+void UWeapon::OnCollision(Collider* pOther)
 {
 }
 
-void UWeapon::OnCollisionEnter(UCollider* pOther)
+void UWeapon::OnCollisionEnter(Collider* pOther)
 {
 }
 
-void UWeapon::OnCollisionExit(UCollider* pOther)
+void UWeapon::OnCollisionExit(Collider* pOther)
 {
 }
 

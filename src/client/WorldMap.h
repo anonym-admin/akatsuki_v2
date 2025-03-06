@@ -2,33 +2,33 @@
 
 #include "Actor.h"
 
-class UApplication;
+class Application;
 struct KDTreeNode_t;
 
-class UWorldMapContainer : public UActor
+class WorldMapContainer : public Actor
 {
 public:
 	static const AkU32 MESH_DATA_CHUNK_COUNT = 8192;
 	static const AkU32 MAX_MESH_OBJ_LIST_COUNT = 1024;
 
-	UWorldMapContainer();
-	~UWorldMapContainer();
+	WorldMapContainer();
+	~WorldMapContainer();
 
-	virtual AkBool Initialize(UApplication* pApp);
+	virtual AkBool Initialize(Application* pApp);
 	virtual void Update(const AkF32 fDeltaTime);
 	virtual void FinalUpdate(const AkF32 fDeltaTime);
 	virtual void RenderShadow();
 	virtual void Render();
 
-	virtual void OnCollision(UCollider* pOther);
-	virtual void OnCollisionEnter(UCollider* pOther);
-	virtual void OnCollisionExit(UCollider* pOther);
+	virtual void OnCollision(Collider* pOther);
+	virtual void OnCollisionEnter(Collider* pOther);
+	virtual void OnCollisionExit(Collider* pOther);
 
 	void BindMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum);
 	void BindMeshObj(IMeshObject* pMeshObj, AkU32 uMeshObjNum, const Matrix* pWorldRows);
 	void Build(AkBool bUseKDTree);
 
-	UCollider** GetColliderList() { return _ppColliderList; }
+	Collider** GetColliderList() { return _ppColliderList; }
 	AkU32 GetColliderNum() { return _uColliderNum; }
 	KDTreeNode_t* GetKDTreeNode() { return _pKDTreeNode; }
 	void SetDrawKDTreeNodeFlag(AkBool bDrawKDTreeNode) { _bDrawKDTreeNode = bDrawKDTreeNode; }
@@ -41,7 +41,7 @@ private:
 	virtual void CleanUp();
 
 private:
-	UApplication* _pApp = nullptr;
+	Application* _pApp = nullptr;
 	IRenderer* _pRenderer = nullptr;
 	IMeshObject* _pMeshObj[MAX_MESH_OBJ_LIST_COUNT] = {};
 	AkU32 _uMeshObjNum[MAX_MESH_OBJ_LIST_COUNT] = {};
@@ -52,7 +52,7 @@ private:
 	MeshData_t* _ppMeshDataChunk[MESH_DATA_CHUNK_COUNT] = {};
 	AkU32 _pMeshDataNum[MESH_DATA_CHUNK_COUNT] = {};
 	
-	UCollider** _ppColliderList = nullptr;
+	Collider** _ppColliderList = nullptr;
 	AkU32 _uColliderNum = 0;
 	AkU32 _uInitColliderID = 0;
 

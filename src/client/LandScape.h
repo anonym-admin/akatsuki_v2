@@ -6,17 +6,17 @@ LandScape
 ==============
 */
 
-class UApplication;
+class Application;
 
-class ULandScape
+class LandScape
 {
 public:
-	ULandScape();
-	~ULandScape();
+	LandScape();
+	~LandScape();
 
-	AkBool Initialize(UApplication* pApp);
-	AkBool Initialize(UApplication* pApp, const wchar_t* wcModelFilename, const wchar_t* wcTextureFilename);
-	AkBool Initialize(UApplication* pApp, const wchar_t* wcRawSetUpFilename);
+	AkBool Initialize();
+	AkBool Initialize(const wchar_t* wcModelFilename, const wchar_t* wcTextureFilename);
+	AkBool Initialize(const wchar_t* wcRawSetUpFilename);
 	void Update(const AkF32 fDeltaTime);
 	void Render();
 
@@ -33,8 +33,6 @@ private:
 	void UpdateGroupObject(GAME_OBJECT_GROUP_TYPE eType);
 
 private:
-	UApplication* _pApp = nullptr;
-	IRenderer* _pRenderer = nullptr;
 	IMeshObject* _pMeshObj = nullptr;
 	Matrix _mWorld = Matrix();
 

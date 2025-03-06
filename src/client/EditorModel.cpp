@@ -19,7 +19,7 @@ UEditorModel::~UEditorModel()
 	CleanUp();
 }
 
-AkBool UEditorModel::Initialize(UApplication* pApp)
+AkBool UEditorModel::Initialize(Application* pApp)
 {
 	if (!UEditor::Initialize(pApp))
 	{
@@ -43,14 +43,14 @@ AkBool UEditorModel::Initialize(UApplication* pApp)
 	//	return AK_FALSE;
 	//}
 
-	_pSystemTextUI = new UTextUI;
+	_pSystemTextUI = new TextUI;
 	if (!_pSystemTextUI->Initialize(pApp, 256, 32, L"Consolas", 12))
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
-	_pEditorTextUI = new UTextUI;
+	_pEditorTextUI = new TextUI;
 	if (!_pEditorTextUI->Initialize(pApp, 256, 256, L"Consolas", 12))
 	{
 		__debugbreak();
@@ -66,10 +66,10 @@ void UEditorModel::BeginEditor()
 {
 	ShowCursor(AK_TRUE);
 
-	USceneManager* pSceneManager = GetApp()->GetSceneManager();
-	UScene* pScene = pSceneManager->GetCurrentScene();
+	SceneManager* pSceneManager = GetApp()->GetSceneManager();
+	Scene* pScene = pSceneManager->GetCurrentScene();
 	GameObjContainer_t* pGameObjContainer = pScene->GetGroupObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER);
-	UActor* pPlayer = (UActor*)pGameObjContainer->pGameObjHead->pData;
+	Actor* pPlayer = (Actor*)pGameObjContainer->pGameObjHead->pData;
 	UEditorCamera* pEditorCam = GetEditorCamera();
 
 	Vector3 vPlayerPos = pPlayer->GetPosition();
@@ -89,7 +89,7 @@ void UEditorModel::EndEditor()
 void UEditorModel::Update(const AkF32 fDeltaTime)
 {
 	UEditorCamera* pEditorCam = GetEditorCamera();
-	UGameInput* pGameInput = GetApp()->GetGameInput();
+	GameInput* pGameInput = GetApp()->GetGameInput();
 
 	if (pGameInput->KeyFirstDown(KEY_INPUT_F))
 	{
@@ -224,12 +224,12 @@ void UEditorModel::ProcessMousePicking()
 	//}
 }
 
-UActor* UEditorModel::PickClosets(Vector3* pHitPos, AkF32* pMinDist, AkF32* pRatio)
+Actor* UEditorModel::PickClosets(Vector3* pHitPos, AkF32* pMinDist, AkF32* pRatio)
 {
-	USceneManager* pSceneManager = GetApp()->GetSceneManager();
-	UScene* pScene = pSceneManager->GetCurrentScene();
+	SceneManager* pSceneManager = GetApp()->GetSceneManager();
+	Scene* pScene = pSceneManager->GetCurrentScene();
 	GameObjContainer_t** ppAllGameObj = pScene->GetAllGameObject();
-	UActor* pMinActor = nullptr;
+	Actor* pMinActor = nullptr;
 	Vector3 vMinHitPos = Vector3(0.0f);
 	AkF32 fMinDist = AK_MAX_F32;
 	AkF32 fMinRatio = 0.0f;
@@ -280,7 +280,7 @@ UActor* UEditorModel::PickClosets(Vector3* pHitPos, AkF32* pMinDist, AkF32* pRat
 	return pMinActor;
 }
 
-AkBool UEditorModel::ProcessMousePickingWithSphere(UCollider* pCollider, Vector3* pHitPos, AkF32* pDist, AkF32* pRatio)
+AkBool UEditorModel::ProcessMousePickingWithSphere(Collider* pCollider, Vector3* pHitPos, AkF32* pDist, AkF32* pRatio)
 {
 	//UApplication* pApp = GetApp();
 	//IRenderer* pRenderer = pApp->GetRenderer();

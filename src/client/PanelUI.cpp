@@ -8,27 +8,28 @@ Panel UI
 ===========
 */
 
-UPanelUI::UPanelUI()
+UPanelUI::UPanelUI(const wchar_t* wcTexFileName, AkU32 uPosX, AkU32 uPosY, AkU32 uTexWidth, AkU32 uTexHeight)
 {
+	if (!Initialize(wcTexFileName,  uPosX,  uPosY,  uTexWidth,  uTexHeight))
+	{
+		__debugbreak();
+	}
 }
-
 
 UPanelUI::~UPanelUI()
 {
 	CleanUp();
 }
 
-AkBool UPanelUI::Initialize(UApplication* pApp, const wchar_t* wcTexFileName, AkU32 uPosX, AkU32 uPosY, AkU32 uTexWidth, AkU32 uTexHeight)
+AkBool UPanelUI::Initialize(const wchar_t* wcTexFileName, AkU32 uPosX, AkU32 uPosY, AkU32 uTexWidth, AkU32 uTexHeight)
 {
-	if (!UUI::Initialize(pApp))
+	if (!UUI::Initialize())
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
-	_pRenderer = pApp->GetRenderer();
-
-	_pTexSpriteObj = _pRenderer->CreateSpriteObjectWidthTex(wcTexFileName, (AkI32)uPosX, (AkI32)uPosY, (AkI32)uTexWidth, (AkI32)uTexHeight);
+	_pTexSpriteObj = GRenderer->CreateSpriteObjectWidthTex(wcTexFileName, (AkI32)uPosX, (AkI32)uPosY, (AkI32)uTexWidth, (AkI32)uTexHeight);
 
 	return AK_TRUE;
 }
@@ -63,9 +64,9 @@ void UPanelUI::SetDrawBackGround(AkBool bDrawBackGround)
 
 void UPanelUI::Render()
 {
-	if (_pRenderer)
+	if (GRenderer)
 	{
-		_pRenderer->RenderSprite(_pTexSpriteObj, _iPosX, _iPosY, _fScaleX, _fScaleY, _fDepth);
+		GRenderer->RenderSprite(_pTexSpriteObj, _iPosX, _iPosY, _fScaleX, _fScaleY, _fDepth);
 	}
 
 	RenderChildUI();

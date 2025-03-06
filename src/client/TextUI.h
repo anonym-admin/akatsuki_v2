@@ -8,13 +8,13 @@ Text UI
 ===========
 */
 
-class UTextUI : public UUI 
+class TextUI : public UUI 
 {
 public:
-	UTextUI();
-	~UTextUI();
+	TextUI(AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
+	~TextUI();
 
-	AkBool Initialize(UApplication* pApp, AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
+	AkBool Initialize(AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
 	void WriteText(const wchar_t* wcText);
 	void SetFontColor(const Vector3* pFontColor) { _vFontColor = *pFontColor; }
 

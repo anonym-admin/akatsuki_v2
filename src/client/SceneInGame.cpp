@@ -26,45 +26,19 @@ Scene InGame
 =============
 */
 
-USceneInGame::USceneInGame()
-{
-}
-
-USceneInGame::~USceneInGame()
+SceneInGame::~SceneInGame()
 {
 	EndScene();
 }
 
-AkBool USceneInGame::Initialize(UApplication* pApp)
+AkBool SceneInGame::BeginScene()
 {
-	if (!UScene::Initialize(pApp))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pApp = pApp;
-
-	_pRenderer = _pApp->GetRenderer();
-
-	return AK_TRUE;
-}
-
-AkBool USceneInGame::BeginScene()
-{
-	UCollisionManager* pCollisionManager = _pApp->GetCollisionManager();
-	UAssetManager* pAssetManager = _pApp->GetAssetManager();
-	UModelManager* pModelManager = _pApp->GetModelManager();
-
-	// Init Default Models.
-	pModelManager->InitDefaultModels();
-	
 	// Set IBL Strength
-	_pRenderer->SetIBLStrength(0.25f);
+	GRenderer->SetIBLStrength(0.25f);
 
 	// Player.A
 	{
-		UActor* pPlayer = new UPlayer;
+		Actor* pPlayer = new UPlayer;
 		pPlayer->Initialize(_pApp);
 		pPlayer->SetRotationY(DirectX::XM_PI);
 		pPlayer->SetPosition(0.0f, 10.0f, 1025.0f);
@@ -77,7 +51,7 @@ AkBool USceneInGame::BeginScene()
 	// Dancer.
 	{
 		{
-			UActor* pDancer = new UDancer;
+			Actor* pDancer = new UDancer;
 			pDancer->Initialize(_pApp);
 			pDancer->SetPosition(-2.0f, 0.5f, 1025.0f);
 			pDancer->SetName(L"Dancer");
@@ -85,7 +59,7 @@ AkBool USceneInGame::BeginScene()
 			AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER, pDancer);
 		}
 		{
-			UActor* pDancer = new UDancer;
+			Actor* pDancer = new UDancer;
 			pDancer->Initialize(_pApp);
 			pDancer->SetPosition(2.0f, 0.5f, 1025.0f);
 			pDancer->SetName(L"Dancer");
@@ -96,7 +70,7 @@ AkBool USceneInGame::BeginScene()
 
 	// World Map Containter.
 	{
-		_pWorldMap = new UWorldMapContainer;
+		_pWorldMap = new WorldMapContainer;
 		if (!_pWorldMap->Initialize(_pApp))
 		{
 			__debugbreak();
@@ -156,7 +130,7 @@ AkBool USceneInGame::BeginScene()
 
 			_pRandomTransform[i] = Matrix::CreateScale(fScaleX, fScaleY, fScaleZ) * Matrix::CreateTranslation(vRandPosition);
 
-			pBox = UGeometryGenerator::MakeCube(&uNum, 0.5f);
+			pBox = GeometryGenerator::MakeCube(&uNum, 0.5f);
 			for (AkU32 j = 0; j < uNum; j++)
 			{
 				for (AkU32 k = 0; k < pBox[j].uVerticeNum; k++)
@@ -190,7 +164,7 @@ AkBool USceneInGame::BeginScene()
 			_pBoxList[i] = tBox;
 		}
 
-		pBox = UGeometryGenerator::MakeCube(&uNum, 0.5f);
+		pBox = GeometryGenerator::MakeCube(&uNum, 0.5f);
 		for (AkU32 j = 0; j < uNum; j++)
 		{
 			wcscpy_s(pBox[j].wcAlbedoTextureFilename, L"../../assets/asset_test_01.dds");
@@ -200,10 +174,10 @@ AkBool USceneInGame::BeginScene()
 		AkF32 fMetallic = 0.0f;
 		AkF32 fRoughness = 1.0f;
 		Vector3 vEmissive = Vector3(0.0f);
-		_pBuildingMeshObj = _pRenderer->CreateBasicMeshObject();
+		_pBuildingMeshObj = GRenderer->CreateBasicMeshObject();
 		_pBuildingMeshObj->CreateMeshBuffers(pBox, uNum);
 		_pBuildingMeshObj->UpdateMaterialBuffers(&vAlbedo, fMetallic, fRoughness, &vEmissive);
-		UGeometryGenerator::DestroyGeometry(pBox, uNum);
+		GeometryGenerator::DestroyGeometry(pBox, uNum);
 
 		// Bind Map Container.
 		_pWorldMap->BindMeshObj(_pBuildingMeshObj, BUILDING_BOX_COUNT, _pRandomTransform);
@@ -212,7 +186,7 @@ AkBool USceneInGame::BeginScene()
 	// House
 	{
 		AssetMeshDataContainer_t tAssetMeshDataContainter = {};
-		tAssetMeshDataContainter.pMeshData = pAssetManager->ReadFromFile(&tAssetMeshDataContainter, &tAssetMeshDataContainter.uMeshDataNum, L"../../assets/model/", L"cottage_fbx.md3d", 7.5f, AK_FALSE);
+		tAssetMeshDataContainter.pMeshData = GAssetManager->ReadFromFile(&tAssetMeshDataContainter, &tAssetMeshDataContainter.uMeshDataNum, L"../../assets/model/", L"cottage_fbx.md3d", 7.5f, AK_FALSE);
 		wcscpy_s(tAssetMeshDataContainter.pMeshData->wcAlbedoTextureFilename, L"../../assets/model/cottage_diffuse.dds");
 		wcscpy_s(tAssetMeshDataContainter.pMeshData->wcNormalTextureFilename, L"../../assets/model/cottage_normal.dds");
 
@@ -239,7 +213,7 @@ AkBool USceneInGame::BeginScene()
 		_pWorldMap->BindMeshData(tAssetMeshDataContainter.pMeshData, tAssetMeshDataContainter.uMeshDataNum);
 
 		// Create Render Object.
-		_pHouseMeshObj = _pRenderer->CreateBasicMeshObject();
+		_pHouseMeshObj = GRenderer->CreateBasicMeshObject();
 		_pHouseMeshObj->CreateMeshBuffers(tAssetMeshDataContainter.pMeshData, tAssetMeshDataContainter.uMeshDataNum);
 		_pHouseMeshObj->UpdateMaterialBuffers(&vAlbedo, fMetallic, fRoughness, &vEmissive);
 
@@ -262,8 +236,8 @@ AkBool USceneInGame::BeginScene()
 
 	// LandScape
 	{
-		_pLandScape = new ULandScape;
-		if (!_pLandScape->Initialize(_pApp, L"../../assets/landscape/setup.txt"))
+		_pLandScape = new LandScape;
+		if (!_pLandScape->Initialize(L"../../assets/landscape/setup.txt"))
 		{
 			__debugbreak();
 			return AK_FALSE;
@@ -273,7 +247,7 @@ AkBool USceneInGame::BeginScene()
 	// Attach Map.
 	{
 		_pWorldMap->Build(AK_TRUE);
-		pCollisionManager->AttachMap(_pWorldMap);
+		GCollisionManager->AttachMap(_pWorldMap);
 	}
 
 	// Create mini map sprite.
@@ -281,34 +255,39 @@ AkBool USceneInGame::BeginScene()
 		AkI32 iWidth = 128;
 		AkI32 iHeight = 128;
 
-		_iMiniMapPosX = _pApp->GetScreenWidth() - iWidth - _iOffset;
+		RECT tRect = {};
+		GetClientRect(GhWnd, &tRect);
+		AkU32 uScreenWidth = tRect.right - tRect.left;
+		AkU32 uScreenHeight = tRect.bottom - tRect.top;
+
+		_iMiniMapPosX = uScreenWidth - iWidth - _iOffset;
 		_iMiniMapPosY = _iOffset;
 
-		_pMiniMapOutlineSprite = _pRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/white.dds", 0, 0, 136, 136);
+		_pMiniMapOutlineSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/white.dds", 0, 0, 136, 136);
 		_pMiniMapOutlineSprite->SetDrawBackground(AK_TRUE);
 
-		_pMiniMapSprite = _pRenderer->CreateSpriteObjectWidthTex(L"../../assets/landscape/colormap.dds", 0, 0, iWidth, iHeight);
+		_pMiniMapSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/landscape/colormap.dds", 0, 0, iWidth, iHeight);
 		_pMiniMapSprite->SetDrawBackground(AK_TRUE);
 	}
 
 	// Create location point.
 	{
-		_pLocationPointSprite = _pRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/light_green.dds", 0, 0, 3, 3);
+		_pLocationPointSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/light_green.dds", 0, 0, 3, 3);
 		_pLocationPointSprite->SetDrawBackground(AK_TRUE);
 	}
 
 	// Create skybox.
 	{
-		_pSkyboxObj = _pRenderer->CreateSkyboxObject();
+		_pSkyboxObj = GRenderer->CreateSkyboxObject();
 	}
 
 	// Bind IBL Texture For PBR.
 	{
-		AssetTextureContainer_t* pDiffuseHDR = pAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_IRRADIANCE);
-		AssetTextureContainer_t* pSpecularHDR = pAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_SPECULAR);
-		AssetTextureContainer_t* pBrdf = pAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_BRDF);
+		AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_IRRADIANCE);
+		AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_SPECULAR);
+		AssetTextureContainer_t* pBrdf = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_BRDF);
 
-		_pRenderer->BindIBLTexture(pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle, pBrdf->pTexHandle);
+		GRenderer->BindIBLTexture(pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle, pBrdf->pTexHandle);
 	}
 
 	// Lights
@@ -327,24 +306,20 @@ AkBool USceneInGame::BeginScene()
 	}
 
 	// Collision check.
-	pCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER);
-	pCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON);
-	pCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
-	pCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
-	pCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
 
 	// Create Frustum.
-	_pFrustum = CreateFrustum(_pRenderer);
+	_pFrustum = CreateFrustum(GRenderer);
 
 	return AK_TRUE;
 }
 
-AkBool USceneInGame::EndScene()
+AkBool SceneInGame::EndScene()
 {
-	UModelManager* pModelManager = _pApp->GetModelManager();
-
-	pModelManager->CleanUpDefaultModels();
-
 	if (_pHouseMeshObj)
 	{
 		_pHouseMeshObj->Release();
@@ -401,28 +376,16 @@ AkBool USceneInGame::EndScene()
 	return AK_TRUE;
 }
 
-void USceneInGame::Update(const AkF32 fDeltaTime)
+void SceneInGame::Update()
 {
-	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
-	UGameInput* pGameInput = _pApp->GetGameInput();
+	Scene::Update();
 
-	// Update game obj.
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
-	{
-		if (pGameObjContainerList[i])
-		{
-			List_t* pCur = pGameObjContainerList[i]->pGameObjHead;
-			while (pCur != nullptr)
-			{
-				UActor* pActor = reinterpret_cast<UActor*>(pCur->pData);
-				pActor->Update(fDeltaTime);
+	RECT tRect = {};
+	GetClientRect(GhWnd, &tRect);
+	AkU32 uScreenWidth = tRect.right - tRect.left;
+	AkU32 uScreenHeight = tRect.bottom - tRect.top;
 
-				pCur = pCur->pNext;
-			}
-		}
-	}
-
-	_iMiniMapPosX = _pApp->GetScreenWidth() - 128 - _iOffset;
+	_iMiniMapPosX = uScreenWidth - 128 - _iOffset;
 	_iMiniMapPosY = _iOffset;
 
 	_iPosX = (_iMiniMapPosX + 4) + (AkI32)(0.5f * 128.0f);
@@ -436,7 +399,7 @@ void USceneInGame::Update(const AkF32 fDeltaTime)
 
 	// Update Frustum Culling.
 	// Frustum Culling 구현부와 KDTree Triangle 충돌사이에 연동 데이터를 적용하여, KDTree 충돌처리시에 충돌 Obj 를 미리 컬링하는 구조로 최적화 가능.
-	UpdateFrustum(_pRenderer, _pFrustum);
+	UpdateFrustum(GRenderer, _pFrustum);
 
 	AkU32 uIndex = 0;
 
@@ -474,67 +437,19 @@ void USceneInGame::Update(const AkF32 fDeltaTime)
 	// TODO!!
 }
 
-void USceneInGame::FinalUpdate(const AkF32 fDeltaTime)
+void SceneInGame::FinalUpdate()
 {
-	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
-
-	// Final Update game obj.
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
-	{
-		if (pGameObjContainerList[i])
-		{
-			List_t* pCur = pGameObjContainerList[i]->pGameObjHead;
-			while (pCur != nullptr)
-			{
-				UActor* pActor = reinterpret_cast<UActor*>(pCur->pData);
-				pActor->FinalUpdate(fDeltaTime);
-
-				pCur = pCur->pNext;
-			}
-		}
-	}
+	Scene::FinalUpdate();
 }
 
-void USceneInGame::RenderShadowPass()
+void SceneInGame::RenderShadow()
 {
-	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
-
-	// Render game obj.
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
-	{
-		if (pGameObjContainerList[i])
-		{
-			List_t* pCur = pGameObjContainerList[i]->pGameObjHead;
-			while (pCur != nullptr)
-			{
-				UActor* pActor = reinterpret_cast<UActor*>(pCur->pData);
-				pActor->RenderShadow();
-
-				pCur = pCur->pNext;
-			}
-		}
-	}
+	Scene::RenderShadow();
 }
 
-void USceneInGame::Render()
+void SceneInGame::Render()
 {
-	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
-
-	// Render game obj.
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
-	{
-		if (pGameObjContainerList[i])
-		{
-			List_t* pCur = pGameObjContainerList[i]->pGameObjHead;
-			while (pCur != nullptr)
-			{
-				UActor* pActor = reinterpret_cast<UActor*>(pCur->pData);
-				pActor->Render();
-
-				pCur = pCur->pNext;
-			}
-		}
-	}
+	Scene::Render();
 
 	// Render mini map.
 	// _pRenderer->RenderSprite(_pMiniMapOutlineSprite, _iMiniMapPosX - 4, _iMiniMapPosY - 4, 1.0f, 1.0f, 0.0001f);
@@ -546,14 +461,12 @@ void USceneInGame::Render()
 	// Render Land scape.
 	// _pLandScape->Render();
 
-	UAssetManager* pAssetManager = _pApp->GetAssetManager();
-
-	AssetTextureContainer_t* pEnv = pAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_ENV);
-	AssetTextureContainer_t* pDiffuseHDR = pAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_IRRADIANCE);
-	AssetTextureContainer_t* pSpecularHDR = pAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_SPECULAR);
+	AssetTextureContainer_t* pEnv = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_ENV);
+	AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_IRRADIANCE);
+	AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_SPECULAR);
 
 	// Render skybox.
-	_pRenderer->RenderSkybox(_pSkyboxObj, &_mSkyboxTransform, pEnv->pTexHandle, pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle);
+	GRenderer->RenderSkybox(_pSkyboxObj, &_mSkyboxTransform, pEnv->pTexHandle, pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle);
 
 	// Render KDTree.
 	//if (_bRenderKDTreeFlag)
@@ -563,7 +476,7 @@ void USceneInGame::Render()
 		//_pRenderer->RenderBasicMeshObject(_pBuildingMeshObj, &_mRandomTransform[i]);
 }
 
-AkU32 USceneInGame::GetTriangleCount()
+AkU32 SceneInGame::GetTriangleCount()
 {
 	if (nullptr == _pWorldMap)
 	{

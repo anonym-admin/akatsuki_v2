@@ -8,20 +8,22 @@ Loading Scene
 ===============
 */
 
-class USceneLoading : public UScene
+class USceneLoading : public Scene
 {
 public:
-	USceneLoading();
 	~USceneLoading();
 
-	virtual AkBool Initialize(UApplication* pApp) override;
 	virtual AkBool BeginScene() override;
 	virtual AkBool EndScene() override;
+	virtual void Update() override;
+	virtual void FinalUpdate() override;
+	virtual void RenderShadow() override;
+	virtual void Render() override;
 
 	void RenderLoadingScreenCallBack(const wchar_t* wcText);
 
 private:
-	UApplication* _pApp = nullptr;
+	Application* _pApp = nullptr;
 	IRenderer* _pRenderer = nullptr;
 
 	// Loading scene sprite.

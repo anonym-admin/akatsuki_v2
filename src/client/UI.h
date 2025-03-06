@@ -6,7 +6,7 @@ UI
 =========
 */
 
-class UApplication;
+class Application;
 
 class UUI
 {
@@ -14,8 +14,7 @@ public:
 	UUI();
 	virtual ~UUI() = 0;
 
-	AkBool Initialize(UApplication* pApp);
-	UApplication* GetApp() { return _pApp; }
+	AkBool Initialize();
 	ISpriteObject* GetCommonSpriteObj() { return sm_pCommonSpriteObj; }
 	void GetRelativePosition(AkI32* pOutPosX, AkI32* pOutPosY);
 	List_t* GetChildUIListHead() { return _pChildUIHead; }
@@ -33,7 +32,7 @@ public:
 	
 	virtual void SetDrawBackGround(AkBool bDrawBackGround);
 
-	virtual void Update(const AkF32 fDeltaTime);
+	virtual void Update();
 	virtual void Render();
 
 	virtual void MouseOn() = 0;
@@ -46,7 +45,7 @@ public:
 
 protected:
 	void MouseOnCheck();
-	void UpdateChildUI(const AkF32 fDeltaTime);
+	void UpdateChildUI();
 	void RenderChildUI();
 
 private:
@@ -57,7 +56,7 @@ private:
 private:
 	static AkU32 sm_pInitRefCount;
 	IRenderer* _pRenderer = nullptr;
-	UApplication* _pApp = nullptr;
+	Application* _pApp = nullptr;
 	void* _pTexHandle = nullptr;
 	AkU8* _pTexImage = nullptr;
 	List_t* _pChildUIHead = nullptr;

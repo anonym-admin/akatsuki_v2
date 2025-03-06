@@ -157,19 +157,18 @@ Game Input (keyboard, mouse)
 ============================
 */
 
-UGameInput::UGameInput()
+GameInput::GameInput()
 {
+	Initialize();
 }
 
-UGameInput::~UGameInput()
+GameInput::~GameInput()
 {
 	CleanUp();
 }
 
-AkBool UGameInput::Initialize(UApplication* pApp)
+AkBool GameInput::Initialize()
 {
-	_hWnd = pApp->GetHwnd();
-
 	if (FAILED(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<void**>(&_pDirectInput), nullptr)))
 	{
 		__debugbreak();
@@ -185,7 +184,7 @@ AkBool UGameInput::Initialize(UApplication* pApp)
 		__debugbreak();
 		return AK_FALSE;
 	}
-	if (FAILED(_pKeyboardDevice->SetCooperativeLevel(_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND | DISCL_NOWINKEY)))
+	if (FAILED(_pKeyboardDevice->SetCooperativeLevel(GhWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND | DISCL_NOWINKEY)))
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -204,7 +203,7 @@ AkBool UGameInput::Initialize(UApplication* pApp)
 		__debugbreak();
 		return AK_FALSE;
 	}
-	if (FAILED(_pMouseDevice->SetCooperativeLevel(_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)))
+	if (FAILED(_pMouseDevice->SetCooperativeLevel(GhWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)))
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -215,10 +214,10 @@ AkBool UGameInput::Initialize(UApplication* pApp)
 	return AK_TRUE;
 }
 
-void UGameInput::Update()
+void GameInput::Update()
 {
 	GetCursorPos(&_tMousePos);
-	ScreenToClient(_hWnd, &_tMousePos);
+	ScreenToClient(GhWnd, &_tMousePos);
 
 	if (!_pMouseDevice || !_pKeyboardDevice)
 	{
@@ -291,62 +290,61 @@ void UGameInput::Update()
 		}
 	}
 
-	// printf("%d %d\n", (int)_tDiMouseState.lX, (int)_tDiMouseState.lY);
-	// printf("%d %d\n", (int)_tMousePos.x, (int)_tMousePos.y);
-
-	_iReleasedMousePosX += _tDiMouseState.lX;
-	_iReleasedMousePosY += _tDiMouseState.lY;
+	_iAccMousePosX += _tDiMouseState.lX;
+	_iAccMousePosY += _tDiMouseState.lY;
 
 	memcpy(_btPrevMouseState, _btMouseState, sizeof(AkU8) * 3);
 	memcpy(_btPrevKeyState, _btKeyState, sizeof(AkU8) * KEY_INPUT_NUM);
+
+	UpdateNDCPosition();
 }
 
-bool UGameInput::LeftBtnDown()
+bool GameInput::LeftBtnDown()
 {
 	return (_btMouseState[0] == KEY_PUSH);
 }
 
-bool UGameInput::RightBtnDown()
+bool GameInput::RightBtnDown()
 {
 	return (_btMouseState[1] == KEY_PUSH);
 }
 
-bool UGameInput::LeftBtnHold()
+bool GameInput::LeftBtnHold()
 {
 	return (_btMouseState[0] == KEY_HOLD);
 }
 
-bool UGameInput::RightBtnHold()
+bool GameInput::RightBtnHold()
 {
 	return (_btMouseState[1] == KEY_HOLD);
 }
 
-bool UGameInput::LeftBtnUp()
+bool GameInput::LeftBtnUp()
 {
 	return (_btMouseState[0] == KEY_UP);
 }
 
-bool UGameInput::RightBtnUp()
+bool GameInput::RightBtnUp()
 {
 	return (_btMouseState[1] == KEY_UP);
 }
 
-bool UGameInput::KeyFirstDown(KEY_INPUT input)
+bool GameInput::KeyFirstDown(KEY_INPUT input)
 {
 	return (_btKeyState[KEY_TABLE[input]] == KEY_PUSH);
 }
 
-bool UGameInput::KeyHoldDown(KEY_INPUT input)
+bool GameInput::KeyHoldDown(KEY_INPUT input)
 {
 	return (_btKeyState[KEY_TABLE[input]] == KEY_HOLD);
 }
 
-bool UGameInput::KeyUp(KEY_INPUT input)
+bool GameInput::KeyUp(KEY_INPUT input)
 {
 	return (_btKeyState[KEY_TABLE[input]] == KEY_UP);
 }
 
-void UGameInput::CleanUp()
+void GameInput::CleanUp()
 {
 	if (_pMouseDevice)
 	{
@@ -367,7 +365,7 @@ void UGameInput::CleanUp()
 	}
 }
 
-void UGameInput::AcquireKeyboadrDevice()
+void GameInput::AcquireKeyboadrDevice()
 {
 	while (_pKeyboardDevice->Acquire() == DIERR_INPUTLOST)
 	{
@@ -375,10 +373,37 @@ void UGameInput::AcquireKeyboadrDevice()
 	}
 }
 
-void UGameInput::AcquireMouseDevice()
+void GameInput::AcquireMouseDevice()
 {
 	while (_pMouseDevice->Acquire() == DIERR_INPUTLOST)
 	{
 
+	}
+}
+
+void GameInput::UpdateNDCPosition()
+{
+	RECT tRect = {};
+	GetClientRect(GhWnd, &tRect);
+	AkU32 uScreenWidth = tRect.right - tRect.left;
+	AkU32 uScreenHeight = tRect.bottom - tRect.top;
+
+	{
+		AkI32 iMousePosX = GetMouseX();
+		AkI32 iMousePosY = GetMouseY();
+
+		_fNdcX = (AkF32)iMousePosX / uScreenWidth * 2.0f - 1.0f;
+		_fNdcY = (AkF32)iMousePosY / uScreenHeight * -2.0f + 1.0f;
+
+		_fNdcX = Clamp(_fNdcX, -1.0f, 1.0f);
+		_fNdcY = Clamp(_fNdcY, -1.0f, 1.0f);
+	}
+
+	{
+		AkI32 iAccMousePosX = GetAccumulatedMouseX();
+		AkI32 iAccMousePosY = GetAccumulatedMouseY();
+
+		_fAccNdcX = (AkF32)iAccMousePosX / uScreenWidth * 2.0f - 1.0f;
+		_fAccNdcY = (AkF32)iAccMousePosY / uScreenHeight * -2.0f + 1.0f;
 	}
 }

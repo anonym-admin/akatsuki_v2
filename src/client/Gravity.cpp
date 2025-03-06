@@ -3,24 +3,24 @@
 #include "Actor.h"
 #include "RigidBody.h"
 
-UGravity::UGravity()
+Gravity::Gravity()
 {
 }
 
-UGravity::~UGravity()
+Gravity::~Gravity()
 {
 }
 
-AkBool UGravity::Initialize(UActor* pOwner)
+AkBool Gravity::Initialize(Actor* pOwner)
 {
 	_pOwner = pOwner;
 
 	return AK_TRUE;
 }
 
-void UGravity::Update(const AkF32 fDeltaTime)
+void Gravity::Update(const AkF32 fDeltaTime)
 {
-	URigidBody* pRigidBody = _pOwner->GetRigidBody();
+	RigidBody* pRigidBody = _pOwner->GetRigidBody();
 
 	Vector3 vOldVelocity = pRigidBody->GetVelocity();
 

@@ -4,6 +4,8 @@
 #include "GameInput.h"
 #include "Actor.h"
 #include "RigidBody.h"
+#include "Transform.h"
+#include "Timer.h"
 
 /*
 ===================
@@ -11,193 +13,173 @@ Camera base class
 ===================
 */
 
-AkBool UCamera::Initialize(UApplication* pApp)
+Camera::Camera(const Vector3* pPos, const Vector3* pYawPirchRoll)
 {
-	_pApp = pApp;
-	_pRenderer = _pApp->GetRenderer();
+	Initialize(pPos, pYawPirchRoll);
+}
 
+Camera::~Camera()
+{
+	CleanUp();
+}
+
+AkBool Camera::Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll)
+{
+	_pTransform = new Transform;
+	_vCamInitPos = *pPos;
+
+	SetPosition(pPos);
+	SetRotation(pYawPirchRoll);
 	return AK_TRUE;
 }
 
-void UCamera::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)
+void Camera::Update()
 {
-	_vCamPos = Vector3(fX, fY, fZ);
-	_pRenderer->SetCameraPosition(_vCamPos.x, _vCamPos.y, _vCamPos.z);
+	switch (Mode)
+	{
+	case CAMERA_MODE::FREE:
+		MoveFree();
+
+		break;
+	case CAMERA_MODE::EDITOR:
+		RotateEditor();
+		MoveEditor();
+		break;
+
+	case CAMERA_MODE::FOLLOW:
+		RotateFollow();
+		MoveFollow();
+		break;
+	}
 }
 
-void UCamera::SetCameraDirection(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll)
+void Camera::Render()
 {
-	_vCamCurDir = Vector3::Transform(_vCamInitDir, Matrix::CreateFromYawPitchRoll(fYaw, fPitch, fRoll));
-	_pRenderer->RotateYawPitchRollCamera(fYaw, fPitch, fRoll);
+
 }
 
-/*
-===================
-EditorCamera
-===================
-*/
-
-AkBool UEditorCamera::Initialize(UApplication* pApp)
+void Camera::SetPosition(const Vector3* pPos)
 {
-	if (!UCamera::Initialize(pApp))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	// Set camera pos. 
-	SetCameraPosition(0.0f, 10.0f, 0.0f);
-
-	SetCameraDirection(0.0f, DirectX::XM_PIDIV2, 0.0f);
-
-	return AK_TRUE;
+	_pTransform->Position = *pPos;
+	GRenderer->SetCameraPosition(pPos->x, pPos->y, pPos->z);
 }
 
-void UEditorCamera::Update(const AkF32 fDeltaTime)
+void Camera::SetRotation(const Vector3* pYawPitchRoll)
 {
-	UGameInput* pGameInput = _pApp->GetGameInput();
-
-	if (pGameInput->KeyFirstDown(KEY_INPUT_LSHIFT))
-	{
-		_bMovaUpDown = !_bMovaUpDown;
-	}
-
-	// Camera 이동
-	if (pGameInput->KeyHoldDown(KEY_INPUT_F5))
-	{
-		_pRenderer->MoveCamera(-fDeltaTime * _fCamSpeed, 0.0f, 0.0f);
-
-		_vCamPos.x += -fDeltaTime * _fCamSpeed;
-	}
-	if (pGameInput->KeyHoldDown(KEY_INPUT_F6))
-	{
-		_pRenderer->MoveCamera(fDeltaTime * _fCamSpeed, 0.0f, 0.0f);
-
-		_vCamPos.x += fDeltaTime * _fCamSpeed;
-	}
-	if (pGameInput->KeyHoldDown(KEY_INPUT_F7))
-	{
-		if (_bMovaUpDown)
-		{
-			_pRenderer->MoveCamera(0.0f, -fDeltaTime * _fCamSpeed, 0.0f);
-
-			_vCamPos.y += -fDeltaTime * _fCamSpeed;
-		}
-		else
-		{
-			_pRenderer->MoveCamera(0.0f, 0.0f, -fDeltaTime * _fCamSpeed);
-
-			_vCamPos.z += -fDeltaTime * _fCamSpeed;
-		}
-	}
-	if (pGameInput->KeyHoldDown(KEY_INPUT_F8))
-	{
-		if (_bMovaUpDown)
-		{
-			_pRenderer->MoveCamera(0.0f, fDeltaTime * _fCamSpeed, 0.0f);
-
-			_vCamPos.y += fDeltaTime * _fCamSpeed;
-		}
-		else
-		{
-			_pRenderer->MoveCamera(0.0f, 0.0f, fDeltaTime * _fCamSpeed);
-
-			_vCamPos.z += fDeltaTime * _fCamSpeed;
-		}
-	}
-
-	const AkF32 fNdcX = _pApp->GetClampNdcX();
-	const AkF32 fNdcY = _pApp->GetClampNdcY();
-
-	// Camera 회전
-	AkF32 fYaw = DirectX::XM_2PI * fNdcX;
-	AkF32 fPitch = -DirectX::XM_PIDIV2 * fNdcY;
-
-	_pRenderer->RotateYawPitchRollCamera(fYaw, fPitch, 0.0f);
-
-	Vector3 vCamDir = Vector3(0.0f, -1.0f, 0.0f);
-	vCamDir = Vector3::Transform(vCamDir, Matrix::CreateFromYawPitchRoll(fYaw, fPitch, 0.0f));
-	vCamDir.Normalize();
-	_vCamCurDir = vCamDir;
+	_pTransform->Rotation = *pYawPitchRoll;
+	GRenderer->RotateYawPitchRollCamera(pYawPitchRoll->x, pYawPitchRoll->y, pYawPitchRoll->z);
 }
 
-/*
-===================
-InGameCamera
-===================
-*/
-
-AkBool UInGameCamera::Initialize(UApplication* pApp)
+void Camera::SetOwner(Actor* pOwner)
 {
-	if (!UCamera::Initialize(pApp))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	return AK_TRUE;
-}
-
-AkBool UInGameCamera::Initialize(UApplication* pApp, UActor* pOwner, Vector3 vRelativePos)
-{
-	if (!UCamera::Initialize(pApp))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
 	_pOwner = pOwner;
-
-	// Init camera.
-	Vector3 vOwnerPos = pOwner->GetPosition();
-
-	_vCamPos = vOwnerPos + vRelativePos;
-
-	_pRenderer->SetCameraPosition(vRelativePos.x, vRelativePos.y, vRelativePos.z);
-
-	_vRelativePos = vRelativePos;
-
-	return AK_TRUE;
 }
 
-void UInGameCamera::Update(const AkF32 fDeltaTime)
+Vector3 Camera::GetPosition()
 {
-	const AkF32 fNdcX = _pApp->_fNdcX;
-	const AkF32 fNdcY = _pApp->GetClampNdcY();
-
-	AkF32 fYaw = DirectX::XM_PIDIV2 * fNdcX;
-	AkF32 fPitch = -1.5f * fNdcY;
-
-	//// Dir (카메라를 오너 기준으로 회전 => 오너도 같은 방향을 향해 회전)
-
-	//// 상대위치만큼 이동
-	Vector3 vRelativePos = _vRelativePos;
-
-	//// 카메라의 위치를 회전 시킨다.
-	vRelativePos = Vector3::Transform(vRelativePos, Matrix::CreateFromYawPitchRoll(fYaw, fPitch, 0.0f));
-
-	_pRenderer->RotateYawPitchRollCamera(fYaw, fPitch, 0.0f);
-
-	Vector3 vCamDir = _vCamInitDir;
-	vCamDir = Vector3::Transform(vCamDir, Matrix::CreateFromYawPitchRoll(fYaw, fPitch, 0.0f));
-	vCamDir.Normalize();
-	_vCamCurDir = vCamDir;
-
-	// 오너의 방향도 회전
-	_pOwner->SetRotationY(_fOwnerInitRot + fYaw);
-
-	//// 카메라의 위치를 지정
-	Vector3 vOwnerPos = _pOwner->GetPosition();
-
-	_vCamPos = vOwnerPos + vRelativePos;
-
-	_pRenderer->SetCameraPosition(_vCamPos.x, _vCamPos.y, _vCamPos.z);
+	return _pTransform->Position;
 }
 
-void UInGameCamera::Render()
+Vector3 Camera::GetDirection()
+{
+	Vector3 vDir = Vector3::Transform(_vCamInitDir, Matrix::CreateFromYawPitchRoll(_pTransform->Rotation.x, _pTransform->Rotation.y, _pTransform->Rotation.z));
+	vDir.Normalize();
+	return vDir;
+}
+
+void Camera::CleanUp()
+{
+	if (_pTransform)
+	{
+		delete _pTransform;
+		_pTransform = nullptr;
+	}
+}
+
+void Camera::MoveFree()
 {
 }
 
-void UInGameCamera::SetRalativePosition(Vector3 vRelativePos)
+void Camera::MoveEditor()
 {
-	_vRelativePos = vRelativePos;
+	Vector3 vPos = GetPosition();
+	Vector3 vDir = GetDirection();
+	Vector3 vUp = Vector3(0.0f, 1.0f, 0.0f);
+	Vector3 vRight = vUp.Cross(vDir);
+	Vector3 vDeltaPos = Vector3(0.0f);
+	vRight.Normalize();
+
+	if (KEY_HOLD(KEY_INPUT_W))
+	{
+		vDeltaPos += (_fCamSpeed * vDir * DT);
+	}
+	if (KEY_HOLD(KEY_INPUT_S))
+	{
+		vDeltaPos += (_fCamSpeed * -vDir * DT);
+	}
+	if (KEY_HOLD(KEY_INPUT_D))
+	{
+		vDeltaPos += (_fCamSpeed * vRight * DT);
+	}
+	if (KEY_HOLD(KEY_INPUT_A))
+	{
+		vDeltaPos += (_fCamSpeed * -vRight * DT);
+	}
+	if (KEY_HOLD(KEY_INPUT_Q))
+	{
+		vDeltaPos += (_fCamSpeed * vUp * DT);
+	}
+	if (KEY_HOLD(KEY_INPUT_E))
+	{
+		vDeltaPos += (_fCamSpeed * -vUp * DT);
+	}
+
+	vPos += vDeltaPos;
+	SetPosition(&vPos);
+	GRenderer->MoveCamera(vDeltaPos.x, vDeltaPos.y, vDeltaPos.z);
 }
+
+void Camera::MoveFollow()
+{
+	Vector3 vTargetPos = _pOwner->GetTransform()->Position;
+	Vector3 vFinalPos = vTargetPos + _vCamFollowPos;
+
+	SetPosition(&vFinalPos);
+}
+
+void Camera::RotateEditor()
+{
+	Vector3 vYawPitchRoll = Vector3(0.0f);
+
+	vYawPitchRoll.x = NDC_ACC_X * DirectX::XM_PI; // Yaw
+	vYawPitchRoll.y = -NDC_Y * DirectX::XM_PIDIV2; // Pitch
+
+	SetRotation(&vYawPitchRoll);
+}
+
+void Camera::RotateFollow()
+{
+	static AkBool bFirst = AK_TRUE;
+	if (bFirst)
+	{
+		_vOwnerInitRot = _pOwner->GetTransform()->Rotation;
+		bFirst = AK_FALSE;
+	}
+
+	static AkF32 fLerp = 0.0f;
+
+	Vector3 vYawPitchRoll = Vector3(0.0f);
+
+	vYawPitchRoll.x = NDC_X * DirectX::XM_PIDIV2; // Yaw
+	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 방지.
+
+	_vCamFollowPos = Vector3::Transform(_vCamInitPos, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
+
+	SetRotation(&vYawPitchRoll);
+
+	// 오너 애니메이션 실행.
+	Vector3 vOwnerRot = _vOwnerInitRot + vYawPitchRoll;
+	vOwnerRot.y = 0.0f;
+	_pOwner->SetRotation(&vOwnerRot);
+}
+

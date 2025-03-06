@@ -1,73 +1,27 @@
 #pragma once
 
-/*
-==========
-Model
-==========
-*/
-
-class UApplication;
-class UAnimation;
-
-struct ModelContext_t
-{
-	Matrix mWorldRow = Matrix();
-	UAnimation* pAnimation = nullptr;
-};
-
-enum class MODEL_RENDER_OBJECT_TYPE
-{
-	BASIC_MESH_OBJ,
-	SKINNED_MESH_OBJ,
-};
-
-class UModel
+class Model
 {
 public:
-	static const AkU32 MAX_MODEL_CONTEXT_NUM = 4;
+	Model() = default;
+	Model(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
+	virtual ~Model();
 
-	UModel();
-	virtual ~UModel();
-
-	virtual AkBool Initialize(UApplication* pApp);
-	virtual void Render() = 0;
-	virtual void RenderNormal() = 0;
-	virtual void RenderShadow() = 0;
-	virtual void Release();
-	
-	AkU32 AddRef();
-
-	void CreateContextTable(Matrix* pWorldRow, UAnimation* pAnim);
-	void DestroyContextTable();
-
-	void SetModelContextTableIndex(AkU32 uModelCtxTableIndex) { _uModelCtxTableIndex = uModelCtxTableIndex; }
-	void SetWorldMatrix(AkU32 uModelCtxTableIndex, const Matrix* pWorld);
-	void SetRenderObject(IMeshObject* pMeshObj, MODEL_RENDER_OBJECT_TYPE eType);
-	ModelContext_t* GetCurrentModelContext() { return _pModelContextTable[_uModelCtxTableIndex]; }
-	const Matrix* GetWorldMatrix();
-	AkU32 GetModelContextTableIndex() { return _uModelCtxTableIndex; }
-	IMeshObject* GetRenderObject() { return _pMeshObj; }
-
-	AkBool PlayAnimation(const AkF32 fDeltaTime, const wchar_t* wcClipName, AkBool bInPlace = AK_FALSE);
-
-protected:
-	AkBool CreateStaticMeshObject();
-	AkBool CreateSkinnedMeshObject();
-	void CreateMeshBuffersForDraw(MeshData_t* pMeshData, AkU32 uMeshDataNum);
-	void DestroyMeshObject();
+	virtual AkBool Initialize(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
+	virtual void Render();
+	virtual void RenderNormal();
+	virtual void RenderShadow();
+	void UpdateWorldRow(const Matrix* pWorldRow);
+	void SetWireFrame(AkBool bDrawWire);
 
 private:
-	virtual void CleanUp();
+	void CleanUp();
+	virtual void CreateMeshObject(MeshData_t* pMeshData, AkU32 uMeshDataNum);
 
 protected:
-	AkU32 _uRefCount = 0;
+	virtual void CreateMaterial(const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 
-private:
-	AkU32 _uModelCtxTableIndex = 0;
-	AkU32 _uModelCtxNum = 0;
-	ModelContext_t* _pModelContextTable[MAX_MODEL_CONTEXT_NUM] = {};
+protected:
 	IMeshObject* _pMeshObj = nullptr;
-	UApplication* _pApp = nullptr;
-	IRenderer* _pRenderer = nullptr;
-	MODEL_RENDER_OBJECT_TYPE _eType = {};
+	Matrix _mWorldRow = Matrix();
 };

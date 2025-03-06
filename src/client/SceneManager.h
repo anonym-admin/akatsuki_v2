@@ -6,34 +6,34 @@ USceneManager
 ===================
 */
 
-class UApplication;
-class UScene;
+class Application;
+class Scene;
 
-class USceneManager
+class SceneManager
 {
 public:
-	USceneManager();
-	~USceneManager();
+	~SceneManager();
 
-	AkBool Initialize(UApplication* pApp);
-	void Update(const AkF32 fDeltaTime);
-	void FinalUpdate(const AkF32 fDeltaTime);
-	void RenderShadowPass();
+	void Update();
+	void FinalUpdate();
 	void Render();
-	
-	void ChangeScene(GAME_SCENE_TYPE eSceneType);
-	UScene* GetCurrentScene() { return _pCurScene; }
-	UScene* GetScene(GAME_SCENE_TYPE eSceneType) { return _pSceneList[(AkU32)eSceneType]; }
+	void RenderShadow();
+
+	void ChangeScene(SCENE_TYPE eType);
+	Scene* GetCurrentScene() { return _pCurScene; }
+	SCENE_TYPE GetCurrentSceneType() { return _eType; }
+	Scene* GetScene(SCENE_TYPE eType) { return _pSceneList[(AkU32)eType]; }
+	Scene* AddScene(SCENE_TYPE eType, Scene* pScene);
+	Scene* BindCurrentScene(SCENE_TYPE eType);
+	void UnBindCurrentScene();
 
 private:
 	void CleanUp();
 
-	UScene* CreateScene(GAME_SCENE_TYPE eSceneType);
-
 private:
-	UApplication* _pApp = nullptr;
-	UScene* _pSceneList[(AkU32)GAME_SCENE_TYPE::SCENE_TYPE_COUNT] = {};
-	UScene* _pCurScene = nullptr;
+	Scene* _pSceneList[(AkU32)SCENE_TYPE::SCENE_TYPE_COUNT] = {};
+	Scene* _pCurScene = nullptr;
+	SCENE_TYPE _eType = {};
 	AkU32 _uSceneNum = 0;
 };
 

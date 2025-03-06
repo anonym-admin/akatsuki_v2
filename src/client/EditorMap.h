@@ -2,7 +2,7 @@
 
 #include "Editor.h"
 
-class UTextUI;
+class TextUI;
 
 class UEditorMap : public UEditor
 {
@@ -10,7 +10,7 @@ public:
 	UEditorMap();
 	virtual ~UEditorMap();
 
-	virtual AkBool Initialize(UApplication* pApp) override;
+	virtual AkBool Initialize(Application* pApp) override;
 	virtual void BeginEditor() override;
 	virtual void EndEditor() override;
 	virtual void Update(const AkF32 fDeltaTime) override;
@@ -29,6 +29,6 @@ private:
 	Vector3 _vLeftTopPos = Vector3(0.0f);
 	Vector3 _vRightBottomPos = Vector3(0.0f);
 
-	UTextUI* _pSystemTextUI = nullptr;
+	TextUI* _pSystemTextUI = nullptr;
 };
 

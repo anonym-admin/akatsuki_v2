@@ -14,7 +14,7 @@ UPlayerModel::~UPlayerModel()
 	CleanUp();
 }
 
-AkBool UPlayerModel::Initialize(UApplication* pApp)
+AkBool UPlayerModel::Initialize(Application* pApp)
 {
 	if (!UModel::Initialize(pApp))
 	{
@@ -25,8 +25,8 @@ AkBool UPlayerModel::Initialize(UApplication* pApp)
 	_pApp = pApp;
 	_pRenderer = pApp->GetRenderer();
 
-	UAssetManager* pAssetManager = _pApp->GetAssetManager();
-	UAnimator* pAnimator = _pApp->GetAnimator();
+	AssetManager* pAssetManager = _pApp->GetAssetManager();
+	Animator* pAnimator = _pApp->GetAnimator();
 
 	if (CreateSkinnedMeshObject())
 	{
@@ -45,7 +45,7 @@ AkBool UPlayerModel::Initialize(UApplication* pApp)
 		pMeshObj->UpdateMaterialBuffers(&vAlbedoFactor, fMetallicFactor, fRoughnessFactor, &vEmissiveFactor);
 
 		// Animation.
-		UAnimation* pPlayerAnim0 = pAnimator->GetAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_PLAYER);
+		Animation* pPlayerAnim0 = pAnimator->GetAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_PLAYER);
 
 		Matrix mWorldRow = Matrix();
 

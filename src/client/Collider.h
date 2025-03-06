@@ -13,23 +13,23 @@ Collider
 ===========
 */
 
-class UActor;
-class UApplication;
+class Actor;
+class Application;
 
-class UCollider
+class Collider
 {
 public:
 	static const AkU32 MAX_SPHERE_GROUP_SHAPE_COUNT = 3;
 
-	UCollider();
-	~UCollider();
+	Collider();
+	~Collider();
 
-	AkBool Initialize(UActor* pOwner, IRenderer* pRenderer);
-	void Update(const AkF32 fDeltaTime);
+	AkBool Initialize(Actor* pOwner, IRenderer* pRenderer);
+	void Update();
 	void Render();
 
 	AkU32 GetID() { return _uID; }
-	UActor* GetOwner() { return _pOwner; }
+	Actor* GetOwner() { return _pOwner; }
 	AkBox_t* GetBoundingBox() { return _pBox; }
 	AkSphere_t* GetBoundingSphere() { return _pSphere; }
 	AkTriangle_t* GetTriangle() { return _pTriangle; }
@@ -42,9 +42,9 @@ public:
 	void DestroyBoundingSphere();
 	void DestroyTriangle();
 
-	virtual void OnCollision(UCollider* pCollider);
-	virtual void OnCollisionEnter(UCollider* pCollider);
-	virtual void OnCollisionExit(UCollider* pCollider);
+	virtual void OnCollision(Collider* pCollider);
+	virtual void OnCollisionEnter(Collider* pCollider);
+	virtual void OnCollisionExit(Collider* pCollider);
 
 private:
 	void CleanUp();
@@ -52,7 +52,7 @@ private:
 private:
 	static AkU32 sm_uID;
 	AkU32 _uID = 0;
-	UActor* _pOwner = nullptr;
+	Actor* _pOwner = nullptr;
 	IRenderer* _pRenderer = nullptr;
 	IMeshObject* _pMeshObj = nullptr;
 	Matrix _mWorldRow = Matrix();

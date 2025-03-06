@@ -177,22 +177,28 @@
     <ClInclude Include="..\..\utils\Stack.h" />
     <ClInclude Include="..\..\utils\UtilFunc.h" />
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="Animator.h" />
     <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="BaseObject.h" />
     <ClInclude Include="BRS_74.h" />
     <ClInclude Include="BRS_74_Model.h" />
     <ClInclude Include="BtnUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="DancerModel.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorMap.h" />
     <ClInclude Include="EditorModel.h" />
+    <ClInclude Include="Enum.h" />
     <ClInclude Include="EventManager.h" />
+    <ClInclude Include="Global.h" />
     <ClInclude Include="Gravity.h" />
     <ClInclude Include="Building.h" />
     <ClInclude Include="InputUI.h" />
     <ClInclude Include="KDTree.h" />
     <ClInclude Include="LandScape.h" />
+    <ClInclude Include="Macro.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Collider.h" />
@@ -203,6 +209,7 @@
     <ClInclude Include="PanelUI.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Player2.h" />
     <ClInclude Include="PlayerModel.h" />
     <ClInclude Include="RigidBody.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -214,12 +221,16 @@
     <ClInclude Include="Actor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="SkinnedModel.h" />
+    <ClInclude Include="Spawn.h" />
+    <ClInclude Include="Swat.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Transform.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="Dancer.h" />
-    <ClInclude Include="EditorManager.h" />
     <ClInclude Include="Sound.h" />
+    <ClInclude Include="Window.h" />
     <ClInclude Include="WorldMap.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="UIManager.h" />
@@ -235,18 +246,22 @@
     <ClCompile Include="..\..\utils\Stack.cpp" />
     <ClCompile Include="..\..\utils\UtilFunc.cpp" />
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="Animator.cpp" />
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="BaseObject.cpp" />
     <ClCompile Include="BRS_74.cpp" />
     <ClCompile Include="BRS_74_Model.cpp" />
     <ClCompile Include="BtnUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DancerModel.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorMap.cpp" />
     <ClCompile Include="EditorModel.cpp" />
     <ClCompile Include="EventManager.cpp" />
+    <ClCompile Include="Global.cpp" />
     <ClCompile Include="Gravity.cpp" />
     <ClCompile Include="Building.cpp" />
     <ClCompile Include="InputUI.cpp" />
@@ -267,6 +282,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Player2.cpp" />
     <ClCompile Include="PlayerModel.cpp" />
     <ClCompile Include="RigidBody.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -278,11 +294,15 @@
     <ClCompile Include="Actor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SkinnedModel.cpp" />
+    <ClCompile Include="Spawn.cpp" />
+    <ClCompile Include="Swat.cpp" />
     <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Dancer.cpp" />
-    <ClCompile Include="EditorManager.cpp" />
     <ClCompile Include="Sound.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="Window.cpp" />
     <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="UIManager.cpp" />

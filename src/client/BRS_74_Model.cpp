@@ -12,7 +12,7 @@ UBRS_74_Model::~UBRS_74_Model()
 	CleanUp();
 }
 
-AkBool UBRS_74_Model::Initialize(UApplication* pApp)
+AkBool UBRS_74_Model::Initialize(Application* pApp)
 {
 	if (!UModel::Initialize(pApp))
 	{
@@ -23,7 +23,7 @@ AkBool UBRS_74_Model::Initialize(UApplication* pApp)
 	_pApp = pApp;
 	_pRenderer = pApp->GetRenderer();
 
-	UAssetManager* pAssetManager = _pApp->GetAssetManager();
+	AssetManager* pAssetManager = _pApp->GetAssetManager();
 
 	if (CreateStaticMeshObject())
 	{

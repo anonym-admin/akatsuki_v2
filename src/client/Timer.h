@@ -6,11 +6,11 @@ Game Timer Class
 ==================
 */
 
-class UTimer
+class Timer
 {
 public:
-	UTimer();
-	~UTimer();
+	Timer();
+	~Timer();
 
 	AkBool Initialize();
 	void Tick();
