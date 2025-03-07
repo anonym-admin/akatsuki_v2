@@ -25,6 +25,16 @@
 #include "Type.h"
 #include "Global.h"
 #include "Macro.h"
+#include "GameInput.h"
+#include "Timer.h"
+#include "GeometryGenerator.h"
+#include "SceneManager.h"
+#include "EditorManager.h"
+#include "CollisionManager.h"
+#include "EventManager.h"
+#include "UIManager.h"
+#include "AssetManager.h"
+#include "Animator.h"
 
 // fmod
 #include "fmod.hpp"
@@ -33,6 +43,8 @@
 #include <imgui.h>
 #include <imgui_impl_dx12.h>
 #include <imgui_impl_win32.h>
+#include <ImGuiFileDialog.h>
+#include <ImGuiFileDialogConfig.h>
 
 #ifdef _DEBUG
 	#define _CRTDBG_MAP_ALLOC

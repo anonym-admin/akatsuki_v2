@@ -9,7 +9,7 @@ public:
 	~Gravity();
 
 	AkBool Initialize(Actor* pOwner);
-	void Update(const AkF32 fDeltaTime);
+	void Update();
 
 private:
 	Actor* _pOwner = nullptr;

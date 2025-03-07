@@ -170,7 +170,7 @@ void Camera::RotateFollow()
 
 	Vector3 vYawPitchRoll = Vector3(0.0f);
 
-	vYawPitchRoll.x = NDC_X * DirectX::XM_PIDIV2; // Yaw
+	vYawPitchRoll.x = NDC_ACC_X * DirectX::XM_PIDIV2; // Yaw
 	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree ¹æÁö.
 
 	_vCamFollowPos = Vector3::Transform(_vCamInitPos, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));

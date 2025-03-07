@@ -25,9 +25,10 @@ private:
 
 	void Idle();
 	void UpdateMove();
+	void UpdateWeapon();
 	void UpdateFire();
 	void UpdateAnimation();
-	void UpdateWeapon();
+	void FinalUpdateWeapon();
 
 private:
 	Matrix _mHandAnimTransform = Matrix();

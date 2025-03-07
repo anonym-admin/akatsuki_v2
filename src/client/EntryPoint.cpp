@@ -8,6 +8,7 @@ Link Library
 */
 
 #pragma comment(lib, "fmod_vc.lib")
+#pragma comment(lib, "ImGuiFileDialog.lib")
 
 extern "C" { __declspec(dllexport) AkU32 NvOptimusEnablement = 0x00000001; }
 

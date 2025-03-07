@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "GameInput.h"
 #include "SceneManager.h"
+#include "EditorManager.h"
 #include "EventManager.h"
 #include "AssetManager.h"
 #include "CollisionManager.h"
@@ -40,7 +41,7 @@ public:
 		GAssetManager = new AssetManager;
 		GEventManager = new EventManager;
 		GSceneManager = new SceneManager;
-		// GEditorManager = new EditorManager;
+		GEditorManager = new EditorManager;
 		GAnimator = new Animator;
 		GCollisionManager = new CollisionManager;
 		GUIManager = new UIManager;
@@ -67,6 +68,11 @@ public:
 		{
 			delete GAnimator;
 			GAnimator = nullptr;
+		}
+		if (GEditorManager)
+		{
+			delete GEditorManager;
+			GEditorManager = nullptr;
 		}
 		if (GEditorManager)
 		{

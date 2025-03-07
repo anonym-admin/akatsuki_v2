@@ -17,7 +17,7 @@ UIManager::~UIManager()
 
 void UIManager::Update()
 {
-    for (AkU32 i = 0; i < (AkU32)UI_OBJECT_TYPE::UI_OBJ_TYPE_COUNT; i++)
+    for (AkU32 i = 0; i < (AkU32)UI_TYPE::UI_OBJ_TYPE_COUNT; i++)
     {
         if(_pOnFlag[i])
             _ppUIList[i]->Update();
@@ -28,36 +28,36 @@ void UIManager::Update()
 
 void UIManager::Render()
 {
-    for (AkU32 i = 0; i < (AkU32)UI_OBJECT_TYPE::UI_OBJ_TYPE_COUNT; i++)
+    for (AkU32 i = 0; i < (AkU32)UI_TYPE::UI_OBJ_TYPE_COUNT; i++)
     {
         if (_pOnFlag[i])
             _ppUIList[i]->Render();
     }
 }
 
-void UIManager::AddUI(UUI* pUI, UI_OBJECT_TYPE eType)
+void UIManager::AddUI(UUI* pUI, UI_TYPE eType)
 {
     _ppUIList[(AkU32)eType] = pUI;
 }
 
-void UIManager::OnUI(UI_OBJECT_TYPE eType)
+void UIManager::OnUI(UI_TYPE eType)
 {
     _pOnFlag[(AkU32)eType] = AK_TRUE;
 }
 
-void UIManager::OffUI(UI_OBJECT_TYPE eType)
+void UIManager::OffUI(UI_TYPE eType)
 {
     _pOnFlag[(AkU32)eType] = AK_FALSE;
 }
 
-void UIManager::ToggleUI(UI_OBJECT_TYPE eType)
+void UIManager::ToggleUI(UI_TYPE eType)
 {
     _pOnFlag[(AkU32)eType] = !_pOnFlag[(AkU32)eType];
 }
 
 void UIManager::CleanUp()
 {
-    for (AkU32 i = 0; i < (AkU32)UI_OBJECT_TYPE::UI_OBJ_TYPE_COUNT; i++)
+    for (AkU32 i = 0; i < (AkU32)UI_TYPE::UI_OBJ_TYPE_COUNT; i++)
     {
         delete _ppUIList[i];
         _ppUIList[i] = nullptr;
@@ -66,7 +66,7 @@ void UIManager::CleanUp()
 
 void UIManager::ProcessMouseControl()
 {
-    for (AkU32 i = 0; i < (AkU32)UI_OBJECT_TYPE::UI_OBJ_TYPE_COUNT; i++)
+    for (AkU32 i = 0; i < (AkU32)UI_TYPE::UI_OBJ_TYPE_COUNT; i++)
     {
         UUI* pUI = (UUI*)_ppUIList[i];
 

@@ -2,6 +2,7 @@
 #include "Gravity.h"
 #include "Actor.h"
 #include "RigidBody.h"
+#include "Timer.h"
 
 Gravity::Gravity(Actor* pOwner)
 {
@@ -22,13 +23,13 @@ AkBool Gravity::Initialize(Actor* pOwner)
 	return AK_TRUE;
 }
 
-void Gravity::Update(const AkF32 fDeltaTime)
+void Gravity::Update()
 {
 	RigidBody* pRigidBody = _pOwner->GetRigidBody();
 
 	Vector3 vOldVelocity = pRigidBody->GetVelocity();
 
-	Vector3 vNewVelocity = vOldVelocity + _fGforce * fDeltaTime;
+	Vector3 vNewVelocity = vOldVelocity + _fGforce * DT;
 
 	pRigidBody->SetVelocity(vNewVelocity);
 }

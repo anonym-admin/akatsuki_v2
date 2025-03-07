@@ -1,14 +1,5 @@
 #include "pch.h"
 #include "Application.h"
-#include "Timer.h"
-#include "GameInput.h"
-#include "GeometryGenerator.h"
-#include "CollisionManager.h"
-#include "SceneManager.h"
-#include "AssetManager.h"
-#include "Animation.h"
-#include "EventManager.h"
-#include "UIManager.h"
 #include "Camera.h"
 #include "TextUI.h"
 #include "PanelUI.h"
@@ -17,6 +8,8 @@
 
 #include "SceneInGame.h"
 #include "SceneLoading.h"
+#include "EditorModel.h"
+#include "EditorMap.h"
 
 #include "Sound.h"
 
@@ -39,18 +32,28 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 {
 	srand((AkU32)time(nullptr));
 
+	// Init Rederer dll.
 	if (!InitRenderer(bEnableDebugLayer, bEnableGBV))
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
+	// Init Scene.
 	if (!InitScene())
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
+	// Init Editor.
+	if (!InitEditor())
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+
+	// Init Game UI.
 	if (!InitUI())
 	{
 		__debugbreak();
@@ -67,6 +70,13 @@ void Application::RunApplication()
 {
 	GTimer->Tick();
 
+	// Start the Dear ImGui frame
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	ImGuiIO& io = ImGui::GetIO();
+
+	// Update.
 	Update();
 
 	GRenderer->UpdateCascadeOrthoProjMatrix();
@@ -75,6 +85,7 @@ void Application::RunApplication()
 	for (AkU32 i = 0; i < 5; i++)
 	{
 		GRenderer->BeginCasterRenderPreparation();
+		GEditorManager->RenderShadow();
 		GSceneManager->RenderShadow();
 		GRenderer->EndCasterRenderPreparation();
 	}
@@ -82,7 +93,11 @@ void Application::RunApplication()
 	// Begin render.
 	GRenderer->BeginRender();
 
+	// Render.
 	Render();
+
+	// ImGui Render.
+	ImGui::Render();
 
 	// End render.
 	GRenderer->EndRender();
@@ -106,15 +121,10 @@ AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 	return bResult;
 }
 
-void Application::SetVSync(AkBool bUseVSync)
-{
-	_bUseVSync = bUseVSync;
-
-	GRenderer->SetVSync(_bUseVSync);
-}
-
 void Application::CleanUp()
 {
+	GRenderer->UnBindImGui();
+
 	if (GRenderer)
 	{
 		GRenderer->Release();
@@ -190,6 +200,20 @@ AkBool Application::InitScene()
 	return AK_TRUE;
 }
 
+AkBool Application::InitEditor()
+{
+	GRenderer->BindImGui((void**)&GImGui);
+
+	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_TYPE_MODEL, new EditorModel());
+	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_TYPE_MAP, new EditorMap());
+
+	// Editor 들은 모두 Begin 진행.
+	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_TYPE_MODEL)->BeginEditor();
+	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_TYPE_MAP)->BeginEditor();
+
+	return AK_TRUE;
+}
+
 AkBool Application::InitUI()
 {
 	_pSysTextUI = new TextUI(256, 32, L"Consolas", 10);
@@ -197,8 +221,8 @@ AkBool Application::InitUI()
 	_pSysTextUI->SetScale(1.0f, 1.0f);
 	_pSysTextUI->SetFontColor(&_vSysFontColor);
 
-	GUIManager->AddUI(_pSysTextUI, UI_OBJECT_TYPE::UI_OBJ_SYS_INFO_TEXT);
-	GUIManager->OnUI(UI_OBJECT_TYPE::UI_OBJ_SYS_INFO_TEXT);
+	GUIManager->AddUI(_pSysTextUI, UI_TYPE::UI_OBJ_SYS_INFO_TEXT);
+	GUIManager->OnUI(UI_TYPE::UI_OBJ_SYS_INFO_TEXT);
 
 	_pDynamicTextUI = new InputUI(256, 32, L"Consolas", 10);
 	_pDynamicTextUI->SetPosition(10, 500);
@@ -206,8 +230,8 @@ AkBool Application::InitUI()
 	_pDynamicTextUI->SetFontColor(&_vDynamicTextFontColor);
 	_pDynamicTextUI->SetDrawBackGround(AK_TRUE);
 
-	GUIManager->AddUI(_pDynamicTextUI, UI_OBJECT_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
-	GUIManager->OnUI(UI_OBJECT_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
+	GUIManager->AddUI(_pDynamicTextUI, UI_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
+	GUIManager->OnUI(UI_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
 
 	TextUI* pStaticTextUI = new TextUI(256, 32, L"Consolas", 10);
 	pStaticTextUI->SetPosition(10, 32 + 10 + 10);
@@ -215,7 +239,7 @@ AkBool Application::InitUI()
 	pStaticTextUI->SetFontColor(&_vSysFontColor);
 	pStaticTextUI->WriteText(L"Test Static Text\n");
 
-	GUIManager->AddUI(pStaticTextUI, UI_OBJECT_TYPE::UI_OBJ_TEST_STATIC_TEXT);
+	GUIManager->AddUI(pStaticTextUI, UI_TYPE::UI_OBJ_TEST_STATIC_TEXT);
 
 	UPanelUI* pTextureUI = new UPanelUI(L"../../assets/ui_01.dds", 0, 0, 2545, 1867);
 	pTextureUI->SetPosition(500, 10);
@@ -223,7 +247,7 @@ AkBool Application::InitUI()
 	pTextureUI->SetDrawBackGround(AK_TRUE);
 	pTextureUI->SetResolution((AkU32)(0.1f * 2545), (AkU32)(0.2f * 1867));
 
-	GUIManager->AddUI(pTextureUI, UI_OBJECT_TYPE::UI_OBJ_EXIT);
+	GUIManager->AddUI(pTextureUI, UI_TYPE::UI_OBJ_EXIT);
 
 	UBtnUI* pBtnUI = new UBtnUI(L"../../assets/Exit_Btn.dds", 0, 0, 225, 49);
 	pBtnUI->SetRelativePosition(10, 10);
@@ -254,6 +278,12 @@ void Application::Update()
 	// Update Game Env.
 	UpdateEnviroment();
 
+	// Update Editor list.
+	GEditorManager->Update();
+
+	// Final Update Editor list.
+	GEditorManager->FinalUpdate();
+
 	// Update Scene list.
 	GSceneManager->Update();
 
@@ -282,13 +312,31 @@ void Application::UpdateEnviroment()
 	{
 		_bUseVSync = !_bUseVSync;
 
-		SetVSync(_bUseVSync);
+		GRenderer->SetVSync(_bUseVSync);
 	}
+	if (KEY_DOWN(KEY_INPUT_F5))
+	{
+		_bChangeEditor = !_bChangeEditor;
+
+		EventHandle_t tEvent = {};
+		if (_bChangeEditor)
+		{
+			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
+			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_TYPE_MODEL;
+		}
+		else
+		{
+			tEvent.eEventType = EVENT_TYPE::EDITOR_TO_SCENE_CHANGE;
+			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::SCENE_TYPE_INGANE;
+		}
+		GEventManager->AddEvent(&tEvent);
+	}
+
 	// TODO!!
 	// 임시로 F1 버튼으로 설정.
 	if (KEY_DOWN(KEY_INPUT_F1))
 	{
-		GUIManager->ToggleUI(UI_OBJECT_TYPE::UI_OBJ_EXIT);
+		GUIManager->ToggleUI(UI_TYPE::UI_OBJ_EXIT);
 	}
 }
 
@@ -306,6 +354,9 @@ void Application::UpdateText()
 
 void Application::Render()
 {
+	// Render Editor list.
+	GEditorManager->Render();
+
 	// Render Scene list.
 	GSceneManager->Render();
 

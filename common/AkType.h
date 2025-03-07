@@ -20,7 +20,7 @@ typedef uint8_t AkU8;
 typedef float AkF32;
 typedef double AkF64;
 typedef float AkReal;
-typedef AkI8 AkBool;
+typedef bool AkBool;
 // Int-as-bool type - has some uses for efficiency and with SIMD
 typedef AkI32 AkIntBool;
 
@@ -47,8 +47,8 @@ typedef AkI32 AkIntBool;
 #define AK_MAX_U32	UINT32_MAX
 #define AK_MIN_U32	0
 
-#define AK_TRUE		1
-#define AK_FALSE	0
+#define AK_TRUE		true
+#define AK_FALSE	false
 
 // Light
 #define LIGHT_OFF 0x00

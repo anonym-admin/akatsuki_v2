@@ -132,14 +132,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)vender\fmod\inc;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vender\ImGuiFileDialog;$(SolutionDir)vender\fmod\inc;$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)vender\fmod\lib\$(Platform)\;$(SolutionDir)bin\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)vender\ImGuiFileDialog\$(Configuration)\;$(SolutionDir)vender\fmod\lib\$(Platform)\;$(SolutionDir)bin\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -185,6 +185,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="Editor.h" />
+    <ClInclude Include="EditorManager.h" />
     <ClInclude Include="Enum.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="Global.h" />
@@ -193,11 +195,13 @@
     <ClInclude Include="KDTree.h" />
     <ClInclude Include="LandScape.h" />
     <ClInclude Include="Macro.h" />
+    <ClInclude Include="EditorMap.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="GameInput.h" />
     <ClInclude Include="GeometryGenerator.h" />
+    <ClInclude Include="EditorModel.h" />
     <ClInclude Include="ModelImporter.h" />
     <ClInclude Include="PanelUI.h" />
     <ClInclude Include="pch.h" />
@@ -246,17 +250,21 @@
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="Editor.cpp" />
+    <ClCompile Include="EditorManager.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Gravity.cpp" />
     <ClCompile Include="InputUI.cpp" />
     <ClCompile Include="KDTree.cpp" />
     <ClCompile Include="LandScape.cpp" />
+    <ClCompile Include="EditorMap.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="EntryPoint.cpp" />
     <ClCompile Include="GameInput.cpp" />
     <ClCompile Include="GeometryGenerator.cpp" />
+    <ClCompile Include="EditorModel.cpp" />
     <ClCompile Include="ModelImporter.cpp" />
     <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="pch.cpp">

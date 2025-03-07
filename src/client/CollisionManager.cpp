@@ -108,12 +108,14 @@ void CollisionManager::CleanUp()
 void CollisionManager::CollisionStaticObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft)
 {
 	if (GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP == eLeft || GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON == eLeft)
-	{
 		return;
-	}
 
-	Scene* pCurScence = GSceneManager->GetCurrentScene();
-	GameObjContainer_t* pGameObjContainer = pCurScence->GetGroupObject(eLeft);
+	Scene* pCurScene = GSceneManager->GetCurrentScene();
+
+	if (!pCurScene)
+		return;
+
+	GameObjContainer_t* pGameObjContainer = pCurScene->GetGroupObject(eLeft);
 
 	List_t* pCur = pGameObjContainer->pGameObjHead;
 	while (pCur != nullptr)
@@ -183,10 +185,13 @@ void CollisionManager::CollisionStaticObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft)
 
 void CollisionManager::CollisionDynamicObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft, GAME_OBJECT_GROUP_TYPE eRight)
 {
-	Scene* pCurScence = GSceneManager->GetCurrentScene();
+	Scene* pCurScene = GSceneManager->GetCurrentScene();
 
-	GameObjContainer_t* pLeftGameObjContainer = pCurScence->GetGroupObject(eLeft);
-	GameObjContainer_t* pRightGameObjContainer = pCurScence->GetGroupObject(eRight);
+	if (!pCurScene)
+		return;
+
+	GameObjContainer_t* pLeftGameObjContainer = pCurScene->GetGroupObject(eLeft);
+	GameObjContainer_t* pRightGameObjContainer = pCurScene->GetGroupObject(eRight);
 
 	List_t* pCurLeft = pLeftGameObjContainer->pGameObjHead;
 	while (pCurLeft != nullptr)

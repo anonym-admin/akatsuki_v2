@@ -69,8 +69,8 @@ AkBool SceneLoading::BeginScene()
 	// Add Change Scene Event.
 	EventHandle_t tEventHandle = {};
 	tEventHandle.eEventType = EVENT_TYPE::SCENE_CHANGE;
-	tEventHandle.tSceneChangeParam.eBefore = SCENE_TYPE::SCENE_TYPE_LOADING;
-	tEventHandle.tSceneChangeParam.eAfter = SCENE_TYPE::SCENE_TYPE_INGANE;
+	tEventHandle.tSceneAndEditorChangeParam.eBeforeScene = SCENE_TYPE::SCENE_TYPE_LOADING;
+	tEventHandle.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::SCENE_TYPE_INGANE;
 	GEventManager->AddEvent(&tEventHandle);
 
 	return AK_TRUE;

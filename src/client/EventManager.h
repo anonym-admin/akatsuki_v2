@@ -1,28 +1,5 @@
 #pragma once
 
-struct EventCreateGameObjectParam_t
-{
-
-};
-
-struct EventSceneChangeParam_t
-{
-	SCENE_TYPE eBefore = {};
-	SCENE_TYPE eAfter = {};
-};
-
-struct EventHandle_t
-{
-	EVENT_TYPE eEventType = {};
-	void* pObj = nullptr;
-
-	union
-	{
-		EventCreateGameObjectParam_t tCreateGameObjParam;
-		EventSceneChangeParam_t tSceneChangeParam;
-	};
-};
-
 /*
 ==================
 EventManager

@@ -112,3 +112,25 @@ float GenterateRandomFloat(float fMin, float fMax)
 	float fScale = rand() / (float)RAND_MAX;
 	return fMin + fScale * (fMax - fMin);
 }
+
+std::string GetFileExtension(const std::string& filePath)
+{
+	size_t dotPos = filePath.find_last_of('.');
+	if (dotPos == std::string::npos) {
+		return "";
+	}
+	size_t slashPos = filePath.find_last_of("/\\");
+	if (slashPos != std::string::npos && slashPos > dotPos) {
+		return "";
+	}
+	return filePath.substr(dotPos + 1);
+}
+
+std::string GetFilePath(const std::string& fullPath)
+{
+	size_t pos = fullPath.find_last_of("/\\");
+	if (pos == std::string::npos) {
+		return "";
+	}
+	return fullPath.substr(0, pos + 1);
+}

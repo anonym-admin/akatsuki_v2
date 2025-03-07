@@ -243,6 +243,18 @@
     <ClInclude Include="Camera.h">
       <Filter>src\camera</Filter>
     </ClInclude>
+    <ClInclude Include="Editor.h">
+      <Filter>src\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorMap.h">
+      <Filter>src\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorModel.h">
+      <Filter>src\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorManager.h">
+      <Filter>src\mgr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -400,6 +412,18 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>src\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor.cpp">
+      <Filter>src\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorMap.cpp">
+      <Filter>src\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorModel.cpp">
+      <Filter>src\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorManager.cpp">
+      <Filter>src\mgr</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
