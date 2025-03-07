@@ -77,22 +77,10 @@ Game Event Type
 ================
 */
 
-enum class GAME_EVENT_TYPE
+enum class EVENT_TYPE
 {
-	GAME_EVENT_TYPE_CREATE_GAME_OBJECT,
-	GAME_EVENT_TYPE_SCENE_CHANGE,
-};
-
-/*
-==================
-Editor Event Type
-==================
-*/
-
-enum class EDITOR_EVENT_TYPE
-{
-	EDITOR_EVENT_TYPE_CREATE_GAME_OBJECT,
-	EDITOR_EVENT_TYPE_EDITOR_CHANGE,
+	CREATE_GAME_OBJECT,
+	SCENE_CHANGE,
 };
 
 /*
@@ -132,4 +120,17 @@ enum class CAMERA_MODE
 	FREE,
 	EDITOR,
 	FOLLOW,
+};
+
+/*
+==================
+Transform Mode
+==================
+*/
+
+enum class TRANSFORM_MODE
+{
+	YPR,
+	EULER,
+	QUAT,
 };

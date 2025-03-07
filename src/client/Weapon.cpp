@@ -1,11 +1,7 @@
 #include "pch.h"
 #include "Weapon.h"
-#include "Player.h"
-#include "Collider.h"
-#include "RigidBody.h"
 #include "Gravity.h"
-#include "Model.h"
-#include "BRS_74_Model.h"
+#include "Transform.h"
 #include "Application.h"
 
 /*
@@ -14,148 +10,106 @@ Weapon
 ==========
 */
 
-UWeapon::UWeapon()
+Weapon::Weapon()
 {
+	if (!Initialize())
+	{
+		__debugbreak();
+	}
 }
 
-UWeapon::~UWeapon()
+Weapon::~Weapon()
 {
 	CleanUp();
 }
 
-AkBool UWeapon::Initialize(Application* pApp, const Vector3* pExtent, const Vector3* pCenter)
+AkBool Weapon::Initialize()
 {
-	if (!Actor::Initialize(pApp))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
+	// Create Transform.
+	_pTransform = CreateTransform();
 
 	// Create Collider.
-	Collider* pCollider = CreateCollider();
-
-	// Create Rigid Body.
-	RigidBody* pRigidBody = CreateRigidBody();
-	pRigidBody->SetFrictionCoef(0.0f);
+	_pCollider = CreateCollider();
 
 	// Create Gravity.
-	Gravity* pGravity = CreateGravity();
+	_pGravity = CreateGravity();
+
+	// Create Rigidbody.
+	_pRigidBody = CreateRigidBody();
 
 	return AK_TRUE;
 }
 
-void UWeapon::Update(const AkF32 fDeltaTime)
-{
-}
-
-void UWeapon::FinalUpdate(const AkF32 fDeltaTime)
-{
-	Collider* pCollider = GetCollider();
-
-	pCollider->Update(fDeltaTime);
-
-	UpdateModelTransform();
-}
-
-void UWeapon::Render()
-{
-	Application* pApp = GetApp();
-	Collider* pCollider = GetCollider();
-
-	// Render Model.
-	RenderModel();
-
-	// Render Normal.
-	if (IsDrawNoraml())
-	{
-		RenderNormal();
-	}
-
-	if (pApp->EnableEditor())
-	{
-		pCollider->Render();
-	}
-}
-
-void UWeapon::OnCollision(Collider* pOther)
-{
-}
-
-void UWeapon::OnCollisionEnter(Collider* pOther)
-{
-}
-
-void UWeapon::OnCollisionExit(Collider* pOther)
-{
-}
-
-void UWeapon::SetOwnerRotationY(AkF32 fRot)
+void Weapon::SetOwnerRotationY(AkF32 fRot)
 {
 	_fOwnerRotY = fRot;
 }
 
-void UWeapon::SetRelativeRotationX(AkF32 fRot)
+void Weapon::SetRelativeRotationX(AkF32 fRot)
 {
 	_vRelativeRot.x = fRot;
 }
 
-void UWeapon::SetRelativeRotationY(AkF32 fRot)
+void Weapon::SetRelativeRotationY(AkF32 fRot)
 {
 	_vRelativeRot.y = fRot;
 }
 
-void UWeapon::SetRelativeRotationZ(AkF32 fRot)
+void Weapon::SetRelativeRotationZ(AkF32 fRot)
 {
 	_vRelativeRot.z = fRot;
 }
 
-void UWeapon::SetRelativePosition(AkF32 fX, AkF32 fY, AkF32 fZ)
+void Weapon::SetRelativePosition(AkF32 fX, AkF32 fY, AkF32 fZ)
 {
 	_vRelativePos = Vector3(fX, fY, fZ);
-
-	Vector3 vOwnerPos = _pOwner->GetPosition();
 }
 
-void UWeapon::SetAnimTransform(Matrix* pMat)
+void Weapon::SetRelativeRotation(const Vector3* pYawPitchRoll)
+{
+	_vRelativeRot = *pYawPitchRoll;
+}
+
+void Weapon::SetRelativePosition(const Vector3* pPos)
+{
+	_vRelativePos = *pPos;
+}
+
+void Weapon::SetAnimTransform(Matrix* pMat)
 {
 	_mAnimTransform = *pMat;
 }
 
-void UWeapon::AttachOwner(UPlayer* pOwner)
+void Weapon::CleanUp()
 {
-	_pOwner = pOwner;
-}
-
-void UWeapon::UpdateModelTransform()
-{
-	using namespace DirectX;
-
-	MODEL_CONTEXT_INDEX eModelCtxIndex = GetModelContextIndex();
-	UModel* pModel = (UModel*)GetModel(eModelCtxIndex);
-
-	Matrix mWorld = Matrix::CreateScale(_vScale) *
-					Matrix::CreateRotationX(XMConvertToRadians(_vRelativeRot.x)) *
-					Matrix::CreateRotationY(XMConvertToRadians(_vRelativeRot.y)) *
-					Matrix::CreateRotationZ(XMConvertToRadians(_vRelativeRot.z)) *
-					Matrix::CreateTranslation(_vRelativePos);
-
-	mWorld = mWorld *_mAnimTransform;
-	if (_pOwner)
+	AkU32 uRefCount = _uInstanceCount - 1;
+	if (uRefCount)
 	{
-		mWorld = mWorld * Matrix::CreateRotationX(_pOwner->GetRotationX()) * 
-						  Matrix::CreateRotationY(_fOwnerRotY) * 
-						  Matrix::CreateRotationZ(_pOwner->GetRotationZ()) *
-						  Matrix::CreateTranslation(_pOwner->GetPosition());
+		return;
 	}
-
-	pModel->SetWorldMatrix((AkU32)eModelCtxIndex, &mWorld);
 }
 
-void UWeapon::CleanUp()
-{
-	DestroyGravity();
-
-	DesteoyRigidBody();
-
-	DestroyCollider();
-}
+//void UWeapon::UpdateModelTransform()
+//{
+//	using namespace DirectX;
+//
+//	MODEL_CONTEXT_INDEX eModelCtxIndex = GetModelContextIndex();
+//	UModel* pModel = (UModel*)GetModel(eModelCtxIndex);
+//
+//	Matrix mWorld = Matrix::CreateScale(_vScale) *
+//					Matrix::CreateRotationX(XMConvertToRadians(_vRelativeRot.x)) *
+//					Matrix::CreateRotationY(XMConvertToRadians(_vRelativeRot.y)) *
+//					Matrix::CreateRotationZ(XMConvertToRadians(_vRelativeRot.z)) *
+//					Matrix::CreateTranslation(_vRelativePos);
+//
+//	mWorld = mWorld *_mAnimTransform;
+//	if (_pOwner)
+//	{
+//		mWorld = mWorld * Matrix::CreateRotationX(_pOwner->GetRotationX()) * 
+//						  Matrix::CreateRotationY(_fOwnerRotY) * 
+//						  Matrix::CreateRotationZ(_pOwner->GetRotationZ()) *
+//						  Matrix::CreateTranslation(_pOwner->GetPosition());
+//	}
+//
+//	pModel->SetWorldMatrix((AkU32)eModelCtxIndex, &mWorld);
+//}

@@ -6,78 +6,60 @@
 #include "KDTree.h"
 #include "CollisionManager.h"
 
-WorldMapContainer::WorldMapContainer()
-{
-}
-
-WorldMapContainer::~WorldMapContainer()
+MapObjects::~MapObjects()
 {
 	CleanUp();
 }
 
-AkBool WorldMapContainer::Initialize(Application* pApp)
-{
-	if (!Actor::Initialize(pApp))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-
-	_pApp = pApp;
-	_pRenderer = pApp->GetRenderer();
-
-	return AK_TRUE;
-}
-
-void WorldMapContainer::Update(const AkF32 fDeltaTime)
+void MapObjects::Update()
 {
 }
 
-void WorldMapContainer::FinalUpdate(const AkF32 fDeltaTime)
+void MapObjects::FinalUpdate()
 {
 }
 
-void WorldMapContainer::RenderShadow()
+void MapObjects::RenderShadow()
 {
 	for (AkU32 i = 0; i < _uMsshObjListNum; i++)
 	{
 		for (AkU32 j = 0; j < _uMeshObjNum[i]; j++)
 		{
-			_pRenderer->RenderShadowOfBasicMeshObject(_pMeshObj[i], _pWorldRows[i] + j);
+			GRenderer->RenderShadowOfBasicMeshObject(_pMeshObj[i], _pWorldRows[i] + j);
 		}
 	}
 }
 
-void WorldMapContainer::Render()
+void MapObjects::Render()
 {
 	for (AkU32 i = 0; i < _uMsshObjListNum; i++)
 	{
 		for (AkU32 j = 0; j < _uMeshObjNum[i]; j++)
 		{
-			_pRenderer->RenderBasicMeshObject(_pMeshObj[i], _pWorldRows[i] + j);
+			GRenderer->RenderBasicMeshObject(_pMeshObj[i], _pWorldRows[i] + j);
 		}
 	}
 
 	if (_bUseKDTree && _bDrawKDTreeNode)
 	{
-		RenderKDTreeNode(_pKDTreeNode, _pRenderer, _pKDTreeBoxObj);
+		RenderKDTreeNode(_pKDTreeNode, GRenderer, _pKDTreeBoxObj);
 	}
 }
 
-void WorldMapContainer::OnCollision(Collider* pOther)
+void MapObjects::OnCollision(Collider* pOther)
 {
 }
 
-void WorldMapContainer::OnCollisionEnter(Collider* pOther)
+void MapObjects::OnCollisionEnter(Collider* pOther)
 {
 }
 
-void WorldMapContainer::OnCollisionExit(Collider* pOther)
+void MapObjects::OnCollisionExit(Collider* pOther)
 {
 
 }
 
-void WorldMapContainer::BindMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum)
+void MapObjects::BindMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum)
 {
 	_ppMeshDataChunk[_uMeshDataChunkNum] = pMeshData;
 	_pMeshDataNum[_uMeshDataChunkNum] = uMeshDataNum;
@@ -87,7 +69,7 @@ void WorldMapContainer::BindMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum)
 	_uMeshDataChunkNum++;
 }
 
-void WorldMapContainer::BindMeshObj(IMeshObject* pMeshObj, AkU32 uMeshObjNum, const Matrix* pWorldRows)
+void MapObjects::BindMeshObj(IMeshObject* pMeshObj, AkU32 uMeshObjNum, const Matrix* pWorldRows)
 {
 	if (_uMsshObjListNum >= MAX_MESH_OBJ_LIST_COUNT)
 	{
@@ -101,7 +83,7 @@ void WorldMapContainer::BindMeshObj(IMeshObject* pMeshObj, AkU32 uMeshObjNum, co
 	_uMsshObjListNum++;
 }
 
-void WorldMapContainer::Build(AkBool bUseKDTree)
+void MapObjects::Build(AkBool bUseKDTree)
 {
 	if (0 == _uMeshDataChunkNum)
 	{
@@ -139,8 +121,7 @@ void WorldMapContainer::Build(AkBool bUseKDTree)
 				pTriList[uTriIndex].vP[1] = _ppMeshDataChunk[i][j].pVertices[i1].vPosition;
 				pTriList[uTriIndex].vP[2] = _ppMeshDataChunk[i][j].pVertices[i2].vPosition;
 
-				_ppColliderList[uTriIndex] = CreateCollider();
-				_ppColliderList[uTriIndex]->Initialize(this, _pRenderer);
+				_ppColliderList[uTriIndex] = new Collider(this);
 				_ppColliderList[uTriIndex]->CreateTriangle(&pTriList[uTriIndex].vP[0], &pTriList[uTriIndex].vP[1], &pTriList[uTriIndex].vP[2]);
 
 				_ppColliderList[uTriIndex]->_pDraw = _pDrawTable + i;
@@ -178,7 +159,7 @@ void WorldMapContainer::Build(AkBool bUseKDTree)
 		MeshData_t* pBoxMeshData = GeometryGenerator::MakeCube(&uMeshDataNum, 0.5f);
 		Vector3 vAlbedo = Vector3(0.0f);
 		Vector3 vEmissive = Vector3(1.0f, 0.0f, 0.0f);
-		_pKDTreeBoxObj = _pRenderer->CreateBasicMeshObject();
+		_pKDTreeBoxObj = GRenderer->CreateBasicMeshObject();
 		_pKDTreeBoxObj->CreateMeshBuffers(pBoxMeshData, uMeshDataNum);
 		_pKDTreeBoxObj->EnableWireFrame();
 		_pKDTreeBoxObj->UpdateMaterialBuffers(&vAlbedo, 0.0f, 0.0f, &vEmissive);
@@ -193,7 +174,7 @@ void WorldMapContainer::Build(AkBool bUseKDTree)
 	}
 }
 
-void WorldMapContainer::CleanUp()
+void MapObjects::CleanUp()
 {
 	if (_pKDTreeBoxObj)
 	{

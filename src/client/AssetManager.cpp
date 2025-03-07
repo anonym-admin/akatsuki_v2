@@ -19,7 +19,7 @@ AssetManager::~AssetManager()
 
 void AssetManager::AddMeshData(ASSET_MESH_DATA_TYPE eType, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
 {
-	USceneLoading* pSceneLoading = (USceneLoading*)GSceneManager->GetCurrentScene();
+	SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
 	AssetMeshDataContainer_t* pAssetMeshDataContainer = nullptr;
 
 	pAssetMeshDataContainer = AllocMeshDataContainer();
@@ -38,7 +38,7 @@ void AssetManager::AddMeshData(ASSET_MESH_DATA_TYPE eType, const wchar_t* wcBase
 
 void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* wcEnvFilename, const wchar_t* wcIrradianceFilename, const wchar_t* wcSpecularFilename, const wchar_t* wcBrdfFilaename)
 {
-	USceneLoading* pSceneLoading = (USceneLoading*)GSceneManager->GetCurrentScene();
+	SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
 	AssetTextureContainer_t* pAssetTexContainer = nullptr;
 	void* pTexHandle = nullptr;
 
@@ -47,7 +47,7 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, wcEnvFilename);
 
 	// Env
-	pTexHandle = _pRenderer->CreateCubeMapTexture(wcFullPath);
+	pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
 	pAssetTexContainer = AllocTextureContainer();
 	pAssetTexContainer->pTexHandle = pTexHandle;
 
@@ -61,7 +61,7 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, wcIrradianceFilename);
 
 	// Irradiance
-	pTexHandle = _pRenderer->CreateCubeMapTexture(wcFullPath);
+	pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
 	pAssetTexContainer = AllocTextureContainer();
 	pAssetTexContainer->pTexHandle = pTexHandle;
 
@@ -75,7 +75,7 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, wcSpecularFilename);
 
 	// Specular
-	pTexHandle = _pRenderer->CreateCubeMapTexture(wcFullPath);
+	pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
 	pAssetTexContainer = AllocTextureContainer();
 	pAssetTexContainer->pTexHandle = pTexHandle;
 
@@ -89,7 +89,7 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, wcBrdfFilaename);
 
 	// Brdf
-	pTexHandle = _pRenderer->CreateTextureFromFile(wcFullPath, AK_FALSE);
+	pTexHandle = GRenderer->CreateTextureFromFile(wcFullPath, AK_FALSE);
 	pAssetTexContainer = AllocTextureContainer();
 	pAssetTexContainer->pTexHandle = pTexHandle;
 
@@ -145,7 +145,7 @@ void AssetManager::DeleteTexture(ASSET_TEXTURE_TYPE eType)
 
 	if (_ppAssetTextureContainerList[uType])
 	{
-		_pRenderer->DestroyTexture(_ppAssetTextureContainerList[uType]->pTexHandle);
+		GRenderer->DestroyTexture(_ppAssetTextureContainerList[uType]->pTexHandle);
 		_ppAssetTextureContainerList[uType]->pTexHandle = nullptr;
 
 		FreeTextureContainer(_ppAssetTextureContainerList[uType]);

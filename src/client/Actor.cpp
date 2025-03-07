@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Actor.h"
-#include "PlayerModel.h"
 #include "GameInput.h"
 #include "Application.h"
 #include "RigidBody.h"
@@ -15,22 +14,19 @@ Actor::~Actor()
 
 Collider* Actor::CreateCollider()
 {
-	_pCollider = new Collider;
-	_pCollider->Initialize(this, _pApp->GetRenderer());
+	_pCollider = new Collider(this);
 	return _pCollider;
 }
 
 RigidBody* Actor::CreateRigidBody()
 {
-	_pRigidBody = new RigidBody;
-	_pRigidBody->Initialize(this);
+	_pRigidBody = new RigidBody(this);
 	return _pRigidBody;
 }
 
 Gravity* Actor::CreateGravity()
 {
-	_pGravity = new Gravity;
-	_pGravity->Initialize(this);
+	_pGravity = new Gravity(this);
 	return _pGravity;
 }
 
@@ -78,6 +74,12 @@ void Actor::DestroyCamera()
 		delete _pCamera;
 		_pCamera = nullptr;
 	}
+}
+
+void Actor::SetWeapon(Weapon* pWeapon)
+{
+	BindWeapon = AK_TRUE;
+	_pWeapon = pWeapon;
 }
 
 void Actor::CleanUp()

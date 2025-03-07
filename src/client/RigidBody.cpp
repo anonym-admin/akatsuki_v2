@@ -1,12 +1,22 @@
 #include "pch.h"
 #include "RigidBody.h"
 #include "Actor.h"
+#include "Transform.h"
+#include "Timer.h"
 
 /*
 ==============
 URigidBody
 ==============
 */
+
+RigidBody::RigidBody(Actor* pOwner)
+{
+    if (!Initialize(pOwner))
+    {
+        __debugbreak();
+    }
+}
 
 AkBool RigidBody::Initialize(Actor* pOwner)
 {
@@ -15,7 +25,7 @@ AkBool RigidBody::Initialize(Actor* pOwner)
     return AK_TRUE;
 }
 
-void RigidBody::Update(const AkF32 fDeltaTime)
+void RigidBody::Update()
 {
     AkF32 fForce = _vForce.Length();
 
@@ -27,7 +37,7 @@ void RigidBody::Update(const AkF32 fDeltaTime)
 
         _vAccel = _vForce * fAccel;
 
-        _vVelocity += _vAccel * fDeltaTime;
+        _vVelocity += _vAccel * DT;
     }
 
     if (_vVelocity.Length() >= 0.0f)
@@ -35,7 +45,7 @@ void RigidBody::Update(const AkF32 fDeltaTime)
         Vector3 vVelocityDir = _vVelocity;
         vVelocityDir.Normalize();
 
-        Vector3 vFriction = -vVelocityDir * _fFricCoeff * fDeltaTime;
+        Vector3 vFriction = -vVelocityDir * _fFricCoeff * DT;
         if (_vVelocity.Length() < vFriction.Length())
         {
             _vVelocity = Vector3(0.0f);
@@ -52,7 +62,7 @@ void RigidBody::Update(const AkF32 fDeltaTime)
         _vVelocity *= _fMaxVelocity;
     }
 
-    Move(fDeltaTime);
+    Move();
 
     _vForce = Vector3(0.0f);
 }
@@ -73,7 +83,7 @@ void RigidBody::SetVelocity(AkF32 fX, AkF32 fY, AkF32 fZ)
     _vVelocity = Vector3(fX, fY, fZ);
 }
 
-void RigidBody::Move(const AkF32 fDeltaTime)
+void RigidBody::Move()
 {
     const AkF32 fSpeed = _vVelocity.Length();
 
@@ -82,10 +92,10 @@ void RigidBody::Move(const AkF32 fDeltaTime)
         Vector3 vDir = _vVelocity;
         vDir.Normalize();
 
-        Vector3 vPos = _pOwner->GetPosition();
+        Vector3 vPos = _pOwner->GetTransform()->GetPosition();
 
-        vPos += _vVelocity * fDeltaTime;
+        vPos += _vVelocity * DT;
 
-        _pOwner->SetPosition(vPos.x, vPos.y, vPos.z);
+        _pOwner->GetTransform()->SetPosition(&vPos);
     }
 }

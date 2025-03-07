@@ -55,8 +55,6 @@ private:
 
 private:
 	static AkU32 sm_pInitRefCount;
-	IRenderer* _pRenderer = nullptr;
-	Application* _pApp = nullptr;
 	void* _pTexHandle = nullptr;
 	AkU8* _pTexImage = nullptr;
 	List_t* _pChildUIHead = nullptr;

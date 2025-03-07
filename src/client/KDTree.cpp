@@ -98,8 +98,7 @@ KDTreeNode_t* BuildKDTree(Actor* pOwner, Collider** pTriList, AkU32 uTriNum, AkU
 
 	// Create node.
 	KDTreeNode_t* pNode = new KDTreeNode_t;
-	pNode->pBox = new Collider;
-	pNode->pBox->Initialize(pOwner, nullptr);
+	pNode->pBox = new Collider(pOwner);
 	pNode->pBox->CreateBoundingBox(&tBox.vMin, &tBox.vMax);
 	pNode->pTri = pTriList[uMedianIndex];
 	pNode->uTriNum++;

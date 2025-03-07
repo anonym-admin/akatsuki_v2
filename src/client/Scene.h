@@ -12,9 +12,7 @@ struct GameObjContainer_t
 	List_t* pGameObjTail = nullptr;
 };
 
-class Application;
 class Actor;
-class LandScape;
 
 class Scene
 {
@@ -47,9 +45,6 @@ private:
 	void FreeGameObjectContainer(GameObjContainer_t* pGameObjContainer);
 
 private:
-	Application* _pApp = nullptr;
-	IRenderer* _pRenderer = nullptr;
-
 	// Common sprite obj.
 	void* _pFontObj = nullptr;
 	ISpriteObject* _pSpriteObj = nullptr;

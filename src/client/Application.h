@@ -37,9 +37,10 @@ private:
 	void CleanUp();
 
 	AkBool InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV);
+	AkBool InitScene();
+	AkBool InitUI();
 
 	void Update();
-	void UpdateMouseNdcPos();
 	void UpdateEnviroment();
 	void UpdateText();
 	void Render();

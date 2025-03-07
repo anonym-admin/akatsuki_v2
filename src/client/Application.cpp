@@ -2,21 +2,21 @@
 #include "Application.h"
 #include "Timer.h"
 #include "GameInput.h"
-#include "SceneInGame.h"
 #include "GeometryGenerator.h"
 #include "CollisionManager.h"
 #include "SceneManager.h"
 #include "AssetManager.h"
 #include "Animation.h"
 #include "EventManager.h"
-#include "ModelManager.h"
 #include "UIManager.h"
-#include "Editor.h"
 #include "Camera.h"
 #include "TextUI.h"
 #include "PanelUI.h"
 #include "BtnUI.h"
 #include "InputUI.h"
+
+#include "SceneInGame.h"
+#include "SceneLoading.h"
 
 #include "Sound.h"
 
@@ -45,72 +45,17 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 		return AK_FALSE;
 	}
 
-	_pSysTextUI = new TextUI;
-	if (!_pSysTextUI->Initialize(this, 256, 32, L"Consolas", 10))
+	if (!InitScene())
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
-	_pSysTextUI->SetPosition(10, 10);
-	_pSysTextUI->SetScale(1.0f, 1.0f);
-	_pSysTextUI->SetFontColor(&_vSysFontColor);
 
-	_pUIManager->AddUI(_pSysTextUI, UI_OBJECT_TYPE::UI_OBJ_SYS_INFO_TEXT);
-	_pUIManager->OnUI(UI_OBJECT_TYPE::UI_OBJ_SYS_INFO_TEXT);
-
-	_pDynamicTextUI = new InputUI;
-	if (!_pDynamicTextUI->Initialize(this, 256, 32, L"Consolas", 10))
+	if (!InitUI())
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
-	_pDynamicTextUI->SetPosition(10, 500);
-	_pDynamicTextUI->SetScale(1.0f, 1.0f);
-	_pDynamicTextUI->SetFontColor(&_vDynamicTextFontColor);
-	_pDynamicTextUI->SetDrawBackGround(AK_TRUE);
-
-	_pUIManager->AddUI(_pDynamicTextUI, UI_OBJECT_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
-	_pUIManager->OnUI(UI_OBJECT_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
-
-	TextUI* pStaticTextUI = new TextUI;
-	if (!pStaticTextUI->Initialize(this, 256, 32, L"Consolas", 10))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-	pStaticTextUI->SetPosition(10, 32 + 10 + 10);
-	pStaticTextUI->SetScale(1.0f, 1.0f);
-	pStaticTextUI->SetFontColor(&_vSysFontColor);
-	pStaticTextUI->WriteText(L"Test Static Text\n");
-
-	_pUIManager->AddUI(pStaticTextUI, UI_OBJECT_TYPE::UI_OBJ_TEST_STATIC_TEXT);
-
-	UPanelUI* pTextureUI = new UPanelUI;
-	if (!pTextureUI->Initialize(this, L"../../assets/ui_01.dds", 0, 0, 2545, 1867))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-	pTextureUI->SetPosition(500, 10);
-	pTextureUI->SetScale(0.1f, 0.2f);
-	pTextureUI->SetDrawBackGround(AK_TRUE);
-	pTextureUI->SetResolution((AkU32)(0.1f * 2545), (AkU32)(0.2f * 1867));
-
-	_pUIManager->AddUI(pTextureUI, UI_OBJECT_TYPE::UI_OBJ_EXIT);
-
-	UBtnUI* pBtnUI = new UBtnUI;
-	if (!pBtnUI->Initialize(this, L"../../assets/Exit_Btn.dds", 0, 0, 225, 49))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-	pBtnUI->SetRelativePosition(10, 10);
-	pBtnUI->SetScale(1.0f, 1.0f);
-	pBtnUI->SetDrawBackGround(AK_TRUE);
-	pBtnUI->SetResolution(225, 49);
-	pBtnUI->SetClickFunc(&Application::ExitGame);
-
-	pTextureUI->AddChildUI(pBtnUI);
 
 	// Reset timer.
 	GTimer->Reset();
@@ -122,31 +67,31 @@ void Application::RunApplication()
 {
 	GTimer->Tick();
 
-	Update(_pTimer);
+	Update();
 
 	GRenderer->UpdateCascadeOrthoProjMatrix();
 
 	// Shadow Pass.
 	for (AkU32 i = 0; i < 5; i++)
 	{
-		_pRenderer->BeginCasterRenderPreparation();
-		_pSceneManager->RenderShadowPass();
-		_pRenderer->EndCasterRenderPreparation();
+		GRenderer->BeginCasterRenderPreparation();
+		GSceneManager->RenderShadow();
+		GRenderer->EndCasterRenderPreparation();
 	}
 
 	// Begin render.
-	_pRenderer->BeginRender();
+	GRenderer->BeginRender();
 
-	Render(_pTimer);
+	Render();
 
 	// End render.
-	_pRenderer->EndRender();
-	_pRenderer->Present();
+	GRenderer->EndRender();
+	GRenderer->Present();
 
 	CalculateFrameRate();
 
-	_pGameEventManager->Reset();
-	_pEditorEventManager->Reset();
+	// Excute Event Manager.
+	GEventManager->Excute();
 }
 
 AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
@@ -235,6 +180,63 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 	return AK_TRUE;
 }
 
+AkBool Application::InitScene()
+{
+	GSceneManager->AddScene(SCENE_TYPE::SCENE_TYPE_LOADING, new SceneLoading());
+	GSceneManager->AddScene(SCENE_TYPE::SCENE_TYPE_INGANE, new SceneInGame());
+
+	GSceneManager->BindCurrentScene(SCENE_TYPE::SCENE_TYPE_LOADING)->BeginScene();
+
+	return AK_TRUE;
+}
+
+AkBool Application::InitUI()
+{
+	_pSysTextUI = new TextUI(256, 32, L"Consolas", 10);
+	_pSysTextUI->SetPosition(10, 10);
+	_pSysTextUI->SetScale(1.0f, 1.0f);
+	_pSysTextUI->SetFontColor(&_vSysFontColor);
+
+	GUIManager->AddUI(_pSysTextUI, UI_OBJECT_TYPE::UI_OBJ_SYS_INFO_TEXT);
+	GUIManager->OnUI(UI_OBJECT_TYPE::UI_OBJ_SYS_INFO_TEXT);
+
+	_pDynamicTextUI = new InputUI(256, 32, L"Consolas", 10);
+	_pDynamicTextUI->SetPosition(10, 500);
+	_pDynamicTextUI->SetScale(1.0f, 1.0f);
+	_pDynamicTextUI->SetFontColor(&_vDynamicTextFontColor);
+	_pDynamicTextUI->SetDrawBackGround(AK_TRUE);
+
+	GUIManager->AddUI(_pDynamicTextUI, UI_OBJECT_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
+	GUIManager->OnUI(UI_OBJECT_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
+
+	TextUI* pStaticTextUI = new TextUI(256, 32, L"Consolas", 10);
+	pStaticTextUI->SetPosition(10, 32 + 10 + 10);
+	pStaticTextUI->SetScale(1.0f, 1.0f);
+	pStaticTextUI->SetFontColor(&_vSysFontColor);
+	pStaticTextUI->WriteText(L"Test Static Text\n");
+
+	GUIManager->AddUI(pStaticTextUI, UI_OBJECT_TYPE::UI_OBJ_TEST_STATIC_TEXT);
+
+	UPanelUI* pTextureUI = new UPanelUI(L"../../assets/ui_01.dds", 0, 0, 2545, 1867);
+	pTextureUI->SetPosition(500, 10);
+	pTextureUI->SetScale(0.1f, 0.2f);
+	pTextureUI->SetDrawBackGround(AK_TRUE);
+	pTextureUI->SetResolution((AkU32)(0.1f * 2545), (AkU32)(0.2f * 1867));
+
+	GUIManager->AddUI(pTextureUI, UI_OBJECT_TYPE::UI_OBJ_EXIT);
+
+	UBtnUI* pBtnUI = new UBtnUI(L"../../assets/Exit_Btn.dds", 0, 0, 225, 49);
+	pBtnUI->SetRelativePosition(10, 10);
+	pBtnUI->SetScale(1.0f, 1.0f);
+	pBtnUI->SetDrawBackGround(AK_TRUE);
+	pBtnUI->SetResolution(225, 49);
+	pBtnUI->SetClickFunc(&Application::ExitGame);
+
+	pTextureUI->AddChildUI(pBtnUI);
+
+	return AK_TRUE;
+}
+
 void Application::Update()
 {
 	static AkF32 fTimeElapsed = 0.0f;
@@ -248,9 +250,6 @@ void Application::Update()
 
 	// Update game input.
 	GGameInput->Update();
-
-	// Update mouse ndc pos.
-	UpdateMouseNdcPos();
 
 	// Update Game Env.
 	UpdateEnviroment();
@@ -270,34 +269,11 @@ void Application::Update()
 	// Update UI Manager.
 	GUIManager->Update();
 
-	// Excute event manager.
-	_pGameEventManager->Excute(fDeltaTime);
-	_pEditorEventManager->Excute(fDeltaTime);
-
-	// 게임 종료.
-	if (_pGameInput->KeyFirstDown(KEY_INPUT_ESCAPE))
+	// Exit Game.
+	if (KEY_DOWN(KEY_INPUT_ESCAPE))
 	{
 		ExitGame();
 	}
-
-	// Update sound manager.
-	_pSoundManager->Update(fDeltaTime);
-	// _pTestSound->Play(AK_TRUE);
-
-	fTimeElapsed = 0.0f;
-}
-
-void Application::UpdateMouseNdcPos()
-{
-	// AkI32 iMousePosX = _pGameInput->GetMouseX();
-	AkI32 iMousePosX = _pGameInput->GetReleasedMouseX();
-	AkI32 iMousePosY = _pGameInput->GetMouseY();
-
-	_fNdcX = (AkF32)iMousePosX / _uScreenWidth * 2.0f - 1.0f;
-	_fNdcY = (AkF32)iMousePosY / _uScreenHeight * -2.0f + 1.0f;
-
-	_fClampNdcX = Clamp(_fNdcX, -1.0f, 1.0f);
-	_fClampNdcY = Clamp(_fNdcY, -1.0f, 1.0f);
 }
 
 void Application::UpdateEnviroment()
@@ -318,7 +294,7 @@ void Application::UpdateEnviroment()
 
 void Application::UpdateText()
 {
-	SceneInGame* pSceneInGame = (SceneInGame*)_pSceneManager->GetScene(SCENE_TYPE::SCENE_TYPE_INGANE);
+	SceneInGame* pSceneInGame = (SceneInGame*)GSceneManager->GetScene(SCENE_TYPE::SCENE_TYPE_INGANE);
 
 	AkI32 iTextWidth = 0;
 	AkI32 iTextHeight = 0;
@@ -328,23 +304,13 @@ void Application::UpdateText()
 	_pSysTextUI->WriteText(wcText);
 }
 
-void Application::Render(const Timer* pTimer)
+void Application::Render()
 {
-	// Render editor.
-	if (_bEnableEditor)
-	{
-		_pEditorManager->GetCurrentEditor()->Render();
-	}
-
 	// Render Scene list.
-	_pSceneManager->Render();
+	GSceneManager->Render();
 
 	// Render UI
-	_pUIManager->Render();
-
-	if (_bESC)
-	{
-	}
+	GUIManager->Render();
 }
 
 void Application::CalculateFrameRate()
@@ -354,7 +320,7 @@ void Application::CalculateFrameRate()
 
 	uFrameCount++;
 
-	if (_pTimer->GetTotalTime() - fTimeElapsed >= 1.0f)
+	if (GTimer->GetTotalTime() - fTimeElapsed >= 1.0f)
 	{
 		AkF32 fFps = static_cast<AkF32>(uFrameCount);
 
@@ -367,11 +333,6 @@ void Application::CalculateFrameRate()
 
 void Application::ExitGame()
 {
-	if (_bEnableEditor)
-	{
-		_pEditorManager->GetCurrentEditor()->EndEditor();
-	}
-
 	::PostQuitMessage(996);
 }
 

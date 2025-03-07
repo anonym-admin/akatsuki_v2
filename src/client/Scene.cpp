@@ -120,12 +120,12 @@ void Scene::AddGameObject(GAME_OBJECT_GROUP_TYPE eGameObjType, Actor* pGameObj)
 
 void Scene::CreateCommonFontObject(const wchar_t* wcFontFamilyName, AkF32 fFontSize)
 {
-	_pFontObj = _pRenderer->CreateFontObject(wcFontFamilyName, fFontSize);
+	_pFontObj = GRenderer->CreateFontObject(wcFontFamilyName, fFontSize);
 }
 
 void Scene::CreateCommonSpriteObject()
 {
-	_pSpriteObj = _pRenderer->CreateSpriteObject();
+	_pSpriteObj = GRenderer->CreateSpriteObject();
 	_pSpriteObj->SetDrawBackground(AK_FALSE);
 }
 
@@ -155,18 +155,13 @@ void Scene::CleanUp()
 
 	if (_pFontObj)
 	{
-		_pRenderer->DestroyFontObject(_pFontObj);
+		GRenderer->DestroyFontObject(_pFontObj);
 		_pFontObj = nullptr;
 	}
 	if (_pSpriteObj)
 	{
 		_pSpriteObj->Release();
 		_pSpriteObj = nullptr;
-	}
-	if (_pLandScape)
-	{
-		delete _pLandScape;
-		_pLandScape = nullptr;
 	}
 }
 

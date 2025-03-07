@@ -15,8 +15,12 @@ Collider
 
 AkU32 Collider::sm_uID;
 
-Collider::Collider()
+Collider::Collider(Actor* pOwner)
 {
+	if (!Initialize(pOwner))
+	{
+		__debugbreak();
+	}
 }
 
 Collider::~Collider()
@@ -24,20 +28,18 @@ Collider::~Collider()
 	CleanUp();
 }
 
-AkBool Collider::Initialize(Actor* pOwner, IRenderer* pRenderer)
+AkBool Collider::Initialize(Actor* pOwner)
 {
 	_pOwner = pOwner;
 
 	_uID = sm_uID++;
-
-	_pRenderer = pRenderer;
 
 	return AK_TRUE;
 }
 
 void Collider::Update()
 {
-	Vector3 vOwnerPos = _pOwner->GetTransform()->Position;
+	Vector3 vOwnerPos = _pOwner->GetTransform()->GetPosition();
 
 	if (_pBox)
 	{

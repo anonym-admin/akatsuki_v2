@@ -8,26 +8,21 @@ BRS_74
 =============
 */
 
-class UBRS_74 : public UWeapon
+class UBRS_74 : public Weapon
 {
 public:
 	UBRS_74();
-	~UBRS_74();
 
-	virtual AkBool Initialize(Application* pApp);
-	virtual AkBool Initialize(Application* pApp, const Vector3* pExtent, const Vector3* pCenter);
-	virtual void Update(const AkF32 fDeltaTime);
-	virtual void FinalUpdate(const AkF32 fDeltaTime);
-	virtual void RenderShadow();
-	virtual void Render();
+	AkBool Initialize();
+	virtual void Update() override;
+	virtual void FinalUpdate() override;
+	virtual void Render() override;
+	virtual void RenderShadow() override;
 
 	virtual void OnCollision(Collider* pOther);
 	virtual void OnCollisionEnter(Collider* pOther);
 	virtual void OnCollisionExit(Collider* pOther);
 
-private:
-	virtual void CleanUp();
-
-private:
+	virtual UBRS_74* Clone() override;
 };
 

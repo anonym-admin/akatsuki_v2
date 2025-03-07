@@ -181,20 +181,14 @@
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BaseObject.h" />
     <ClInclude Include="BRS_74.h" />
-    <ClInclude Include="BRS_74_Model.h" />
     <ClInclude Include="BtnUI.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Controller.h" />
-    <ClInclude Include="DancerModel.h" />
-    <ClInclude Include="Editor.h" />
-    <ClInclude Include="EditorMap.h" />
-    <ClInclude Include="EditorModel.h" />
     <ClInclude Include="Enum.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Gravity.h" />
-    <ClInclude Include="Building.h" />
     <ClInclude Include="InputUI.h" />
     <ClInclude Include="KDTree.h" />
     <ClInclude Include="LandScape.h" />
@@ -205,12 +199,9 @@
     <ClInclude Include="GameInput.h" />
     <ClInclude Include="GeometryGenerator.h" />
     <ClInclude Include="ModelImporter.h" />
-    <ClInclude Include="ModelManager.h" />
     <ClInclude Include="PanelUI.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Player2.h" />
-    <ClInclude Include="PlayerModel.h" />
     <ClInclude Include="RigidBody.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
@@ -250,20 +241,14 @@
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BaseObject.cpp" />
     <ClCompile Include="BRS_74.cpp" />
-    <ClCompile Include="BRS_74_Model.cpp" />
     <ClCompile Include="BtnUI.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Controller.cpp" />
-    <ClCompile Include="DancerModel.cpp" />
-    <ClCompile Include="Editor.cpp" />
-    <ClCompile Include="EditorMap.cpp" />
-    <ClCompile Include="EditorModel.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Gravity.cpp" />
-    <ClCompile Include="Building.cpp" />
     <ClCompile Include="InputUI.cpp" />
     <ClCompile Include="KDTree.cpp" />
     <ClCompile Include="LandScape.cpp" />
@@ -273,7 +258,6 @@
     <ClCompile Include="GameInput.cpp" />
     <ClCompile Include="GeometryGenerator.cpp" />
     <ClCompile Include="ModelImporter.cpp" />
-    <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -282,8 +266,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Player2.cpp" />
-    <ClCompile Include="PlayerModel.cpp" />
     <ClCompile Include="RigidBody.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>

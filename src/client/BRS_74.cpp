@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "BRS_74.h"
-#include "BRS_74_Model.h"
-#include "Collider.h"
 #include "Application.h"
 #include "EventManager.h"
-#include "ModelManager.h"
-#include "Player.h"
+#include "AssetManager.h"
+#include "Collider.h"
+#include "Transform.h"
+#include "Model.h"
 
 /*
 =============
@@ -15,89 +15,78 @@ BRS_74
 
 UBRS_74::UBRS_74()
 {
-}
-
-UBRS_74::~UBRS_74()
-{
-	CleanUp();
-}
-
-AkBool UBRS_74::Initialize(Application* pApp)
-{
-	return AK_FALSE;
-}
-
-AkBool UBRS_74::Initialize(Application* pApp, const Vector3* pExtent, const Vector3* pCenter)
-{
-	if (!UWeapon::Initialize(pApp, pExtent, pCenter))
+	if (!Initialize())
 	{
 		__debugbreak();
-		return AK_FALSE;
 	}
+}
 
-	// Bind Model.
-	ModelManager* pModelManager = pApp->GetModelManager();
-	UBRS_74_Model* pBRSModel = (UBRS_74_Model*)pModelManager->GetModel(MODEL_TYPE::BRS_74);
-	BindModel(pBRSModel);
+AkBool UBRS_74::Initialize()
+{	
+	// Create Model.
+	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74);
+	Vector3 vAlbedo = Vector3(1.0f);
+	Vector3 vEmissive = Vector3(0.0f);
+	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_FALSE);
+	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74);
 
 	// Create Bounding Box.
-	Collider* pCollider = GetCollider();
 	Vector3 vMin = Vector3(0.0f);
-	Vector3 vMax = Vector3(0.0f);
-	pBRSModel->GetMinMaxPosition(&vMin, &vMax);
-	pCollider->CreateBoundingBox(&vMin, &vMax);
+	Vector3 vMax = Vector3(0.25f);
+	_pCollider->CreateBoundingBox(&vMin, &vMax);
 
 	return AK_TRUE;
 }
 
-void UBRS_74::Update(const AkF32 fDeltaTime)
+void UBRS_74::Update()
 {
-	UWeapon::Update(fDeltaTime);
 }
 
-void UBRS_74::FinalUpdate(const AkF32 fDeltaTime)
+void UBRS_74::FinalUpdate()
 {
-	UWeapon::FinalUpdate(fDeltaTime);
-}
+	_pTransform->Update();
 
-void UBRS_74::RenderShadow()
-{
-	RenderShadowOfModel();
+	_pCollider->Update();
+
+	Matrix mFinalWorldTransform = _pOwner ? _pTransform->GetWorldTransform() * _pOwner->GetTransform()->GetWorldTransform() : _pTransform->GetWorldTransform();
+	_pModel->UpdateWorldRow(&mFinalWorldTransform);
 }
 
 void UBRS_74::Render()
 {
-	IRenderer* pRenderer = GetApp()->GetRenderer();
+	_pModel->Render();
+}
 
-	UWeapon::Render();
+void UBRS_74::RenderShadow()
+{
+	_pModel->RenderShadow();
+}
+
+void UBRS_74::OnCollisionEnter(Collider* pOther)
+{
+	Actor* pActor = pOther->GetOwner();
+	const wchar_t* wcName = pActor->Name;
+
+	if (!wcscmp(wcName, L"Swat"))
+	{
+		// Bind Weapon.
+		pActor->SetWeapon(this);
+		AttachOwner(pActor);
+	}
 }
 
 void UBRS_74::OnCollision(Collider* pOther)
 {
 }
 
-void UBRS_74::OnCollisionEnter(Collider* pOther)
-{
-	Application* pApp = GetApp();
-	EventManager* pGameEventManager = pApp->GetGameEventManager();
-	IRenderer* pRenderer = pApp->GetRenderer();
-	Actor* pActor = pOther->GetOwner();
-	const wchar_t* wcName = pActor->GetName();
-
-	if (!wcscmp(wcName, L"Player"))
-	{
-		// Bind Weapon.
-		UPlayer* pPlayer = (UPlayer*)pActor;
-		pPlayer->BindWeapon(this);
-	}
-}
-
 void UBRS_74::OnCollisionExit(Collider* pOther)
 {
 }
 
-void UBRS_74::CleanUp()
+UBRS_74* UBRS_74::Clone()
 {
-
+	Spawn::Clone();
+	return new UBRS_74();
 }
+
 

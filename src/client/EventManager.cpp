@@ -14,7 +14,7 @@ EventManager::~EventManager()
     CleanUp();
 }
 
-void EventManager::Excute(AkF32 fDeltaTime)
+void EventManager::Excute()
 {
     EventHandle_t* pEventHandle = nullptr;
 
@@ -22,15 +22,14 @@ void EventManager::Excute(AkF32 fDeltaTime)
     {
         switch (pEventHandle->eEventType)
         {
-            case GAME_EVENT_TYPE::GAME_EVENT_TYPE_CREATE_GAME_OBJECT:
+            case EVENT_TYPE::CREATE_GAME_OBJECT:
             {
 
             }
             break;
-            case GAME_EVENT_TYPE::GAME_EVENT_TYPE_SCENE_CHANGE:
+            case EVENT_TYPE::SCENE_CHANGE:
             {
-                SceneManager* pSceneManager = _pApp->GetSceneManager();
-                pSceneManager->ChangeScene(pEventHandle->tSceneChangeParam.eAfter);
+                GSceneManager->ChangeScene(pEventHandle->tSceneChangeParam.eAfter);
             }
             break;
             default:

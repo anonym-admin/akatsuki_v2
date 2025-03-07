@@ -1,29 +1,32 @@
 #pragma once
 
-#include "Actor.h"
+#include "Spawn.h"
 
-class Application;
+/*
+===========
+Dancer
+===========
+*/
 
-class UDancer : public Actor
+class Dancer : public Spawn
 {
 public:
-	UDancer();
-	~UDancer();
+	Dancer();
 
-	virtual AkBool Initialize(Application* pApp);
-	virtual void Update(const AkF32 fDeltaTime);
-	virtual void FinalUpdate(const AkF32 fDeltaTime);
-	virtual void RenderShadow();
-	virtual void Render();
+	AkBool Initialize();
+	virtual void Update() override;
+	virtual void FinalUpdate() override;
+	virtual void Render() override;
+	virtual void RenderShadow() override;
 
-	virtual void OnCollision(Collider* pOther);
-	virtual void OnCollisionEnter(Collider* pOther);
-	virtual void OnCollisionExit(Collider* pOther);
+	virtual void OnCollisionEnter(Collider* pOther) override;
+	virtual void OnCollision(Collider* pOther) override;
+	virtual void OnCollisionExit(Collider* pOther) override;
 
-private:
-	virtual void CleanUp();
+	virtual Dancer* Clone() override;
 
 private:
-	AkBool _bFirst = AK_TRUE;
+	void UpdateMove();
+	void UpdateAnimation();
 };
 

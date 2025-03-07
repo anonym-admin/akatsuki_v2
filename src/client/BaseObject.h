@@ -14,11 +14,6 @@ public:
 	virtual void Render() = 0;
 	virtual void RenderShadow() = 0;
 
-	void SetName(const wchar_t* wcName) { Name = wcName; }
-	void SetScale(const Vector3* pScale);
-	void SetRotation(const Vector3* pYawPitchRoll);
-	void SetPosition(const Vector3* pPos);
-
 	Model* GetModel() { return _pModel; }
 	Transform* GetTransform() { return _pTransform; }
 

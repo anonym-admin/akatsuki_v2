@@ -50,7 +50,6 @@ Animator
 ==============
 */
 
-class Application;
 struct HashTable_t;
 
 class Animation
@@ -80,9 +79,9 @@ public:
 	void SetBoneNum(AkU32 uBoneNum) { _uBoneNum = uBoneNum; }
 	void DestroyAnimationClip(const wchar_t* wcClipName);
 
-	AnimationClip_t* ReadFromAnimationFile(Application* pApp, const wchar_t* wcBasePath, const wchar_t* wcFilename);
+	AnimationClip_t* ReadFromAnimationFile(const wchar_t* wcBasePath, const wchar_t* wcFilename);
 
-	AkBool PlayAnimation(const AkF32 fDeltaTime, const wchar_t* wcAnimClipname, AkBool bInPlace);
+	AkBool PlayAnimation(const wchar_t* wcAnimClipname, AkBool bInPlace);
 
 private:
 	void CleanUp();

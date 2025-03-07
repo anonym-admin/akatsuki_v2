@@ -3,8 +3,12 @@
 #include "Actor.h"
 #include "RigidBody.h"
 
-Gravity::Gravity()
+Gravity::Gravity(Actor* pOwner)
 {
+	if (!Initialize(pOwner))
+	{
+		__debugbreak();
+	}
 }
 
 Gravity::~Gravity()

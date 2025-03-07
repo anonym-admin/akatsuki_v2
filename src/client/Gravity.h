@@ -5,7 +5,7 @@ class Actor;
 class Gravity
 {
 public:
-	Gravity();
+	Gravity(Actor* pOwner);
 	~Gravity();
 
 	AkBool Initialize(Actor* pOwner);

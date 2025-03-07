@@ -54,6 +54,7 @@ class Collider;
 class RigidBody;
 class Gravity;
 class Camera;
+class Weapon;
 
 class Actor : public BaseObject
 {
@@ -72,33 +73,26 @@ public:
 	Collider* CreateCollider();
 	RigidBody* CreateRigidBody();
 	Gravity* CreateGravity();
-	Camera* CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll);
+	Camera* CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll = nullptr);
 
 	void DestroyCollider();
 	void DesteoyRigidBody();
 	void DestroyGravity();
 	void DestroyCamera();
 
-	void SetGroundCollision(AkBool bIsCollision) { _bGroundCollision = bIsCollision; }
-	void SetName(const wchar_t* wcName) { Name = wcName; }
-	void SetDrawNormal(AkBool bDrawNormal) { _bDrawNormal = bDrawNormal; }
-
 	Collider* GetCollider() { return _pCollider; }
 	RigidBody* GetRigidBody() { return _pRigidBody; }
 	Gravity* GetGravity() { return _pGravity; }
 	Camera* GetCamera() { return _pCamera; }
-	const wchar_t* GetName() { return Name; }
-	AkBool IsDrawNoraml() { return _bDrawNormal; }
+
+	void SetWeapon(Weapon* pWeapon);
 
 	List_t tLink;
 
 private:
-	virtual void CleanUp() = 0;
-	void UnBindModel();
+	void CleanUp();
 
 protected:
-	AkBool _bGroundCollision = AK_FALSE;
-
 	// 충돌체
 	Collider* _pCollider = nullptr;
 
@@ -111,20 +105,19 @@ protected:
 	// 카메라
 	Camera* _pCamera = nullptr;
 
-	// name
-	const wchar_t* Name = nullptr;
-
-	// Draw Normal Flag
-	AkBool _bDrawNormal = AK_FALSE;
-
+	// Weapon
+	Weapon* _pWeapon = nullptr;
 
 public:
+	AkBool GroundCollision = AK_FALSE;
+	AkBool SpeedUp = AK_FALSE;
 	AkBool Jumping = AK_FALSE;
 	AkBool BindWeapon = AK_FALSE;
 	AkBool First = AK_TRUE;
 	AkBool RightHand = AK_FALSE;
 	AkBool LeftHand = AK_FALSE;
 	AkBool Fire = AK_FALSE;
+	AkBool DrawNormal = AK_FALSE;
 	MOVE_STATE MoveState = {};
 	ANIM_STATE AnimState = {};
 };

@@ -1,24 +1,19 @@
 #include "pch.h"
 #include "SceneInGame.h"
 #include "Application.h"
-#include "Actor.h"
 #include "GeometryGenerator.h"
 #include "CollisionManager.h"
 #include "Camera.h"
 #include "LandScape.h"
 #include "AssetManager.h"
-#include "ModelManager.h"
-#include "Player.h"
-#include "Dancer.h"
-#include "BRS_74.h"
-#include "Building.h"
-#include "PlayerModel.h"
-#include "DancerModel.h"
-#include "BRS_74_Model.h"
 #include "Collider.h"
 #include "KDTree.h"
 #include "GameInput.h"
 #include "WorldMap.h"
+#include "Swat.h"
+#include "Dancer.h"
+#include "BRS_74.h"
+#include "Transform.h"
 
 /*
 =============
@@ -38,46 +33,35 @@ AkBool SceneInGame::BeginScene()
 
 	// Player.A
 	{
-		Actor* pPlayer = new UPlayer;
-		pPlayer->Initialize(_pApp);
-		pPlayer->SetRotationY(DirectX::XM_PI);
-		pPlayer->SetPosition(0.0f, 10.0f, 1025.0f);
-		pPlayer->SetName(L"Player");
-
-		pPlayer->tLink.pData = pPlayer;
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, pPlayer);
+		Swat* pSwat = new Swat();
+		pSwat->Name = L"Swat";
+		pSwat->tLink.pData = pSwat;
+		pSwat->GetTransform()->SetRotation(DirectX::XM_PI, 0.0f, 0.0f);
+		pSwat->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, pSwat);
 	}
 
 	// Dancer.
 	{
-		{
-			Actor* pDancer = new UDancer;
-			pDancer->Initialize(_pApp);
-			pDancer->SetPosition(-2.0f, 0.5f, 1025.0f);
-			pDancer->SetName(L"Dancer");
-			pDancer->tLink.pData = pDancer;
-			AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER, pDancer);
-		}
-		{
-			Actor* pDancer = new UDancer;
-			pDancer->Initialize(_pApp);
-			pDancer->SetPosition(2.0f, 0.5f, 1025.0f);
-			pDancer->SetName(L"Dancer");
-			pDancer->tLink.pData = pDancer;
-			AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER, pDancer);
-		}
+		Dancer* pDancer = new Dancer;
+		pDancer->Name = L"Dancer_01";
+		pDancer->tLink.pData = pDancer;
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER, pDancer);
+	}
+
+	// Weapon
+	{
+		UBRS_74* pBRS_74 = new UBRS_74;
+		pBRS_74->Name = L"BRS_74";
+		pBRS_74->tLink.pData = pBRS_74;
+		pBRS_74->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON, pBRS_74);
 	}
 
 	// World Map Containter.
 	{
-		_pWorldMap = new WorldMapContainer;
-		if (!_pWorldMap->Initialize(_pApp))
-		{
-			__debugbreak();
-			return AK_FALSE;
-		}
-
-		_pWorldMap->SetName(L"Map");
+		_pWorldMap = new MapObjects;
+		_pWorldMap->Name = L"Map Obj";
 		_pWorldMap->tLink.pData = _pWorldMap;
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP, _pWorldMap);
 	}
@@ -86,7 +70,7 @@ AkBool SceneInGame::BeginScene()
 	{
 		AkU32 uNum = 0;
 		MeshData_t* pBox = nullptr;
-		_pBoxList = new AkBox_t[BUILDING_BOX_COUNT]; 
+		_pBoxList = new AkBox_t[BUILDING_BOX_COUNT];
 		_pDraw = new AkBool[BUILDING_BOX_COUNT + 1]; // 임시.
 		memset(_pBoxList, 0, sizeof(MeshData_t*) * BUILDING_BOX_COUNT);
 		memset(_pDraw, 1, BUILDING_BOX_COUNT);
@@ -221,29 +205,6 @@ AkBool SceneInGame::BeginScene()
 		_pWorldMap->BindMeshObj(_pHouseMeshObj, 1, &_mHouseWorld);
 	}
 
-	// Weapon
-	{
-		UBRS_74* pBRS_74 = new UBRS_74;
-		Vector3 vExtent = Vector3(0.05f, 0.1f, 0.35f);
-		Vector3 vCenter = Vector3(0.0f);
-		pBRS_74->Initialize(_pApp, &vExtent, &vCenter);
-		pBRS_74->SetName(L"BRS_74");
-		pBRS_74->SetPosition(0.0f, 1.0f, 1025.0f);
-
-		pBRS_74->tLink.pData = pBRS_74;
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON, pBRS_74);
-	}
-
-	// LandScape
-	{
-		_pLandScape = new LandScape;
-		if (!_pLandScape->Initialize(L"../../assets/landscape/setup.txt"))
-		{
-			__debugbreak();
-			return AK_FALSE;
-		}
-	}
-
 	// Attach Map.
 	{
 		_pWorldMap->Build(AK_TRUE);
@@ -340,12 +301,6 @@ AkBool SceneInGame::EndScene()
 		delete _pFrustum;
 		_pFrustum = nullptr;
 	}
-	if (_pLandScape)
-	{
-		delete _pLandScape;
-		_pLandScape = nullptr;
-	}
-
 	if (_pBuildingMeshObj)
 	{
 		_pBuildingMeshObj->Release();
@@ -393,9 +348,6 @@ void SceneInGame::Update()
 
 	_iPosX -= 1;
 	_iPosY -= 1;
-
-	// Update LandScape.
-	// _pLandScape->Update(fDeltaTime);
 
 	// Update Frustum Culling.
 	// Frustum Culling 구현부와 KDTree Triangle 충돌사이에 연동 데이터를 적용하여, KDTree 충돌처리시에 충돌 Obj 를 미리 컬링하는 구조로 최적화 가능.

@@ -8,7 +8,7 @@ Scene InGame
 =============
 */
 
-class WorldMapContainer;
+class MapObjects;
 
 class SceneInGame : public Scene
 {
@@ -43,11 +43,8 @@ private:
 	ISkyboxObject* _pSkyboxObj = nullptr;
 	Matrix _mSkyboxTransform = Matrix();
 
-	// LandScape
-	class LandScape* _pLandScape = nullptr;
-
 	// World Map Container.
-	WorldMapContainer* _pWorldMap = nullptr;
+	MapObjects* _pWorldMap = nullptr;
 
 	// Frustum.
 	AkFrustum_t* _pFrustum = nullptr;

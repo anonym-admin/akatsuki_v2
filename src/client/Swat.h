@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Player2.h"
+#include "Player.h"
 
-class UWeapon;
+class Weapon;
 
 class Swat : public Player
 {
@@ -23,11 +23,13 @@ public:
 private:
 	void CleanUp();
 
+	void Idle();
 	void UpdateMove();
+	void UpdateFire();
 	void UpdateAnimation();
+	void UpdateWeapon();
 
 private:
-	UWeapon* _pWeapon = nullptr;
 	Matrix _mHandAnimTransform = Matrix();
 };
 

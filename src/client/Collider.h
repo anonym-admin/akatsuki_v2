@@ -21,10 +21,10 @@ class Collider
 public:
 	static const AkU32 MAX_SPHERE_GROUP_SHAPE_COUNT = 3;
 
-	Collider();
+	Collider(Actor* pOwner);
 	~Collider();
 
-	AkBool Initialize(Actor* pOwner, IRenderer* pRenderer);
+	AkBool Initialize(Actor* pOwner);
 	void Update();
 	void Render();
 

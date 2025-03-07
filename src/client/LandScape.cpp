@@ -7,6 +7,7 @@
 #include "SceneInGame.h"
 #include "Actor.h"
 #include "DirectXMesh.h"
+#include "Transform.h"
 
 #include <fstream>
 
@@ -452,7 +453,7 @@ void LandScape::UpdateGroupObject(GAME_OBJECT_GROUP_TYPE eType)
 	{
 		Actor* pPlayer = (Actor*)pCur->pData;
 
-		Vector3 vPlayerPos = pPlayer->GetPosition();
+		Vector3 vPlayerPos = pPlayer->GetTransform()->GetPosition();
 		Vector3 vOffset = Vector3((AkF32)_iLandScapeWidth / 2.0f, 0.0f, (AkF32)_iLandScapeHeight / 2.0f);
 		Vector3 vHeightMapPos = vPlayerPos + vOffset;
 
@@ -493,13 +494,15 @@ void LandScape::UpdateGroupObject(GAME_OBJECT_GROUP_TYPE eType)
 			{
 				vHitPos0 = vRayPos + vRayDir * fDist0;
 
-				pPlayer->SetPosition(vPlayerPos.x, vHitPos0.y + 1.0f, vPlayerPos.z);
+				Vector3 vPos = Vector3(vPlayerPos.x, vHitPos0.y + 1.0f, vPlayerPos.z);
+				pPlayer->GetTransform()->SetPosition(&vPos);
 			}
 			else
 			{
 				vHitPos1 = vRayPos + vRayDir * fDist1;
 
-				pPlayer->SetPosition(vPlayerPos.x, vHitPos1.y + 1.0f, vPlayerPos.z);
+				Vector3 vPos = Vector3(vPlayerPos.x, vHitPos1.y + 1.0f, vPlayerPos.z);
+				pPlayer->GetTransform()->SetPosition(&vPos);
 			}
 		}
 		else

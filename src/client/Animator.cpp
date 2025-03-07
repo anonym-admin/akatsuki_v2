@@ -50,7 +50,7 @@ void Animator::AddAnimation(GAME_ANIMATION_TYPE eType, const wchar_t* wcBasePath
 
 	for (AkU32 i = 0; i < uFileNum; i++)
 	{
-		pAnimClip = pAnim->ReadFromAnimationFile(_pApp, wcBasePath, wcFilenames[i]);
+		pAnimClip = pAnim->ReadFromAnimationFile(wcBasePath, wcFilenames[i]);
 	}
 
 	_ppAnimList[(AkU32)eType] = pAnim;

@@ -32,7 +32,7 @@ AkBool UUI::Initialize()
 		return AK_TRUE;
 	}
 
-	sm_pCommonSpriteObj = _pRenderer->CreateSpriteObject();
+	sm_pCommonSpriteObj = GRenderer->CreateSpriteObject();
 
 	sm_pInitRefCount++;
 

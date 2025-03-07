@@ -114,17 +114,8 @@
     <ClInclude Include="Dancer.h">
       <Filter>src\obj</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerModel.h">
-      <Filter>src\model</Filter>
-    </ClInclude>
-    <ClInclude Include="DancerModel.h">
-      <Filter>src\model</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>src\model</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>src\obj</Filter>
     </ClInclude>
     <ClInclude Include="Collider.h">
       <Filter>src\comp</Filter>
@@ -147,23 +138,8 @@
     <ClInclude Include="ModelImporter.h">
       <Filter>src\model</Filter>
     </ClInclude>
-    <ClInclude Include="Building.h">
-      <Filter>src\obj</Filter>
-    </ClInclude>
     <ClInclude Include="LandScape.h">
       <Filter>src\landscape</Filter>
-    </ClInclude>
-    <ClInclude Include="Editor.h">
-      <Filter>src\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="EditorModel.h">
-      <Filter>src\editor</Filter>
-    </ClInclude>
-    <ClInclude Include="BRS_74_Model.h">
-      <Filter>src\model</Filter>
-    </ClInclude>
-    <ClInclude Include="EditorMap.h">
-      <Filter>src\editor</Filter>
     </ClInclude>
     <ClInclude Include="BRS_74.h">
       <Filter>src\obj\weapon</Filter>
@@ -184,9 +160,6 @@
       <Filter>src\mgr</Filter>
     </ClInclude>
     <ClInclude Include="EventManager.h">
-      <Filter>src\mgr</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelManager.h">
       <Filter>src\mgr</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\AkMath.h">
@@ -261,7 +234,7 @@
     <ClInclude Include="Swat.h">
       <Filter>src\obj</Filter>
     </ClInclude>
-    <ClInclude Include="Player2.h">
+    <ClInclude Include="Player.h">
       <Filter>src\obj</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
@@ -311,17 +284,8 @@
     <ClCompile Include="Dancer.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
-    <ClCompile Include="DancerModel.cpp">
-      <Filter>src\model</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>src\model</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerModel.cpp">
-      <Filter>src\model</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>src\obj</Filter>
     </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>src\comp</Filter>
@@ -344,23 +308,8 @@
     <ClCompile Include="ModelImporter.cpp">
       <Filter>src\model</Filter>
     </ClCompile>
-    <ClCompile Include="Building.cpp">
-      <Filter>src\obj</Filter>
-    </ClCompile>
     <ClCompile Include="LandScape.cpp">
       <Filter>src\landscape</Filter>
-    </ClCompile>
-    <ClCompile Include="Editor.cpp">
-      <Filter>src\editor</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorModel.cpp">
-      <Filter>src\editor</Filter>
-    </ClCompile>
-    <ClCompile Include="BRS_74_Model.cpp">
-      <Filter>src\model</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorMap.cpp">
-      <Filter>src\editor</Filter>
     </ClCompile>
     <ClCompile Include="BRS_74.cpp">
       <Filter>src\obj\weapon</Filter>
@@ -378,9 +327,6 @@
       <Filter>src\mgr</Filter>
     </ClCompile>
     <ClCompile Include="EventManager.cpp">
-      <Filter>src\mgr</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelManager.cpp">
       <Filter>src\mgr</Filter>
     </ClCompile>
     <ClCompile Include="..\..\common\AkMath.cpp">
@@ -446,7 +392,7 @@
     <ClCompile Include="Swat.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
-    <ClCompile Include="Player2.cpp">
+    <ClCompile Include="Player.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">

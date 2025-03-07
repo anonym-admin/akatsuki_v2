@@ -15,21 +15,6 @@ BaseObject::~BaseObject()
 	CleanUp();
 }
 
-void BaseObject::SetScale(const Vector3* pScale)
-{
-	_pTransform->Scale = *pScale;
-}
-
-void BaseObject::SetRotation(const Vector3* pYawPitchRoll)
-{
-	_pTransform->Rotation = *pYawPitchRoll;
-}
-
-void BaseObject::SetPosition(const Vector3* pPos)
-{
-	_pTransform->Position = *pPos;
-}
-
 Model* BaseObject::CreateModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned)
 {
 	Model* pModel = nullptr;

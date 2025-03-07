@@ -13,7 +13,7 @@ struct EventSceneChangeParam_t
 
 struct EventHandle_t
 {
-	GAME_EVENT_TYPE eEventType = {};
+	EVENT_TYPE eEventType = {};
 	void* pObj = nullptr;
 
 	union
@@ -29,8 +29,6 @@ EventManager
 ==================
 */
 
-class Application;
-
 class EventManager
 {
 public:
@@ -38,7 +36,7 @@ public:
 
 	~EventManager();
 
-	void Excute(AkF32 fDeltaTime);
+	void Excute();
 	void Reset();
 
 	void AddEvent(EventHandle_t* pEventHandle);

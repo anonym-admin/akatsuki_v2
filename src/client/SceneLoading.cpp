@@ -14,12 +14,12 @@ Loading Scene
 ===============
 */
 
-USceneLoading::~USceneLoading()
+SceneLoading::~SceneLoading()
 {
 	EndScene();
 }
 
-AkBool USceneLoading::BeginScene()
+AkBool SceneLoading::BeginScene()
 {
 	// Create Font.
 	CreateCommonFontObject(L"Consolas", 12.0f);
@@ -33,7 +33,7 @@ AkBool USceneLoading::BeginScene()
 	_uScreenWidth = tRect.right - tRect.left;
 	_uScreenHeight = tRect.bottom - tRect.top;
 	_pScreenImage = (AkU8*)malloc(_uScreenWidth * _uScreenHeight * 4);
-	_pScreenTextureHandle = _pRenderer->CreateDynamicTexture(_uScreenWidth, _uScreenHeight);
+	_pScreenTextureHandle = GRenderer->CreateDynamicTexture(_uScreenWidth, _uScreenHeight);
 	memset(_pScreenImage, 0, _uScreenWidth * _uScreenHeight * 4);
 
 	// Load MeshData.
@@ -66,17 +66,9 @@ AkBool USceneLoading::BeginScene()
 		GAssetManager->AddCubeMapTexture(L"../../assets/skybox/", L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
 	}
 
-	//// Create LandScape.
-	//{
-	//	// 해당 모델 데이터 2개의 매쉬 데이터 존재(1. 실질적 데이터, 2. 옆면) 
-	//	_pLandScape = new ULandScape;
-	//	_pLandScape->Initialize(_pApp, L"../../assets/landscape/setup.txt");
-	//}
-
-	// pSceneManager->ChangeScene(GAME_SCENE_TYPE::SCENE_TYPE_INGANE);
-
+	// Add Change Scene Event.
 	EventHandle_t tEventHandle = {};
-	tEventHandle.eEventType = GAME_EVENT_TYPE::GAME_EVENT_TYPE_SCENE_CHANGE;
+	tEventHandle.eEventType = EVENT_TYPE::SCENE_CHANGE;
 	tEventHandle.tSceneChangeParam.eBefore = SCENE_TYPE::SCENE_TYPE_LOADING;
 	tEventHandle.tSceneChangeParam.eAfter = SCENE_TYPE::SCENE_TYPE_INGANE;
 	GEventManager->AddEvent(&tEventHandle);
@@ -84,7 +76,7 @@ AkBool USceneLoading::BeginScene()
 	return AK_TRUE;
 }
 
-AkBool USceneLoading::EndScene()
+AkBool SceneLoading::EndScene()
 {
 	// Loading 관련 오브젝트 삭제.
 	if (_pScreenImage)
@@ -94,14 +86,14 @@ AkBool USceneLoading::EndScene()
 	}
 	if (_pScreenTextureHandle)
 	{
-		_pRenderer->DestroyTexture(_pScreenTextureHandle);
+		GRenderer->DestroyTexture(_pScreenTextureHandle);
 		_pScreenTextureHandle = nullptr;
 	}
 
 	return AK_TRUE;
 }
 
-void USceneLoading::RenderLoadingScreenCallBack(const wchar_t* wcText)
+void SceneLoading::RenderLoadingScreenCallBack(const wchar_t* wcText)
 {
 	static wchar_t wcChunkText[1024] = {};
 
@@ -113,13 +105,13 @@ void USceneLoading::RenderLoadingScreenCallBack(const wchar_t* wcText)
 	AkU32 uTxtLen = (AkU32)wcslen(wcChunkText);
 
 	// 텍스트가 변경된 경우
-	_pRenderer->WriteTextToBitmap(_pScreenImage, _uScreenWidth, _uScreenHeight, _uScreenWidth * 4, &iTextWidth, &iTextHeight, GetCommonFontObject(), wcChunkText, uTxtLen);
-	_pRenderer->UpdateTextureWidthImage(_pScreenTextureHandle, _pScreenImage, _uScreenWidth, _uScreenHeight);
+	GRenderer->WriteTextToBitmap(_pScreenImage, _uScreenWidth, _uScreenHeight, _uScreenWidth * 4, &iTextWidth, &iTextHeight, GetCommonFontObject(), wcChunkText, uTxtLen);
+	GRenderer->UpdateTextureWidthImage(_pScreenTextureHandle, _pScreenImage, _uScreenWidth, _uScreenHeight);
 
-	_pRenderer->BeginRender();
+	GRenderer->BeginRender();
 
-	_pRenderer->RenderSpriteWithTex(GetCommonSpriteObject(), 0, 0, 1.0f, 1.0f, nullptr, 0.0f, _pScreenTextureHandle);
+	GRenderer->RenderSpriteWithTex(GetCommonSpriteObject(), 0, 0, 1.0f, 1.0f, nullptr, 0.0f, _pScreenTextureHandle);
 
-	_pRenderer->EndRender();
-	_pRenderer->Present();
+	GRenderer->EndRender();
+	GRenderer->Present();
 }

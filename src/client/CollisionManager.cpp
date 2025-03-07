@@ -112,8 +112,7 @@ void CollisionManager::CollisionStaticObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft)
 		return;
 	}
 
-	SceneManager* pSceneManager = _pApp->GetSceneManager();
-	Scene* pCurScence = pSceneManager->GetCurrentScene();
+	Scene* pCurScence = GSceneManager->GetCurrentScene();
 	GameObjContainer_t* pGameObjContainer = pCurScence->GetGroupObject(eLeft);
 
 	List_t* pCur = pGameObjContainer->pGameObjHead;
@@ -184,8 +183,7 @@ void CollisionManager::CollisionStaticObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft)
 
 void CollisionManager::CollisionDynamicObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft, GAME_OBJECT_GROUP_TYPE eRight)
 {
-	SceneManager* pSceneManager = _pApp->GetSceneManager();
-	Scene* pCurScence = pSceneManager->GetCurrentScene();
+	Scene* pCurScence = GSceneManager->GetCurrentScene();
 
 	GameObjContainer_t* pLeftGameObjContainer = pCurScence->GetGroupObject(eLeft);
 	GameObjContainer_t* pRightGameObjContainer = pCurScence->GetGroupObject(eRight);

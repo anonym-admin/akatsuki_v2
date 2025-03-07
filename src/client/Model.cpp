@@ -38,7 +38,7 @@ void Model::RenderShadow()
 	GRenderer->RenderShadowOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
-void Model::UpdateWorldRow(const Matrix* pWorldRow)
+void Model::UpdateWorldRow(Matrix* pWorldRow)
 {
 	_mWorldRow = *pWorldRow;
 }

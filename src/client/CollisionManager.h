@@ -26,7 +26,7 @@ CollisionManager
 class Application;
 class LandScape;
 class Collider;
-class WorldMapContainer;
+class MapObjects;
 struct KDTreeNode_t;
 struct RbTreeNode_t;
 
@@ -40,7 +40,7 @@ public:
 
 	AkBool Initialize();
 	void CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE eLeft, GAME_OBJECT_GROUP_TYPE eRight);
-	void AttachMap(WorldMapContainer* pMap) { _pMap = pMap; }
+	void AttachMap(MapObjects* pMap) { _pMap = pMap; }
 
 	void Update();
 
@@ -63,6 +63,6 @@ private:
 	LandScape* _pLandScape = nullptr;
 
 	// Map.
-	WorldMapContainer* _pMap = nullptr;
+	MapObjects* _pMap = nullptr;
 };
 

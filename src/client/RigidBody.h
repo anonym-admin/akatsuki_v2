@@ -11,8 +11,10 @@ class Actor;
 class RigidBody
 {
 public:
+	RigidBody(Actor* pOwner);
+
 	AkBool Initialize(Actor* pOwner);
-	void Update(const AkF32 fDeltaTime);
+	void Update();
 
 	void AddForce(Vector3 vForce) { _vForce += vForce; }
 	void AddVelocity(Vector3 vVelocity) { _vVelocity += vVelocity; }
@@ -25,7 +27,7 @@ public:
 	Vector3 GetVelocity() { return _vVelocity; }
 
 private:
-	void Move(const AkF32 fDeltaTime);
+	void Move();
 
 private:
 	Actor* _pOwner = nullptr;

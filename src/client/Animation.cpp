@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "SceneManager.h"
 #include "SceneLoading.h"
+#include "Timer.h"
 
 BoneAnimation_t::BoneAnimation_t()
 {
@@ -352,14 +353,13 @@ void Animation::DestroyAnimationClip(const wchar_t* wcClipName)
 	}
 }
 
-AnimationClip_t* Animation::ReadFromAnimationFile(Application* pApp, const wchar_t* wcBasePath, const wchar_t* wcFilename)
+AnimationClip_t* Animation::ReadFromAnimationFile(const wchar_t* wcBasePath, const wchar_t* wcFilename)
 {
-	SceneManager* pSceneManager = pApp->GetSceneManager();
-	USceneLoading* pSceneLoading = (USceneLoading*)pSceneManager->GetCurrentScene();
+	SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
 
 	UModelImporter tModelImporter = { };
 
-	tModelImporter.LoadAnimation(pApp, wcBasePath, wcFilename, _uBoneNum);
+	tModelImporter.LoadAnimation(wcBasePath, wcFilename, _uBoneNum);
 
 	wchar_t wcFullPath[MAX_PATH] = {};
 	wcscpy_s(wcFullPath, wcBasePath);
@@ -374,7 +374,7 @@ AnimationClip_t* Animation::ReadFromAnimationFile(Application* pApp, const wchar
 	return pAnimClip;
 }
 
-AkBool Animation::PlayAnimation(const AkF32 fDeltaTime, const wchar_t* wcAnimClipname, AkBool bInPlace)
+AkBool Animation::PlayAnimation(const wchar_t* wcAnimClipname, AkBool bInPlace)
 {
 	AkBool bIsEnd = AK_FALSE;
 
@@ -382,7 +382,7 @@ AkBool Animation::PlayAnimation(const AkF32 fDeltaTime, const wchar_t* wcAnimCli
 	AkU32 uDuration = GetClipDuration(wcAnimClipname);
 
 	AkF32 fAnimTime = GetClipCurrentTime(wcAnimClipname);
-	fAnimTime += (AkF32)uTickPerSecond * fDeltaTime;
+	fAnimTime += (AkF32)uTickPerSecond * DT;
 
 	if (fAnimTime >= GetClipEndTime(wcAnimClipname))
 	{

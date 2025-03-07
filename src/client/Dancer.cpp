@@ -1,185 +1,114 @@
 #include "pch.h"
 #include "Dancer.h"
-#include "DancerModel.h"
 #include "Collider.h"
 #include "RigidBody.h"
 #include "Gravity.h"
 #include "Application.h"
-#include "ModelManager.h"
+#include "AssetManager.h"
+#include "SkinnedModel.h"
+#include "Animator.h"
+#include "Transform.h"
 
-UDancer::UDancer()
-{
-}
+/*
+===========
+Dancer
+===========
+*/
 
-UDancer::~UDancer()
+Dancer::Dancer()
 {
-	CleanUp();
-}
-
-AkBool UDancer::Initialize(Application* pApp)
-{
-	if (!Actor::Initialize(pApp))
+	if (!Initialize())
 	{
 		__debugbreak();
-		return AK_FALSE;
 	}
+}
 
-	// Bind Model.
-	ModelManager* pModelManager = pApp->GetModelManager();
-	UModel* pDancerModel = pModelManager->GetModel(MODEL_TYPE::BLENDER_MODEL_DANCER);
-	BindModel(pDancerModel);
+AkBool Dancer::Initialize()
+{
+	// Create Model.
+	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER);
+	Vector3 vAlbedo = Vector3(1.0f);
+	Vector3 vEmissive = Vector3(0.0f);
+	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_TRUE);
+	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER);
+
+	// Bind Animation.
+	((SkinnedModel*)_pModel)->BindAnimation(GAnimator->GetAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_DANCER));
+	AnimState = ANIM_STATE::PLAYER_ANIM_STATE_IDLE;
+
+	// Create Trnasform.
+	_pTransform = CreateTransform();
 
 	// Create Collider.
-	Collider* pCollider = CreateCollider();
 	Vector3 vCenter = Vector3(0.0f);
 	AkF32 fRadius = 0.5f;
-	pCollider->CreateBoundingSphere(fRadius, &vCenter);
+	_pCollider = CreateCollider();
+	_pCollider->CreateBoundingSphere(fRadius, &vCenter);
 
-	Gravity* pGravity = CreateGravity();
-	
-	RigidBody* pRigidBody = CreateRigidBody();
-	pRigidBody->SetFrictionCoef(0.0f);
-	pRigidBody->SetMaxVeleocity(10.0f);
+	// Create Gravity
+	_pGravity = CreateGravity();
+
+	// Create Rigidbody
+	_pRigidBody = CreateRigidBody();
+	_pRigidBody->SetFrictionCoef(0.0f);
+	_pRigidBody->SetMaxVeleocity(10.0f);
 
     return AK_TRUE;
 }
 
-void UDancer::Update(const AkF32 fDeltaTime)
+void Dancer::Update()
 {
-	RigidBody* pRigidBody = GetRigidBody();
-
-	if (!_bGroundCollision)
-	{
-		// 지면과 충돌하지 않았을때 중력 가속도 적용
-		pRigidBody->SetVelocity(0.0f, pRigidBody->GetVelocity().y, 0.0f);
-	}
-	else
-	{
-		// 지면과 충돌 시 위치 보정 중력 가속도는 적용되지 않음
-		Vector3 vPos = GetPosition();
-
-		pRigidBody->SetVelocity(0.0f, 0.0f, 0.0f);
-		SetPosition(vPos.x, vPos.y, vPos.z);
-	}
-
-	PlayAnimation(fDeltaTime, L"Dancing.anim");
+	UpdateMove();
+	UpdateAnimation();
 }
 
-void UDancer::FinalUpdate(const AkF32 fDeltaTime)
+void Dancer::FinalUpdate()
 {
-	UDancerModel* pModel = (UDancerModel*)GetModel(GetModelContextIndex());
-	Gravity* pGravity = GetGravity();
-	RigidBody* pRigidBody = GetRigidBody();
-	Collider* pCollider = GetCollider();
+	_pRigidBody->Update();
 
-	// Gravity 업데이트
-	if (!_bGroundCollision)
-	{
-		pGravity->Update(fDeltaTime);
-	}
+	_pTransform->Update();
 
-	// Rigid Body 업데이트
-	pRigidBody->Update(fDeltaTime);
+	_pCollider->Update();
 
-	// 첫프레임 위치 보정
-	Vector3 vPos = GetPosition();
-
-	if (_bFirst)
-	{
-		SetPosition(vPos.x, 0.5f, vPos.z);
-
-		_bFirst = AK_FALSE;
-	}
-
-	// Collider 업데이트
-	pCollider->Update(fDeltaTime);
-
-	// Model 의 위치 변경
-	UpdateModelTransform();
+	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());
 }
 
-void UDancer::RenderShadow()
+void Dancer::Render()
 {
-	RenderShadowOfModel();
+	_pModel->Render();
 }
 
-void UDancer::Render()
+void Dancer::RenderShadow()
 {
-	Application* pApp = GetApp();
-
-	// Render Model.
-	RenderModel();
-
-	// Render Normal.
-	if (IsDrawNoraml())
-	{
-		RenderNormal();
-	}
-
-	// Render Collider.
-	if (pApp->EnableEditor())
-	{
-		Collider* pCollider = GetCollider();
-
-		pCollider->Render();
-	}
+	_pModel->RenderShadow();
 }
 
-void UDancer::OnCollision(Collider* pOther)
+void Dancer::OnCollision(Collider* pOther)
 {
-	Actor* pOwner = pOther->GetOwner();
-	const wchar_t* wcName = pOwner->GetName();
 
-	if (!wcscmp(L"Map", wcName))
-	{
-		AkTriangle_t* pTri = pOther->GetTriangle();
-		AkF32 fNdotY = pTri->vNormal.Dot(Vector3(0.0f, 1.0f, 0.0f));
-		if (0.0f <= fNdotY - 1.0f && fNdotY - 1.0f <= 1e-5f)
-		{
-			SetGroundCollision(AK_TRUE);
-		}
-
-		AkSphere_t* pSphere = GetCollider()->GetBoundingSphere();
-		Vector3 vTriToSphere = pSphere->vCenter - pTri->vP[0];
-		AkF32 fDistance = vTriToSphere.Dot(pTri->vNormal);
-		Vector3 vProjectedCenter = pSphere->vCenter - pTri->vNormal * (fDistance - pSphere->fRadius);
-
-		SetPosition(vProjectedCenter.x, vProjectedCenter.y, vProjectedCenter.z);
-	}
 }
 
-void UDancer::OnCollisionEnter(Collider* pOther)
+void Dancer::OnCollisionEnter(Collider* pOther)
 {
-	Actor* pOwner = pOther->GetOwner();
-	const wchar_t* wcName = pOwner->GetName();
 
-	if (!wcscmp(L"Map", wcName))
-	{
-		AkTriangle_t* pTri = pOther->GetTriangle();
-		AkF32 fNdotY = pTri->vNormal.Dot(Vector3(0.0f, 1.0f, 0.0f));
-		if (0.0f <= fNdotY - 1.0f && fNdotY - 1.0f <= 1e-5f)
-		{
-			SetGroundCollision(AK_TRUE);
-		}
-
-		AkSphere_t* pSphere = GetCollider()->GetBoundingSphere();
-		Vector3 vTriToSphere = pSphere->vCenter - pTri->vP[0];
-		AkF32 fDistance = vTriToSphere.Dot(pTri->vNormal);
-		Vector3 vProjectedCenter = pSphere->vCenter - pTri->vNormal * (fDistance - pSphere->fRadius);
-
-		SetPosition(vProjectedCenter.x, vProjectedCenter.y, vProjectedCenter.z);
-	}
 }
 
-void UDancer::OnCollisionExit(Collider* pOther)
+void Dancer::OnCollisionExit(Collider* pOther)
 {
 }
 
-void UDancer::CleanUp()
+Dancer* Dancer::Clone()
 {
-	DestroyCollider();
+	Spawn::Clone();
+	return new Dancer();
+}
 
-	DesteoyRigidBody();
 
-	DestroyGravity();
+void Dancer::UpdateMove()
+{
+}
+
+void Dancer::UpdateAnimation()
+{
+	((SkinnedModel*)_pModel)->PlayAnimation(GAME_ANIM_DANCER_ANIM_FILE_NAME[(AkU32)AnimState], AK_FALSE);
 }

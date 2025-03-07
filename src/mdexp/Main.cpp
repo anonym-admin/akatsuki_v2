@@ -31,8 +31,8 @@ Global Variable
 HWND g_hWnd = nullptr;
 unsigned int g_uScreenWidth = 0;
 unsigned int g_uScreenHeight = 0;
-bool g_bEnableDebugLayer = false;
-bool g_bEnableGBV = false;
+bool g_bEnableDebugLayer = true;
+bool g_bEnableGBV = true;
 HMODULE g_hRendererDLL = nullptr;
 IRenderer* g_pRenderer = nullptr;
 void* g_pIrradianceTexHandle;

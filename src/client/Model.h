@@ -11,7 +11,7 @@ public:
 	virtual void Render();
 	virtual void RenderNormal();
 	virtual void RenderShadow();
-	void UpdateWorldRow(const Matrix* pWorldRow);
+	void UpdateWorldRow(Matrix* pWorldRow);
 	void SetWireFrame(AkBool bDrawWire);
 
 private:

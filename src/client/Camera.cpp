@@ -60,13 +60,13 @@ void Camera::Render()
 
 void Camera::SetPosition(const Vector3* pPos)
 {
-	_pTransform->Position = *pPos;
+	_pTransform->SetPosition(pPos);
 	GRenderer->SetCameraPosition(pPos->x, pPos->y, pPos->z);
 }
 
 void Camera::SetRotation(const Vector3* pYawPitchRoll)
 {
-	_pTransform->Rotation = *pYawPitchRoll;
+	_pTransform->SetRotation(pYawPitchRoll);
 	GRenderer->RotateYawPitchRollCamera(pYawPitchRoll->x, pYawPitchRoll->y, pYawPitchRoll->z);
 }
 
@@ -77,12 +77,14 @@ void Camera::SetOwner(Actor* pOwner)
 
 Vector3 Camera::GetPosition()
 {
-	return _pTransform->Position;
+	return _pTransform->GetPosition();
 }
 
 Vector3 Camera::GetDirection()
 {
-	Vector3 vDir = Vector3::Transform(_vCamInitDir, Matrix::CreateFromYawPitchRoll(_pTransform->Rotation.x, _pTransform->Rotation.y, _pTransform->Rotation.z));
+	Vector3 vYawPitchRoll = _pTransform->GetRotation();
+
+	Vector3 vDir = Vector3::Transform(_vCamInitDir, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
 	vDir.Normalize();
 	return vDir;
 }
@@ -141,7 +143,7 @@ void Camera::MoveEditor()
 
 void Camera::MoveFollow()
 {
-	Vector3 vTargetPos = _pOwner->GetTransform()->Position;
+	Vector3 vTargetPos = _pOwner->GetTransform()->GetPosition();
 	Vector3 vFinalPos = vTargetPos + _vCamFollowPos;
 
 	SetPosition(&vFinalPos);
@@ -162,11 +164,9 @@ void Camera::RotateFollow()
 	static AkBool bFirst = AK_TRUE;
 	if (bFirst)
 	{
-		_vOwnerInitRot = _pOwner->GetTransform()->Rotation;
+		_vOwnerInitRot = _pOwner->GetTransform()->GetRotation();
 		bFirst = AK_FALSE;
 	}
-
-	static AkF32 fLerp = 0.0f;
 
 	Vector3 vYawPitchRoll = Vector3(0.0f);
 
@@ -180,6 +180,6 @@ void Camera::RotateFollow()
 	// 오너 애니메이션 실행.
 	Vector3 vOwnerRot = _vOwnerInitRot + vYawPitchRoll;
 	vOwnerRot.y = 0.0f;
-	_pOwner->SetRotation(&vOwnerRot);
+	_pOwner->GetTransform()->SetRotation(&vOwnerRot);
 }
 

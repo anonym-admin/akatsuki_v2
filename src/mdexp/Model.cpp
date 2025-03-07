@@ -242,7 +242,7 @@ void Model::UpdateGizmo()
 
 	ImGuizmo::Manipulate((float*)&g_mViewMat, (float*)&g_mProjMat, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&_mGizmoWorldRow._11, NULL, useSnap ? &snap[0] : NULL);
 
-	_mWorldRow = _mGizmoWorldRow * _mBoneTransform.Invert();
+	_mWorldRow =  _mGizmoWorldRow * _mBoneTransform.Invert();
 
 	ImGui::End();
 }

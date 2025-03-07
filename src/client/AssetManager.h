@@ -31,8 +31,6 @@ private:
 	void FreeMeshDataContainer(AssetMeshDataContainer_t* pAssetMeshDataContainer);
 
 private:
-	Application* _pApp = nullptr;
-	IRenderer* _pRenderer = nullptr;
 	AssetMeshDataContainer_t* _ppAssetMeshDataContainerList[(AkU32)ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_COUNT] = {};
 	AssetTextureContainer_t* _ppAssetTextureContainerList[(AkU32)ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_COUNT] = {};
 };
