@@ -445,3 +445,305 @@ void Animation::CleanUp()
 	}
 }
 
+
+
+// Newly => Animation Blending.
+N_Animation::N_Animation(AkU32 uMaxClipNum)
+{
+	if (!Initialize(uMaxClipNum))
+	{
+		__debugbreak();
+	}
+}
+
+N_Animation::~N_Animation()
+{
+	CleanUp();
+}
+
+AkBool N_Animation::Initialize(AkU32 uMaxClipNum)
+{
+	_pAnimationClipTable = HT_CreateHashTable(uMaxClipNum, _MAX_PATH, uMaxClipNum);
+	_uMaxClipNum = uMaxClipNum;
+	_bIsChanging = AK_FALSE;
+
+	_pFinalTransforms = reinterpret_cast<Matrix*>(malloc(sizeof(Matrix) * 96));
+	memset(_pFinalTransforms, 0, sizeof(Matrix) * 96);
+
+	return AK_TRUE;
+}
+
+void N_Animation::Update()
+{
+	if (_bIsChanging)
+	{
+		UpdateAnimator(&_tNextAnimator);
+
+		_fChangedTime += DT;
+		if (_fChangedTime > _fBlendTime)
+		{
+			_fChangedTime = 0.0f;
+
+			_tCurAnimator = _tNextAnimator;
+			_bIsChanging = AK_FALSE;
+		}
+	}
+
+	UpdateAnimator(&_tCurAnimator);
+}
+
+Matrix N_Animation::GetBoneTrnasformAtID(AkU32 uBoneID)
+{
+	return Matrix();
+}
+
+Matrix* N_Animation::GetBoneTransforms()
+{
+	Matrix* pToParentTransform = new Matrix[96];
+
+	AnimationClip_t* pCurClip = nullptr;
+	AkU32 uKeySize = (AkU32)wcslen(_tCurAnimator.wcName) * sizeof(wchar_t);
+	if (!HT_Find(_pAnimationClipTable, (void**)&pCurClip, 1, _tCurAnimator.wcName, uKeySize))
+	{
+		__debugbreak();
+	}
+
+	if (!_tNextAnimator.wcName)
+		_tNextAnimator.wcName = _tCurAnimator.wcName;
+
+	AnimationClip_t* pNextClip = nullptr;
+	uKeySize = (AkU32)wcslen(_tNextAnimator.wcName) * sizeof(wchar_t);
+	if (!HT_Find(_pAnimationClipTable, (void**)&pNextClip, 1, _tNextAnimator.wcName, uKeySize))
+	{
+		__debugbreak();
+	}
+
+	if (pNextClip->uNumBoneAnimation != pCurClip->uNumBoneAnimation)
+	{
+		__debugbreak();
+	}
+
+	Matrix* pCurTransform = new Matrix[96];
+	Matrix* pNextTransform = new Matrix[96];
+	if (_bIsChanging)
+	{
+		for (AkU32 i = 0; i < _uBoneNum; i++)
+		{
+			Vector3 vCurScale = Vector3(1.0f);
+			Quaternion qCurQuat = Quaternion();
+			Vector3 vCurPos = Vector3(0.0f);
+
+			Matrix Test = Matrix::CreateScale(vCurScale) * Matrix::CreateFromQuaternion(qCurQuat) * Matrix::CreateTranslation(vCurPos);
+
+			Vector3 vNextScale = Vector3(1.0f);
+			Quaternion qNextQuat = Quaternion();
+			Vector3 vNextPos = Vector3(0.0f);
+
+			// Cur
+			{
+				AkU32 uKeyFrame = pCurClip->pBoneAnimationList[i].uNumKeyFrame;
+				if (uKeyFrame)
+				{
+					uKeyFrame = _tCurAnimator.uNextFrame % uKeyFrame;
+
+					Vector3 vScale = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vScale;
+					Quaternion qQuat = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].qRot;
+					Vector3 vPos = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vPos;
+
+					pCurTransform[i] = Matrix::CreateScale(vScale) * Matrix::CreateFromQuaternion(qQuat) * Matrix::CreateTranslation(vPos);
+
+					//vCurScale = vScale;
+					//qCurQuat = qQuat;
+					//vCurPos = vPos;
+				}
+			}
+			// Next
+			{
+				AkU32 uKeyFrame = pNextClip->pBoneAnimationList[i].uNumKeyFrame;
+				if (uKeyFrame)
+				{
+					uKeyFrame = _tNextAnimator.uCurFrame % uKeyFrame;
+
+					Vector3 vScale0 = pNextClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vScale;
+					Quaternion qQuat0 = pNextClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].qRot;
+					Vector3 vPos0 = pNextClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vPos;
+
+					uKeyFrame = pNextClip->pBoneAnimationList[i].uNumKeyFrame;
+					uKeyFrame = _tNextAnimator.uNextFrame % uKeyFrame;
+
+					Vector3 vScale1 = pNextClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vScale;
+					Quaternion qQuat1 = pNextClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].qRot;
+					Vector3 vPos1 = pNextClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vPos;
+
+					Vector3 vScale = DirectX::XMVectorLerp(vScale0, vScale1, _tNextAnimator.fFrameWeight);
+					Quaternion qQuat = DirectX::XMQuaternionSlerp(qQuat0, qQuat1, _tNextAnimator.fFrameWeight);
+					Vector3 vPos = DirectX::XMVectorLerp(vPos0, vPos1, _tNextAnimator.fFrameWeight);
+
+					pNextTransform[i] = Matrix::CreateScale(vScale) * Matrix::CreateFromQuaternion(qQuat) * Matrix::CreateTranslation(vPos);
+
+					//vNextScale = vScale;
+					//qNextQuat = qQuat;
+					//vNextPos = vPos;
+				}
+			}
+
+			const AkF32 fRatio = _fChangedTime / _fBlendTime;
+
+			pToParentTransform[i] = pCurTransform[i] * (1.0f - fRatio) + pNextTransform[i] * fRatio;
+
+			//Vector3 vScale = DirectX::XMVectorLerp(vCurScale, vNextScale, fRatio);
+			//Quaternion qQuat = DirectX::XMQuaternionSlerp(qCurQuat, qNextQuat, fRatio);
+			//Vector3 vPos = DirectX::XMVectorLerp(vCurPos, vNextPos, fRatio);
+
+			//pToParentTransform[i] = Matrix::CreateScale(vScale) * Matrix::CreateFromQuaternion(qQuat) * Matrix::CreateTranslation(vPos);
+		}
+	}
+	else
+	{
+		for (AkU32 i = 0; i < _uBoneNum; i++)
+		{
+			AkU32 uKeyFrame = pCurClip->pBoneAnimationList[i].uNumKeyFrame;
+			if (uKeyFrame)
+			{
+				uKeyFrame = _tCurAnimator.uCurFrame % uKeyFrame;
+
+				Vector3 vScale0 = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vScale;
+				Quaternion qQuat0 = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].qRot;
+				Vector3 vPos0 = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vPos;
+
+				uKeyFrame = pCurClip->pBoneAnimationList[i].uNumKeyFrame;
+				uKeyFrame = _tCurAnimator.uNextFrame % uKeyFrame;
+
+				Vector3 vScale1 = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vScale;
+				Quaternion qQuat1 = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].qRot;
+				Vector3 vPos1 = pCurClip->pBoneAnimationList[i].pKeyFrameList[uKeyFrame].vPos;
+
+				Vector3 vScale = DirectX::XMVectorLerp(vScale0, vScale1, _tCurAnimator.fFrameWeight);
+				Quaternion qQuat = DirectX::XMQuaternionSlerp(qQuat0, qQuat1, _tCurAnimator.fFrameWeight);
+				Vector3 vPos = DirectX::XMVectorLerp(vPos0, vPos1, _tCurAnimator.fFrameWeight);
+
+				pToParentTransform[i] = Matrix::CreateScale(vScale) * Matrix::CreateFromQuaternion(qQuat) * Matrix::CreateTranslation(vPos);
+			}
+			else
+			{
+				pToParentTransform[i] = Matrix();
+			}
+		}
+	}
+
+	delete[] pCurTransform;
+	pCurTransform = nullptr;
+
+	delete[] pNextTransform;
+	pNextTransform = nullptr;
+
+	Matrix* pToRootTransform = new Matrix[_uBoneNum];
+
+	pToRootTransform[0] = pToParentTransform[0];
+
+	for (AkU32 i = 1; i < _uBoneNum; i++)
+	{
+		AkI32 iParentIndex = _pBoneHierarchyList[i];
+
+		pToRootTransform[i] = pToParentTransform[i] * pToRootTransform[iParentIndex];
+	}
+
+	for (AkU32 i = 0; i < _uBoneNum; i++)
+	{
+		_pFinalTransforms[i] = _mDefaultMatrix.Invert() * _pBoneOffsetMatrixList[i] * pToRootTransform[i] * _mDefaultMatrix;
+		_pFinalTransforms[i] = _pFinalTransforms[i].Transpose();
+	}
+
+	delete[] pToRootTransform;
+	pToRootTransform = nullptr;
+
+	delete[] pToParentTransform;
+	pToParentTransform = nullptr;
+
+	return _pFinalTransforms;
+}
+
+AnimationClip_t* N_Animation::ReadClip(const wchar_t* wcBasePath, const wchar_t* wcFilename)
+{
+	//SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
+
+	UModelImporter tModelImporter = { };
+
+	tModelImporter.LoadAnimation(wcBasePath, wcFilename, _uBoneNum);
+
+	//wchar_t wcFullPath[MAX_PATH] = {};
+	//wcscpy_s(wcFullPath, wcBasePath);
+	//wcscat_s(wcFullPath, wcFilename);
+	//wcscat_s(wcFullPath, L"\n");
+
+	//pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+
+	AnimationClip_t* pAnimClip = tModelImporter.GetAnimationClip();
+
+	AddAnimationClip(pAnimClip, wcFilename);
+
+	return pAnimClip;
+}
+
+void N_Animation::SetIdle(const wchar_t* wcIdleClipName)
+{
+	_tCurAnimator.wcName = wcIdleClipName;
+}
+
+void N_Animation::PlayClip(const wchar_t* wcClipname, N_ANIM_STATE eState, AkF32 fBlendTime)
+{
+	_fChangedTime = 0.0f;
+
+	_bIsChanging = AK_TRUE;
+
+	_tCurAnimator.eAnimState = N_ANIM_STATE::STOP;
+	_tNextAnimator.eAnimState = eState;
+	_tNextAnimator.uCurFrame = 0;
+	_tNextAnimator.uNextFrame = 1;
+	_tNextAnimator.wcName = wcClipname;
+
+	_fBlendTime = fBlendTime;
+}
+
+void N_Animation::AddAnimationClip(AnimationClip_t* pAnimClip, const wchar_t* wcClipName)
+{
+	AkU32 uClipNameByteSize = (AkU32)wcslen(wcClipName) * sizeof(wchar_t);
+
+	if (HT_Find(_pAnimationClipTable, (void**)&pAnimClip, 1, wcClipName, uClipNameByteSize))
+	{
+		return;
+	}
+
+	void* pSearchHandle = HT_Insert(_pAnimationClipTable, pAnimClip, wcClipName, uClipNameByteSize);
+	pAnimClip->pSearchHandle = pSearchHandle;
+}
+
+void N_Animation::UpdateAnimator(N_Animator* pAnimator)
+{
+	if (N_ANIM_STATE::LOOP == pAnimator->eAnimState)
+	{
+		AnimationClip_t* pClip = nullptr;
+		AkU32 uKeySize = (AkU32)wcslen(pAnimator->wcName) * sizeof(wchar_t);
+		if (!HT_Find(_pAnimationClipTable, (void**)&pClip, 1, pAnimator->wcName, uKeySize))
+		{
+			__debugbreak();
+		}
+
+		pAnimator->fFrameWeight += (DT * pClip->uTickPerSecond * _fAnimScale);
+
+		if (pAnimator->fFrameWeight >= 1.0f) // 프레임 사이를 보간
+		{
+			pAnimator->fFrameWeight = 0.0f;
+			pAnimator->uCurFrame++;
+			pAnimator->uNextFrame++;
+
+			// printf("%u %u\n", pAnimator->uCurFrame, pAnimator->uNextFrame);
+
+			// if(pAnimator->uNextFrame >= pClip->u) 
+		}
+	}
+}
+
+void N_Animation::CleanUp()
+{
+}

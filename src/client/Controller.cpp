@@ -40,171 +40,179 @@ void Controller::KeyBoard()
 	{
 		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
+		if (KEY_HOLD(KEY_INPUT_LSHIFT))
+		{
+			_pOwner->SpeedUp = AK_TRUE;
+			_pOwner->SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RUN);
+		}
 		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
+		{
+			if (_pOwner->BindWeapon)
+				_pOwner->SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK);
+			else
+				_pOwner->SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_WALK);
+		}
 	}
-	if (KEY_HOLD(KEY_INPUT_S))
-	{
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_BACK_WALK;
+	//if (KEY_HOLD(KEY_INPUT_S))
+	//{
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_BACK_WALK;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
-	}
-	if (KEY_HOLD(KEY_INPUT_A))
-	{
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_LEFT_WALK;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_A))
+	//{
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_LEFT_WALK;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
-	}
-	if (KEY_HOLD(KEY_INPUT_D))
-	{
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_RIGHT_WALK;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_D))
+	//{
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_RIGHT_WALK;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
-	}
-	if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_A))
-	{
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_FRONT_WALK;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_A))
+	//{
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_FRONT_WALK;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
-	}
-	if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_D))
-	{
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_FRONT_WALK;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_D))
+	//{
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_FRONT_WALK;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
-	}
-	if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_A))
-	{
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_A))
+	//{
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
-	}
-	if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_D))
-	{
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIHGT_BACK_WALK;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_D))
+	//{
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIHGT_BACK_WALK;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
-	}
-	// 2. run
-	if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_LSHIFT))
-	{
-		_pOwner->SpeedUp = AK_TRUE;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_WALK;
+	//}
+	//// 2. run
+	//else if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_LSHIFT))
+	//{
+	//	_pOwner->SpeedUp = AK_TRUE;
 
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN;
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
-	}
-	if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_LSHIFT))
-	{
-		_pOwner->SpeedUp = AK_TRUE;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN);
+	//	else
+	//		_pOwner->SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RUN);
+	//}
+	//if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_LSHIFT))
+	//{
+	//	_pOwner->SpeedUp = AK_TRUE;
 
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_BACK_RUN;
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_BACK_RUN;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
-	}
-	if (KEY_HOLD(KEY_INPUT_A) && KEY_HOLD(KEY_INPUT_LSHIFT))
-	{
-		_pOwner->SpeedUp = AK_TRUE;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_A) && KEY_HOLD(KEY_INPUT_LSHIFT))
+	//{
+	//	_pOwner->SpeedUp = AK_TRUE;
 
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_LEFT_RUN;
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_LEFT_RUN;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
-	}
-	if (KEY_HOLD(KEY_INPUT_D) && KEY_HOLD(KEY_INPUT_LSHIFT))
-	{
-		_pOwner->SpeedUp = AK_TRUE;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_D) && KEY_HOLD(KEY_INPUT_LSHIFT))
+	//{
+	//	_pOwner->SpeedUp = AK_TRUE;
 
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_RIGHT_RUN;
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_RIGHT_RUN;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
-	}
-	if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_D) && KEY_HOLD(KEY_INPUT_LSHIFT))
-	{
-		_pOwner->SpeedUp = AK_TRUE;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_D) && KEY_HOLD(KEY_INPUT_LSHIFT))
+	//{
+	//	_pOwner->SpeedUp = AK_TRUE;
 
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_FRONT_RUN;
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_FRONT_RUN;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
-	}
-	if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_A) && KEY_HOLD(KEY_INPUT_LSHIFT))
-	{
-		_pOwner->SpeedUp = AK_TRUE;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_W) && KEY_HOLD(KEY_INPUT_A) && KEY_HOLD(KEY_INPUT_LSHIFT))
+	//{
+	//	_pOwner->SpeedUp = AK_TRUE;
 
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_FRONT_RUN;
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_FRONT_RUN;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
-	}
-	if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_D) && KEY_HOLD(KEY_INPUT_LSHIFT))
-	{
-		_pOwner->SpeedUp = AK_TRUE;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_D) && KEY_HOLD(KEY_INPUT_LSHIFT))
+	//{
+	//	_pOwner->SpeedUp = AK_TRUE;
 
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_BACK_RUN;
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_BACK_RUN;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
-	}
-	if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_A) && KEY_HOLD(KEY_INPUT_LSHIFT))
-	{
-		_pOwner->SpeedUp = AK_TRUE;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
+	//}
+	//if (KEY_HOLD(KEY_INPUT_S) && KEY_HOLD(KEY_INPUT_A) && KEY_HOLD(KEY_INPUT_LSHIFT))
+	//{
+	//	_pOwner->SpeedUp = AK_TRUE;
 
-		_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN;
+	//	_pOwner->MoveState = MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN;
 
-		if (_pOwner->BindWeapon)
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
-		else
-			_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
-	}
-	if (KEY_DOWN(KEY_INPUT_SPACE))
-	{
-		// Jump
-		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_JUMP;
+	//	if (_pOwner->BindWeapon)
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN;
+	//	else
+	//		_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RUN;
+	//}
+	//if (KEY_DOWN(KEY_INPUT_SPACE))
+	//{
+	//	// Jump
+	//	_pOwner->AnimState = ANIM_STATE::PLAYER_ANIM_STATE_JUMP;
 
-		_pOwner->GroundCollision = AK_FALSE;
-		_pOwner->Jumping = AK_TRUE;
-	}
+	//	_pOwner->GroundCollision = AK_FALSE;
+	//	_pOwner->Jumping = AK_TRUE;
+	//}
 }
 
 void Controller::KeyBoardRelease()

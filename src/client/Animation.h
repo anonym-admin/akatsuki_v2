@@ -105,3 +105,70 @@ private:
 	Matrix* _pRootTransforms = nullptr;
 };
 
+
+
+
+
+
+
+
+
+// Newly
+enum class N_ANIM_STATE
+{
+	LOOP,
+	ONCE,
+	STOP,
+};
+
+class N_Animation
+{
+	struct N_Animator
+	{
+		AkF32 fFrameWeight = 0.0f;
+		AkU32 uCurFrame = 0;
+		AkU32 uNextFrame = 1;
+		const wchar_t* wcName = nullptr;
+		N_ANIM_STATE eAnimState = N_ANIM_STATE::STOP;
+	};
+
+	void UpdateAnimator(N_Animator* pAnimator);
+
+public:
+	N_Animation(AkU32 uMaxClipNum);
+	~N_Animation();
+
+	AkBool Initialize(AkU32 uMaxClipNum);
+	void Update();
+
+	Matrix GetBoneTrnasformAtID(AkU32 uBoneID);
+	Matrix* GetBoneTransforms();
+	
+	AnimationClip_t* ReadClip(const wchar_t* wcBasePath, const wchar_t* wcClipname);
+	void SetIdle(const wchar_t* wcIdleClipName);
+	void PlayClip(const wchar_t* wcClipname, N_ANIM_STATE eState, AkF32 fBlendTime);
+	void SetBoneNum(AkU32 uBoneNum) { _uBoneNum = uBoneNum; }
+	void SetDefaultMatrix(const Matrix* pDefaultMat) { _mDefaultMatrix = *pDefaultMat; }
+	void SetBoneOffsetMat(const Matrix* pBoneOffsetMatList) { _pBoneOffsetMatrixList = pBoneOffsetMatList; }
+	void SetBoneHierarchy(const AkI32* pBoneHierarchyList) { _pBoneHierarchyList = pBoneHierarchyList; }
+
+private:
+	void CleanUp();
+
+	void AddAnimationClip(AnimationClip_t* pAnimClip, const wchar_t* wcClipName);
+
+private:
+	HashTable_t* _pAnimationClipTable = nullptr;
+	N_Animator _tCurAnimator = {};
+	N_Animator _tNextAnimator = {};
+	const AkI32* _pBoneHierarchyList = nullptr;
+	const Matrix* _pBoneOffsetMatrixList = nullptr;
+	Matrix _mDefaultMatrix = Matrix();
+	Matrix* _pFinalTransforms = nullptr;
+	AkU32 _uBoneNum = 0;
+	AkU32 _uMaxClipNum = 0;
+	AkBool _bIsChanging = AK_FALSE;
+	AkF32 _fChangedTime = 0.0f;
+	AkF32 _fBlendTime = 0.0f;
+	AkF32 _fAnimScale = 1.5f;
+};

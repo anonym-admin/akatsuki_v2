@@ -59,7 +59,7 @@ AkBool Dancer::Initialize()
 void Dancer::Update()
 {
 	UpdateMove();
-	UpdateAnimation();
+	// UpdateAnimation();
 }
 
 void Dancer::FinalUpdate()

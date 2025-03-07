@@ -27,7 +27,6 @@ private:
 	void UpdateMove();
 	void UpdateWeapon();
 	void UpdateFire();
-	void UpdateAnimation();
 	void FinalUpdateWeapon();
 
 private:

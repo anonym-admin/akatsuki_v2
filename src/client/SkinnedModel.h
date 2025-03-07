@@ -4,6 +4,8 @@
 
 class Animation;
 
+class N_Animation;
+
 class SkinnedModel : public Model
 {
 public:
@@ -17,10 +19,23 @@ public:
 	Animation* GetAnimation() { return _pAnim; }
 	AkBool PlayAnimation(const wchar_t* wcClipName, AkBool bInPlace);
 
+
+
+
+	void BindAnimationTest(N_Animation* pAnim) { _pTest = pAnim; }
+	N_Animation* GetAnimationTest() { return _pTest; }
+
 private:
 	virtual void CreateMeshObject(MeshData_t* pMeshData, AkU32 uMeshDataNum);
 
 private:
 	Animation* _pAnim = nullptr;
+
+
+
+
+
+
+	N_Animation* _pTest = nullptr;
 };
 

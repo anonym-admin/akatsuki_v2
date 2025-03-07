@@ -14,7 +14,7 @@ enum class ANIM_STATE
 	PLAYER_ANIM_STATE_RIFLE_RUN_FIRE,
 	PLAYER_ANIM_STATE_RIFLE_WALK_FIRE,
 	PLAYER_ANIM_STATE_RIFLE_IDLE_FIRE,
-	PLAYER_ANIM_STATE_COUNT,
+	PLAYER_ANIM_STATE_COUNT = 32,
 };
 
 enum class MOVE_STATE
@@ -75,10 +75,15 @@ public:
 	Gravity* CreateGravity();
 	Camera* CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll = nullptr);
 
+	class N_Animation* CreateAnimation(AkU32 uMaxClipNum);
+	void SetAnimation(ANIM_STATE eState);
+
 	void DestroyCollider();
 	void DesteoyRigidBody();
 	void DestroyGravity();
 	void DestroyCamera();
+
+	void DestroyAnimation();
 
 	Collider* GetCollider() { return _pCollider; }
 	RigidBody* GetRigidBody() { return _pRigidBody; }
@@ -108,6 +113,8 @@ protected:
 	// Weapon
 	Weapon* _pWeapon = nullptr;
 
+	N_Animation* _pAnimation = nullptr;
+
 public:
 	AkBool GroundCollision = AK_FALSE;
 	AkBool SpeedUp = AK_FALSE;
@@ -119,5 +126,5 @@ public:
 	AkBool Fire = AK_FALSE;
 	AkBool DrawNormal = AK_FALSE;
 	MOVE_STATE MoveState = {};
-	ANIM_STATE AnimState = {};
+	ANIM_STATE AnimState = ANIM_STATE::PLAYER_ANIM_STATE_COUNT;
 };

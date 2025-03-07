@@ -202,7 +202,9 @@
     <ClInclude Include="GameInput.h" />
     <ClInclude Include="GeometryGenerator.h" />
     <ClInclude Include="EditorModel.h" />
+    <ClInclude Include="ModelExporter.h" />
     <ClInclude Include="ModelImporter.h" />
+    <ClInclude Include="ModelType.h" />
     <ClInclude Include="PanelUI.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
@@ -265,6 +267,7 @@
     <ClCompile Include="GameInput.cpp" />
     <ClCompile Include="GeometryGenerator.cpp" />
     <ClCompile Include="EditorModel.cpp" />
+    <ClCompile Include="ModelExporter.cpp" />
     <ClCompile Include="ModelImporter.cpp" />
     <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="pch.cpp">

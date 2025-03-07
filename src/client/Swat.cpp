@@ -33,10 +33,29 @@ AkBool Swat::Initialize()
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissive = Vector3(0.0f);
 	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_TRUE);
-	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
+
+	// Create Anim.
+	_pAnimation = CreateAnimation(12);
+	_pAnimation->SetBoneHierarchy(pMeshDataContainer->pBoneHierarchyList);
+	_pAnimation->SetBoneOffsetMat(pMeshDataContainer->pBoneOffsetMatList);
+	_pAnimation->SetDefaultMatrix(&pMeshDataContainer->mDefaultMat);
+	_pAnimation->SetBoneNum(pMeshDataContainer->uBoneNum);
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_Idle.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_Walking.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_Run.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_Jump.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleRun.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleWalking.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleIdle.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleRunFire.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleWalkFire.anim");
+	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleIdleFire.anim");
+	_pAnimation->SetIdle(L"SwatGuy_Idle.anim");
+	SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_IDLE);
 
 	// Bind Animation.
-	((SkinnedModel*)_pModel)->BindAnimation(GAnimator->GetAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_PLAYER));
+	((SkinnedModel*)_pModel)->BindAnimationTest(_pAnimation);
+	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
 
 	// Create Controller.
 	_pController = CreateController();
@@ -76,8 +95,6 @@ void Swat::Update()
 	UpdateMove();
 	UpdateWeapon();
 	UpdateFire();
-	UpdateAnimation();
-
 }
 
 void Swat::FinalUpdate()
@@ -91,6 +108,8 @@ void Swat::FinalUpdate()
 	_pCollider->Update();
 
 	_pCamera->Update();
+
+	_pAnimation->Update();
 
 	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());
 
@@ -210,11 +229,11 @@ void Swat::Idle()
 
 	if (!BindWeapon)
 	{
-		AnimState = ANIM_STATE::PLAYER_ANIM_STATE_IDLE;
+		// SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_IDLE);
 	}
 	else
 	{
-		AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_IDLE;
+		// SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_IDLE);
 	}
 }
 
@@ -400,63 +419,44 @@ void Swat::UpdateFire()
 		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(6.16f), DirectX::XMConvertToRadians(-2.817f), DirectX::XMConvertToRadians(178.809f));
 		_pWeapon->GetTransform()->SetPosition(0.426f, 0.297f, 0.058f);
 
-		AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_IDLE_FIRE;
+		SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_IDLE_FIRE);
 	}
 	else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK)
 	{
 		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(16.092f), DirectX::XMConvertToRadians(-21.279f), DirectX::XMConvertToRadians(-166.074f));
 		_pWeapon->GetTransform()->SetPosition(0.410f, 0.301f, 0.014f);
 
-		AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK_FIRE;
+		SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK_FIRE);
 	}
 	else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN)
 	{
 		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-23.338f), DirectX::XMConvertToRadians(-20.093f), DirectX::XMConvertToRadians(-167.379f));
 		_pWeapon->GetTransform()->SetPosition(0.410f, 0.309f, 0.014f);
 
-		AnimState = ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN_FIRE;
-	}
-}
-
-void Swat::UpdateAnimation()
-{
-	if (Jumping)
-	{
-		// 아직 점프중
-		AnimState = ANIM_STATE::PLAYER_ANIM_STATE_JUMP;
-	}
-
-	AkBool bEndAnim = ((SkinnedModel*)_pModel)->PlayAnimation(GAME_ANIM_PLAYER_ANIM_FILE_NAME[(AkU32)AnimState], AK_FALSE);
-
-	if (ANIM_STATE::PLAYER_ANIM_STATE_JUMP == AnimState)
-	{
-		if (bEndAnim)
-		{
-			Jumping = AK_FALSE;
-		}
+		SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN_FIRE);
 	}
 }
 
 void Swat::FinalUpdateWeapon()
 {
-	if (!BindWeapon)
-	{
-		return;
-	}
+	//if (!BindWeapon)
+	//{
+	//	return;
+	//}
 
-	Matrix* pFinalTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetFinalTransforms();
+	//Matrix* pFinalTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetFinalTransforms();
 
-	// Gun model default matrix.
-	if (RightHand)
-	{
-		Matrix mRightHandAnimTransfrom = pFinalTransform[34].Transpose();
-		_mHandAnimTransform = mRightHandAnimTransfrom;
-	}
-	if (LeftHand)
-	{
-		Matrix mLeftHandAnimTransform = pFinalTransform[10].Transpose();
-		_mHandAnimTransform = mLeftHandAnimTransform;
-	}
+	//// Gun model default matrix.
+	//if (RightHand)
+	//{
+	//	Matrix mRightHandAnimTransfrom = pFinalTransform[34].Transpose();
+	//	_mHandAnimTransform = mRightHandAnimTransfrom;
+	//}
+	//if (LeftHand)
+	//{
+	//	Matrix mLeftHandAnimTransform = pFinalTransform[10].Transpose();
+	//	_mHandAnimTransform = mLeftHandAnimTransform;
+	//}
 
-	_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
+	//_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
 }

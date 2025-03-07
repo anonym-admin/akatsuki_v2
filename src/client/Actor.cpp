@@ -6,6 +6,7 @@
 #include "Gravity.h"
 #include "Camera.h"
 #include "Collider.h"
+#include "Animation.h"
 
 Actor::~Actor()
 {
@@ -38,6 +39,24 @@ Camera* Actor::CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll)
 	Camera* pCam = new Camera(pPos, pYawPitchRoll);
 	pCam->Mode = CAMERA_MODE::EDITOR;
 	return pCam;
+}
+
+N_Animation* Actor::CreateAnimation(AkU32 uMaxClipNum)
+{
+	N_Animation* pAnim = new N_Animation(uMaxClipNum);
+	return pAnim;
+}
+
+void Actor::SetAnimation(ANIM_STATE eState)
+{
+	if (eState != AnimState)
+	{
+		// printf("%u\n", (AkU32)eState);
+
+
+		AnimState = eState;
+		_pAnimation->PlayClip(GAME_ANIM_PLAYER_ANIM_FILE_NAME[(AkU32)eState], N_ANIM_STATE::LOOP, 0.5f);
+	}
 }
 
 void Actor::DestroyCollider()
@@ -76,6 +95,15 @@ void Actor::DestroyCamera()
 	}
 }
 
+void Actor::DestroyAnimation()
+{
+	if (_pAnimation)
+	{
+		delete _pAnimation;
+		_pAnimation = nullptr;
+	}
+}
+
 void Actor::SetWeapon(Weapon* pWeapon)
 {
 	BindWeapon = AK_TRUE;
@@ -94,6 +122,7 @@ void Actor::CleanUp()
 	DesteoyRigidBody();
 	DestroyGravity();
 	DestroyCamera();
+	DestroyAnimation();
 }
 
 

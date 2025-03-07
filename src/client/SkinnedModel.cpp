@@ -19,7 +19,7 @@ SkinnedModel::~SkinnedModel()
 void SkinnedModel::Render()
 {
 	Matrix pIdentity[96] = {};
-	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetFinalTransforms() : pIdentity;
+	const Matrix* pBoneTransform = _pTest ? _pTest->GetBoneTransforms() : pIdentity;
 
 	GRenderer->RenderSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
 }
@@ -27,7 +27,7 @@ void SkinnedModel::Render()
 void SkinnedModel::RenderNormal()
 {
 	Matrix pIdentity[96] = {};
-	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetFinalTransforms() : pIdentity;
+	const Matrix* pBoneTransform = _pTest ? _pTest->GetBoneTransforms() : pIdentity;
 
 	GRenderer->RenderNormalOfSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
 }
@@ -35,7 +35,7 @@ void SkinnedModel::RenderNormal()
 void SkinnedModel::RenderShadow()
 {
 	Matrix pIdentity[96] = {};
-	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetFinalTransforms() : pIdentity;
+	const Matrix* pBoneTransform = _pTest ? _pTest->GetBoneTransforms() : pIdentity;
 
 	GRenderer->RenderShadowOfSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
 }

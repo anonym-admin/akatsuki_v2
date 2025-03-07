@@ -255,6 +255,12 @@
     <ClInclude Include="EditorManager.h">
       <Filter>src\mgr</Filter>
     </ClInclude>
+    <ClInclude Include="ModelType.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelExporter.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -424,6 +430,9 @@
     </ClCompile>
     <ClCompile Include="EditorManager.cpp">
       <Filter>src\mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelExporter.cpp">
+      <Filter>src\model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
