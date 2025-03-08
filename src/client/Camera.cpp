@@ -75,6 +75,11 @@ void Camera::SetOwner(Actor* pOwner)
 	_pOwner = pOwner;
 }
 
+void Camera::ToggleViewMode()
+{
+	_bIsView = !_bIsView;
+}
+
 Vector3 Camera::GetPosition()
 {
 	return _pTransform->GetPosition();
@@ -171,7 +176,7 @@ void Camera::RotateFollow()
 	Vector3 vYawPitchRoll = Vector3(0.0f);
 
 	vYawPitchRoll.x = NDC_ACC_X * DirectX::XM_PIDIV2; // Yaw
-	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 방지.
+	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 도달 시 Up Vector에 의한 회전 방지.
 
 	_vCamFollowPos = Vector3::Transform(_vCamInitPos, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
 
@@ -180,6 +185,10 @@ void Camera::RotateFollow()
 	// 오너 애니메이션 실행.
 	Vector3 vOwnerRot = _vOwnerInitRot + vYawPitchRoll;
 	vOwnerRot.y = 0.0f;
-	_pOwner->GetTransform()->SetRotation(&vOwnerRot);
+
+	if (!_bIsView)
+	{
+		_pOwner->GetTransform()->SetRotation(&vOwnerRot);
+	}
 }
 

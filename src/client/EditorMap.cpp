@@ -28,8 +28,8 @@ void EditorMap::Update()
 
 void EditorMap::FinalUpdate()
 {
-	ImGui::Begin("Map Editor");
-	ImGui::End();
+	//ImGui::Begin("Map Editor");
+	//ImGui::End();
 }
 
 void EditorMap::Render()

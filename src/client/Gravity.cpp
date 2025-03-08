@@ -31,6 +31,6 @@ void Gravity::Update()
 
 	Vector3 vNewVelocity = vOldVelocity + _fGforce * DT;
 
-	pRigidBody->SetVelocity(vNewVelocity);
+	pRigidBody->SetVelocity(&vNewVelocity);
 }
 

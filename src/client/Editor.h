@@ -32,7 +32,7 @@ protected:
 	Model* CreateModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned);
 	Camera* CreateCamera();
 	Transform* CreateTransform();
-	Animation* CreateAnimation();
+	Animation* CreateAnimation(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum);
 
 protected:
 	Model* _pTarget = nullptr;

@@ -16,15 +16,15 @@ public:
 	AkBool Initialize(Actor* pOwner);
 	void Update();
 
-	void AddForce(Vector3 vForce) { _vForce += vForce; }
-	void AddVelocity(Vector3 vVelocity) { _vVelocity += vVelocity; }
-	void SetMass(AkF32 fMass) { _fMass = fMass; }
-	void SetVelocity(Vector3 vVelocity);
-	void SetVelocity(AkF32 fX, AkF32 fY, AkF32 fZ);
+	void AddForce(const Vector3* pForce) { _vForce += *pForce; }
+	void AddVelocity(const Vector3* pVelocity) { _vVelocity += *pVelocity; }
+	void SetVelocity(const Vector3* pVelocity);
 	void SetMaxVeleocity(AkF32 fMaxVelocity) { _fMaxVelocity = fMaxVelocity; }
 	void SetFrictionCoef(AkF32 fFricCoeff) { _fFricCoeff = fFricCoeff; }
-	AkF32 GetMass() { return _fMass; }
+	void SetMass(AkF32 fMass) { _fMass = fMass; }
 	Vector3 GetVelocity() { return _vVelocity; }
+	AkF32 GetMaxVelocity() { return _fMaxVelocity; }
+	AkF32 GetMass() { return _fMass; }
 
 private:
 	void Move();

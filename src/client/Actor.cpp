@@ -37,26 +37,14 @@ Camera* Actor::CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll)
 	if (!pYawPitchRoll)
 		pYawPitchRoll = &vYawPitchRoll;
 	Camera* pCam = new Camera(pPos, pYawPitchRoll);
-	pCam->Mode = CAMERA_MODE::EDITOR;
+	pCam->Mode = CAMERA_MODE::FREE;
 	return pCam;
 }
 
-N_Animation* Actor::CreateAnimation(AkU32 uMaxClipNum)
+Animation* Actor::CreateAnimation(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum)
 {
-	N_Animation* pAnim = new N_Animation(uMaxClipNum);
+	Animation* pAnim = new Animation(pMeshDataContainer, wcIdleClipName, uMaxClipNum);
 	return pAnim;
-}
-
-void Actor::SetAnimation(ANIM_STATE eState)
-{
-	if (eState != AnimState)
-	{
-		// printf("%u\n", (AkU32)eState);
-
-
-		AnimState = eState;
-		_pAnimation->PlayClip(GAME_ANIM_PLAYER_ANIM_FILE_NAME[(AkU32)eState], N_ANIM_STATE::LOOP, 0.5f);
-	}
 }
 
 void Actor::DestroyCollider()

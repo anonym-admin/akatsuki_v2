@@ -13,7 +13,6 @@ public:
 
 private:
 	void KeyBoard();
-	void KeyBoardRelease();
 	void Mouse();
 
 private:

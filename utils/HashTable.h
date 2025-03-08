@@ -30,5 +30,11 @@ struct HashTable_t
 HashTable_t* HT_CreateHashTable(unsigned int uMaxBucketNum, unsigned int uMaxKeyLength, unsigned int uMaxDataNum);
 void* HT_Insert(HashTable_t* pHashTable, const void* pData, const void* pKey, unsigned int uKeyLength);
 unsigned int HT_Find(HashTable_t* pHashTable, void** ppDataList, unsigned int uGetItemNum, const void* pKey, unsigned int uKeyLength);
+unsigned int HT_FindAll(HashTable_t* pHashTable, void** ppOutDataList, unsigned int uMaxItemNum, bool* pOutInSufficient);
 void HT_Delete(HashTable_t* pHashTable, const void* pSearchHandle);
+void HT_DeleteAll(HashTable_t* pHashTable);
 void HT_DestroyHashTable(HashTable_t* pHashTable);
+unsigned int HT_GetMaxBucketNum(HashTable_t* pHashTable);
+unsigned int HT_GetDataNum(HashTable_t* pHashTable);
+unsigned int HT_GetKeyPtrAndSize(void** ppOutKeyPtr, const void* pSearchHandle);
+void HT_Check(HashTable_t* pHashTable);

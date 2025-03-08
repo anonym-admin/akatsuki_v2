@@ -134,6 +134,18 @@ void AssetManager::DeleteMeshData(ASSET_MESH_DATA_TYPE eType)
 			_ppAssetMeshDataContainerList[uType]->pMeshData = nullptr;
 		}
 
+		if (_ppAssetMeshDataContainerList[uType]->pBoneHierarchyList)
+		{
+			delete[] _ppAssetMeshDataContainerList[uType]->pBoneHierarchyList;
+			_ppAssetMeshDataContainerList[uType]->pBoneHierarchyList = nullptr;
+		}
+
+		if (_ppAssetMeshDataContainerList[uType]->pBoneOffsetMatrixList)
+		{
+			delete[] _ppAssetMeshDataContainerList[uType]->pBoneOffsetMatrixList;
+			_ppAssetMeshDataContainerList[uType]->pBoneOffsetMatrixList = nullptr;
+		}
+
 		FreeMeshDataContainer(_ppAssetMeshDataContainerList[uType]);
 		_ppAssetMeshDataContainerList[uType] = nullptr;
 	}
@@ -167,7 +179,7 @@ MeshData_t* AssetManager::ReadFromFile(AssetMeshDataContainer_t* pAassetMeshData
 
 	if (bForAnim)
 	{
-		pAassetMeshDataContainer->pBoneOffsetMatList = tModelImporter.GetBoneOffsetTransformList();
+		pAassetMeshDataContainer->pBoneOffsetMatrixList = tModelImporter.GetBoneOffsetTransformList();
 		pAassetMeshDataContainer->pBoneHierarchyList = tModelImporter.GetBoneHierarchyList();
 		pAassetMeshDataContainer->uBoneNum = tModelImporter.GetBoneNum();
 	}

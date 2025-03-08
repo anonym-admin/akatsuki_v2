@@ -2,7 +2,6 @@
 #include "BaseObject.h"
 #include "SkinnedModel.h"
 #include "AssetManager.h"
-#include "Animator.h"
 #include "Transform.h"
 
 BaseObject::BaseObject()

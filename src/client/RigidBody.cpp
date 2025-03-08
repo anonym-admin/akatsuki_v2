@@ -67,8 +67,9 @@ void RigidBody::Update()
     _vForce = Vector3(0.0f);
 }
 
-void RigidBody::SetVelocity(Vector3 vVelocity)
+void RigidBody::SetVelocity(const Vector3* pVelocity)
 {
+    Vector3 vVelocity = *pVelocity;
     if (vVelocity.Length() > _fMaxVelocity)
     {
         vVelocity.Normalize();
@@ -76,11 +77,6 @@ void RigidBody::SetVelocity(Vector3 vVelocity)
     }
 
     _vVelocity = vVelocity;
-}
-
-void RigidBody::SetVelocity(AkF32 fX, AkF32 fY, AkF32 fZ)
-{
-    _vVelocity = Vector3(fX, fY, fZ);
 }
 
 void RigidBody::Move()

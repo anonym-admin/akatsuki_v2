@@ -19,7 +19,7 @@ SkinnedModel::~SkinnedModel()
 void SkinnedModel::Render()
 {
 	Matrix pIdentity[96] = {};
-	const Matrix* pBoneTransform = _pTest ? _pTest->GetBoneTransforms() : pIdentity;
+	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetBoneTransforms() : pIdentity;
 
 	GRenderer->RenderSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
 }
@@ -27,7 +27,7 @@ void SkinnedModel::Render()
 void SkinnedModel::RenderNormal()
 {
 	Matrix pIdentity[96] = {};
-	const Matrix* pBoneTransform = _pTest ? _pTest->GetBoneTransforms() : pIdentity;
+	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetBoneTransforms() : pIdentity;
 
 	GRenderer->RenderNormalOfSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
 }
@@ -35,14 +35,9 @@ void SkinnedModel::RenderNormal()
 void SkinnedModel::RenderShadow()
 {
 	Matrix pIdentity[96] = {};
-	const Matrix* pBoneTransform = _pTest ? _pTest->GetBoneTransforms() : pIdentity;
+	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetBoneTransforms() : pIdentity;
 
 	GRenderer->RenderShadowOfSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
-}
-
-AkBool SkinnedModel::PlayAnimation(const wchar_t* wcClipName, AkBool bInPlace)
-{
-	return _pAnim->PlayAnimation(wcClipName, bInPlace);
 }
 
 void SkinnedModel::CreateMeshObject(MeshData_t* pMeshData, AkU32 uMeshDataNum)

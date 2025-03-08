@@ -11,7 +11,6 @@
 #include "CollisionManager.h"
 #include "UIManager.h"
 #include "Sound.h"
-#include "Animator.h"
 
 HWND GhWnd;
 IRenderer* GRenderer;
@@ -27,8 +26,6 @@ AssetManager* GAssetManager;
 CollisionManager* GCollisionManager;
 UIManager* GUIManager;
 SoundManager* GSoundManager;
-Animator* GAnimator;
-void* GCommonFont;
 
 class UGlobal
 {
@@ -42,7 +39,6 @@ public:
 		GEventManager = new EventManager;
 		GSceneManager = new SceneManager;
 		GEditorManager = new EditorManager;
-		GAnimator = new Animator;
 		GCollisionManager = new CollisionManager;
 		GUIManager = new UIManager;
 		GSoundManager = new SoundManager;
@@ -63,11 +59,6 @@ public:
 		{
 			delete GCollisionManager;
 			GCollisionManager = nullptr;
-		}
-		if (GAnimator)
-		{
-			delete GAnimator;
-			GAnimator = nullptr;
 		}
 		if (GEditorManager)
 		{

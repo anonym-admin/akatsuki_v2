@@ -21,6 +21,7 @@ public:
 	void SetPosition(const Vector3* pPos);
 	void SetRotation(const Vector3* pYawPitchRoll);
 	void SetOwner(Actor* pOwner);
+	void ToggleViewMode();
 	Vector3 GetPosition();
 	Vector3 GetDirection();
 	Transform* GetTransform() { return _pTransform; }
@@ -42,6 +43,9 @@ private:
 	Vector3 _vCamInitDir = Vector3(0.0f, 0.0f, 1.0f);
 	Transform* _pTransform = nullptr;
 	AkF32 _fCamSpeed = 1.0f;
+
+	// Release for follow camera.
+	AkBool _bIsView = AK_FALSE;
 
 public:
 	CAMERA_MODE Mode = {};

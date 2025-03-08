@@ -90,12 +90,12 @@ AkI32 Window::Run()
 }
 
 // Forward declare message handler from imgui_impl_win32.cpp
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+// extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT Window::MemWndProc(HWND hWnd, AkU32 uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-		return AK_TRUE;
+	//if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		//return AK_TRUE;
 
 	switch (uMsg)
 	{

@@ -207,9 +207,6 @@
     <ClInclude Include="Window.h">
       <Filter>src\framework</Filter>
     </ClInclude>
-    <ClInclude Include="Animator.h">
-      <Filter>src\mgr</Filter>
-    </ClInclude>
     <ClInclude Include="Macro.h">
       <Filter>src\framework</Filter>
     </ClInclude>
@@ -260,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="ModelExporter.h">
       <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="FilePath.h">
+      <Filter>src\framework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -391,9 +391,6 @@
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>src\framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Animator.cpp">
-      <Filter>src\mgr</Filter>
     </ClCompile>
     <ClCompile Include="BaseObject.cpp">
       <Filter>src\obj</Filter>

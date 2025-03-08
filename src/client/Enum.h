@@ -125,15 +125,25 @@ enum class CAMERA_MODE
 	FOLLOW,
 };
 
+
 /*
-==================
-Transform Mode
-==================
+================
+Animation
+================
 */
 
-enum class TRANSFORM_MODE
+enum class ANIM_CLIP_STATE
 {
-	YPR,
-	EULER,
-	QUAT,
+	LOOP,
+	ONCE,
+	STOP,
+};
+
+enum class SWAT_ANIM_CLIP
+{
+	IDLE,
+	WALK,
+	RUN,
+	
+	END = 32,
 };

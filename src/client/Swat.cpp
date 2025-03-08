@@ -1,16 +1,13 @@
 #include "pch.h"
 #include "Swat.h"
-#include "AssetManager.h"
 #include "SkinnedModel.h"
 #include "Animation.h"
-#include "Animator.h"
 #include "Transform.h"
 #include "Controller.h"
 #include "Collider.h"
 #include "Gravity.h"
 #include "RigidBody.h"
 #include "Camera.h"
-#include "GameInput.h"
 #include "Weapon.h"
 
 Swat::Swat()
@@ -35,27 +32,24 @@ AkBool Swat::Initialize()
 	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_TRUE);
 
 	// Create Anim.
-	_pAnimation = CreateAnimation(12);
-	_pAnimation->SetBoneHierarchy(pMeshDataContainer->pBoneHierarchyList);
-	_pAnimation->SetBoneOffsetMat(pMeshDataContainer->pBoneOffsetMatList);
-	_pAnimation->SetDefaultMatrix(&pMeshDataContainer->mDefaultMat);
-	_pAnimation->SetBoneNum(pMeshDataContainer->uBoneNum);
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_Idle.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_Walking.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_Run.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_Jump.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleRun.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleWalking.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleIdle.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleRunFire.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleWalkFire.anim");
-	_pAnimation->ReadClip(L"../../assets/model/", L"SwatGuy_RifleIdleFire.anim");
-	_pAnimation->SetIdle(L"SwatGuy_Idle.anim");
-	SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_IDLE);
+	_pAnimation = CreateAnimation(pMeshDataContainer, ANIM_CLIP[IDLE], (AkU32)COUNT);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[IDLE]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[F_WALK]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FL_WALK]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FR_WALK]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[L_WALK]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[R_WALK]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[BL_WALK]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[BR_WALK]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[B_WALK]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[RUN]);
+	SetAnimation(IDLE);
+
+	// Delete MeshData Resource.
+	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
 
 	// Bind Animation.
-	((SkinnedModel*)_pModel)->BindAnimationTest(_pAnimation);
-	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
+	((SkinnedModel*)_pModel)->BindAnimation(_pAnimation);
 
 	// Create Controller.
 	_pController = CreateController();
@@ -88,7 +82,7 @@ AkBool Swat::Initialize()
 
 void Swat::Update()
 {
-	Idle();
+	SetIdle();
 
 	_pController->Update();
 
@@ -99,7 +93,7 @@ void Swat::Update()
 
 void Swat::FinalUpdate()
 {
-	_pGravity->Update();
+	// _pGravity->Update();
 
 	_pRigidBody->Update();
 
@@ -208,33 +202,8 @@ void Swat::CleanUp()
 {
 }
 
-void Swat::Idle()
+void Swat::SetIdle()
 {
-	Fire = AK_FALSE;
-	SpeedUp = AK_FALSE;
-
-	if (!GroundCollision)
-	{
-		// 지면과 충돌하지 않았을때 중력 가속도 적용
-		_pRigidBody->SetVelocity(0.0f, _pRigidBody->GetVelocity().y, 0.0f);
-	}
-	else
-	{
-		// 지면과 충돌 시 위치 보정 중력 가속도는 적용되지 않음
-		Vector3 vPos = _pTransform->GetPosition();
-
-		_pRigidBody->SetVelocity(0.0f, 0.0f, 0.0f);
-		_pTransform->SetPosition(&vPos);
-	}
-
-	if (!BindWeapon)
-	{
-		// SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_IDLE);
-	}
-	else
-	{
-		// SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_IDLE);
-	}
 }
 
 void Swat::UpdateMove()
@@ -242,199 +211,129 @@ void Swat::UpdateMove()
 	if (Jumping)
 		return;
 
-	Vector3 vFrontDir = _pCamera->GetDirection();
-	vFrontDir.y = 0.0f;
-	vFrontDir.Normalize();
+	Vector3 vVelocity = _pRigidBody->GetVelocity();
 
-	Vector3 vUpDir = Vector3(0.0f, 1.0f, 0.0f);
-	Vector3 vRightDir = vUpDir.Cross(vFrontDir);
+	printf("%lf\n", vVelocity.Length());
 
-	AkF32 fSpeed = 1.0f;
-
-	Vector3 vNextDir = Vector3(0.0f);
-	Vector3 vYawPitchRoll = _pTransform->GetRotation();
-
-
-	if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK == MoveState)
+	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 5.0f)
 	{
-		vNextDir += vFrontDir;
+		// Walk.
+		Vector3 vDir = vVelocity;
+		vDir.Normalize();
+
+		AkF32 fCosValue0 = vDir.Dot(_pTransform->Front());
+
+		//printf("%lf\n", fCosValue0);
+		//printf("%lf %lf %lf\n", vDir.x, vDir.y, vDir.z);
+		//printf("%lf %lf %lf\n", _pTransform->Front().x, _pTransform->Front().y, _pTransform->Front().z);
+
+		if (0.866025f < fCosValue0)
+		{
+			SetAnimation(F_WALK);
+		}
+		else if (0.5f <= fCosValue0 && fCosValue0 <= 0.866025f)
+		{
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+				SetAnimation(FR_WALK);
+			else
+				SetAnimation(FL_WALK);
+		}
+		else if (-0.5f < fCosValue0 && fCosValue0 < 0.5f)
+		{
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+				SetAnimation(R_WALK);
+			else
+				SetAnimation(L_WALK);
+		}
+		else if (-0.866025f <= fCosValue0 && fCosValue0 <= -0.5f)
+		{
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+				SetAnimation(BR_WALK);
+			else
+				SetAnimation(BL_WALK);
+		}
+		else
+		{
+			SetAnimation(B_WALK);
+		}
 	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_BACK_WALK == MoveState)
+	else if (vVelocity.Length() > 5.0f)
 	{
-		vNextDir -= vFrontDir;
-
-		vYawPitchRoll.x += DirectX::XM_PI;
+		SetAnimation(RUN);
 	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_RIGHT_WALK == MoveState)
+	else if(0.0f >= vVelocity.Length())
 	{
-		vNextDir += vRightDir;
-
-		vYawPitchRoll.x += DirectX::XM_PIDIV2;
+		if(F_WALK <= AnimState && AnimState <= B_WALK)
+			SetAnimation(IDLE);
+		
+		if (RUN == AnimState)
+			SetAnimation(IDLE);
 	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_LEFT_WALK == MoveState)
-	{
-		vNextDir -= vRightDir;
-
-		vYawPitchRoll.x -= DirectX::XM_PIDIV2;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_FRONT_WALK == MoveState)
-	{
-		vNextDir += vFrontDir;
-		vNextDir += vRightDir;
-
-		vYawPitchRoll.x += DirectX::XM_PIDIV4;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_FRONT_WALK == MoveState)
-	{
-		vNextDir += vFrontDir;
-		vNextDir -= vRightDir;
-
-		vYawPitchRoll.x -= DirectX::XM_PIDIV4;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIHGT_BACK_WALK == MoveState)
-	{
-		vNextDir -= vFrontDir;
-		vNextDir += vRightDir;
-
-		vYawPitchRoll.x += (DirectX::XM_PI - DirectX::XM_PIDIV4);
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK == MoveState)
-	{
-		vNextDir -= vFrontDir;
-		vNextDir -= vRightDir;
-
-		vYawPitchRoll.x += (DirectX::XM_PI + DirectX::XM_PIDIV4);
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN == MoveState)
-	{
-		vNextDir += vFrontDir;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_BACK_RUN == MoveState)
-	{
-		vNextDir -= vFrontDir;
-
-		vYawPitchRoll.x += DirectX::XM_PI;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_RIGHT_RUN == MoveState)
-	{
-		vNextDir += vRightDir;
-
-		vYawPitchRoll.x += DirectX::XM_PIDIV2;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_LEFT_RUN == MoveState)
-	{
-		vNextDir -= vRightDir;
-
-		vYawPitchRoll.x -= DirectX::XM_PIDIV2;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_FRONT_RUN == MoveState)
-	{
-		vNextDir += vFrontDir;
-		vNextDir += vRightDir;
-
-		vYawPitchRoll.x += DirectX::XM_PIDIV4;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_FRONT_RUN == MoveState)
-	{
-		vNextDir += vFrontDir;
-		vNextDir -= vRightDir;
-
-		vYawPitchRoll.x += -DirectX::XM_PIDIV4;
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_RIGHT_BACK_RUN == MoveState)
-	{
-		vNextDir -= vFrontDir;
-		vNextDir += vRightDir;
-
-		vYawPitchRoll.x += (DirectX::XM_PI - DirectX::XM_PIDIV4);
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN == MoveState)
-	{
-		vNextDir -= vFrontDir;
-		vNextDir -= vRightDir;
-
-		vYawPitchRoll.x += (DirectX::XM_PI + DirectX::XM_PIDIV4);
-	}
-
-	vNextDir.Normalize();
-
-	// Run 적용
-	if (SpeedUp)
-		fSpeed *= 3.5f;
-
-	Vector3 vNextVelocity = vNextDir * fSpeed;
-
-	// 중력적용
-	if (!GroundCollision)
-	{
-		vNextVelocity = Vector3(vNextVelocity.x, _pRigidBody->GetVelocity().y, vNextVelocity.z);
-	}
-
-	_pTransform->SetRotation(&vYawPitchRoll);
-
-	_pRigidBody->SetVelocity(vNextVelocity);
 }
 
 void Swat::UpdateWeapon()
 {
-	if (!BindWeapon)
-		return;
+	//if (!BindWeapon)
+	//	return;
 
-	if (MOVE_STATE::PLAYER_MOVE_STATE_NONE == MoveState)
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(7.079f), DirectX::XMConvertToRadians(14.038f), DirectX::XMConvertToRadians(149.514f));
-		_pWeapon->GetTransform()->SetPosition(0.433f, 0.283f, 0.047f);
-		_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+	//if (MOVE_STATE::PLAYER_MOVE_STATE_NONE == MoveState)
+	//{
+	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(7.079f), DirectX::XMConvertToRadians(14.038f), DirectX::XMConvertToRadians(149.514f));
+	//	_pWeapon->GetTransform()->SetPosition(0.433f, 0.283f, 0.047f);
+	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
 
-		LeftHand = AK_TRUE;
-		RightHand = AK_FALSE;
-	}
-	if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK)
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(0.807f), DirectX::XMConvertToRadians(-2.340f), DirectX::XMConvertToRadians(142.585f));
-		_pWeapon->GetTransform()->SetPosition(0.46f, 0.289f, 0.068f);
-		_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+	//	LeftHand = AK_TRUE;
+	//	RightHand = AK_FALSE;
+	//}
+	//if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK)
+	//{
+	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(0.807f), DirectX::XMConvertToRadians(-2.340f), DirectX::XMConvertToRadians(142.585f));
+	//	_pWeapon->GetTransform()->SetPosition(0.46f, 0.289f, 0.068f);
+	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
 
-		LeftHand = AK_TRUE;
-		RightHand = AK_FALSE;
-	}
-	if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN)
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-10.821f), DirectX::XMConvertToRadians(17.809f), DirectX::XMConvertToRadians(155.865f));
-		_pWeapon->GetTransform()->SetPosition(0.437f, 0.293f, 0.053f);
-		_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+	//	LeftHand = AK_TRUE;
+	//	RightHand = AK_FALSE;
+	//}
+	//if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN)
+	//{
+	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-10.821f), DirectX::XMConvertToRadians(17.809f), DirectX::XMConvertToRadians(155.865f));
+	//	_pWeapon->GetTransform()->SetPosition(0.437f, 0.293f, 0.053f);
+	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
 
-		LeftHand = AK_TRUE;
-		RightHand = AK_FALSE;
-	}
+	//	LeftHand = AK_TRUE;
+	//	RightHand = AK_FALSE;
+	//}
 }
 
 void Swat::UpdateFire()
 {
-	if (!Fire)
-		return;
+	//if (!Fire)
+	//	return;
 
-	if (MOVE_STATE::PLAYER_MOVE_STATE_NONE == MoveState)
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(6.16f), DirectX::XMConvertToRadians(-2.817f), DirectX::XMConvertToRadians(178.809f));
-		_pWeapon->GetTransform()->SetPosition(0.426f, 0.297f, 0.058f);
+	//if (MOVE_STATE::PLAYER_MOVE_STATE_NONE == MoveState)
+	//{
+	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(6.16f), DirectX::XMConvertToRadians(-2.817f), DirectX::XMConvertToRadians(178.809f));
+	//	_pWeapon->GetTransform()->SetPosition(0.426f, 0.297f, 0.058f);
 
-		SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_IDLE_FIRE);
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK)
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(16.092f), DirectX::XMConvertToRadians(-21.279f), DirectX::XMConvertToRadians(-166.074f));
-		_pWeapon->GetTransform()->SetPosition(0.410f, 0.301f, 0.014f);
+	//	SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_IDLE_FIRE);
+	//}
+	//else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK)
+	//{
+	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(16.092f), DirectX::XMConvertToRadians(-21.279f), DirectX::XMConvertToRadians(-166.074f));
+	//	_pWeapon->GetTransform()->SetPosition(0.410f, 0.301f, 0.014f);
 
-		SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK_FIRE);
-	}
-	else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN)
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-23.338f), DirectX::XMConvertToRadians(-20.093f), DirectX::XMConvertToRadians(-167.379f));
-		_pWeapon->GetTransform()->SetPosition(0.410f, 0.309f, 0.014f);
+	//	SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK_FIRE);
+	//}
+	//else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN)
+	//{
+	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-23.338f), DirectX::XMConvertToRadians(-20.093f), DirectX::XMConvertToRadians(-167.379f));
+	//	_pWeapon->GetTransform()->SetPosition(0.410f, 0.309f, 0.014f);
 
-		SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN_FIRE);
-	}
+	//	SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN_FIRE);
+	//}
 }
 
 void Swat::FinalUpdateWeapon()
@@ -459,4 +358,13 @@ void Swat::FinalUpdateWeapon()
 	//}
 
 	//_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
+}
+
+void Swat::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)
+{
+	if (eState != AnimState)
+	{
+		AnimState = eState;
+		_pAnimation->PlayClip(ANIM_CLIP[eState], ANIM_CLIP_STATE::LOOP, fSpeed, 0.325f);
+	}
 }

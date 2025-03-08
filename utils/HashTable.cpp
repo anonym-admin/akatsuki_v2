@@ -136,6 +136,48 @@ unsigned int HT_Find(HashTable_t* pHashTable, void** ppDataList, unsigned int uG
 	return uSelectedItemNum;
 }
 
+unsigned int HT_FindAll(HashTable_t* pHashTable, void** ppOutDataList, unsigned int uMaxItemNum, bool* pOutInSufficient)
+{
+	Bucket_t* pBucket = nullptr;
+	List_t* pCur = nullptr;
+
+	*pOutInSufficient = false;
+	unsigned int uItemNum = 0;
+
+	bool bRet = false;
+	for (unsigned int i = 0; i < pHashTable->uMaxBucketNum; i++)
+	{
+		pCur = pHashTable->pBucketDesc[i].pBucketHead;
+		while (pCur)
+		{
+			pBucket = (Bucket_t*)pCur->pData;
+
+			if (uItemNum >= pHashTable->uDataNum)
+			{
+				*pOutInSufficient = true;
+				bRet = true;
+			}
+
+			if (bRet)
+			{
+				break;
+			}
+
+			ppOutDataList[uItemNum] = (void*)pBucket->pData;
+			uItemNum++;
+
+			pCur = pCur->pNext;
+		}
+
+		if (bRet)
+		{
+			break;
+		}
+	}
+
+	return uItemNum;
+}
+
 void HT_Delete(HashTable_t* pHashTable, const void* pSearchHandle)
 {
 	Bucket_t* pBucket = (Bucket_t*)pSearchHandle;
@@ -150,8 +192,25 @@ void HT_Delete(HashTable_t* pHashTable, const void* pSearchHandle)
 	pHashTable->uDataNum--;
 }
 
+void HT_DeleteAll(HashTable_t* pHashTable)
+{
+	Bucket_t* pBucket = nullptr;
+	for (unsigned int i = 0; i < pHashTable->uMaxBucketNum; i++)
+	{
+		while (pHashTable->pBucketDesc[i].pBucketHead)
+		{
+			pBucket = (Bucket_t*)pHashTable->pBucketDesc[i].pBucketHead->pData;
+			HT_Delete(pHashTable, pBucket);
+		}
+	}
+}
+
 void HT_DestroyHashTable(HashTable_t* pHashTable)
 {
+	HT_Check(pHashTable);
+
+	HT_DeleteAll(pHashTable);
+
     if (pHashTable)
     {
 		if (pHashTable->pBucketDesc)
@@ -162,4 +221,29 @@ void HT_DestroyHashTable(HashTable_t* pHashTable)
 
         free(pHashTable);
     }
+}
+
+unsigned int HT_GetMaxBucketNum(HashTable_t* pHashTable)
+{
+	return pHashTable->uMaxBucketNum;
+}
+
+unsigned int HT_GetDataNum(HashTable_t* pHashTable)
+{
+	return pHashTable->uDataNum;
+}
+
+unsigned int HT_GetKeyPtrAndSize(void** ppOutKeyPtr, const void* pSearchHandle)
+{
+	*ppOutKeyPtr = ((Bucket_t*)pSearchHandle)->pKey;
+	unsigned int uSize = ((Bucket_t*)pSearchHandle)->uKeyLength;
+	return uSize;
+}
+
+void HT_Check(HashTable_t* pHashTable)
+{
+	if (pHashTable->uDataNum)
+	{
+		__debugbreak();
+	}
 }

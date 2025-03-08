@@ -3,7 +3,6 @@
 #include "Application.h"
 #include "GeometryGenerator.h"
 #include "SceneManager.h"
-#include "Animator.h"
 #include "LandScape.h"
 #include "AssetManager.h"
 #include "EventManager.h"
@@ -41,24 +40,6 @@ AkBool SceneLoading::BeginScene()
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY, L"../../assets/model/", L"SwatGuy.md3d", 1.0f, AK_TRUE);
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER, L"../../assets/model/", L"Dancer.md3d", 1.0f, AK_TRUE);
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74, L"../../assets/model/", L"BRS-74.md3d", 1.0f, AK_FALSE);
-	}
-
-	// Load Animation clip.
-	{
-		AssetMeshDataContainer_t* pMeshDataContanier = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
-		AnimatorHandle_t tAnimatorHandle = {};
-		tAnimatorHandle.mDefaultMat = pMeshDataContanier->mDefaultMat;
-		tAnimatorHandle.pBoneOffsetMatList = pMeshDataContanier->pBoneOffsetMatList;
-		tAnimatorHandle.pBoneHierarchyList = pMeshDataContanier->pBoneHierarchyList;
-		tAnimatorHandle.uBoneNum = pMeshDataContanier->uBoneNum;
-		GAnimator->AddAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_PLAYER, GMAE_ANIM_FILE_BASE_PATH, GAME_ANIM_PLAYER_ANIM_FILE_NAME, _countof(GAME_ANIM_PLAYER_ANIM_FILE_NAME), &tAnimatorHandle);
-	
-		pMeshDataContanier = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER);
-		tAnimatorHandle.mDefaultMat = pMeshDataContanier->mDefaultMat;
-		tAnimatorHandle.pBoneOffsetMatList = pMeshDataContanier->pBoneOffsetMatList;
-		tAnimatorHandle.pBoneHierarchyList = pMeshDataContanier->pBoneHierarchyList;
-		tAnimatorHandle.uBoneNum = pMeshDataContanier->uBoneNum;
-		GAnimator->AddAnimation(GAME_ANIMATION_TYPE::GAME_ANIM_TYPE_DANCER, GMAE_ANIM_FILE_BASE_PATH, GAME_ANIM_DANCER_ANIM_FILE_NAME, _countof(GAME_ANIM_DANCER_ANIM_FILE_NAME), &tAnimatorHandle);
 	}
 
 	// Image based lighting textures.

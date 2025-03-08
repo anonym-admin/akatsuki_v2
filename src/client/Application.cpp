@@ -70,11 +70,11 @@ void Application::RunApplication()
 {
 	GTimer->Tick();
 
-	// Start the Dear ImGui frame
-	ImGui_ImplDX12_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-	ImGuiIO& io = ImGui::GetIO();
+	//// Start the Dear ImGui frame
+	//ImGui_ImplDX12_NewFrame();
+	//ImGui_ImplWin32_NewFrame();
+	//ImGui::NewFrame();
+	//ImGuiIO& io = ImGui::GetIO();
 
 	// Update.
 	Update();
@@ -96,8 +96,8 @@ void Application::RunApplication()
 	// Render.
 	Render();
 
-	// ImGui Render.
-	ImGui::Render();
+	//// ImGui Render.
+	//ImGui::Render();
 
 	// End render.
 	GRenderer->EndRender();
@@ -123,7 +123,7 @@ AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 
 void Application::CleanUp()
 {
-	GRenderer->UnBindImGui();
+	// GRenderer->UnBindImGui();
 
 	if (GRenderer)
 	{
@@ -187,6 +187,8 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 
 	GRenderer = pRenderer;
 
+	// GRenderer->BindImGui((void**)&GImGui);
+
 	return AK_TRUE;
 }
 
@@ -202,8 +204,6 @@ AkBool Application::InitScene()
 
 AkBool Application::InitEditor()
 {
-	GRenderer->BindImGui((void**)&GImGui);
-
 	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_TYPE_MODEL, new EditorModel());
 	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_TYPE_MAP, new EditorMap());
 

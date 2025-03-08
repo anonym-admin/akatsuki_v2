@@ -1,5 +1,11 @@
 #pragma once
 
+/*
+==========
+Transform
+==========
+*/
+
 class Transform
 {
 public:
@@ -20,12 +26,17 @@ public:
 	Vector3 GetPosition() { return _vPosition; }
 	Matrix& GetWorldTransform() { return _mWorldRow; }
 	Matrix* GetWorldTransformAddr() { return &_mWorldRow; }
+	Vector3 Front();
+	Vector3 Right();
+	Vector3 Up();
 
 private:
-	TRANSFORM_MODE Mode = TRANSFORM_MODE::YPR;
 	Vector3 _vScale = Vector3(1.0f);
 	Vector3 _vPosition = Vector3(0.0f);
 	Vector3 _vRotation = Vector3(0.0f); // Yaw Pich Roll
+	Vector3 _vFront = Vector3(0.0f, 0.0f, -1.0f); // 나를 바라보는 방향 기준
+	Vector3 _vRight = Vector3(-1.0f, 0.0f, 0.0f);
+	Vector3 _vUp = Vector3(0.0f, 1.0f, 0.0f);
 	Matrix _mWorldRow = Matrix();
 	const Matrix* _pParent = nullptr;
 };

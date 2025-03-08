@@ -42,125 +42,57 @@ struct AnimationClip_t
 
 	// Hash Table 버킷을 지우기 위한 핸들.
 	void* pSearchHandle = nullptr;
+
+	List_t tLink = {};
 };
 
 /*
-==============
-Animator
-==============
+============
+Animation
+============
 */
-
-struct HashTable_t;
 
 class Animation
 {
-public:
-	Animation();
-	~Animation();
-
-	AkBool Initialize(AkU32 uMaxClipNum);
-	void AddRef();
-	void Release();
-
-	void GetFinalTransform(const wchar_t* wcClipName, const AkF32 fTimePos, Matrix* pFinalTransform, Matrix* pRootTransform, AkBool bInPlace);
-	AkU32 GetClipTickPerSecond(const wchar_t* wcClipName);
-	AkU32 GetClipDuration(const wchar_t* wcClipName);
-	AkF32 GetClipStartTime(const wchar_t* wcClipName);
-	AkF32 GetClipEndTime(const wchar_t* wcClipName);
-	AkF32 GetClipCurrentTime(const wchar_t* wcClipName);
-	AkU32 GetBoneNum() { return _uBoneNum; }
-	Matrix* GetFinalTransforms() { return _pFinalTransforms; }
-	Matrix* GetRootTransforms() { return _pRootTransforms; }
-
-	void SetDefaultMatrix(const Matrix* mDefaultMat);
-	void SetBoneOffsetMat(const Matrix* pBoneOffsetMatList) { _pBoneOffsetMatrixList = pBoneOffsetMatList; }
-	void SetBoneHierarchy(const AkI32* pBoneHierarchyList) { _pBoneHierarchyList = pBoneHierarchyList; }
-	void SetClipCurrentTime(const wchar_t* wcClipName, AkF32 fCurTime);
-	void SetBoneNum(AkU32 uBoneNum) { _uBoneNum = uBoneNum; }
-	void DestroyAnimationClip(const wchar_t* wcClipName);
-
-	AnimationClip_t* ReadFromAnimationFile(const wchar_t* wcBasePath, const wchar_t* wcFilename);
-
-	AkBool PlayAnimation(const wchar_t* wcAnimClipname, AkBool bInPlace);
-
-private:
-	void CleanUp();
-
-	void AddAnimationClip(AnimationClip_t* pAnimClip, const wchar_t* wcClipName);
-
-private:
-	// 이후에 static 으로 관리?? 
-	// TODO!!
-	static HashTable_t* _pAnimationClipTable;
-	static AkU32 _uInitRefCount;
-
-	const AkI32* _pBoneHierarchyList = nullptr;
-	const Matrix* _pBoneOffsetMatrixList = nullptr;
-	AkU32 _uBoneNum = 0;
-	AkU32 _uMaxClipNum = 0;
-	Matrix _mDefaultMatrix = Matrix();
-	AkU32 _uRefCount = 1;
-
-	Matrix* _pFinalTransforms = nullptr;
-	Matrix* _pRootTransforms = nullptr;
-};
-
-
-
-
-
-
-
-
-
-// Newly
-enum class N_ANIM_STATE
-{
-	LOOP,
-	ONCE,
-	STOP,
-};
-
-class N_Animation
-{
-	struct N_Animator
+	struct Animator_t
 	{
 		AkF32 fFrameWeight = 0.0f;
 		AkU32 uCurFrame = 0;
 		AkU32 uNextFrame = 1;
 		const wchar_t* wcName = nullptr;
-		N_ANIM_STATE eAnimState = N_ANIM_STATE::STOP;
+		ANIM_CLIP_STATE eAnimState = ANIM_CLIP_STATE::STOP;
 	};
 
-	void UpdateAnimator(N_Animator* pAnimator);
+	void UpdateAnimator(Animator_t* pAnimator);
 
 public:
-	N_Animation(AkU32 uMaxClipNum);
-	~N_Animation();
+	Animation(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum);
+	~Animation();
 
-	AkBool Initialize(AkU32 uMaxClipNum);
+	AkBool Initialize(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum);
 	void Update();
 
 	Matrix GetBoneTrnasformAtID(AkU32 uBoneID);
 	Matrix* GetBoneTransforms();
 	
 	AnimationClip_t* ReadClip(const wchar_t* wcBasePath, const wchar_t* wcClipname);
-	void SetIdle(const wchar_t* wcIdleClipName);
-	void PlayClip(const wchar_t* wcClipname, N_ANIM_STATE eState, AkF32 fBlendTime);
+	void PlayClip(const wchar_t* wcClipname, ANIM_CLIP_STATE eState, AkF32 fSpeed = 1.0f, AkF32 fBlendTime = 0.2f);
+
+private:
+	void CleanUp();
+
+	void AddAnimationClip(AnimationClip_t* pAnimClip, const wchar_t* wcClipName);
 	void SetBoneNum(AkU32 uBoneNum) { _uBoneNum = uBoneNum; }
 	void SetDefaultMatrix(const Matrix* pDefaultMat) { _mDefaultMatrix = *pDefaultMat; }
 	void SetBoneOffsetMat(const Matrix* pBoneOffsetMatList) { _pBoneOffsetMatrixList = pBoneOffsetMatList; }
 	void SetBoneHierarchy(const AkI32* pBoneHierarchyList) { _pBoneHierarchyList = pBoneHierarchyList; }
 
 private:
-	void CleanUp();
-
-	void AddAnimationClip(AnimationClip_t* pAnimClip, const wchar_t* wcClipName);
-
-private:
 	HashTable_t* _pAnimationClipTable = nullptr;
-	N_Animator _tCurAnimator = {};
-	N_Animator _tNextAnimator = {};
+	List_t* _pClipHead = nullptr;
+	List_t* _pClipTail = nullptr;
+	Animator_t _tCurAnimator = {};
+	Animator_t _tNextAnimator = {};
 	const AkI32* _pBoneHierarchyList = nullptr;
 	const Matrix* _pBoneOffsetMatrixList = nullptr;
 	Matrix _mDefaultMatrix = Matrix();

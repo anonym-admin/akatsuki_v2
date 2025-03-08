@@ -40,8 +40,8 @@ Transform* Editor::CreateTransform()
 	return pTransform;
 }
 
-Animation* Editor::CreateAnimation()
+Animation* Editor::CreateAnimation(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum)
 {
-	Animation* pAnim = new Animation;
+	Animation* pAnim = new Animation(pMeshDataContainer, wcIdleClipName, uMaxClipNum);
 	return pAnim;
 }

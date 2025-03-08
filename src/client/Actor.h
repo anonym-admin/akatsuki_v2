@@ -2,48 +2,6 @@
 
 #include "BaseObject.h"
 
-enum class ANIM_STATE
-{
-	PLAYER_ANIM_STATE_IDLE,
-	PLAYER_ANIM_STATE_WALK,
-	PLAYER_ANIM_STATE_RUN,
-	PLAYER_ANIM_STATE_JUMP,
-	PLAYER_ANIM_STATE_RIFLE_RUN,
-	PLAYER_ANIM_STATE_RIFLE_WALK,
-	PLAYER_ANIM_STATE_RIFLE_IDLE,
-	PLAYER_ANIM_STATE_RIFLE_RUN_FIRE,
-	PLAYER_ANIM_STATE_RIFLE_WALK_FIRE,
-	PLAYER_ANIM_STATE_RIFLE_IDLE_FIRE,
-	PLAYER_ANIM_STATE_COUNT = 32,
-};
-
-enum class MOVE_STATE
-{
-	PLAYER_MOVE_STATE_NONE,
-
-	PLAYER_MOVE_STATE_FRONT_WALK,
-	PLAYER_MOVE_STATE_BACK_WALK,
-	PLAYER_MOVE_STATE_RIGHT_WALK,
-	PLAYER_MOVE_STATE_LEFT_WALK,
-
-	PLAYER_MOVE_STATE_DIAGONAL_RIGHT_FRONT_WALK,
-	PLAYER_MOVE_STATE_DIAGONAL_LEFT_FRONT_WALK,
-	PLAYER_MOVE_STATE_DIAGONAL_RIHGT_BACK_WALK,
-	PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK,
-
-	PLAYER_MOVE_STATE_FRONT_RUN,
-	PLAYER_MOVE_STATE_BACK_RUN,
-	PLAYER_MOVE_STATE_RIGHT_RUN,
-	PLAYER_MOVE_STATE_LEFT_RUN,
-
-	PLAYER_MOVE_STATE_DIAGONAL_RIGHT_FRONT_RUN,
-	PLAYER_MOVE_STATE_DIAGONAL_LEFT_FRONT_RUN,
-	PLAYER_MOVE_STATE_DIAGONAL_RIGHT_BACK_RUN,
-	PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN,
-
-	PLAYER_MOVE_STATE_COUNT,
-};
-
 /*
 =========
 Actor
@@ -55,6 +13,7 @@ class RigidBody;
 class Gravity;
 class Camera;
 class Weapon;
+class Animation;
 
 class Actor : public BaseObject
 {
@@ -74,21 +33,19 @@ public:
 	RigidBody* CreateRigidBody();
 	Gravity* CreateGravity();
 	Camera* CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll = nullptr);
-
-	class N_Animation* CreateAnimation(AkU32 uMaxClipNum);
-	void SetAnimation(ANIM_STATE eState);
+	Animation* CreateAnimation(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum);
 
 	void DestroyCollider();
 	void DesteoyRigidBody();
 	void DestroyGravity();
 	void DestroyCamera();
-
 	void DestroyAnimation();
 
 	Collider* GetCollider() { return _pCollider; }
 	RigidBody* GetRigidBody() { return _pRigidBody; }
 	Gravity* GetGravity() { return _pGravity; }
 	Camera* GetCamera() { return _pCamera; }
+	Animation* GetAnimation() { return _pAnimation; }
 
 	void SetWeapon(Weapon* pWeapon);
 
@@ -110,10 +67,11 @@ protected:
 	// 카메라
 	Camera* _pCamera = nullptr;
 
-	// Weapon
+	// 무기
 	Weapon* _pWeapon = nullptr;
 
-	N_Animation* _pAnimation = nullptr;
+	// 애니메이션
+	Animation* _pAnimation = nullptr;
 
 public:
 	AkBool GroundCollision = AK_FALSE;
@@ -125,6 +83,4 @@ public:
 	AkBool LeftHand = AK_FALSE;
 	AkBool Fire = AK_FALSE;
 	AkBool DrawNormal = AK_FALSE;
-	MOVE_STATE MoveState = {};
-	ANIM_STATE AnimState = ANIM_STATE::PLAYER_ANIM_STATE_COUNT;
 };
