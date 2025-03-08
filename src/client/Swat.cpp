@@ -42,7 +42,10 @@ AkBool Swat::Initialize()
 	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[BL_WALK]);
 	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[BR_WALK]);
 	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[B_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[RUN]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[F_RUN]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FL_RUN]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FR_RUN]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[PUNCHING_01]);
 	SetAnimation(IDLE);
 
 	// Delete MeshData Resource.
@@ -74,21 +77,19 @@ AkBool Swat::Initialize()
 
 	// Create Rigidbody
 	_pRigidBody = CreateRigidBody();
-	_pRigidBody->SetFrictionCoef(0.0f);
-	_pRigidBody->SetMaxVeleocity(10.0f);
+	_pRigidBody->SetFrictionCoef(2.5f);
+	_pRigidBody->SetMaxVeleocity(3.5f);
 
 	return AK_TRUE;
 }
 
 void Swat::Update()
 {
-	SetIdle();
-
-	_pController->Update();
-
 	UpdateMove();
 	UpdateWeapon();
 	UpdateFire();
+
+	_pController->Update();
 }
 
 void Swat::FinalUpdate()
@@ -204,28 +205,22 @@ void Swat::CleanUp()
 
 void Swat::SetIdle()
 {
+	SetAnimation(IDLE);
 }
 
 void Swat::UpdateMove()
 {
-	if (Jumping)
-		return;
-
 	Vector3 vVelocity = _pRigidBody->GetVelocity();
 
-	printf("%lf\n", vVelocity.Length());
+	// printf("%lf\n", vVelocity.Length());
 
-	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 5.0f)
+	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 2.8f)
 	{
 		// Walk.
 		Vector3 vDir = vVelocity;
 		vDir.Normalize();
 
 		AkF32 fCosValue0 = vDir.Dot(_pTransform->Front());
-
-		//printf("%lf\n", fCosValue0);
-		//printf("%lf %lf %lf\n", vDir.x, vDir.y, vDir.z);
-		//printf("%lf %lf %lf\n", _pTransform->Front().x, _pTransform->Front().y, _pTransform->Front().z);
 
 		if (0.866025f < fCosValue0)
 		{
@@ -260,16 +255,18 @@ void Swat::UpdateMove()
 			SetAnimation(B_WALK);
 		}
 	}
-	else if (vVelocity.Length() > 5.0f)
+	else if (vVelocity.Length() > 3.0f)
 	{
-		SetAnimation(RUN);
+		// Run.
+		SetAnimation(F_RUN);
 	}
-	else if(0.0f >= vVelocity.Length())
+	else if (0.0f >= vVelocity.Length())
 	{
-		if(F_WALK <= AnimState && AnimState <= B_WALK)
+		// Idle.
+		if (F_WALK <= AnimState && AnimState <= B_WALK)
 			SetAnimation(IDLE);
-		
-		if (RUN == AnimState)
+
+		if (F_RUN == AnimState)
 			SetAnimation(IDLE);
 	}
 }
@@ -365,6 +362,11 @@ void Swat::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)
 	if (eState != AnimState)
 	{
 		AnimState = eState;
-		_pAnimation->PlayClip(ANIM_CLIP[eState], ANIM_CLIP_STATE::LOOP, fSpeed, 0.325f);
+		_pAnimation->PlayClip(ANIM_CLIP[eState], ANIM_CLIP_STATE::LOOP, fSpeed, 0.2f);
 	}
+}
+
+void SetIdle(Swat* pSwat)
+{
+	pSwat->SetIdle();
 }

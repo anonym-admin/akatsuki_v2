@@ -17,6 +17,8 @@ struct AnimationClip {
         Quaternion rot = Quaternion();
 
         Matrix GetTransform() {
+            pos.z = 0.0f;
+
             return Matrix::CreateScale(scale) *
                 Matrix::CreateFromQuaternion(rot) *
                 Matrix::CreateTranslation(pos);

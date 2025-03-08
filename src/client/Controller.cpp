@@ -25,24 +25,31 @@ AkBool Controller::Initialize(Player* pOwner)
 
 void Controller::Update()
 {
-	KeyBoard();
+	/*Attack or Fire*/
 	Mouse();
+	
+	/*Move*/
+	KeyBoard();
 }
 
 void Controller::KeyBoard()
 {
 	Swat* pSwat = (Swat*)_pOwner;
+
+	if (pSwat->Attack)
+		return;
+
 	Swat::ANIM_STATE AnimState = pSwat->AnimState;
 	RigidBody* pRigidBody = pSwat->GetRigidBody();
 
 	Vector3 vVelocity = Vector3(0.0f);
-	AkF32 fMoveSpeed = 1.5f;
+	AkF32 fMoveSpeed = 0.15f;
 	if (KEY_HOLD(KEY_INPUT_W))
 	{
 		vVelocity += pSwat->GetTransform()->Front();
 		if (KEY_HOLD(KEY_INPUT_LSHIFT))
 		{
-			fMoveSpeed = 5.5f;
+			fMoveSpeed = 3.5f;
 		}
 	}
 	if (KEY_HOLD(KEY_INPUT_S))
@@ -62,22 +69,31 @@ void Controller::KeyBoard()
 		pSwat->GetCamera()->ToggleViewMode();
 	}
 
+	Vector3 vCurVector = pRigidBody->GetVelocity();
+
+	// Walk 유지.
+	if (vCurVector.Length() > 2.65f)
+	{
+		// 해당 코드로 걷기 애니메이션에서 오브젝트 방향과 속도 사이에 차이가 발생함.
+		// 그 차이로 인해 움직임 변경.
+		vCurVector.Normalize();
+		vCurVector *= 2.65f;
+		pRigidBody->SetVelocity(&vCurVector);
+	}
+
+	// Run 전환.
 	vVelocity.Normalize();
 	vVelocity *= fMoveSpeed;
-	pRigidBody->SetVelocity(&vVelocity);
+	pRigidBody->AddVelocity(&vVelocity);
 }
 
 void Controller::Mouse()
 {
-	// Fire
-	if (_pOwner->BindWeapon)
-	{
-		if (LBTN_DOWN)
-		{
-		}
-		if (LBTN_HOLD)
-		{
-		}
-	}
+	Swat* pSwat = (Swat*)_pOwner;
 
+	if (LBTN_DOWN)
+	{
+		pSwat->Attack = AK_TRUE;
+		pSwat->SetAnimation(Swat::PUNCHING_01);
+	}
 }

@@ -24,6 +24,8 @@ struct BoneAnimation_t
 
 struct AnimationClip_t
 {
+	typedef void(*CALL_BACK)(void);
+
 	AnimationClip_t();
 	~AnimationClip_t();
 
@@ -39,6 +41,7 @@ struct AnimationClip_t
 	AkU32 uDuration = 0;
 	AkU32 uTickPerSecond = 0;
 	AkF32 fCurTime = 0;
+	AkU32 uMaxKeyFrame = 0;
 
 	// Hash Table 버킷을 지우기 위한 핸들.
 	void* pSearchHandle = nullptr;
@@ -51,6 +54,8 @@ struct AnimationClip_t
 Animation
 ============
 */
+
+class Actor;
 
 class Animation
 {
@@ -74,7 +79,8 @@ public:
 
 	Matrix GetBoneTrnasformAtID(AkU32 uBoneID);
 	Matrix* GetBoneTransforms();
-	
+
+	void SetEndCallBack(const wchar_t* wcClipname, Actor* pActor, AnimationClip_t::CALL_BACK pCallBack);
 	AnimationClip_t* ReadClip(const wchar_t* wcBasePath, const wchar_t* wcClipname);
 	void PlayClip(const wchar_t* wcClipname, ANIM_CLIP_STATE eState, AkF32 fSpeed = 1.0f, AkF32 fBlendTime = 0.2f);
 

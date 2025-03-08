@@ -382,25 +382,30 @@ Matrix* Animation::GetBoneTransforms()
 	return _pFinalTransforms;
 }
 
+void Animation::SetEndCallBack(const wchar_t* wcClipname, Actor* pActor, AnimationClip_t::CALL_BACK pCallBack)
+{
+	// TODO...
+}
+
 AnimationClip_t* Animation::ReadClip(const wchar_t* wcBasePath, const wchar_t* wcFilename)
 {
-	//SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
-
 	UModelImporter tModelImporter = { };
 
 	tModelImporter.LoadAnimation(wcBasePath, wcFilename, _uBoneNum);
-
-	//wchar_t wcFullPath[MAX_PATH] = {};
-	//wcscpy_s(wcFullPath, wcBasePath);
-	//wcscat_s(wcFullPath, wcFilename);
-	//wcscat_s(wcFullPath, L"\n");
-
-	//pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 
 	AnimationClip_t* pAnimClip = tModelImporter.GetAnimationClip();
 
 	AddAnimationClip(pAnimClip, wcFilename);
 
+	// Set Max Frame.
+	AkU32 uMaxKeyFrame = 0;
+	for (AkU32 i = 0; i < pAnimClip->uNumBoneAnimation; i++)
+	{
+		uMaxKeyFrame = max(uMaxKeyFrame, pAnimClip->pBoneAnimationList[i].uNumKeyFrame);
+	}
+	pAnimClip->uMaxKeyFrame = uMaxKeyFrame;
+
+	// For Delete Clip.
 	pAnimClip->tLink.pData = pAnimClip;
 	LL_PushBack(&_pClipHead, &_pClipTail, &pAnimClip->tLink);
 
@@ -455,7 +460,13 @@ void Animation::UpdateAnimator(Animator_t* pAnimator)
 			pAnimator->uCurFrame++;
 			pAnimator->uNextFrame++;
 
-			// if(pAnimator->uNextFrame >= pClip->u) 
+			if (pAnimator->uNextFrame >= pClip->uMaxKeyFrame)
+			{
+				pAnimator->uCurFrame = 0;
+				pAnimator->uNextFrame = 1;
+
+				// 
+			}
 		}
 	}
 }
