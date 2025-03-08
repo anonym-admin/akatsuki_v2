@@ -384,7 +384,15 @@ Matrix* Animation::GetBoneTransforms()
 
 void Animation::SetEndCallBack(const wchar_t* wcClipname, Actor* pActor, AnimationClip_t::CALL_BACK pCallBack)
 {
-	// TODO...
+	AnimationClip_t* pClip = nullptr;
+	AkU32 uKeySize = (AkU32)wcslen(wcClipname) * sizeof(wchar_t);
+	if (!HT_Find(_pAnimationClipTable, (void**)&pClip, 1, wcClipname, uKeySize))
+	{
+		__debugbreak();
+	}
+
+	pClip->pCallBack = pCallBack;
+	pClip->pActor = pActor;
 }
 
 AnimationClip_t* Animation::ReadClip(const wchar_t* wcBasePath, const wchar_t* wcFilename)
@@ -465,7 +473,8 @@ void Animation::UpdateAnimator(Animator_t* pAnimator)
 				pAnimator->uCurFrame = 0;
 				pAnimator->uNextFrame = 1;
 
-				// 
+				if(pClip->pCallBack)
+					pClip->pCallBack(pClip->pActor);
 			}
 		}
 	}

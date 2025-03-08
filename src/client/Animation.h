@@ -1,5 +1,7 @@
 #pragma once
 
+class Actor;
+
 struct KeyFrame_t
 {
 	Vector3 vPos = Vector3(0.0f);
@@ -24,7 +26,7 @@ struct BoneAnimation_t
 
 struct AnimationClip_t
 {
-	typedef void(*CALL_BACK)(void);
+	typedef void(*CALL_BACK)(Actor*);
 
 	AnimationClip_t();
 	~AnimationClip_t();
@@ -43,6 +45,9 @@ struct AnimationClip_t
 	AkF32 fCurTime = 0;
 	AkU32 uMaxKeyFrame = 0;
 
+	CALL_BACK pCallBack = nullptr;
+	Actor* pActor = nullptr;
+
 	// Hash Table 버킷을 지우기 위한 핸들.
 	void* pSearchHandle = nullptr;
 
@@ -54,8 +59,6 @@ struct AnimationClip_t
 Animation
 ============
 */
-
-class Actor;
 
 class Animation
 {

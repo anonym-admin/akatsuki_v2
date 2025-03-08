@@ -29,6 +29,11 @@ public:
 
 		/*Attack*/
 		PUNCHING_01,
+		PUNCHING_02,
+
+		/*Jump*/
+		RUN_JUMP,
+		IDLE_JUMP,
 
 		COUNT = 32,
 
@@ -49,6 +54,9 @@ public:
 		 L"SwatGuy_FrontLeftRun.anim",
 		 L"SwatGuy_FrontRightRun.anim",
 		 L"SwatGuy_Punching_01.anim",
+		 L"SwatGuy_Punching_02.anim",
+		 L"SwatGuy_RunJump.anim",
+		 L"SwatGuy_IdleJump.anim"
 	};
 
 public:
@@ -66,8 +74,9 @@ public:
 	virtual void OnCollisionExit(Collider* pOther) override;
 
 	void SetIdle();
+	void SetNextPunching();
 	void SetAnimation(ANIM_STATE eState, AkF32 fSpeed = 1.5f);
-	
+
 private:
 	void CleanUp();
 
@@ -83,5 +92,6 @@ public:
 	AkBool Attack = AK_FALSE;
 };
 
-void SetIdle(Swat* pSwat);
+void SetIdle(Actor* pSwat);
+void SetNextPunching(Actor* pSwat);
 

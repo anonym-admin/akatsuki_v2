@@ -46,6 +46,15 @@ AkBool Swat::Initialize()
 	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FL_RUN]);
 	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FR_RUN]);
 	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[PUNCHING_01]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[PUNCHING_02]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[RUN_JUMP]);
+	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[IDLE_JUMP]);
+
+	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetNextPunching);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
+
 	SetAnimation(IDLE);
 
 	// Delete MeshData Resource.
@@ -205,14 +214,23 @@ void Swat::CleanUp()
 
 void Swat::SetIdle()
 {
+	Attack = AK_FALSE;
+	Jumping = AK_FALSE;
+
 	SetAnimation(IDLE);
+}
+
+void Swat::SetNextPunching()
+{
+	SetAnimation(PUNCHING_02);
 }
 
 void Swat::UpdateMove()
 {
-	Vector3 vVelocity = _pRigidBody->GetVelocity();
+	if (Jumping)
+		return;
 
-	// printf("%lf\n", vVelocity.Length());
+	Vector3 vVelocity = _pRigidBody->GetVelocity();
 
 	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 2.8f)
 	{
@@ -366,7 +384,12 @@ void Swat::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)
 	}
 }
 
-void SetIdle(Swat* pSwat)
+void SetIdle(Actor* pSwat)
 {
-	pSwat->SetIdle();
+	((Swat*)pSwat)->SetIdle();
+}
+
+void SetNextPunching(Actor* pSwat)
+{
+	((Swat*)pSwat)->SetNextPunching();
 }

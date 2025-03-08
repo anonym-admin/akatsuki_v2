@@ -27,7 +27,7 @@ void Controller::Update()
 {
 	/*Attack or Fire*/
 	Mouse();
-	
+
 	/*Move*/
 	KeyBoard();
 }
@@ -36,7 +36,7 @@ void Controller::KeyBoard()
 {
 	Swat* pSwat = (Swat*)_pOwner;
 
-	if (pSwat->Attack)
+	if (pSwat->Attack || pSwat->Jumping)
 		return;
 
 	Swat::ANIM_STATE AnimState = pSwat->AnimState;
@@ -68,6 +68,18 @@ void Controller::KeyBoard()
 	{
 		pSwat->GetCamera()->ToggleViewMode();
 	}
+	if (KEY_DOWN(KEY_INPUT_SPACE))
+	{
+		pSwat->Jumping = AK_TRUE;
+		if (Swat::F_RUN == AnimState || Swat::F_WALK == AnimState)
+		{
+			pSwat->SetAnimation(Swat::RUN_JUMP);
+		}
+		if (Swat::IDLE == AnimState)
+		{
+			pSwat->SetAnimation(Swat::IDLE_JUMP);
+		}
+	}
 
 	Vector3 vCurVector = pRigidBody->GetVelocity();
 
@@ -90,10 +102,14 @@ void Controller::KeyBoard()
 void Controller::Mouse()
 {
 	Swat* pSwat = (Swat*)_pOwner;
+	Swat::ANIM_STATE AnimState = pSwat->AnimState;
 
 	if (LBTN_DOWN)
 	{
 		pSwat->Attack = AK_TRUE;
-		pSwat->SetAnimation(Swat::PUNCHING_01);
+		if (Swat::IDLE == AnimState)
+		{
+			pSwat->SetAnimation(Swat::PUNCHING_01);
+		}
 	}
 }
