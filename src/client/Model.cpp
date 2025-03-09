@@ -2,9 +2,23 @@
 #include "Model.h"
 #include "AssetManager.h"
 
+/*
+========
+Model
+========
+*/
+
 Model::Model(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 {
 	if (!Initialize(pMeshDataContainer, pAlbedo, fMetallic, fRoughness, pEmissive))
+	{
+		__debugbreak();
+	}
+}
+
+Model::Model(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
+{
+	if (!Initialize(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive))
 	{
 		__debugbreak();
 	}
@@ -19,7 +33,13 @@ AkBool Model::Initialize(AssetMeshDataContainer_t* pMeshDataContainer, const Vec
 {
 	CreateMeshObject(pMeshDataContainer->pMeshData, pMeshDataContainer->uMeshDataNum);
 	CreateMaterial(pAlbedo, fMetallic, fRoughness, pEmissive);
+	return AK_TRUE;
+}
 
+AkBool Model::Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
+{
+	CreateMeshObject(pMeshData, uMeshDataNum);
+	CreateMaterial(pAlbedo, fMetallic, fRoughness, pEmissive);
 	return AK_TRUE;
 }
 

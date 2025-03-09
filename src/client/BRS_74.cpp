@@ -31,9 +31,7 @@ AkBool UBRS_74::Initialize()
 	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74);
 
 	// Create Bounding Box.
-	Vector3 vMin = Vector3(0.0f);
-	Vector3 vMax = Vector3(0.25f);
-	_pCollider->CreateBoundingBox(&vMin, &vMax);
+	// TODO...
 
 	return AK_TRUE;
 }
@@ -46,7 +44,7 @@ void UBRS_74::FinalUpdate()
 {
 	_pTransform->Update();
 
-	_pCollider->Update();
+	// _pCollider->Update();
 
 	Matrix mFinalWorldTransform = _pOwner ? _pTransform->GetWorldTransform() * _pOwner->GetTransform()->GetWorldTransform() : _pTransform->GetWorldTransform();
 	_pModel->UpdateWorldRow(&mFinalWorldTransform);
@@ -64,15 +62,15 @@ void UBRS_74::RenderShadow()
 
 void UBRS_74::OnCollisionEnter(Collider* pOther)
 {
-	Actor* pActor = pOther->GetOwner();
-	const wchar_t* wcName = pActor->Name;
+	//Actor* pActor = pOther->GetOwner();
+	//const wchar_t* wcName = pActor->Name;
 
-	if (!wcscmp(wcName, L"Swat"))
-	{
-		// Bind Weapon.
-		pActor->SetWeapon(this);
-		AttachOwner(pActor);
-	}
+	//if (!wcscmp(wcName, L"Swat"))
+	//{
+	//	// Bind Weapon.
+	//	pActor->SetWeapon(this);
+	//	AttachOwner(pActor);
+	//}
 }
 
 void UBRS_74::OnCollision(Collider* pOther)

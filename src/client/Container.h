@@ -1,28 +1,26 @@
 #pragma once
 
-#include "Weapon.h"
+#include "Spawn.h"
 
-/*
-=============
-BRS_74
-=============
-*/
-
-class UBRS_74 : public Weapon
+class Container : public Spawn
 {
 public:
-	UBRS_74();
+	Container();
+	virtual ~Container();
 
-	AkBool Initialize();
+	AkBool Initailize();
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
 	virtual void Render() override;
 	virtual void RenderShadow() override;
 
-	virtual void OnCollision(Collider* pOther) override;
 	virtual void OnCollisionEnter(Collider* pOther) override;
+	virtual void OnCollision(Collider* pOther) override;
 	virtual void OnCollisionExit(Collider* pOther) override;
 
-	virtual UBRS_74* Clone() override;
+	virtual Container* Clone() override;
+
+private:
+	void CleanUp();
 };
 

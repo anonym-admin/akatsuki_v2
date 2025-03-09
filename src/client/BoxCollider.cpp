@@ -9,7 +9,8 @@ Box Collider
 ====================
 */
 
-BoxCollider::BoxCollider(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor)
+BoxCollider::BoxCollider(Actor* pOwner, const Vector3* pMin, const Vector3* pMax, const Vector3* pColor)
+	: Collider(pOwner)
 {
 	if (!Initialize(pMin, pMax, pColor))
 	{
@@ -36,6 +37,9 @@ AkBool BoxCollider::Initialize(const Vector3* pMin, const Vector3* pMax, const V
 	_pLineObj->CreateLineBuffers(pLineBox);
 	GeometryGenerator::DestroyGeometry(pLineBox);
 
+	_vMin = *pMin;
+	_vMax = *pMax;
+
 	return AK_TRUE;
 }
 
@@ -61,7 +65,51 @@ AkBool BoxCollider::CapsuleIntersect(CapsuleCollider* pCollider)
 
 AkBool BoxCollider::SphereIntersect(const Vector3* pCenter, AkF32 fRadius)
 {
-	return AkBool();
+	Vector3 vPos = _pTransform->GetPosition();
+	Vector4 vQuat = _pTransform->GetRotation();
+
+	Matrix mTranslation = Matrix::CreateTranslation(vPos);
+	Matrix mRotation = Matrix::CreateFromQuaternion(vQuat);
+	
+	Matrix mInvWorld = (mRotation * mTranslation).Invert();
+
+	Vector3 vSpherePos = Vector3::Transform(*pCenter, mInvWorld); // To Model Coord.
+
+	Vector3 vMin = _vMin * _pTransform->GetScale();
+	Vector3 vMax = _vMax * _pTransform->GetScale();
+
+	Vector3 vPoint = Vector3(0.0f);
+	vPoint.x = max(vMin.x, min(vSpherePos.x, vMax.x));
+	vPoint.y = max(vMin.y, min(vSpherePos.y, vMax.y));
+	vPoint.z = max(vMin.z, min(vSpherePos.z, vMax.z));
+
+	vPoint -= vSpherePos;
+
+	return vPoint.Length() <= fRadius;
+}
+
+void BoxCollider::OnCollisionEnter(Collider* pCollider)
+{
+	Vector3 vColor = Vector3(1.0f, 0.0f, 0.0f);
+	SetColor(&vColor);
+
+	_pOwner->OnCollisionEnter(pCollider);
+}
+
+void BoxCollider::OnCollision(Collider* pCollider)
+{
+	Vector3 vColor = Vector3(1.0f, 0.0f, 0.0f);
+	SetColor(&vColor);
+
+	_pOwner->OnCollision(pCollider);
+}
+
+void BoxCollider::OnCollisionExit(Collider* pCollider)
+{
+	Vector3 vColor = Vector3(0.0f, 0.5f, 0.0f);
+	SetColor(&vColor);
+
+	_pOwner->OnCollisionExit(pCollider);
 }
 
 Vector3 BoxCollider::GetMinWorld()

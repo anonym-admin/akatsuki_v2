@@ -2,7 +2,11 @@
 
 #include "Model.h"
 
-class Animation;
+/*
+=============
+SkinnedModel
+=============
+*/
 
 class Animation;
 
@@ -10,6 +14,7 @@ class SkinnedModel : public Model
 {
 public:
 	SkinnedModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
+	SkinnedModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	~SkinnedModel();
 
 	virtual void Render();

@@ -285,6 +285,9 @@
     <ClInclude Include="CapsuleCollider.h">
       <Filter>src\comp\collider</Filter>
     </ClInclude>
+    <ClInclude Include="Container.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -463,6 +466,9 @@
     </ClCompile>
     <ClCompile Include="SphereColiider.cpp">
       <Filter>src\comp\collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Container.cpp">
+      <Filter>src\obj</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

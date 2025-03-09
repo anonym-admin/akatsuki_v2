@@ -3,9 +3,23 @@
 #include "AssetManager.h"
 #include "Animation.h"
 
+/*
+=============
+SkinnedModel
+=============
+*/
+
 SkinnedModel::SkinnedModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 {
 	if (!Initialize(pMeshDataContainer, pAlbedo, fMetallic, fRoughness, pEmissive))
+	{
+		__debugbreak();
+	}
+}
+
+SkinnedModel::SkinnedModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
+{
+	if (!Initialize(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive))
 	{
 		__debugbreak();
 	}

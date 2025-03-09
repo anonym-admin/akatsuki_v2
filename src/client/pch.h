@@ -42,6 +42,16 @@
 #include "EventManager.h"
 #include "UIManager.h"
 #include "AssetManager.h"
+#include "BoxCollider.h"
+#include "CapsuleCollider.h"
+#include "SphereColiider.h"
+#include "Transform.h"
+#include "Animation.h"
+#include "RigidBody.h"
+#include "Controller.h"
+#include "Gravity.h"
+#include "Model.h"
+#include "Actor.h"
 
 // fmod
 #include "fmod.hpp"

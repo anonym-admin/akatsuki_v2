@@ -159,7 +159,7 @@ void Camera::RotateFollow()
 	static AkBool bFirst = AK_TRUE;
 	if (bFirst)
 	{
-		_vOwnerInitRot = _pOwner->GetTransform()->GetRotation();
+		_vOwnerInitRot = Vector3(_pOwner->GetTransform()->GetRotation().x, _pOwner->GetTransform()->GetRotation().y, _pOwner->GetTransform()->GetRotation().z);
 		bFirst = AK_FALSE;
 	}
 
@@ -173,19 +173,18 @@ void Camera::RotateFollow()
 	SetRotation(&vYawPitchRoll);
 
 	// 현재 플레이어의 이동방향과 카메라 방향 사이의 각도를 계산.
-	Vector3 vOwnerFront = _pOwner->GetTransform()->Front();
-	vOwnerFront.Normalize();
+	//Vector3 vOwnerFront = _pOwner->GetTransform()->Front();
+	//vOwnerFront.Normalize();
+	//Vector3 vDir = _pTransform->Front();
+	//vDir.Normalize();
+	//AkF32 fCosValue = vDir.Dot(vOwnerFront);
 
-	Vector3 vDir = _pTransform->Front();
-	vDir.Normalize();
-	
-	AkF32 fCosValue = vDir.Dot(vOwnerFront);
-	Vector3 vOwnerRot = _vOwnerInitRot + vYawPitchRoll;
-	vOwnerRot.y = 0.0f;
+	Vector3 vOwenrYawPitchRoll = _vOwnerInitRot + vYawPitchRoll;
+	vOwenrYawPitchRoll.y = 0.0f; // pitch zero.
 
 	Swat* pSwat = (Swat*)_pOwner;
-	if(!_bIsView && Swat::IDLE <= pSwat->AnimState && pSwat->AnimState <= Swat::B_WALK)
-		_pOwner->GetTransform()->SetRotation(&vOwnerRot);
+	if (!_bIsView && Swat::IDLE <= pSwat->AnimState && pSwat->AnimState <= Swat::B_WALK)
+		_pOwner->GetTransform()->SetRotation(&vOwenrYawPitchRoll);
 
 	// TODO!!
 }

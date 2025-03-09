@@ -29,7 +29,7 @@ AkBool Weapon::Initialize()
 	_pTransform = CreateTransform();
 
 	// Create Collider.
-	_pCollider = CreateCollider();
+	// _pCollider = CreateCollider();
 
 	// Create Gravity.
 	_pGravity = CreateGravity();

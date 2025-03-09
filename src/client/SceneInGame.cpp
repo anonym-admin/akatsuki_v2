@@ -1,19 +1,14 @@
 #include "pch.h"
 #include "SceneInGame.h"
 #include "Application.h"
-#include "GeometryGenerator.h"
-#include "CollisionManager.h"
 #include "Camera.h"
 #include "LandScape.h"
-#include "AssetManager.h"
-#include "Collider.h"
 #include "KDTree.h"
-#include "GameInput.h"
 #include "WorldMap.h"
 #include "Swat.h"
 #include "Dancer.h"
 #include "BRS_74.h"
-#include "Transform.h"
+#include "Container.h"
 
 /*
 =============
@@ -37,7 +32,7 @@ AkBool SceneInGame::BeginScene()
 		pSwat->Name = L"Swat";
 		pSwat->tLink.pData = pSwat;
 		pSwat->GetTransform()->SetRotation(DirectX::XM_PI, 0.0f, 0.0f);
-		pSwat->GetTransform()->SetPosition(0.0f, 1.5f, -1025.0f);
+		pSwat->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, pSwat);
 	}
 
@@ -54,8 +49,17 @@ AkBool SceneInGame::BeginScene()
 		UBRS_74* pBRS_74 = new UBRS_74;
 		pBRS_74->Name = L"BRS_74";
 		pBRS_74->tLink.pData = pBRS_74;
-		pBRS_74->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
+		pBRS_74->GetTransform()->SetPosition(0.0f, 1.5f, -1025.0f);
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON, pBRS_74);
+	}
+
+	// Container
+	{
+		Container* pContainer = new Container;
+		pContainer->Name = L"Container";
+		pContainer->tLink.pData = pContainer;
+		pContainer->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_CONTAINER, pContainer);
 	}
 
 	// World Map Containter.
@@ -267,11 +271,7 @@ AkBool SceneInGame::BeginScene()
 	}
 
 	// Collision check.
-	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER);
-	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON);
-	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
-	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
-	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_CONTAINER);
 
 	// Create Frustum.
 	_pFrustum = CreateFrustum(GRenderer);

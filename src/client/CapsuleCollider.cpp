@@ -9,7 +9,8 @@ Capsule Collider
 ====================
 */
 
-CapsuleCollider::CapsuleCollider(AkF32 fRadius, AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+CapsuleCollider::CapsuleCollider(Actor* pOwner, AkF32 fRadius, AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+	: Collider(pOwner)
 {
 	if (!Initialize(fRadius, fHeight, uStack, uSlice, pColor))
 	{
@@ -33,6 +34,9 @@ AkBool CapsuleCollider::Initialize(AkF32 fRadius, AkF32 fHeight, AkU32 uStack, A
 	_pLineObj = GRenderer->CreateLineObject();
 	_pLineObj->CreateLineBuffers(pLineSphere);
 	GeometryGenerator::DestroyGeometry(pLineSphere);
+
+	_fRadius = fRadius;
+	_fHeight = fHeight;
 
 	return AK_TRUE;
 }
@@ -67,6 +71,30 @@ AkBool CapsuleCollider::SphereIntersect(SphereCollider* pCollider)
 AkBool CapsuleCollider::CapsuleIntersect(CapsuleCollider* pCapsule)
 {
 	return AkBool();
+}
+
+void CapsuleCollider::OnCollisionEnter(Collider* pCollider)
+{
+	Vector3 vColor = Vector3(1.0f, 0.0f, 0.0f);
+	SetColor(&vColor);
+
+	_pOwner->OnCollisionEnter(pCollider);
+}
+
+void CapsuleCollider::OnCollision(Collider* pCollider)
+{
+	Vector3 vColor = Vector3(1.0f, 0.0f, 0.0f);
+	SetColor(&vColor);
+
+	_pOwner->OnCollision(pCollider);
+}
+
+void CapsuleCollider::OnCollisionExit(Collider* pCollider)
+{
+	Vector3 vColor = Vector3(0.0f, 0.5f, 0.0f);
+	SetColor(&vColor);
+
+	_pOwner->OnCollisionExit(pCollider);
 }
 
 AkF32 CapsuleCollider::Radius()

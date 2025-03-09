@@ -28,6 +28,20 @@ Model* BaseObject::CreateModel(AssetMeshDataContainer_t* pMeshDataContainer, con
 	return pModel;
 }
 
+Model* BaseObject::CreateModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned)
+{
+	Model* pModel = nullptr;
+	if (bIsSkinned)
+	{
+		pModel = new SkinnedModel(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive);
+	}
+	else
+	{
+		pModel = new Model(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive);
+	}
+	return pModel;
+}
+
 Transform* BaseObject::CreateTransform()
 {
 	Transform* pTransform = new Transform;

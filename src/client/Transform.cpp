@@ -81,14 +81,16 @@ Vector3 Transform::GetScale()
 	return vScale;
 }
 
-Vector3 Transform::GetRotation()
+/*TODO*/
+Vector4 Transform::GetRotation()
 {
-	Vector3 vRot = _vRelativeRotation;
+	// Yaw Pitch Roll.
+	Vector4 vRot = Vector4(_vRelativeRotation.x, _vRelativeRotation.y, _vRelativeRotation.z, 0.0f);
+	
 	if (_pParent)
 	{
-		// TODO...
-
-		// Quat => Angle.
+		// Quat.
+		vRot = _vRotation;
 	}
 
 	return vRot;

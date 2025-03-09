@@ -185,6 +185,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="Container.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorManager.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="CapsuleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="Container.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorManager.cpp" />

@@ -335,7 +335,7 @@ void Application::UpdateEnviroment()
 	}
 	if (KEY_DOWN(KEY_INPUT_F2))
 	{
-		New_Collider::DRAW_COLLIDER = !New_Collider::DRAW_COLLIDER;
+		Collider::DRAW_COLLIDER = !Collider::DRAW_COLLIDER;
 	}
 
 	// TODO!!

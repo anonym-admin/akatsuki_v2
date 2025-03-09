@@ -72,17 +72,7 @@ AkBool Swat::Initialize()
 	_pTransform->SetRight(-1.0f, 0.0f, 0.0f); // 위 이유와 같음
 
 	// Create Collider.
-	Vector3 vCenter = Vector3(0.0f);
-	AkF32 fRadius = 0.5f;
-	_pCollider = CreateCollider();
-	_pCollider->CreateBoundingSphere(fRadius, &vCenter);
-
-
-	// Test
-	_pTest = CreateCapsuleColliderTest();
-
-
-
+	_pCollider = CreateCapsuleCollider(0.25f, 0.5f);
 
 	// Create Camera.
 	Vector3 vCamPos = Vector3(0.0f, 0.5f, -2.0f);
@@ -120,8 +110,7 @@ void Swat::FinalUpdate()
 
 	_pCollider->Update();
 
-	_pTest->GetTransform()->SetParent(&_pTransform->GetWorldTransform());
-	_pTest->Update();
+	_pCollider->Update();
 
 	_pCamera->Update();
 
@@ -138,7 +127,7 @@ void Swat::Render()
 	_pModel->Render();
 
 	// Render collider.
-	_pTest->Render();
+	_pCollider->Render();
 }
 
 void Swat::RenderShadow()
@@ -148,7 +137,10 @@ void Swat::RenderShadow()
 
 void Swat::OnCollisionEnter(Collider* pOther)
 {
-	Actor* pOwner = pOther->GetOwner();
+	printf("Swat Collision\n");
+
+
+	/*Actor* pOwner = pOther->GetOwner();
 	const wchar_t* wcName = pOwner->Name;
 
 	if (!wcscmp(L"Map", wcName))
@@ -178,50 +170,50 @@ void Swat::OnCollisionEnter(Collider* pOther)
 	if (!wcscmp(L"Box", wcName))
 	{
 
-	}
+	}*/
 }
 
 void Swat::OnCollision(Collider* pOther)
 {
-	Actor* pOwner = pOther->GetOwner();
-	const wchar_t* wcName = pOwner->Name;
+	//Actor* pOwner = pOther->GetOwner();
+	//const wchar_t* wcName = pOwner->Name;
 
-	if (!wcscmp(L"Map", wcName))
-	{
-		AkTriangle_t* pTri = pOther->GetTriangle();
-		AkF32 fNdotY = pTri->vNormal.Dot(Vector3(0.0f, 1.0f, 0.0f));
-		if (0.0f <= fNdotY - 1.0f && fNdotY - 1.0f <= 1e-5f)
-		{
-			GroundCollision = AK_TRUE;
-		}
+	//if (!wcscmp(L"Map", wcName))
+	//{
+	//	AkTriangle_t* pTri = pOther->GetTriangle();
+	//	AkF32 fNdotY = pTri->vNormal.Dot(Vector3(0.0f, 1.0f, 0.0f));
+	//	if (0.0f <= fNdotY - 1.0f && fNdotY - 1.0f <= 1e-5f)
+	//	{
+	//		GroundCollision = AK_TRUE;
+	//	}
 
-		AkSphere_t* pSphere = GetCollider()->GetBoundingSphere();
-		Vector3 vTriToSphere = pSphere->vCenter - pTri->vP[0];
-		AkF32 fDistance = vTriToSphere.Dot(pTri->vNormal);
-		Vector3 vProjectedCenter = pSphere->vCenter - pTri->vNormal * (fDistance - pSphere->fRadius);
+	//	AkSphere_t* pSphere = GetCollider()->GetBoundingSphere();
+	//	Vector3 vTriToSphere = pSphere->vCenter - pTri->vP[0];
+	//	AkF32 fDistance = vTriToSphere.Dot(pTri->vNormal);
+	//	Vector3 vProjectedCenter = pSphere->vCenter - pTri->vNormal * (fDistance - pSphere->fRadius);
 
-		_pTransform->SetPosition(&vProjectedCenter);
-	}
-	if (!wcscmp(L"Dancer", wcName))
-	{
-	}
-	if (!wcscmp(L"Ground", wcName))
-	{
-	}
-	if (!wcscmp(L"Box", wcName))
-	{
-	}
+	//	_pTransform->SetPosition(&vProjectedCenter);
+	//}
+	//if (!wcscmp(L"Dancer", wcName))
+	//{
+	//}
+	//if (!wcscmp(L"Ground", wcName))
+	//{
+	//}
+	//if (!wcscmp(L"Box", wcName))
+	//{
+	//}
 }
 
 void Swat::OnCollisionExit(Collider* pOther)
 {
-	Actor* pOwner = pOther->GetOwner();
-	const wchar_t* wcName = pOwner->Name;
+	//Actor* pOwner = pOther->GetOwner();
+	//const wchar_t* wcName = pOwner->Name;
 
-	if (!wcscmp(L"Map", wcName))
-	{
-		GroundCollision = AK_FALSE;
-	}
+	//if (!wcscmp(L"Map", wcName))
+	//{
+	//	GroundCollision = AK_FALSE;
+	//}
 }
 
 void Swat::CleanUp()

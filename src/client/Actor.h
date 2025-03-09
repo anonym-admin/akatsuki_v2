@@ -25,19 +25,13 @@ public:
 	virtual void RenderShadow() = 0;
 	virtual void Render() = 0;
 
-	virtual void OnCollision(Collider* pOther) = 0;
-	virtual void OnCollisionEnter(Collider* pOther) = 0;
-	virtual void OnCollisionExit(Collider* pOther) = 0;
+	virtual void OnCollision(class Collider* pOther) = 0;
+	virtual void OnCollisionEnter(class  Collider* pOther) = 0;
+	virtual void OnCollisionExit(class Collider* pOther) = 0;
 
-	Collider* CreateCollider();
-
-	class New_Collider* CreateBoxColliderTest(const Vector3* pMin = nullptr, const Vector3* pMax = nullptr, const Vector3* pColor = nullptr);
-	class New_Collider* CreateSphereColliderTest(AkF32 fRadius = 0.5f, AkU32 uStack = 16, AkU32 uSlice = 32, const Vector3* pColor = nullptr);
-	class New_Collider* CreateCapsuleColliderTest(AkF32 fRadius = 0.5f, AkF32 fHeight = 1.0f, AkU32 uStack = 16, AkU32 uSlice = 32, const Vector3* pColor = nullptr);
-	void DestroyColliderTest();
-
-
-
+	Collider* CreateBoxCollider(const Vector3* pMin = nullptr, const Vector3* pMax = nullptr, const Vector3* pColor = nullptr);
+	Collider* CreateSphereCollider(AkF32 fRadius = 0.5f, AkU32 uStack = 16, AkU32 uSlice = 32, const Vector3* pColor = nullptr);
+	Collider* CreateCapsuleCollider(AkF32 fRadius = 0.5f, AkF32 fHeight = 1.0f, AkU32 uStack = 16, AkU32 uSlice = 32, const Vector3* pColor = nullptr);
 	RigidBody* CreateRigidBody();
 	Gravity* CreateGravity();
 	Camera* CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll = nullptr);
@@ -63,10 +57,6 @@ private:
 	void CleanUp();
 
 protected:
-
-	class New_Collider* _pTest = nullptr;
-
-
 	// �浹ü
 	Collider* _pCollider = nullptr;
 

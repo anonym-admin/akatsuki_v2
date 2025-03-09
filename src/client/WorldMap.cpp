@@ -85,7 +85,7 @@ void MapObjects::BindMeshObj(IMeshObject* pMeshObj, AkU32 uMeshObjNum, const Mat
 
 void MapObjects::Build(AkBool bUseKDTree)
 {
-	if (0 == _uMeshDataChunkNum)
+	/*if (0 == _uMeshDataChunkNum)
 	{
 		__debugbreak();
 	}
@@ -171,7 +171,7 @@ void MapObjects::Build(AkBool bUseKDTree)
 	{
 		delete[] pTriList;
 		pTriList = nullptr;
-	}
+	}*/
 }
 
 void MapObjects::CleanUp()

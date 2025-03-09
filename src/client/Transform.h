@@ -26,7 +26,7 @@ public:
 	void SetRight(AkF32 fX, AkF32 fY, AkF32 fZ);
 
 	Vector3 GetScale();
-	Vector3 GetRotation();
+	Vector4 GetRotation();
 	Vector3 GetPosition();
 	Matrix& GetWorldTransform() { return _mWorldRow; }
 	Matrix* GetWorldTransformAddr() { return &_mWorldRow; }

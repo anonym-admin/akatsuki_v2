@@ -30,6 +30,8 @@ class MapObjects;
 struct KDTreeNode_t;
 struct RbTreeNode_t;
 
+class Collider;
+
 // #include <map>
 
 class CollisionManager

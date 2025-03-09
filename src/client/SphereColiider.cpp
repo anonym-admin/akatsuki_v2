@@ -8,7 +8,8 @@ Sphere Collider
 ====================
 */
 
-SphereCollider::SphereCollider(AkF32 fRadius, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+SphereCollider::SphereCollider(Actor* pOwner, AkF32 fRadius, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+	: Collider(pOwner)
 {
 	if (!Initialize(fRadius, uStack, uSlice, pColor))
 	{
@@ -33,6 +34,8 @@ AkBool SphereCollider::Initialize(AkF32 fRadius, AkU32 uStack, AkU32 uSlice, con
 	_pLineObj->CreateLineBuffers(pLineSphere);
 	GeometryGenerator::DestroyGeometry(pLineSphere);
 
+	_fRadius = fRadius;
+
 	return AK_TRUE;
 }
 
@@ -54,6 +57,21 @@ AkBool SphereCollider::SphereIntersect(SphereCollider* pCollider)
 AkBool SphereCollider::CapsuleIntersect(CapsuleCollider* pCapsule)
 {
 	return AkBool();
+}
+
+void SphereCollider::OnCollisionEnter(Collider* pCollider)
+{
+	_pOwner->OnCollisionEnter(pCollider);
+}
+
+void SphereCollider::OnCollision(Collider* pCollider)
+{
+	_pOwner->OnCollision(pCollider);
+}
+
+void SphereCollider::OnCollisionExit(Collider* pCollider)
+{
+	_pOwner->OnCollisionExit(pCollider);
 }
 
 AkF32 SphereCollider::Radius()

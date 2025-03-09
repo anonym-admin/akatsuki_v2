@@ -21,13 +21,7 @@ Actor::~Actor()
 	CleanUp();
 }
 
-Collider* Actor::CreateCollider()
-{
-	_pCollider = new Collider(this);
-	return _pCollider;
-}
-
-New_Collider* Actor::CreateBoxColliderTest(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor)
+Collider* Actor::CreateBoxCollider(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor)
 {
 	Vector3 vMin = Vector3(-0.5f);
 	Vector3 vMax = Vector3(0.5f);
@@ -35,29 +29,20 @@ New_Collider* Actor::CreateBoxColliderTest(const Vector3* pMin, const Vector3* p
 		vMin = *pMin;
 	if (pMax)
 		vMax = *pMax;
-	_pTest = new BoxCollider(&vMin, &vMax);
-	return _pTest;
+	_pCollider = new BoxCollider(this, &vMin, &vMax);
+	return _pCollider;
 }
 
-New_Collider* Actor::CreateSphereColliderTest(AkF32 fRadius, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+Collider* Actor::CreateSphereCollider(AkF32 fRadius, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
 {
-	_pTest = new SphereCollider(fRadius, uStack, uSlice, pColor);
-	return _pTest;
+	_pCollider = new SphereCollider(this, fRadius, uStack, uSlice, pColor);
+	return _pCollider;
 }
 
-New_Collider* Actor::CreateCapsuleColliderTest(AkF32 fRadius, AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+Collider* Actor::CreateCapsuleCollider(AkF32 fRadius, AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
 {
-	_pTest = new CapsuleCollider(fRadius, fHeight, uStack, uSlice, pColor);
-	return _pTest;
-}
-
-void Actor::DestroyColliderTest()
-{
-	if (_pTest)
-	{
-		delete _pTest;
-		_pTest = nullptr;
-	}
+	_pCollider = new CapsuleCollider(this, fRadius, fHeight, uStack, uSlice, pColor);
+	return _pCollider;
 }
 
 RigidBody* Actor::CreateRigidBody()
@@ -146,11 +131,6 @@ void Actor::CleanUp()
 	{
 		return;
 	}
-
-
-	DestroyColliderTest();
-
-
 
 	DestroyCollider();
 	DesteoyRigidBody();

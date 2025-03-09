@@ -6,82 +6,23 @@ Collider
 ===========
 */
 
-class Actor;
-class Application;
-
-class Collider
-{
-public:
-	static const AkU32 MAX_SPHERE_GROUP_SHAPE_COUNT = 3;
-
-	Collider(Actor* pOwner);
-	~Collider();
-
-	AkBool Initialize(Actor* pOwner);
-	void Update();
-	void Render();
-
-	AkU32 GetID() { return _uID; }
-	Actor* GetOwner() { return _pOwner; }
-	AkBox_t* GetBoundingBox() { return _pBox; }
-	AkSphere_t* GetBoundingSphere() { return _pSphere; }
-	AkTriangle_t* GetTriangle() { return _pTriangle; }
-	COLLIDER_SHAPE_TYPE GetShapeType() { return _eShapeType; }
-
-	void CreateBoundingBox(const Vector3* pMin, const Vector3* pMax);
-	void CreateBoundingSphere(AkF32 fRadius, const Vector3* pCenter);
-	void CreateTriangle(const Vector3* pV0, const Vector3* pV1, const Vector3* pV2);
-	void DestroyBoundingBox();
-	void DestroyBoundingSphere();
-	void DestroyTriangle();
-
-	virtual void OnCollision(Collider* pCollider);
-	virtual void OnCollisionEnter(Collider* pCollider);
-	virtual void OnCollisionExit(Collider* pCollider);
-
-private:
-	void CleanUp();
-
-private:
-	static AkU32 sm_uID;
-	AkU32 _uID = 0;
-	Actor* _pOwner = nullptr;
-	IRenderer* _pRenderer = nullptr;
-	IMeshObject* _pMeshObj = nullptr;
-	Matrix _mWorldRow = Matrix();
-	AkBox_t* _pBox = nullptr;
-	AkSphere_t* _pSphere = nullptr;
-	AkTriangle_t* _pTriangle = nullptr;
-	COLLIDER_SHAPE_TYPE _eShapeType = {};
-
-	// For Frustum culling with kd-tree.
-public:
-	AkBool* _pDraw = nullptr;
-};
-
-
-
-/*
-===========
-New
-===========
-*/
-
 class Transform;
 class BoxCollider;
 class SphereCollider;
 class CapsuleCollider;
 class SquareCollider;
+class Actor;
 
-class New_Collider
+class Collider
 {
 public:
 	static AkBool DRAW_COLLIDER;
 
-	New_Collider();
-	virtual ~New_Collider();
+	Collider(Actor* pOwner);
+	virtual ~Collider();
 
-	AkBool Initialize();
+	AkBool Initialize(Actor* pOwner);
+	AkBool Intersect(Collider* pCollider);
 
 	virtual AkBool RayIntersect(DirectX::SimpleMath::Ray tRay, Vector3* pOutHitPos = nullptr, AkF32* pOutDist = nullptr) = 0;
 	virtual AkBool BoxIntersect(BoxCollider* pCollider) = 0;
@@ -89,18 +30,28 @@ public:
 	virtual AkBool CapsuleIntersect(CapsuleCollider* pCapsule) = 0;
 	virtual AkBool SqaureIntersect() { return AK_TRUE; }
 
+	virtual void OnCollisionEnter(Collider* pCollider) = 0;
+	virtual void OnCollision(Collider* pCollider) = 0;
+	virtual void OnCollisionExit(Collider* pCollider) = 0;
+
 	void Update();
 	void Render();
 
 	Transform* GetTransform() { return _pTransform; }
+	AkI32 GetID() { return _iID; }
 	void SetColor(const Vector3* pColor);
 
 private:
 	void CleanUp();
 
 protected:
+	Actor* _pOwner = nullptr;
 	COLLIDER_TYPE _eType = COLLIDER_TYPE::NONE;
 	ILineObject* _pLineObj = nullptr;
 	Transform* _pTransform = nullptr;
+
+private:
+	AkI32 _iID = -1;
+	static AkU32 ID;
 };
 

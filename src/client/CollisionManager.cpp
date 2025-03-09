@@ -107,80 +107,80 @@ void CollisionManager::CleanUp()
 
 void CollisionManager::CollisionStaticObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft)
 {
-	if (GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP == eLeft || GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON == eLeft)
-		return;
+	//if (GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP == eLeft || GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON == eLeft)
+	//	return;
 
-	Scene* pCurScene = GSceneManager->GetCurrentScene();
+	//Scene* pCurScene = GSceneManager->GetCurrentScene();
 
-	if (!pCurScene)
-		return;
+	//if (!pCurScene)
+	//	return;
 
-	GameObjContainer_t* pGameObjContainer = pCurScene->GetGroupObject(eLeft);
+	//GameObjContainer_t* pGameObjContainer = pCurScene->GetGroupObject(eLeft);
 
-	List_t* pCur = pGameObjContainer->pGameObjHead;
-	while (pCur != nullptr)
-	{
-		Actor* pObj = (Actor*)pCur->pData;
-		Collider* pObjCollider = pObj->GetCollider();
-		if (nullptr == pObjCollider)
-		{
-			pCur = pCur->pNext;
-			continue;
-		}
+	//List_t* pCur = pGameObjContainer->pGameObjHead;
+	//while (pCur != nullptr)
+	//{
+	//	Actor* pObj = (Actor*)pCur->pData;
+	//	New_Collider* pObjCollider = pObj->GetCollider();
+	//	if (nullptr == pObjCollider)
+	//	{
+	//		pCur = pCur->pNext;
+	//		continue;
+	//	}
 
-		if (_pMap->UseOptimize())
-		{
-			TraversKDTree(_pMap->GetKDTreeNode(), pObjCollider);
-		}
-		else
-		{
-			Vector3 vCollisionPoint = Vector3(0.0f);
-			Collider** pMapColliderList = _pMap->GetColliderList();
-			AkU32 uMapColliderNum = _pMap->GetColliderNum();
+	//	if (_pMap->UseOptimize())
+	//	{
+	//		TraversKDTree(_pMap->GetKDTreeNode(), pObjCollider);
+	//	}
+	//	else
+	//	{
+	//		Vector3 vCollisionPoint = Vector3(0.0f);
+	//		Collider** pMapColliderList = _pMap->GetColliderList();
+	//		AkU32 uMapColliderNum = _pMap->GetColliderNum();
 
-			for (AkU32 i = 0; i < uMapColliderNum; i++)
-			{
-				ColliderID_u ID = {};
-				ID.uLeftID = pObjCollider->GetID();
-				ID.uRightID = pMapColliderList[i]->GetID();
+	//		for (AkU32 i = 0; i < uMapColliderNum; i++)
+	//		{
+	//			ColliderID_u ID = {};
+	//			ID.uLeftID = pObjCollider->GetID();
+	//			ID.uRightID = pMapColliderList[i]->GetID();
 
-				RbTreeNode_t* pSearchNode = RBT_SearchNode(_pRBTree, (void*)ID.u64ID);
-				if (nullptr == pSearchNode)
-				{
-					RBT_InsertNode(&_pRBTree, RBT_CreateNode((void*)ID.u64ID, (void*)AK_FALSE));
-					pSearchNode = RBT_SearchNode(_pRBTree, (void*)ID.u64ID);
-				}
+	//			RbTreeNode_t* pSearchNode = RBT_SearchNode(_pRBTree, (void*)ID.u64ID);
+	//			if (nullptr == pSearchNode)
+	//			{
+	//				RBT_InsertNode(&_pRBTree, RBT_CreateNode((void*)ID.u64ID, (void*)AK_FALSE));
+	//				pSearchNode = RBT_SearchNode(_pRBTree, (void*)ID.u64ID);
+	//			}
 
-				AkBool bIsCollision = IntersectSphereToTriangle(pObjCollider->GetBoundingSphere(), pMapColliderList[i]->GetTriangle());
-				AkBool bPrevCollision = (AkBool)pSearchNode->pData; // #pragma warning(disable : 4302)
-				if (bIsCollision)
-				{
-					if (bPrevCollision)
-					{
-						pMapColliderList[i]->OnCollision(pObjCollider);
-						pObjCollider->OnCollision(pMapColliderList[i]);
-					}
-					else
-					{
-						pMapColliderList[i]->OnCollisionEnter(pObjCollider);
-						pObjCollider->OnCollisionEnter(pMapColliderList[i]);
-						pSearchNode->pData = (void*)AK_TRUE;
-					}
-				}
-				else
-				{
-					if (bPrevCollision)
-					{
-						pMapColliderList[i]->OnCollisionExit(pObjCollider);
-						pObjCollider->OnCollisionExit(pMapColliderList[i]);
-						pSearchNode->pData = (void*)AK_FALSE;
-					}
-				}
-			}
-		}
+	//			AkBool bIsCollision = IntersectSphereToTriangle(pObjCollider->GetBoundingSphere(), pMapColliderList[i]->GetTriangle());
+	//			AkBool bPrevCollision = (AkBool)pSearchNode->pData; // #pragma warning(disable : 4302)
+	//			if (bIsCollision)
+	//			{
+	//				if (bPrevCollision)
+	//				{
+	//					pMapColliderList[i]->OnCollision(pObjCollider);
+	//					pObjCollider->OnCollision(pMapColliderList[i]);
+	//				}
+	//				else
+	//				{
+	//					pMapColliderList[i]->OnCollisionEnter(pObjCollider);
+	//					pObjCollider->OnCollisionEnter(pMapColliderList[i]);
+	//					pSearchNode->pData = (void*)AK_TRUE;
+	//				}
+	//			}
+	//			else
+	//			{
+	//				if (bPrevCollision)
+	//				{
+	//					pMapColliderList[i]->OnCollisionExit(pObjCollider);
+	//					pObjCollider->OnCollisionExit(pMapColliderList[i]);
+	//					pSearchNode->pData = (void*)AK_FALSE;
+	//				}
+	//			}
+	//		}
+	//	}
 
-		pCur = pCur->pNext;
-	}
+	//	pCur = pCur->pNext;
+	//}
 }
 
 void CollisionManager::CollisionDynamicObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft, GAME_OBJECT_GROUP_TYPE eRight)
@@ -274,112 +274,72 @@ void CollisionManager::CollisionLandScapeUpdate(GAME_OBJECT_GROUP_TYPE eType)
 
 void CollisionManager::TraversKDTree(KDTreeNode_t* pNode, Collider* pCollider)
 {
-	if (!pNode)
-	{
-		return;
-	}
+	//if (!pNode)
+	//{
+	//	return;
+	//}
 
-	ColliderID_u ID = {};
-	ID.uLeftID = pCollider->GetID();
-	ID.uRightID = pNode->pTri->GetID();
+	//ColliderID_u ID = {};
+	//ID.uLeftID = pCollider->GetID();
+	//ID.uRightID = pNode->pTri->GetID();
 
-	RbTreeNode_t* pSearchNode = RBT_SearchNode(_pRBTree, (void*)ID.u64ID);
-	if (nullptr == pSearchNode)
-	{
-		RBT_InsertNode(&_pRBTree, RBT_CreateNode((void*)ID.u64ID, (void*)AK_FALSE));
-		pSearchNode = RBT_SearchNode(_pRBTree, (void*)ID.u64ID);
-	}
+	//RbTreeNode_t* pSearchNode = RBT_SearchNode(_pRBTree, (void*)ID.u64ID);
+	//if (nullptr == pSearchNode)
+	//{
+	//	RBT_InsertNode(&_pRBTree, RBT_CreateNode((void*)ID.u64ID, (void*)AK_FALSE));
+	//	pSearchNode = RBT_SearchNode(_pRBTree, (void*)ID.u64ID);
+	//}
 
-	AkBool bIntersectSphereToTri = AK_FALSE;
-	AkBool bIntersectSphereToBox = IntersectSphereToBox(pCollider->GetBoundingSphere(), pNode->pBox->GetBoundingBox());
-	AkBool bPrevCollision = (AkBool)pSearchNode->pData; // #pragma warning(disable : 4302)
-	if (bIntersectSphereToBox)
-	{
-		TraversKDTree(pNode->pLeft, pCollider);
-		TraversKDTree(pNode->pRight, pCollider);
+	//AkBool bIntersectSphereToTri = AK_FALSE;
+	//AkBool bIntersectSphereToBox = IntersectSphereToBox(pCollider->GetBoundingSphere(), pNode->pBox->GetBoundingBox());
+	//AkBool bPrevCollision = (AkBool)pSearchNode->pData; // #pragma warning(disable : 4302)
+	//if (bIntersectSphereToBox)
+	//{
+	//	TraversKDTree(pNode->pLeft, pCollider);
+	//	TraversKDTree(pNode->pRight, pCollider);
 
-		if (AK_FALSE == *(pNode->pTri->_pDraw))
-		{
-			return;
-		}
+	//	if (AK_FALSE == *(pNode->pTri->_pDraw))
+	//	{
+	//		return;
+	//	}
 
-		bIntersectSphereToTri = IntersectSphereToTriangle(pCollider->GetBoundingSphere(), pNode->pTri->GetTriangle());
-		if (bIntersectSphereToTri)
-		{
-			if (bPrevCollision)
-			{
-				pNode->pTri->OnCollision(pCollider);
-				pCollider->OnCollision(pNode->pTri);
-			}
-			else
-			{
-				pNode->pTri->OnCollisionEnter(pCollider);
-				pCollider->OnCollisionEnter(pNode->pTri);
-				pSearchNode->pData = (void*)AK_TRUE;
-			}
-		}
-		else
-		{
-			if (bPrevCollision)
-			{
-				pNode->pTri->OnCollisionExit(pCollider);
-				pCollider->OnCollisionExit(pNode->pTri);
-				pSearchNode->pData = (void*)AK_FALSE;
-			}
-		}
-	}
-	else
-	{
-		if (bPrevCollision)
-		{
-			pNode->pTri->OnCollisionExit(pCollider);
-			pCollider->OnCollisionExit(pNode->pTri);
-			pSearchNode->pData = (void*)AK_FALSE;
-		}
-	}
+	//	bIntersectSphereToTri = IntersectSphereToTriangle(pCollider->GetBoundingSphere(), pNode->pTri->GetTriangle());
+	//	if (bIntersectSphereToTri)
+	//	{
+	//		if (bPrevCollision)
+	//		{
+	//			pNode->pTri->OnCollision(pCollider);
+	//			pCollider->OnCollision(pNode->pTri);
+	//		}
+	//		else
+	//		{
+	//			pNode->pTri->OnCollisionEnter(pCollider);
+	//			pCollider->OnCollisionEnter(pNode->pTri);
+	//			pSearchNode->pData = (void*)AK_TRUE;
+	//		}
+	//	}
+	//	else
+	//	{
+	//		if (bPrevCollision)
+	//		{
+	//			pNode->pTri->OnCollisionExit(pCollider);
+	//			pCollider->OnCollisionExit(pNode->pTri);
+	//			pSearchNode->pData = (void*)AK_FALSE;
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	if (bPrevCollision)
+	//	{
+	//		pNode->pTri->OnCollisionExit(pCollider);
+	//		pCollider->OnCollisionExit(pNode->pTri);
+	//		pSearchNode->pData = (void*)AK_FALSE;
+	//	}
+	//}
 }
 
 AkBool CollisionManager::IsCollision(Collider* pLeft, Collider* pRight)
 {
-	// 움직이는 물체끼리의 충돌
-	COLLIDER_SHAPE_TYPE eLeftType = pLeft->GetShapeType();
-	COLLIDER_SHAPE_TYPE eRightType = pRight->GetShapeType();
-	AkBool bIntersect = AK_FALSE;
-
-	if (COLLIDER_SHAPE_TYPE::COLLIDER_SHAPE_SPHERE == eLeftType)
-	{
-		if (COLLIDER_SHAPE_TYPE::COLLIDER_SHAPE_SPHERE == eRightType)
-		{
-			AkSphere_t* pSphereA = pLeft->GetBoundingSphere();
-			AkSphere_t* pSphereB = pRight->GetBoundingSphere();
-
-#ifdef _DEBUG
-			if (!pSphereA || !pSphereB)
-			{
-				__debugbreak();
-				return AK_FALSE;
-			}
-#endif
-
-			bIntersect = IntersectSphereToSphere(pSphereA, pSphereB);
-		}
-
-		if (COLLIDER_SHAPE_TYPE::COLLIDER_SHAPE_BOX == eRightType)
-		{
-			AkSphere_t* pSphere = pLeft->GetBoundingSphere();
-			AkBox_t* pBox = pRight->GetBoundingBox();
-
-#ifdef _DEBUG
-			if (!pSphere || !pBox)
-			{
-				__debugbreak();
-				return AK_FALSE;
-			}
-#endif
-
-			bIntersect = IntersectSphereToBox(pSphere, pBox);
-		}
-	}
-
-	return bIntersect;
+	return pLeft->Intersect(pRight);
 }

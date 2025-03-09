@@ -8,10 +8,10 @@ Box Collider
 ====================
 */
 
-class BoxCollider : public New_Collider
+class BoxCollider : public Collider
 {
 public:
-	BoxCollider(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor = nullptr);
+	BoxCollider(Actor* pOwner, const Vector3* pMin, const Vector3* pMax, const Vector3* pColor = nullptr);
 	~BoxCollider();
 
 	AkBool Initialize(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor);
@@ -21,6 +21,10 @@ public:
 	virtual AkBool SphereIntersect(SphereCollider* pCollider) override;
 	virtual AkBool CapsuleIntersect(CapsuleCollider* pCollider) override;
 	AkBool SphereIntersect(const Vector3* pCenter, AkF32 fRadius);
+
+	virtual void OnCollisionEnter(Collider* pCollider) override;
+	virtual void OnCollision(Collider* pCollider) override;
+	virtual void OnCollisionExit(Collider* pCollider) override;
 
 	Vector3 GetMinWorld();
 	Vector3 GetMaxWorld();
