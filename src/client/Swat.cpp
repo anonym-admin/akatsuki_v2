@@ -50,7 +50,7 @@ AkBool Swat::Initialize()
 	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[RUN_JUMP]);
 	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[IDLE_JUMP]);
 
-	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetNextPunching);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
@@ -222,12 +222,14 @@ void Swat::SetIdle()
 
 void Swat::SetNextPunching()
 {
+
 	SetAnimation(PUNCHING_02);
+
 }
 
 void Swat::UpdateMove()
 {
-	if (Jumping)
+	if (Jumping || Attack)
 		return;
 
 	Vector3 vVelocity = _pRigidBody->GetVelocity();

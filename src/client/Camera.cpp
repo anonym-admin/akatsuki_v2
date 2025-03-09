@@ -180,6 +180,16 @@ void Camera::RotateFollow()
 
 	_vCamFollowPos = Vector3::Transform(_vCamInitPos, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
 
+	// 회전한만큼 
+
+
+
+
+
+
+
+
+
 	SetRotation(&vYawPitchRoll);
 
 	// 오너 애니메이션 실행.

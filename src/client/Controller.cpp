@@ -70,13 +70,14 @@ void Controller::KeyBoard()
 	}
 	if (KEY_DOWN(KEY_INPUT_SPACE))
 	{
-		pSwat->Jumping = AK_TRUE;
 		if (Swat::F_RUN == AnimState || Swat::F_WALK == AnimState)
 		{
+			pSwat->Jumping = AK_TRUE;
 			pSwat->SetAnimation(Swat::RUN_JUMP);
 		}
 		if (Swat::IDLE == AnimState)
 		{
+			pSwat->Jumping = AK_TRUE;
 			pSwat->SetAnimation(Swat::IDLE_JUMP);
 		}
 	}
@@ -101,15 +102,26 @@ void Controller::KeyBoard()
 
 void Controller::Mouse()
 {
+	static Swat::ANIM_STATE PrevAnimState = Swat::IDLE;
+
 	Swat* pSwat = (Swat*)_pOwner;
 	Swat::ANIM_STATE AnimState = pSwat->AnimState;
 
 	if (LBTN_DOWN)
 	{
-		pSwat->Attack = AK_TRUE;
 		if (Swat::IDLE == AnimState)
 		{
-			pSwat->SetAnimation(Swat::PUNCHING_01);
+			pSwat->Attack = AK_TRUE;
+			if (Swat::IDLE == PrevAnimState)
+			{
+				pSwat->SetAnimation(Swat::PUNCHING_01);
+				PrevAnimState = Swat::PUNCHING_01;
+			}
+			else if(Swat::PUNCHING_01 == PrevAnimState)
+			{
+				pSwat->SetAnimation(Swat::PUNCHING_02);
+				PrevAnimState = Swat::IDLE; // Return Idle.
+			}
 		}
 	}
 }
