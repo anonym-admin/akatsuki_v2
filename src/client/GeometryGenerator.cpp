@@ -244,6 +244,52 @@ MeshData_t* GeometryGenerator::MakeSphere(AkU32* pMeshDataNum, const AkF32 uRadi
 	return pMeshData;
 }
 
+LineData_t* GeometryGenerator::MakeSphere(const AkF32 fRadius, const AkU32 uSlice, const AkU32 uStack, const Vector3* pColor)
+{
+	AkF32 fDeltaPi = DirectX::XM_PI / uStack;
+	AkF32 fDeltaTheta = DirectX::XM_2PI / uSlice;
+
+	LineData_t* pLineData = new LineData_t;
+	pLineData->uVerticeNum = (uSlice + 1) * (uStack + 1);
+	pLineData->uIndicesNum = uSlice * uStack * 4;
+	pLineData->pVertices = new LineVertex_t[pLineData->uVerticeNum];
+	pLineData->pIndices = new AkU32[pLineData->uIndicesNum];
+
+	AkU32 k = 0;
+	for (AkU32 i = 0; i <= uStack; i++)
+	{
+		AkF32 fPi = i * fDeltaPi;
+		for (AkU32 j = 0; j <= uSlice; j++)
+		{
+			AkF32 fTheta = j * fDeltaTheta;
+
+			pLineData->pVertices[k].vPosition.x = (AkF32)sin(fPi) * cos(fTheta) * fRadius;
+			pLineData->pVertices[k].vPosition.y = (AkF32)cos(fPi) * fRadius;
+			pLineData->pVertices[k].vPosition.z = (AkF32)sin(fPi) * sin(fTheta) * fRadius;
+
+			pLineData->pVertices[k].vColor = *pColor;
+
+			k++;
+		}
+	}
+
+	k = 0;
+	for (AkU32 i = 0; i < uStack; i++)
+	{
+		for (AkU32 j = 0; j < uSlice; j++)
+		{
+			pLineData->pIndices[k] = (uSlice + 1) * i + j;
+			pLineData->pIndices[k + 1] = (uSlice + 1) * i + j + 1;
+			pLineData->pIndices[k + 2] = (uSlice + 1) * i + j;
+			pLineData->pIndices[k + 3] = (uSlice + 1) * (i + 1) + j;
+
+			k += 4;
+		}
+	}
+
+	return pLineData;
+}
+
 MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 {
 	MeshData_t* pMeshData = nullptr;
@@ -764,6 +810,61 @@ MeshData_t* GeometryGenerator::MakeGrid(AkU32* pMeshDataNum, const AkF32 fScale,
 	*pMeshDataNum = numMeshData;
 
 	return pMeshData;
+}
+
+LineData_t* GeometryGenerator::MakeCapsule(const AkF32 fRadius, const AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+{
+	AkF32 fDeltaPi = DirectX::XM_PI / uStack;
+	AkF32 fDeltaTheta = DirectX::XM_2PI / uSlice;
+
+	LineData_t* pLineData = new LineData_t;
+	pLineData->uVerticeNum = (uSlice + 1) * (uStack + 1);
+	pLineData->uIndicesNum = uSlice * uStack * 4;
+	pLineData->pVertices = new LineVertex_t[pLineData->uVerticeNum];
+	pLineData->pIndices = new AkU32[pLineData->uIndicesNum];
+
+	AkU32 k = 0;
+	for (AkU32 i = 0; i <= uStack; i++)
+	{
+		AkF32 fPi = i * fDeltaPi;
+		for (AkU32 j = 0; j <= uSlice; j++)
+		{
+			AkF32 fTheta = j * fDeltaTheta;
+
+			pLineData->pVertices[k].vPosition.x = (AkF32)sin(fPi) * cos(fTheta) * fRadius;
+			pLineData->pVertices[k].vPosition.y = (AkF32)cos(fPi) * fRadius;
+			pLineData->pVertices[k].vPosition.z = (AkF32)sin(fPi) * sin(fTheta) * fRadius;
+
+			if (pLineData->pVertices[k].vPosition.y > 0)
+			{
+				pLineData->pVertices[k].vPosition.y += fHeight * 0.5f;
+			}
+			else
+			{
+				pLineData->pVertices[k].vPosition.y -= fHeight * 0.5f;
+			}
+
+			pLineData->pVertices[k].vColor = *pColor;
+
+			k++;
+		}
+	}
+
+	k = 0;
+	for (AkU32 i = 0; i < uStack; i++)
+	{
+		for (AkU32 j = 0; j < uSlice; j++)
+		{
+			pLineData->pIndices[k] = (uSlice + 1) * i + j;
+			pLineData->pIndices[k + 1] = (uSlice + 1) * i + j + 1;
+			pLineData->pIndices[k + 2] = (uSlice + 1) * i + j;
+			pLineData->pIndices[k + 3] = (uSlice + 1) * (i + 1) + j;
+
+			k += 4;
+		}
+	}
+
+	return pLineData;
 }
 
 // 비동기 처리 필요!!

@@ -179,9 +179,11 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BaseObject.h" />
+    <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="BRS_74.h" />
     <ClInclude Include="BtnUI.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CapsuleCollider.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Editor.h" />
@@ -220,6 +222,7 @@
     </ClInclude>
     <ClInclude Include="SkinnedModel.h" />
     <ClInclude Include="Spawn.h" />
+    <ClInclude Include="SphereColiider.h" />
     <ClInclude Include="Swat.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="Timer.h" />
@@ -245,9 +248,11 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BaseObject.cpp" />
+    <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="BRS_74.cpp" />
     <ClCompile Include="BtnUI.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CapsuleCollider.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Controller.cpp" />
@@ -288,6 +293,7 @@
     </ClCompile>
     <ClCompile Include="SkinnedModel.cpp" />
     <ClCompile Include="Spawn.cpp" />
+    <ClCompile Include="SphereColiider.cpp" />
     <ClCompile Include="Swat.cpp" />
     <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="Timer.cpp" />

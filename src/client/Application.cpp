@@ -11,6 +11,8 @@
 #include "EditorModel.h"
 #include "EditorMap.h"
 
+#include "Collider.h"
+
 #include "Sound.h"
 
 /*
@@ -330,6 +332,10 @@ void Application::UpdateEnviroment()
 			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::SCENE_TYPE_INGANE;
 		}
 		GEventManager->AddEvent(&tEvent);
+	}
+	if (KEY_DOWN(KEY_INPUT_F2))
+	{
+		New_Collider::DRAW_COLLIDER = !New_Collider::DRAW_COLLIDER;
 	}
 
 	// TODO!!

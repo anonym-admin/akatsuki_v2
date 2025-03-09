@@ -31,7 +31,9 @@ public:
 
 	Collider* CreateCollider();
 
-	class New_Collider* CreateColliderTest();
+	class New_Collider* CreateBoxColliderTest(const Vector3* pMin = nullptr, const Vector3* pMax = nullptr, const Vector3* pColor = nullptr);
+	class New_Collider* CreateSphereColliderTest(AkF32 fRadius = 0.5f, AkU32 uStack = 16, AkU32 uSlice = 32, const Vector3* pColor = nullptr);
+	class New_Collider* CreateCapsuleColliderTest(AkF32 fRadius = 0.5f, AkF32 fHeight = 1.0f, AkU32 uStack = 16, AkU32 uSlice = 32, const Vector3* pColor = nullptr);
 	void DestroyColliderTest();
 
 

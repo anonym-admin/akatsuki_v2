@@ -5,7 +5,9 @@
 #include "RigidBody.h"
 #include "Gravity.h"
 #include "Camera.h"
-#include "Collider.h"
+#include "BoxCollider.h"
+#include "SphereColiider.h"
+#include "CapsuleCollider.h"
 #include "Animation.h"
 
 /*
@@ -25,11 +27,27 @@ Collider* Actor::CreateCollider()
 	return _pCollider;
 }
 
-New_Collider* Actor::CreateColliderTest()
+New_Collider* Actor::CreateBoxColliderTest(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor)
 {
 	Vector3 vMin = Vector3(-0.5f);
 	Vector3 vMax = Vector3(0.5f);
+	if (pMin)
+		vMin = *pMin;
+	if (pMax)
+		vMax = *pMax;
 	_pTest = new BoxCollider(&vMin, &vMax);
+	return _pTest;
+}
+
+New_Collider* Actor::CreateSphereColliderTest(AkF32 fRadius, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+{
+	_pTest = new SphereCollider(fRadius, uStack, uSlice, pColor);
+	return _pTest;
+}
+
+New_Collider* Actor::CreateCapsuleColliderTest(AkF32 fRadius, AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
+{
+	_pTest = new CapsuleCollider(fRadius, fHeight, uStack, uSlice, pColor);
 	return _pTest;
 }
 

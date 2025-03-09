@@ -13,9 +13,6 @@
     <Filter Include="src\entry">
       <UniqueIdentifier>{580b4412-e15c-4060-8d5f-f1da0d035a71}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\anim">
-      <UniqueIdentifier>{faf9db47-cc97-42e2-b9ea-5e290c83bce4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\scene">
       <UniqueIdentifier>{9d338232-d506-42ec-b1c8-6024693208c1}</UniqueIdentifier>
     </Filter>
@@ -64,6 +61,24 @@
     <Filter Include="src\framework">
       <UniqueIdentifier>{865d3123-8590-48f3-8d0c-372019d541ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\comp\collider">
+      <UniqueIdentifier>{aba7cc99-0e6c-4d1d-b1e0-299cd22ea087}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\comp\controller">
+      <UniqueIdentifier>{e6302ab7-ee1f-4bfb-8608-64a9d4cb032f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\comp\gravity">
+      <UniqueIdentifier>{97875ebb-f85a-48b0-8b2a-955407edcfaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\comp\rigidbody">
+      <UniqueIdentifier>{92b6a934-4a85-4ca3-b46d-db29695bb7b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\comp\transform">
+      <UniqueIdentifier>{03e635d1-2fa5-41b7-bb8a-4aa7b5456460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\comp\anim">
+      <UniqueIdentifier>{faf9db47-cc97-42e2-b9ea-5e290c83bce4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\HashTable.h">
@@ -76,7 +91,7 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
-      <Filter>src\anim</Filter>
+      <Filter>src\comp\anim</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\AkVertex.h">
       <Filter>common</Filter>
@@ -116,15 +131,6 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>src\model</Filter>
-    </ClInclude>
-    <ClInclude Include="Collider.h">
-      <Filter>src\comp</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidBody.h">
-      <Filter>src\comp</Filter>
-    </ClInclude>
-    <ClInclude Include="Gravity.h">
-      <Filter>src\comp</Filter>
     </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>src\app</Filter>
@@ -222,9 +228,6 @@
     <ClInclude Include="SkinnedModel.h">
       <Filter>src\model</Filter>
     </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>src\comp</Filter>
-    </ClInclude>
     <ClInclude Include="Spawn.h">
       <Filter>src\obj</Filter>
     </ClInclude>
@@ -233,9 +236,6 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>src\obj</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller.h">
-      <Filter>src\comp</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>src\camera</Filter>
@@ -261,6 +261,30 @@
     <ClInclude Include="FilePath.h">
       <Filter>src\framework</Filter>
     </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>src\comp\collider</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>src\comp\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Gravity.h">
+      <Filter>src\comp\gravity</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>src\comp\rigidbody</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>src\comp\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereColiider.h">
+      <Filter>src\comp\collider</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>src\comp\collider</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsuleCollider.h">
+      <Filter>src\comp\collider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -276,7 +300,7 @@
       <Filter>src\entry</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
-      <Filter>src\anim</Filter>
+      <Filter>src\comp\anim</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\UtilFunc.cpp">
       <Filter>utils</Filter>
@@ -304,15 +328,6 @@
     </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>src\model</Filter>
-    </ClCompile>
-    <ClCompile Include="Collider.cpp">
-      <Filter>src\comp</Filter>
-    </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
-      <Filter>src\comp</Filter>
-    </ClCompile>
-    <ClCompile Include="Gravity.cpp">
-      <Filter>src\comp</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>src\app</Filter>
@@ -398,9 +413,6 @@
     <ClCompile Include="SkinnedModel.cpp">
       <Filter>src\model</Filter>
     </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>src\comp</Filter>
-    </ClCompile>
     <ClCompile Include="Spawn.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
@@ -409,9 +421,6 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>src\obj</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller.cpp">
-      <Filter>src\comp</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>src\camera</Filter>
@@ -430,6 +439,30 @@
     </ClCompile>
     <ClCompile Include="ModelExporter.cpp">
       <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>src\comp\collider</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>src\comp\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Gravity.cpp">
+      <Filter>src\comp\gravity</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>src\comp\rigidbody</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>src\comp\transform</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>src\comp\collider</Filter>
+    </ClCompile>
+    <ClCompile Include="CapsuleCollider.cpp">
+      <Filter>src\comp\collider</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereColiider.cpp">
+      <Filter>src\comp\collider</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

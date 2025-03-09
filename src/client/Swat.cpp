@@ -79,7 +79,7 @@ AkBool Swat::Initialize()
 
 
 	// Test
-	_pTest = CreateColliderTest();
+	_pTest = CreateCapsuleColliderTest();
 
 
 
