@@ -299,7 +299,7 @@ void FFontManager::Cleanup()
 {
 	CleanupDWrite();
 	CleanupD2D();
-}
+}  
 
 AkBool FFontManager::Initialize(FRenderer* pRenderer, ID3D12CommandQueue* pCommandQueue, AkU32 uWidth, AkU32 uHeight, AkBool bEnableDebugLayer)
 {
