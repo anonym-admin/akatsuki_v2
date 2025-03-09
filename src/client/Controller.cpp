@@ -44,12 +44,14 @@ void Controller::KeyBoard()
 
 	Vector3 vVelocity = Vector3(0.0f);
 	AkF32 fMoveSpeed = 0.15f;
+	
 	if (KEY_HOLD(KEY_INPUT_W))
 	{
 		vVelocity += pSwat->GetTransform()->Front();
 		if (KEY_HOLD(KEY_INPUT_LSHIFT))
 		{
-			fMoveSpeed = 3.5f;
+			vVelocity *= pSwat->GetRunSpeed();
+			pRigidBody->SetMaxVeleocity(pSwat->GetRunSpeed());
 		}
 	}
 	if (KEY_HOLD(KEY_INPUT_S))
@@ -82,19 +84,6 @@ void Controller::KeyBoard()
 		}
 	}
 
-	Vector3 vCurVector = pRigidBody->GetVelocity();
-
-	// Walk 유지.
-	if (vCurVector.Length() > 2.65f)
-	{
-		// 해당 코드로 걷기 애니메이션에서 오브젝트 방향과 속도 사이에 차이가 발생함.
-		// 그 차이로 인해 움직임 변경.
-		vCurVector.Normalize();
-		vCurVector *= 2.65f;
-		pRigidBody->SetVelocity(&vCurVector);
-	}
-
-	// Run 전환.
 	vVelocity.Normalize();
 	vVelocity *= fMoveSpeed;
 	pRigidBody->AddVelocity(&vVelocity);
@@ -117,7 +106,7 @@ void Controller::Mouse()
 				pSwat->SetAnimation(Swat::PUNCHING_01);
 				PrevAnimState = Swat::PUNCHING_01;
 			}
-			else if(Swat::PUNCHING_01 == PrevAnimState)
+			else if (Swat::PUNCHING_01 == PrevAnimState)
 			{
 				pSwat->SetAnimation(Swat::PUNCHING_02);
 				PrevAnimState = Swat::IDLE; // Return Idle.

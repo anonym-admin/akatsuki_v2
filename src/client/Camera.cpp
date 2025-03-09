@@ -2,10 +2,10 @@
 #include "Camera.h"
 #include "Application.h"
 #include "GameInput.h"
-#include "Actor.h"
 #include "RigidBody.h"
 #include "Transform.h"
 #include "Timer.h"
+#include "Swat.h"
 
 /*
 ===================
@@ -178,27 +178,26 @@ void Camera::RotateFollow()
 	vYawPitchRoll.x = NDC_ACC_X * DirectX::XM_PIDIV2; // Yaw
 	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 도달 시 Up Vector에 의한 회전 방지.
 
+	// 카메라 회전 후 위치 계산.
 	_vCamFollowPos = Vector3::Transform(_vCamInitPos, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
-
-	// 회전한만큼 
-
-
-
-
-
-
-
-
-
 	SetRotation(&vYawPitchRoll);
 
-	// 오너 애니메이션 실행.
+	// 현재 플레이어의 이동방향과 카메라 방향 사이의 각도를 계산.
+	Vector3 vOwnerFront = _pOwner->GetTransform()->Front();
+	vOwnerFront.Normalize();
+
+	Vector3 vDir = GetDirection();
+	vDir.Normalize();
+	
+	AkF32 fCosValue = vDir.Dot(vOwnerFront);
 	Vector3 vOwnerRot = _vOwnerInitRot + vYawPitchRoll;
 	vOwnerRot.y = 0.0f;
 
-	if (!_bIsView)
-	{
+	Swat* pSwat = (Swat*)_pOwner;
+	if(Swat::IDLE <= pSwat->AnimState && pSwat->AnimState <= Swat::B_WALK)
 		_pOwner->GetTransform()->SetRotation(&vOwnerRot);
-	}
+
+
+	// TODO!!
 }
 

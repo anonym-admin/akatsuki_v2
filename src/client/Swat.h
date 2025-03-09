@@ -77,6 +77,9 @@ public:
 	void SetNextPunching();
 	void SetAnimation(ANIM_STATE eState, AkF32 fSpeed = 1.5f);
 
+	AkF32 GetRunSpeed() { return _fRunSpeed; }
+	AkF32 GetWalkSpeed() { return _fWalkSpeed; }
+
 private:
 	void CleanUp();
 
@@ -87,6 +90,8 @@ private:
 
 private:
 	Matrix _mHandAnimTransform = Matrix();
+	AkF32 _fWalkSpeed = 2.65f;
+	AkF32 _fRunSpeed = 3.5f;
 
 public:
 	AkBool Attack = AK_FALSE;

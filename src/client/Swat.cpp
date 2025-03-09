@@ -87,7 +87,7 @@ AkBool Swat::Initialize()
 	// Create Rigidbody
 	_pRigidBody = CreateRigidBody();
 	_pRigidBody->SetFrictionCoef(2.5f);
-	_pRigidBody->SetMaxVeleocity(3.5f);
+	_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 
 	return AK_TRUE;
 }
@@ -242,10 +242,12 @@ void Swat::UpdateMove()
 
 		AkF32 fCosValue0 = vDir.Dot(_pTransform->Front());
 
+		// [] > 60
 		if (0.866025f < fCosValue0)
 		{
 			SetAnimation(F_WALK);
 		}
+		// 30 <= [] <= 60
 		else if (0.5f <= fCosValue0 && fCosValue0 <= 0.866025f)
 		{
 			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
@@ -254,6 +256,7 @@ void Swat::UpdateMove()
 			else
 				SetAnimation(FL_WALK);
 		}
+		// -60 < [] < 60
 		else if (-0.5f < fCosValue0 && fCosValue0 < 0.5f)
 		{
 			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
@@ -262,6 +265,7 @@ void Swat::UpdateMove()
 			else
 				SetAnimation(L_WALK);
 		}
+		// -60 <= [] <= -30
 		else if (-0.866025f <= fCosValue0 && fCosValue0 <= -0.5f)
 		{
 			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
@@ -270,10 +274,14 @@ void Swat::UpdateMove()
 			else
 				SetAnimation(BL_WALK);
 		}
+		// [] < -60
 		else
 		{
 			SetAnimation(B_WALK);
 		}
+
+		// Return Walk Speed.
+		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 	}
 	else if (vVelocity.Length() > 3.0f)
 	{
@@ -288,6 +296,9 @@ void Swat::UpdateMove()
 
 		if (F_RUN == AnimState)
 			SetAnimation(IDLE);
+
+		// Return Walk Speed.
+		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 	}
 }
 
