@@ -28,3 +28,11 @@ struct MeshData_t
 	//wchar_t* wcAoTextureFilename = nullptr;
 	//wchar_t* wcOpacityTextureFilename = nullptr;
 };
+
+struct LineData_t
+{
+	LineVertex_t* pVertices = nullptr;
+	AkU32* pIndices = nullptr;
+	AkU32 uVerticeNum = 0;
+	AkU32 uIndicesNum = 0;
+};

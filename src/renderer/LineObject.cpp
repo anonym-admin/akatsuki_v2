@@ -89,10 +89,11 @@ void FLineObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, 
 	pCmdList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 
 	pCmdList->IASetVertexBuffers(0, 1, &_tVertexBufferView);
-	pCmdList->DrawInstanced(_uVertexCount, 1, 0, 0);
+	pCmdList->IASetIndexBuffer(&_tIndexBufferView);
+	pCmdList->DrawIndexedInstanced(_uIndiceCount, 1, 0, 0, 0);
 }
 
-AkBool FLineObject::CreateLineBuffers(LineVertex_t* pStart, LineVertex_t* pEnd)
+AkBool FLineObject::CreateLineBuffer(LineVertex_t* pStart, LineVertex_t* pEnd)
 {
 	ID3D12Device* pD3DDeivce = _pRenderer->GetDevice();
 	AkU32 uSrvDescriptorSize = pD3DDeivce->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -103,16 +104,49 @@ AkBool FLineObject::CreateLineBuffers(LineVertex_t* pStart, LineVertex_t* pEnd)
 	pVertices[0] = *pStart;
 	pVertices[1] = *pEnd;
 
+	AkU32 pIndeics[2] = { 0, 1 };
+
 	if (FAILED(pResourceManager->CreateVertexBuffer(sizeof(LineVertex_t), 2, &_tVertexBufferView, &_pVertexBuffer, pVertices)))
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+	if (FAILED(pResourceManager->CreateIndexBuffer(2, &_tIndexBufferView, &_pIndexBuffer, pIndeics)))
 	{
 		__debugbreak();
 		return AK_FALSE;
 	}
 
 	_uVertexCount = 2;
+	_uIndiceCount = 2;
 
 	delete[] pVertices;
 	pVertices = nullptr;
+
+	return AK_TRUE;
+}
+
+AkBool FLineObject::CreateLineBuffers(LineData_t* pLineData)
+{
+	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
+	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
+	D3D12_INDEX_BUFFER_VIEW tIBView = {};
+	ID3D12Resource* pVertexBuffer = nullptr;
+	ID3D12Resource* pIndexBuffer = nullptr;
+
+	if (pResourceManager->CreateVertexBuffer(sizeof(LineVertex_t), pLineData->uVerticeNum, &tVBView, &pVertexBuffer, pLineData->pVertices))
+	{
+		_pVertexBuffer = pVertexBuffer;
+		_tVertexBufferView = tVBView;
+	}
+
+	if (pResourceManager->CreateIndexBuffer(pLineData->uIndicesNum, &tIBView, &pIndexBuffer, pLineData->pIndices))
+	{
+		_pIndexBuffer = pIndexBuffer;
+		_tIndexBufferView = tIBView;
+		_uVertexCount = pLineData->uVerticeNum;
+		_uIndiceCount = pLineData->uIndicesNum;
+	}
 
 	return AK_TRUE;
 }
@@ -146,6 +180,11 @@ void FLineObject::CleanUp()
 	{
 		_pVertexBuffer->Release();
 		_pVertexBuffer = nullptr;
+	}
+	if (_pIndexBuffer)
+	{
+		_pIndexBuffer->Release();
+		_pIndexBuffer = nullptr;
 	}
 
 	DestroyCommonResources();

@@ -18,12 +18,8 @@ public:
 	AkBool Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll);
 	void Update();
 	void Render();
-	void SetPosition(const Vector3* pPos);
-	void SetRotation(const Vector3* pYawPitchRoll);
 	void SetOwner(Actor* pOwner);
 	void ToggleViewMode();
-	Vector3 GetPosition();
-	Vector3 GetDirection();
 	Transform* GetTransform() { return _pTransform; }
 
 private:
@@ -34,15 +30,18 @@ private:
 	void MoveFollow();
 	void RotateEditor();
 	void RotateFollow();
+
+	void SetPosition(const Vector3* pPos);
+	void SetRotation(const Vector3* pYawPitchRoll);
 	
 private:
 	Actor* _pOwner = nullptr;
 	Vector3 _vOwnerInitRot = Vector3(0.0f);
-	Vector3 _vCamInitPos = Vector3(0.0f);
-	Vector3 _vCamFollowPos = Vector3(0.0f);
-	Vector3 _vCamInitDir = Vector3(0.0f, 0.0f, 1.0f);
+
+	Vector3 _vRelativePos = Vector3(0.0f);
+	Vector3 _vFollowPos = Vector3(0.0f);
 	Transform* _pTransform = nullptr;
-	AkF32 _fCamSpeed = 1.0f;
+	AkF32 _fSpeed = 1.0f;
 
 	// Release for follow camera.
 	AkBool _bIsView = AK_FALSE;

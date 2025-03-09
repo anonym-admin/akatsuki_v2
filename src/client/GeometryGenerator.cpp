@@ -355,6 +355,46 @@ MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 	return pMeshData;
 }
 
+LineData_t* GeometryGenerator::MakeCube(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor)
+{
+	LineData_t* pLineData = nullptr;
+	pLineData = new LineData_t;
+
+	pLineData->uVerticeNum = 8;
+	pLineData->uIndicesNum = 24;
+	pLineData->pVertices = new LineVertex_t[pLineData->uVerticeNum];
+	pLineData->pIndices = new AkU32[pLineData->uIndicesNum];
+
+	pLineData->pVertices[0].vPosition = Vector3(pMin->x, pMin->y, pMin->z);
+	pLineData->pVertices[1].vPosition = Vector3(pMin->x, pMax->y, pMin->z);
+	pLineData->pVertices[2].vPosition = Vector3(pMax->x, pMax->y, pMin->z);
+	pLineData->pVertices[3].vPosition = Vector3(pMax->x, pMin->y, pMin->z);
+	pLineData->pVertices[0].vColor = *pColor;
+	pLineData->pVertices[1].vColor = *pColor;
+	pLineData->pVertices[2].vColor = *pColor;
+	pLineData->pVertices[3].vColor = *pColor;
+
+	pLineData->pVertices[4].vPosition = Vector3(pMin->x, pMin->y, pMax->z);
+	pLineData->pVertices[5].vPosition = Vector3(pMin->x, pMax->y, pMax->z);
+	pLineData->pVertices[6].vPosition = Vector3(pMax->x, pMax->y, pMax->z);
+	pLineData->pVertices[7].vPosition = Vector3(pMax->x, pMin->y, pMax->z);
+	pLineData->pVertices[4].vColor = *pColor;
+	pLineData->pVertices[5].vColor = *pColor;
+	pLineData->pVertices[6].vColor = *pColor;
+	pLineData->pVertices[7].vColor = *pColor;
+
+	AkU32 pIndices[] =
+	{
+		0, 1, 1, 2, 2, 3, 3, 0,
+		4, 5, 5, 6, 6, 7, 7, 4,
+		0, 4, 1, 5, 2, 6, 3, 7
+	};
+
+	memcpy(pLineData->pIndices, pIndices, sizeof(AkU32) * pLineData->uIndicesNum);
+
+	return pLineData;
+}
+
 MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Vector3* pExtent)
 {
 	MeshData_t* pMeshData = nullptr;
@@ -813,5 +853,24 @@ void GeometryGenerator::DestroyGeometry(MeshData_t* pMeshData, AkU32 uMeshDataNu
 			}*/
 		}
 		delete[] pMeshData;
+	}
+}
+
+void GeometryGenerator::DestroyGeometry(LineData_t* pLineData)
+{
+	if (pLineData)
+	{
+		if (pLineData->pVertices)
+		{
+			delete[] pLineData->pVertices;
+			pLineData->pVertices = nullptr;
+		}
+		if (pLineData->pIndices)
+		{
+			delete[] pLineData->pIndices;
+			pLineData->pIndices = nullptr;
+		}
+
+		delete pLineData;
 	}
 }

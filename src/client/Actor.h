@@ -30,6 +30,12 @@ public:
 	virtual void OnCollisionExit(Collider* pOther) = 0;
 
 	Collider* CreateCollider();
+
+	class New_Collider* CreateColliderTest();
+	void DestroyColliderTest();
+
+
+
 	RigidBody* CreateRigidBody();
 	Gravity* CreateGravity();
 	Camera* CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll = nullptr);
@@ -55,6 +61,10 @@ private:
 	void CleanUp();
 
 protected:
+
+	class New_Collider* _pTest = nullptr;
+
+
 	// �浹ü
 	Collider* _pCollider = nullptr;
 

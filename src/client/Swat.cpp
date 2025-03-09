@@ -68,12 +68,21 @@ AkBool Swat::Initialize()
 
 	// Create Trnasform.
 	_pTransform = CreateTransform();
+	_pTransform->SetFront(0.0f, 0.0f, -1.0f); // 모델이 생성될때 나를 바라보는 방향으로 만들어지기 때문에 Front 의 방향을 재설정 필요!!
+	_pTransform->SetRight(-1.0f, 0.0f, 0.0f); // 위 이유와 같음
 
 	// Create Collider.
 	Vector3 vCenter = Vector3(0.0f);
 	AkF32 fRadius = 0.5f;
 	_pCollider = CreateCollider();
 	_pCollider->CreateBoundingSphere(fRadius, &vCenter);
+
+
+	// Test
+	_pTest = CreateColliderTest();
+
+
+
 
 	// Create Camera.
 	Vector3 vCamPos = Vector3(0.0f, 0.5f, -2.0f);
@@ -111,6 +120,9 @@ void Swat::FinalUpdate()
 
 	_pCollider->Update();
 
+	_pTest->GetTransform()->SetParent(&_pTransform->GetWorldTransform());
+	_pTest->Update();
+
 	_pCamera->Update();
 
 	_pAnimation->Update();
@@ -122,7 +134,11 @@ void Swat::FinalUpdate()
 
 void Swat::Render()
 {
+	// Render model.
 	_pModel->Render();
+
+	// Render collider.
+	_pTest->Render();
 }
 
 void Swat::RenderShadow()

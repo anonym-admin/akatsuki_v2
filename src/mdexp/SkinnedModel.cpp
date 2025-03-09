@@ -67,7 +67,7 @@ bool SkinnedModel::Init(MeshData_t* pMeshData, int iMeshCount, AnimationData* pA
 		LineVertex_t tStart = { vStart, vColor };
 		LineVertex_t tEnd = { vEnd, vColor };
 		ILineObject* pLineObj = g_pRenderer->CreateLineObject();
-		pLineObj->CreateLineBuffers(&tStart, &tEnd);
+		pLineObj->CreateLineBuffer(&tStart, &tEnd);
 
 		cout << pAnimData->boneIdToName[iBoneId] << endl;
 		if (pAnimData->boneIdToName[iBoneId].find("LeftHand") != string::npos && !bLeftHandFind)

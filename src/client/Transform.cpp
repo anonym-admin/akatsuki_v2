@@ -51,6 +51,26 @@ void Transform::SetPosition(AkF32 fX, AkF32 fY, AkF32 fZ)
 	_vPosition = Vector3(fX, fY, fZ);
 }
 
+void Transform::SetFront(const Vector3* pFront)
+{
+	_vFront = *pFront;
+}
+
+void Transform::SetRight(const Vector3* pRight)
+{
+	_vRight = *pRight;
+}
+
+void Transform::SetFront(AkF32 fX, AkF32 fY, AkF32 fZ)
+{
+	_vFront = Vector3(fX, fY, fZ);
+}
+
+void Transform::SetRight(AkF32 fX, AkF32 fY, AkF32 fZ)
+{
+	_vRight = Vector3(fX, fY, fZ);
+}
+
 Vector3 Transform::Front()
 {
 	Matrix mWorldTranslationZero = _mWorldRow;

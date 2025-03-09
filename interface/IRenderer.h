@@ -33,7 +33,8 @@ interface ISkyboxObject : public IUnknown
 
 interface ILineObject : public IUnknown
 {
-	virtual AkBool CreateLineBuffers(LineVertex_t* pStart, LineVertex_t* pEnd) = 0;
+	virtual AkBool CreateLineBuffer(LineVertex_t* pStart, LineVertex_t* pEnd) = 0;
+	virtual AkBool CreateLineBuffers(LineData_t* pLineData) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;

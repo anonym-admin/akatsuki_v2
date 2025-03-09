@@ -13,7 +13,8 @@ public:
 	AkBool Initialize(FRenderer* pRenderer);
 	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
-	virtual AkBool CreateLineBuffers(LineVertex_t* pStart, LineVertex_t* pEnd) override;
+	virtual AkBool CreateLineBuffer(LineVertex_t* pStart, LineVertex_t* pEnd) override;
+	virtual AkBool CreateLineBuffers(LineData_t* pLineData) override;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
 	virtual ULONG __stdcall Release(void) override;
@@ -36,8 +37,11 @@ private:
 	FRenderer* _pRenderer = nullptr;
 
 	// vertex data
-	ID3D12Resource* _pVertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW _tVertexBufferView;
+	ID3D12Resource* _pVertexBuffer = nullptr;
+	ID3D12Resource* _pIndexBuffer = nullptr;
+	D3D12_VERTEX_BUFFER_VIEW _tVertexBufferView = {};
+	D3D12_INDEX_BUFFER_VIEW _tIndexBufferView = {};
 	AkU32 _uVertexCount = 0;
+	AkU32 _uIndiceCount = 0;
 };
 

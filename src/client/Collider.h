@@ -1,12 +1,5 @@
 #pragma once
 
-enum class COLLIDER_SHAPE_TYPE
-{
-	COLLIDER_SHAPE_SPHERE,
-	COLLIDER_SHAPE_BOX,
-	COLLIDER_SHAPE_COUNT,
-};
-
 /*
 ===========
 Collider
@@ -65,3 +58,86 @@ private:
 public:
 	AkBool* _pDraw = nullptr;
 };
+
+
+
+/*
+===========
+New
+===========
+*/
+
+class Transform;
+class BoxCollider;
+class SphereCollider;
+class CapsuleCollider;
+class SquareCollider;
+
+class New_Collider
+{
+public:
+	New_Collider();
+	virtual ~New_Collider();
+
+	AkBool Initialize();
+
+	virtual AkBool RayIntersect(DirectX::SimpleMath::Ray tRay, Vector3* pOutHitPos = nullptr, AkF32* pOutDist = nullptr) = 0;
+	virtual AkBool BoxIntersect(BoxCollider* pCollider) = 0;
+	virtual AkBool SphereIntersect(SphereCollider* pCollider) = 0;
+	virtual AkBool CapsuleIntersect(CapsuleCollider* pCapsule) = 0;
+	virtual AkBool SqaureIntersect() { return AK_TRUE; }
+
+	void Update();
+	void Render();
+
+	Transform* GetTransform() { return _pTransform; }
+
+private:
+	void CleanUp();
+
+protected:
+	COLLIDER_TYPE _eType = COLLIDER_TYPE::NONE;
+	ILineObject* _pLineObj = nullptr;
+	Transform* _pTransform = nullptr;
+};
+
+/*
+====================
+Box Collider
+====================
+*/
+
+class BoxCollider : public New_Collider
+{
+public:
+	BoxCollider(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor = nullptr);
+	~BoxCollider();
+
+	AkBool Initialize(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor);
+
+	virtual AkBool RayIntersect(DirectX::SimpleMath::Ray tRay, Vector3* pOutHitPos = nullptr, AkF32* pOutDist = nullptr) override;
+	virtual AkBool BoxIntersect(BoxCollider* pCollider) override;
+	virtual AkBool SphereIntersect(SphereCollider* pCollider) override;
+	virtual AkBool CapsuleIntersect(CapsuleCollider* pCapsule) override;
+
+	Vector3 GetMinWorld();
+	Vector3 GetMaxWorld();
+
+private:
+	Vector3 _vMin = Vector3(0.0f);
+	Vector3 _vMax = Vector3(0.0f);
+};
+
+/*
+====================
+Sphere Collider
+====================
+*/
+
+/*
+====================
+Capsule Collider
+====================
+*/
+
+

@@ -26,15 +26,19 @@ Camera::~Camera()
 AkBool Camera::Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll)
 {
 	_pTransform = new Transform;
-	_vCamInitPos = *pPos;
+
+	_vRelativePos = *pPos;
 
 	SetPosition(pPos);
 	SetRotation(pYawPirchRoll);
+
 	return AK_TRUE;
 }
 
 void Camera::Update()
 {
+	_pTransform->Update();
+
 	switch (Mode)
 	{
 	case CAMERA_MODE::FREE:
@@ -80,20 +84,6 @@ void Camera::ToggleViewMode()
 	_bIsView = !_bIsView;
 }
 
-Vector3 Camera::GetPosition()
-{
-	return _pTransform->GetPosition();
-}
-
-Vector3 Camera::GetDirection()
-{
-	Vector3 vYawPitchRoll = _pTransform->GetRotation();
-
-	Vector3 vDir = Vector3::Transform(_vCamInitDir, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
-	vDir.Normalize();
-	return vDir;
-}
-
 void Camera::CleanUp()
 {
 	if (_pTransform)
@@ -109,8 +99,8 @@ void Camera::MoveFree()
 
 void Camera::MoveEditor()
 {
-	Vector3 vPos = GetPosition();
-	Vector3 vDir = GetDirection();
+	Vector3 vPos = _pTransform->GetPosition();
+	Vector3 vDir = _pTransform->Front();
 	Vector3 vUp = Vector3(0.0f, 1.0f, 0.0f);
 	Vector3 vRight = vUp.Cross(vDir);
 	Vector3 vDeltaPos = Vector3(0.0f);
@@ -118,27 +108,27 @@ void Camera::MoveEditor()
 
 	if (KEY_HOLD(KEY_INPUT_W))
 	{
-		vDeltaPos += (_fCamSpeed * vDir * DT);
+		vDeltaPos += (_fSpeed * vDir * DT);
 	}
 	if (KEY_HOLD(KEY_INPUT_S))
 	{
-		vDeltaPos += (_fCamSpeed * -vDir * DT);
+		vDeltaPos += (_fSpeed * -vDir * DT);
 	}
 	if (KEY_HOLD(KEY_INPUT_D))
 	{
-		vDeltaPos += (_fCamSpeed * vRight * DT);
+		vDeltaPos += (_fSpeed * vRight * DT);
 	}
 	if (KEY_HOLD(KEY_INPUT_A))
 	{
-		vDeltaPos += (_fCamSpeed * -vRight * DT);
+		vDeltaPos += (_fSpeed * -vRight * DT);
 	}
 	if (KEY_HOLD(KEY_INPUT_Q))
 	{
-		vDeltaPos += (_fCamSpeed * vUp * DT);
+		vDeltaPos += (_fSpeed * vUp * DT);
 	}
 	if (KEY_HOLD(KEY_INPUT_E))
 	{
-		vDeltaPos += (_fCamSpeed * -vUp * DT);
+		vDeltaPos += (_fSpeed * -vUp * DT);
 	}
 
 	vPos += vDeltaPos;
@@ -149,7 +139,7 @@ void Camera::MoveEditor()
 void Camera::MoveFollow()
 {
 	Vector3 vTargetPos = _pOwner->GetTransform()->GetPosition();
-	Vector3 vFinalPos = vTargetPos + _vCamFollowPos;
+	Vector3 vFinalPos = vTargetPos + _vFollowPos;
 
 	SetPosition(&vFinalPos);
 }
@@ -179,14 +169,14 @@ void Camera::RotateFollow()
 	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 도달 시 Up Vector에 의한 회전 방지.
 
 	// 카메라 회전 후 위치 계산.
-	_vCamFollowPos = Vector3::Transform(_vCamInitPos, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
+	_vFollowPos = Vector3::Transform(_vRelativePos, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
 	SetRotation(&vYawPitchRoll);
 
 	// 현재 플레이어의 이동방향과 카메라 방향 사이의 각도를 계산.
 	Vector3 vOwnerFront = _pOwner->GetTransform()->Front();
 	vOwnerFront.Normalize();
 
-	Vector3 vDir = GetDirection();
+	Vector3 vDir = _pTransform->Front();
 	vDir.Normalize();
 	
 	AkF32 fCosValue = vDir.Dot(vOwnerFront);
@@ -194,9 +184,8 @@ void Camera::RotateFollow()
 	vOwnerRot.y = 0.0f;
 
 	Swat* pSwat = (Swat*)_pOwner;
-	if(Swat::IDLE <= pSwat->AnimState && pSwat->AnimState <= Swat::B_WALK)
+	if(!_bIsView && Swat::IDLE <= pSwat->AnimState && pSwat->AnimState <= Swat::B_WALK)
 		_pOwner->GetTransform()->SetRotation(&vOwnerRot);
-
 
 	// TODO!!
 }

@@ -8,6 +8,12 @@
 #include "Collider.h"
 #include "Animation.h"
 
+/*
+=========
+Actor
+=========
+*/
+
 Actor::~Actor()
 {
 	CleanUp();
@@ -17,6 +23,23 @@ Collider* Actor::CreateCollider()
 {
 	_pCollider = new Collider(this);
 	return _pCollider;
+}
+
+New_Collider* Actor::CreateColliderTest()
+{
+	Vector3 vMin = Vector3(-0.5f);
+	Vector3 vMax = Vector3(0.5f);
+	_pTest = new BoxCollider(&vMin, &vMax);
+	return _pTest;
+}
+
+void Actor::DestroyColliderTest()
+{
+	if (_pTest)
+	{
+		delete _pTest;
+		_pTest = nullptr;
+	}
 }
 
 RigidBody* Actor::CreateRigidBody()
@@ -105,6 +128,11 @@ void Actor::CleanUp()
 	{
 		return;
 	}
+
+
+	DestroyColliderTest();
+
+
 
 	DestroyCollider();
 	DesteoyRigidBody();

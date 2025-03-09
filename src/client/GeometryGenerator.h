@@ -16,6 +16,7 @@ public:
 	static MeshData_t* MakeSquare(AkU32* pMeshDataNum, const AkF32 fScale = 1.0f, const Vector2* pTexScale = nullptr);
 	static MeshData_t* MakeSphere(AkU32* pMeshDataNum, const AkF32 uRadius, const AkU32 uNumSlices, const AkU32 uNumStacks, const Vector2* pTexScale = nullptr);
 	static MeshData_t* MakeCube(AkU32* pMeshDataNum, const AkF32 fScale = 1.0f);
+	static LineData_t* MakeCube(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor);
 	static MeshData_t* MakeCubeWidthExtent(AkU32* pMeshDataNum, const Vector3* pExtent);
 	static MeshData_t* MakeWireCube(AkU32* pMeshDataNum, const AkF32 fScale = 1.0f);
 	static MeshData_t* MakeWireCubeWidthExtent(AkU32* pMeshDataNum, Vector3* vP0, Vector3* vP1, Vector3* vP2, Vector3* vP3, Vector3* vP4, Vector3* vP5, Vector3* vP6, Vector3* vP7);
@@ -26,5 +27,6 @@ public:
 	static void NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum, const AkF32 fScaleLength, AkBool bIsAnim , Matrix* pDefaultMatrix);
 
 	static void DestroyGeometry(MeshData_t* pMeshData, AkU32 uMeshDataNum);
+	static void DestroyGeometry(LineData_t* pLineData);
 };
 

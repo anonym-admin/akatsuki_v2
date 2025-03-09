@@ -147,3 +147,26 @@ enum class SWAT_ANIM_CLIP
 	
 	END = 32,
 };
+
+/*
+============
+Collider
+============
+*/
+
+enum class COLLIDER_SHAPE_TYPE
+{
+	COLLIDER_SHAPE_SPHERE,
+	COLLIDER_SHAPE_BOX,
+	COLLIDER_SHAPE_COUNT,
+};
+
+enum class COLLIDER_TYPE
+{
+	BOX,
+	SPHERE,
+	CAPSULE,
+	SQUARE,
+	
+	NONE,
+};
