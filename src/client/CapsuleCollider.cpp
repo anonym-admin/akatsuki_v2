@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CapsuleCollider.h"
 #include "Transform.h"
+#include "BoxCollider.h"
 
 /*
 ====================
@@ -43,7 +44,19 @@ AkBool CapsuleCollider::RayIntersect(DirectX::SimpleMath::Ray tRay, Vector3* pOu
 
 AkBool CapsuleCollider::BoxIntersect(BoxCollider* pCollider)
 {
-	return AkBool();
+	Vector3 vUp = _pTransform->Up();
+	Vector3 vO = _pTransform->GetPosition() - vUp * Height() * 0.5f;
+
+	Vector3 vA = pCollider->GetTransform()->GetPosition() - vO;
+
+	AkF32 t = vA.Dot(vUp);
+	t = max(0, t);
+	t = min(Height(), t);
+
+	Vector3 vP = vO + vUp * t;
+
+	Vector3 vPos = _pTransform->GetPosition();
+	return pCollider->SphereIntersect(&vPos, Radius());
 }
 
 AkBool CapsuleCollider::SphereIntersect(SphereCollider* pCollider)

@@ -37,6 +37,7 @@ void FLineObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, 
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
 	FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
 	FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
+	FConstantBufferPool* pLineCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_LINE);
 	AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
@@ -65,18 +66,32 @@ void FLineObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, 
 	pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
 
-	CBContainer_t* pCBContainer = pMeshCBPool->Alloc();
-	if (!pCBContainer)
+	CBContainer_t* pMeshCBContainer = pMeshCBPool->Alloc();
+	if (!pMeshCBContainer)
 	{
 		__debugbreak();
 		return;
 	}
 
-	MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pCBContainer->pSystemMemAddr);
+	MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr);
 	pMeshConstantBuffer->mWorld = (*pWorldMat).Transpose();
 
-	// Per Obj.
-	pDevice->CopyDescriptorsSimple(1, hDest, pCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	// Per Obj (b1).
+	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	CBContainer_t* pLineCBContainer = pLineCBPool->Alloc();
+	if (!pLineCBContainer)
+	{
+		__debugbreak();
+		return;
+	}
+
+	LineConstantBuffer_t* pLineConstantBuffer = reinterpret_cast<LineConstantBuffer_t*>(pLineCBContainer->pSystemMemAddr);
+	pLineConstantBuffer->vColor = _vColor;
+
+	// Per Obj (b2).
+	pDevice->CopyDescriptorsSimple(1, hDest, pLineCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
 
 	// Set RootSignature.
@@ -149,6 +164,11 @@ AkBool FLineObject::CreateLineBuffers(LineData_t* pLineData)
 	}
 
 	return AK_TRUE;
+}
+
+void FLineObject::SetColor(AkF32 fR, AkF32 fG, AkF32 fB)
+{
+	_vColor = Vector3(fR, fG, fB);
 }
 
 HRESULT __stdcall FLineObject::QueryInterface(REFIID riid, void** ppvObject)
@@ -231,7 +251,7 @@ AkBool FLineObject::CreateRootSignature()
 	// }
 
 	CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[1] = {};
-	tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0 : Constant Buffer View per Object.
+	tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 3, 0);	// b0, b1, b2 : Constant Buffer View per Object.
 
 	CD3DX12_ROOT_PARAMETER tRootParameters[1] = {};
 	tRootParameters[0].InitAsDescriptorTable(_countof(tRangesPerObj), tRangesPerObj, D3D12_SHADER_VISIBILITY_ALL);

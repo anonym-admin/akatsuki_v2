@@ -25,9 +25,9 @@ public:
 	void SetFront(AkF32 fX, AkF32 fY, AkF32 fZ);
 	void SetRight(AkF32 fX, AkF32 fY, AkF32 fZ);
 
-	Vector3 GetScale() { return _vScale; }
-	Vector3 GetRotation() { return _vRotation; }
-	Vector3 GetPosition() { return _vPosition; }
+	Vector3 GetScale();
+	Vector3 GetRotation();
+	Vector3 GetPosition();
 	Matrix& GetWorldTransform() { return _mWorldRow; }
 	Matrix* GetWorldTransformAddr() { return &_mWorldRow; }
 	Vector3 Front();
@@ -35,9 +35,13 @@ public:
 	Vector3 Up();
 
 private:
+	Vector3 _vRelativeScale = Vector3(1.0f);
+	Vector3 _vRelativeRotation = Vector3(0.0f); // Yaw Pich Roll
+	Vector3 _vRelativePosition = Vector3(0.0f);
+
 	Vector3 _vScale = Vector3(1.0f);
 	Vector3 _vPosition = Vector3(0.0f);
-	Vector3 _vRotation = Vector3(0.0f); // Yaw Pich Roll
+	Quaternion _vRotation = Quaternion(); // Quat
 	Vector3 _vFront = Vector3(0.0f, 0.0f, 1.0f); 
 	Vector3 _vRight = Vector3(1.0f, 0.0f, 0.0f);
 	Vector3 _vUp = Vector3(0.0f, 1.0f, 0.0f);

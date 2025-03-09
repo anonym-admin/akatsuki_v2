@@ -5,7 +5,7 @@ class FRenderer;
 class FLineObject : public ILineObject
 {
 public:
-	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 2;
+	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 3;
 
 	FLineObject();
 	~FLineObject();
@@ -15,6 +15,7 @@ public:
 
 	virtual AkBool CreateLineBuffer(LineVertex_t* pStart, LineVertex_t* pEnd) override;
 	virtual AkBool CreateLineBuffers(LineData_t* pLineData) override;
+	virtual void SetColor(AkF32 fR, AkF32 fG, AkF32 fB) override;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
 	virtual ULONG __stdcall Release(void) override;
@@ -43,5 +44,7 @@ private:
 	D3D12_INDEX_BUFFER_VIEW _tIndexBufferView = {};
 	AkU32 _uVertexCount = 0;
 	AkU32 _uIndiceCount = 0;
+
+	Vector3 _vColor = Vector3(0.0f, 0.5f, 0.0f);
 };
 

@@ -1,5 +1,10 @@
 #include "Common.hlsli"
 
+cbuffer LineConsts : register(b2)
+{
+    float3 color;
+};
+
 struct VertexShaderInput
 {
     float3 posModel : POSITION;
@@ -27,5 +32,5 @@ PixelShaderInput VSMain(VertexShaderInput input)
 
 float4 PSMain(PixelShaderInput input) : SV_TARGET
 {
-    return float4(input.color, 1.0);
+    return float4(color, 1.0);
 }

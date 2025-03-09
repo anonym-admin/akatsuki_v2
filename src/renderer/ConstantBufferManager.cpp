@@ -7,6 +7,7 @@ ConstantBufferProperty_t g_pConstantbufferProperties[] =
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL, sizeof(GlobalConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH, sizeof(MeshConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_SKINNED_MESH, sizeof(SkinnedMeshConstantBuffer_t),
+	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_LINE, sizeof(LineConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MATERIAL, sizeof(MaterialConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_SPRITE, sizeof(SpriteConstantBuffer_t)
 };

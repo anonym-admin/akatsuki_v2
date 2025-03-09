@@ -11,6 +11,7 @@ enum class CONSTANT_BUFFER_TYPE
 	CONSTANT_BUFFER_TYPE_GLOBAL,
 	CONSTANT_BUFFER_TYPE_MESH,
 	CONSTANT_BUFFER_TYPE_SKINNED_MESH,
+	CONSTANT_BUFFER_TYPE_LINE,
 	CONSTANT_BUFFER_TYPE_MATERIAL,
 	CONSTANT_BUFFER_TYPE_SPRITE,
 	CONSTANT_BUFFER_TYPE_COUNT
@@ -57,6 +58,11 @@ struct MeshConstantBuffer_t
 {
 	Matrix mWorld = Matrix();
 	Matrix mWorldIT = Matrix();
+};
+
+struct LineConstantBuffer_t
+{
+	Vector3 vColor = Vector3(0.0f, 0.5f, 0.0f);
 };
 
 struct MaterialConstantBuffer_t

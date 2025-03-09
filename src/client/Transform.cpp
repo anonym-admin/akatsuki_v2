@@ -9,12 +9,14 @@ Transform
 
 void Transform::Update()
 {
-	_mWorldRow = Matrix::CreateScale(_vScale) * Matrix::CreateFromYawPitchRoll(_vRotation.x, _vRotation.y, _vRotation.z) * Matrix::CreateTranslation(_vPosition);
+	_mWorldRow = Matrix::CreateScale(_vRelativeScale) * Matrix::CreateFromYawPitchRoll(_vRelativeRotation.x, _vRelativeRotation.y, _vRelativeRotation.z) * Matrix::CreateTranslation(_vRelativePosition);
 
 	if (_pParent)
 	{
 		_mWorldRow = _mWorldRow * (*_pParent);
 	}
+
+	_mWorldRow.Decompose(_vScale, _vRotation, _vPosition);
 }
 
 void Transform::Render()
@@ -23,32 +25,32 @@ void Transform::Render()
 
 void Transform::SetScale(const Vector3* pScale)
 {
-	_vScale = *pScale;
+	_vRelativeScale = *pScale;
 }
 
 void Transform::SetRotation(const Vector3* pYawPitchRoll)
 {
-	_vRotation = *pYawPitchRoll;
+	_vRelativeRotation = *pYawPitchRoll;
 }
 
 void Transform::SetPosition(const Vector3* pPos)
 {
-	_vPosition = *pPos;
+	_vRelativePosition = *pPos;
 }
 
 void Transform::SetScale(AkF32 fX, AkF32 fY, AkF32 fZ)
 {
-	_vScale = Vector3(fX, fY, fZ);
+	_vRelativeScale = Vector3(fX, fY, fZ);
 }
 
 void Transform::SetRotation(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll)
 {
-	_vRotation = Vector3(fYaw, fPitch, fRoll);
+	_vRelativeRotation = Vector3(fYaw, fPitch, fRoll);
 }
 
 void Transform::SetPosition(AkF32 fX, AkF32 fY, AkF32 fZ)
 {
-	_vPosition = Vector3(fX, fY, fZ);
+	_vRelativePosition = Vector3(fX, fY, fZ);
 }
 
 void Transform::SetFront(const Vector3* pFront)
@@ -69,6 +71,35 @@ void Transform::SetFront(AkF32 fX, AkF32 fY, AkF32 fZ)
 void Transform::SetRight(AkF32 fX, AkF32 fY, AkF32 fZ)
 {
 	_vRight = Vector3(fX, fY, fZ);
+}
+
+Vector3 Transform::GetScale()
+{
+	Vector3 vScale = _vRelativeScale;
+	if (_pParent)
+		vScale = _vScale;
+	return vScale;
+}
+
+Vector3 Transform::GetRotation()
+{
+	Vector3 vRot = _vRelativeRotation;
+	if (_pParent)
+	{
+		// TODO...
+
+		// Quat => Angle.
+	}
+
+	return vRot;
+}
+
+Vector3 Transform::GetPosition()
+{
+	Vector3 vPos = _vRelativePosition;
+	if (_pParent)
+		vPos = _vPosition;
+	return vPos;
 }
 
 Vector3 Transform::Front()

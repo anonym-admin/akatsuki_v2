@@ -222,6 +222,10 @@ AkBool New_Collider::Initialize()
 void New_Collider::Update()
 {
 	_pTransform->Update();
+
+
+
+	printf("%lf %lf %lf\n", _pTransform->GetPosition().x, _pTransform->GetPosition().y, _pTransform->GetPosition().z);
 }
 
 void New_Collider::Render()
@@ -233,6 +237,14 @@ void New_Collider::Render()
 		return;
 
 	GRenderer->RenderLineObject(_pLineObj, &_pTransform->GetWorldTransform());
+}
+
+void New_Collider::SetColor(const Vector3* pColor)
+{
+	if (!_pLineObj)
+		return;
+
+	_pLineObj->SetColor(pColor->x, pColor->y, pColor->z);
 }
 
 void New_Collider::CleanUp()

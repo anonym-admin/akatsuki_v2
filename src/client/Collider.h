@@ -93,6 +93,7 @@ public:
 	void Render();
 
 	Transform* GetTransform() { return _pTransform; }
+	void SetColor(const Vector3* pColor);
 
 private:
 	void CleanUp();

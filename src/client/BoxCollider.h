@@ -19,7 +19,8 @@ public:
 	virtual AkBool RayIntersect(DirectX::SimpleMath::Ray tRay, Vector3* pOutHitPos = nullptr, AkF32* pOutDist = nullptr) override;
 	virtual AkBool BoxIntersect(BoxCollider* pCollider) override;
 	virtual AkBool SphereIntersect(SphereCollider* pCollider) override;
-	virtual AkBool CapsuleIntersect(CapsuleCollider* pCapsule) override;
+	virtual AkBool CapsuleIntersect(CapsuleCollider* pCollider) override;
+	AkBool SphereIntersect(const Vector3* pCenter, AkF32 fRadius);
 
 	Vector3 GetMinWorld();
 	Vector3 GetMaxWorld();

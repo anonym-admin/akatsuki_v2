@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "BoxCollider.h"
 #include "Transform.h"
+#include "CapsuleCollider.h"
 
 /*
 ====================
@@ -53,7 +54,12 @@ AkBool BoxCollider::SphereIntersect(SphereCollider* pCollider)
 	return AkBool();
 }
 
-AkBool BoxCollider::CapsuleIntersect(CapsuleCollider* pCapsule)
+AkBool BoxCollider::CapsuleIntersect(CapsuleCollider* pCollider)
+{
+	return pCollider->BoxIntersect(this);
+}
+
+AkBool BoxCollider::SphereIntersect(const Vector3* pCenter, AkF32 fRadius)
 {
 	return AkBool();
 }

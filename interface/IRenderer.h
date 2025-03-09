@@ -35,6 +35,7 @@ interface ILineObject : public IUnknown
 {
 	virtual AkBool CreateLineBuffer(LineVertex_t* pStart, LineVertex_t* pEnd) = 0;
 	virtual AkBool CreateLineBuffers(LineData_t* pLineData) = 0;
+	virtual void SetColor(AkF32 fR, AkF32 fG, AkF32 fB) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
