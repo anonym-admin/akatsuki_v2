@@ -210,7 +210,7 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 
 	// TODO!!
 	Vector3 vRadiance = Vector3(0.5f);
-	Vector3 vLightDir = Vector3(-20.0f, 20.0f, 20.0f);
+	Vector3 vLightDir = Vector3(-20.0f, 50.0f, 20.0f);
 	AddGlobalLight(&vRadiance, &vLightDir, AK_TRUE);
 
 	if (pAdapter)
@@ -1748,7 +1748,7 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 
 		// View Matrix.
 		_tGlobalLight.vDirection.Normalize();
-		_pShadowView[i] = XMMatrixLookAtLH(vCenter + _tGlobalLight.vDirection, vCenter, Vector3(0.0f, 1.0f, 0.0f));
+		_pShadowView[i] = XMMatrixLookAtLH(vCenter + _tGlobalLight.vDirection, vCenter, Vector3(0.0f, 1.0f, 0.0f)); 
 
 		AkF32 fMinX = AK_MAX_F32;
 		AkF32 fMaxX = -AK_MAX_F32;
@@ -1768,8 +1768,6 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 			fMinZ = min(fMinZ, vTrf.z);
 			fMaxZ = max(fMaxZ, vTrf.z);
 		}
-
-		// printf("Before Frustum Z : %lf %lf\n", fMinZ, fMaxZ);
 
 		// Projection Matrix.
 		_pShadowOrthoProj[i] = XMMatrixOrthographicOffCenterLH(fMinX, fMaxX, fMinY, fMaxY, fMinZ, fMaxZ);
