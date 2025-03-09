@@ -50,7 +50,7 @@
 #include "RigidBody.h"
 #include "Controller.h"
 #include "Gravity.h"
-#include "Model.h"
+#include "SkinnedModel.h"
 #include "Actor.h"
 
 // fmod

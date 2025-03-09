@@ -37,9 +37,29 @@ AkBool SceneLoading::BeginScene()
 
 	// Load MeshData.
 	{
-		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY, L"../../assets/model/", L"SwatGuy.md3d", 1.0f, AK_TRUE);
-		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_DANCER, L"../../assets/model/", L"Dancer.md3d", 1.0f, AK_TRUE);
-		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74, L"../../assets/model/", L"BRS-74.md3d", 1.0f, AK_FALSE);
+		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::SWATGUY, MODEL_FILE_PATH, L"SwatGuy.md3d", 1.0f, AK_TRUE);
+		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::DANCER, MODEL_FILE_PATH, L"Dancer.md3d", 1.0f, AK_TRUE);
+		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::BRS_74, MODEL_FILE_PATH, L"BRS-74.md3d", 1.0f, AK_FALSE);
+	}
+
+	// Load Animation.
+	{
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Idle.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontWalk.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontLeftWalk.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontRightWalk.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_LeftWalk.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RightWalk.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackLeftWalk.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackRightWalk.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackWalk.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Run.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontLeftRun.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontRightRun.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_01.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_02.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RunJump.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_IdleJump.anim");
 	}
 
 	// Image based lighting textures.

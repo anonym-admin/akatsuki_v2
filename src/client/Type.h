@@ -19,6 +19,14 @@ struct AssetTextureContainer_t
 	void* pTexHandle = nullptr;
 };
 
+struct AssetAnimationContainer_t
+{
+	static const AkU32 MAX_CLIP_NAME_COUNT = 32;
+
+	class Animation* pAnim = nullptr;
+	const wchar_t* wcClipName[MAX_CLIP_NAME_COUNT] = {};
+};
+
 /*
 ======================
 Event Manager Handle

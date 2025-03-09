@@ -248,9 +248,9 @@ AkBool SceneInGame::BeginScene()
 
 	// Bind IBL Texture For PBR.
 	{
-		AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_IRRADIANCE);
-		AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_SPECULAR);
-		AssetTextureContainer_t* pBrdf = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_BRDF);
+		AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::IRRADIANCE);
+		AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::SPECULAR);
+		AssetTextureContainer_t* pBrdf = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::BRDF);
 
 		GRenderer->BindIBLTexture(pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle, pBrdf->pTexHandle);
 	}
@@ -413,9 +413,9 @@ void SceneInGame::Render()
 	// Render Land scape.
 	// _pLandScape->Render();
 
-	AssetTextureContainer_t* pEnv = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_ENV);
-	AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_IRRADIANCE);
-	AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_IBL_SPECULAR);
+	AssetTextureContainer_t* pEnv = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::ENV);
+	AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::IRRADIANCE);
+	AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::SPECULAR);
 
 	// Render skybox.
 	GRenderer->RenderSkybox(_pSkyboxObj, &_mSkyboxTransform, pEnv->pTexHandle, pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle);

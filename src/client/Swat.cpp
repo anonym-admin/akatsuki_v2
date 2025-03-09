@@ -26,42 +26,23 @@ Swat::~Swat()
 AkBool Swat::Initialize()
 {
 	// Create Model.
-	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
+	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::SWATGUY);
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissive = Vector3(0.0f);
 	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_TRUE);
 
-	// Create Anim.
-	_pAnimation = CreateAnimation(pMeshDataContainer, ANIM_CLIP[IDLE], (AkU32)COUNT);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[IDLE]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[F_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FL_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FR_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[L_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[R_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[BL_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[BR_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[B_WALK]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[F_RUN]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FL_RUN]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[FR_RUN]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[PUNCHING_01]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[PUNCHING_02]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[RUN_JUMP]);
-	_pAnimation->ReadClip(ANIM_FILE_PATH, ANIM_CLIP[IDLE_JUMP]);
-
+	// Bind Animation.
+	AssetAnimationContainer_t* pAnimContainer = GAssetManager->GetAnimationContainer(ASSET_ANIM_TYPE::SWATGUY);
+	BindAnimation(pAnimContainer->pAnim);
+	memcpy(ANIM_CLIP, pAnimContainer->wcClipName, sizeof(wchar_t*) * COUNT);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
-
 	SetAnimation(IDLE);
 
 	// Delete MeshData Resource.
-	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_SWATGUY);
-
-	// Bind Animation.
-	((SkinnedModel*)_pModel)->BindAnimation(_pAnimation);
+	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::SWATGUY);
 
 	// Create Controller.
 	_pController = CreateController();
@@ -218,6 +199,7 @@ void Swat::OnCollisionExit(Collider* pOther)
 
 void Swat::CleanUp()
 {
+	UnBindAnimation();
 }
 
 void Swat::SetIdle()

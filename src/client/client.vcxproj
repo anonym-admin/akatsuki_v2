@@ -139,7 +139,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)vender\ImGuiFileDialog\$(Configuration)\;$(SolutionDir)vender\fmod\lib\$(Platform)\;$(SolutionDir)bin\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)vender\ImGuiFileDialog\Debug\;$(SolutionDir)vender\fmod\lib\$(Platform)\;$(SolutionDir)bin\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,7 +159,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)vender\fmod\lib\$(Platform)\;$(SolutionDir)bin\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)vender\ImGuiFileDialog\Debug\;$(SolutionDir)vender\fmod\lib\$(Platform)\;$(SolutionDir)bin\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

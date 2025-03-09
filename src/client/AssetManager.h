@@ -5,7 +5,6 @@
 Asset Manager
 ================
 */
-
 class AssetManager
 {
 public:
@@ -16,22 +15,28 @@ public:
 	void AddDynamicTexture();
 	void DeleteMeshData(ASSET_MESH_DATA_TYPE eType);
 	void DeleteTexture(ASSET_TEXTURE_TYPE eType);
+	void DeleteAnimation(ASSET_ANIM_TYPE eType);
 
-	AssetMeshDataContainer_t* GetMeshDataContainer(ASSET_MESH_DATA_TYPE eType) { return _ppAssetMeshDataContainerList[(AkU32)eType]; }
-	AssetTextureContainer_t* GetTextureContainer(ASSET_TEXTURE_TYPE eType) { return _ppAssetTextureContainerList[(AkU32)eType]; }
+	AssetMeshDataContainer_t* GetMeshDataContainer(ASSET_MESH_DATA_TYPE eType) { return _ppMeshDataContainerList[(AkU32)eType]; }
+	AssetTextureContainer_t* GetTextureContainer(ASSET_TEXTURE_TYPE eType) { return _ppTextureContainerList[(AkU32)eType]; }
+	AssetAnimationContainer_t* GetAnimationContainer(ASSET_ANIM_TYPE eType) { return _ppAnimContainerList[(AkU32)eType]; }
 
 	MeshData_t* ReadFromFile(AssetMeshDataContainer_t* pAassetMeshDataContainer, AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim);
+	void ReadClip(ASSET_ANIM_TYPE eType, const wchar_t* wcFilePath, const wchar_t* wcFileName);
 
 private:
 	void CleanUp();
 
 	AssetTextureContainer_t* AllocTextureContainer();
 	AssetMeshDataContainer_t* AllocMeshDataContainer();
-	void FreeTextureContainer(AssetTextureContainer_t* pAssetTextureContainer);
-	void FreeMeshDataContainer(AssetMeshDataContainer_t* pAssetMeshDataContainer);
+	AssetAnimationContainer_t* AllocAnimationContainer();
+	void FreeTextureContainer(AssetTextureContainer_t* pTexContainer);
+	void FreeMeshDataContainer(AssetMeshDataContainer_t* pMeshDataContainer);
+	void FreeAnimationContainer(AssetAnimationContainer_t* pAnimContainer);
 
 private:
-	AssetMeshDataContainer_t* _ppAssetMeshDataContainerList[(AkU32)ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_COUNT] = {};
-	AssetTextureContainer_t* _ppAssetTextureContainerList[(AkU32)ASSET_TEXTURE_TYPE::ASSET_TEXTURE_TYPE_COUNT] = {};
+	AssetMeshDataContainer_t* _ppMeshDataContainerList[(AkU32)ASSET_MESH_DATA_TYPE::COUNT] = {};
+	AssetTextureContainer_t* _ppTextureContainerList[(AkU32)ASSET_TEXTURE_TYPE::COUNT] = {};
+	AssetAnimationContainer_t* _ppAnimContainerList[(AkU32)ASSET_ANIM_TYPE::COUNT] = {};
 };
 

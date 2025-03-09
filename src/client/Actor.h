@@ -49,6 +49,9 @@ public:
 	Camera* GetCamera() { return _pCamera; }
 	Animation* GetAnimation() { return _pAnimation; }
 
+	void BindAnimation(Animation* pAnim);
+	void UnBindAnimation();
+
 	void SetWeapon(Weapon* pWeapon);
 
 	List_t tLink;

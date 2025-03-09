@@ -35,29 +35,29 @@ public:
 		RUN_JUMP,
 		IDLE_JUMP,
 
-		COUNT = 32,
+		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
 
 	} AnimState;
 
-	const wchar_t* ANIM_CLIP[(AkU32)ANIM_STATE::COUNT] =
-	{
-		 L"SwatGuy_Idle.anim",
-		 L"SwatGuy_FrontWalk.anim",
-		 L"SwatGuy_FrontLeftWalk.anim",
-		 L"SwatGuy_FrontRightWalk.anim",
-		 L"SwatGuy_LeftWalk.anim",
-		 L"SwatGuy_RightWalk.anim",
-		 L"SwatGuy_BackLeftWalk.anim",
-		 L"SwatGuy_BackRightWalk.anim",
-		 L"SwatGuy_BackWalk.anim",
-		 L"SwatGuy_Run.anim",
-		 L"SwatGuy_FrontLeftRun.anim",
-		 L"SwatGuy_FrontRightRun.anim",
-		 L"SwatGuy_Punching_01.anim",
-		 L"SwatGuy_Punching_02.anim",
-		 L"SwatGuy_RunJump.anim",
-		 L"SwatGuy_IdleJump.anim"
-	};
+	const wchar_t* ANIM_CLIP[(AkU32)ANIM_STATE::COUNT] = {};
+	//{
+	//	 L"SwatGuy_Idle.anim",
+	//	 L"SwatGuy_FrontWalk.anim",
+	//	 L"SwatGuy_FrontLeftWalk.anim",
+	//	 L"SwatGuy_FrontRightWalk.anim",
+	//	 L"SwatGuy_LeftWalk.anim",
+	//	 L"SwatGuy_RightWalk.anim",
+	//	 L"SwatGuy_BackLeftWalk.anim",
+	//	 L"SwatGuy_BackRightWalk.anim",
+	//	 L"SwatGuy_BackWalk.anim",
+	//	 L"SwatGuy_Run.anim",
+	//	 L"SwatGuy_FrontLeftRun.anim",
+	//	 L"SwatGuy_FrontRightRun.anim",
+	//	 L"SwatGuy_Punching_01.anim",
+	//	 L"SwatGuy_Punching_02.anim",
+	//	 L"SwatGuy_RunJump.anim",
+	//	 L"SwatGuy_IdleJump.anim"
+	//};
 
 public:
 	Swat();

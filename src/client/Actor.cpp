@@ -118,6 +118,20 @@ void Actor::DestroyAnimation()
 	}
 }
 
+void Actor::BindAnimation(Animation* pAnim)
+{
+	_pAnimation = pAnim;
+	if (_pModel)
+	{
+		((SkinnedModel*)_pModel)->BindAnimation(pAnim);
+	}
+}
+
+void Actor::UnBindAnimation()
+{
+	_pAnimation = nullptr;
+}
+
 void Actor::SetWeapon(Weapon* pWeapon)
 {
 	BindWeapon = AK_TRUE;

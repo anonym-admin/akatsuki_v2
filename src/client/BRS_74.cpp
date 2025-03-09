@@ -24,11 +24,11 @@ UBRS_74::UBRS_74()
 AkBool UBRS_74::Initialize()
 {	
 	// Create Model.
-	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74);
+	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::BRS_74);
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissive = Vector3(0.0f);
 	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_FALSE);
-	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::ASSET_MESH_DATA_TYPE_BRS_74);
+	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::BRS_74);
 
 	// Create Bounding Box.
 	// TODO...

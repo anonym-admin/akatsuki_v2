@@ -21,6 +21,7 @@ public:
 	virtual void RenderNormal();
 	virtual void RenderShadow();
 	void BindAnimation(Animation* pAnim) { _pAnim = pAnim; }
+	void UnBindAnimation() { _pAnim = nullptr; }
 	Animation* GetAnimation() { return _pAnim; }
 
 private:
