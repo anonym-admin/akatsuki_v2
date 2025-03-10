@@ -29,10 +29,8 @@ AkBool UBRS_74::Initialize()
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissive = Vector3(0.0f);
 	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_FALSE);
-<<<<<<< HEAD
-=======
+
 	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::BRS_74);
->>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 
 	// Create Collider.
 	Vector3 vMin = Vector3(0.0f);

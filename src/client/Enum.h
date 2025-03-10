@@ -89,11 +89,8 @@ enum class ASSET_MESH_DATA_TYPE // ASSET_ANIM_TYPE 순서 동일하게.
 
 	// NOT SKINNED
 	BRS_74,
-<<<<<<< HEAD
 	BULLET,
 	CASING,
-=======
->>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 
 	COUNT,
 };
