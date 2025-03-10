@@ -9,6 +9,7 @@
 #include "Dancer.h"
 #include "BRS_74.h"
 #include "Container.h"
+#include "TreeBillboards.h"
 
 /*
 =============
@@ -32,8 +33,8 @@ AkBool SceneInGame::BeginScene()
 		pSwat->Name = L"Swat";
 		pSwat->tLink.pData = pSwat;
 		pSwat->GetTransform()->SetRotation(DirectX::XM_PI, 0.0f, 0.0f);
-		pSwat->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, pSwat);
+		pSwat->GetTransform()->SetPosition(-3.0f, 1.5f, 1025.0f);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pSwat);
 	}
 
 	// Dancer.
@@ -41,7 +42,7 @@ AkBool SceneInGame::BeginScene()
 		Dancer* pDancer = new Dancer;
 		pDancer->Name = L"Dancer_01";
 		pDancer->tLink.pData = pDancer;
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_DANCER, pDancer);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::DANCER, pDancer);
 	}
 
 	// Weapon
@@ -49,8 +50,9 @@ AkBool SceneInGame::BeginScene()
 		UBRS_74* pBRS_74 = new UBRS_74;
 		pBRS_74->Name = L"BRS_74";
 		pBRS_74->tLink.pData = pBRS_74;
-		pBRS_74->GetTransform()->SetPosition(0.0f, 1.5f, -1025.0f);
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_WEAPON, pBRS_74);
+		pBRS_74->GetTransform()->SetPosition(3.0f, 1.5f, 1025.0f);
+		pBRS_74->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::WEAPON, pBRS_74);
 	}
 
 	// Container
@@ -59,7 +61,15 @@ AkBool SceneInGame::BeginScene()
 		pContainer->Name = L"Container";
 		pContainer->tLink.pData = pContainer;
 		pContainer->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_CONTAINER, pContainer);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::CONTAINER, pContainer);
+	}
+
+	// Tree Billboard.
+	{
+		//TreeBillboard* pTreeBillboards = new TreeBillboard;
+		//pTreeBillboards->Name = L"Tree";
+		//pTreeBillboards->tLink.pData = pTreeBillboards;
+		//AddGameObject(GAME_OBJECT_GROUP_TYPE::TREE, pTreeBillboards);
 	}
 
 	// World Map Containter.
@@ -67,7 +77,7 @@ AkBool SceneInGame::BeginScene()
 		_pWorldMap = new MapObjects;
 		_pWorldMap->Name = L"Map Obj";
 		_pWorldMap->tLink.pData = _pWorldMap;
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP, _pWorldMap);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::MAP, _pWorldMap);
 	}
 
 	// Buildings.
@@ -271,7 +281,8 @@ AkBool SceneInGame::BeginScene()
 	}
 
 	// Collision check.
-	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_PLAYER, GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_CONTAINER);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::CONTAINER);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::WEAPON);
 
 	// Create Frustum.
 	_pFrustum = CreateFrustum(GRenderer);

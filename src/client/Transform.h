@@ -24,6 +24,7 @@ public:
 	void SetRight(const Vector3* pRight);
 	void SetFront(AkF32 fX, AkF32 fY, AkF32 fZ);
 	void SetRight(AkF32 fX, AkF32 fY, AkF32 fZ);
+	void SetWorldTransform(Matrix mWorldRow);
 
 	Vector3 GetScale();
 	Vector4 GetRotation();

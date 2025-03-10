@@ -25,7 +25,7 @@ public:
 	virtual void OnCollision(Collider* pCollider) override;
 	virtual void OnCollisionExit(Collider* pCollider) override;
 
-	AkF32 Radius();
+	virtual AkF32 Radius() override;
 
 private:
 	AkF32 _fRadius = 1.0f;

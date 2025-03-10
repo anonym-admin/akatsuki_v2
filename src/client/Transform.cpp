@@ -73,6 +73,13 @@ void Transform::SetRight(AkF32 fX, AkF32 fY, AkF32 fZ)
 	_vRight = Vector3(fX, fY, fZ);
 }
 
+void Transform::SetWorldTransform(Matrix mWorldRow)
+{
+	_mWorldRow = mWorldRow;
+
+	_mWorldRow.Decompose(_vScale, _vRotation, _vPosition);
+}
+
 Vector3 Transform::GetScale()
 {
 	Vector3 vScale = _vRelativeScale;

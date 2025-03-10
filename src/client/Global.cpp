@@ -14,7 +14,7 @@
 
 HWND GhWnd;
 IRenderer* GRenderer;
-ISpriteObject* GCommonSprite;
+ISprite* GCommonSprite;
 Window* GWindow;
 Application* GApp;
 Timer* GTimer;

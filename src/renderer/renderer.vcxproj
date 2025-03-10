@@ -187,6 +187,7 @@
     <ClCompile Include="..\..\utils\Queue.cpp" />
     <ClCompile Include="..\..\utils\Stack.cpp" />
     <ClCompile Include="BasicMeshObject.cpp" />
+    <ClCompile Include="BillboardObject.cpp" />
     <ClCompile Include="CommandListPool.cpp" />
     <ClCompile Include="ConstantBufferManager.cpp" />
     <ClCompile Include="ConstantBufferPool.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="..\..\utils\Queue.h" />
     <ClInclude Include="..\..\utils\Stack.h" />
     <ClInclude Include="BasicMeshObject.h" />
+    <ClInclude Include="BillboardObject.h" />
     <ClInclude Include="CommandListPool.h" />
     <ClInclude Include="ConstantBufferManager.h" />
     <ClInclude Include="ConstantBufferPool.h" />
@@ -277,6 +279,11 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\DepthOnlyShader.hlsl">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>

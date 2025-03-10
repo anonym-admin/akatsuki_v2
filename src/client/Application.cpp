@@ -196,22 +196,22 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 
 AkBool Application::InitScene()
 {
-	GSceneManager->AddScene(SCENE_TYPE::SCENE_TYPE_LOADING, new SceneLoading());
-	GSceneManager->AddScene(SCENE_TYPE::SCENE_TYPE_INGANE, new SceneInGame());
+	GSceneManager->AddScene(SCENE_TYPE::LOADING, new SceneLoading());
+	GSceneManager->AddScene(SCENE_TYPE::INGANE, new SceneInGame());
 
-	GSceneManager->BindCurrentScene(SCENE_TYPE::SCENE_TYPE_LOADING)->BeginScene();
+	GSceneManager->BindCurrentScene(SCENE_TYPE::LOADING)->BeginScene();
 
 	return AK_TRUE;
 }
 
 AkBool Application::InitEditor()
 {
-	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_TYPE_MODEL, new EditorModel());
-	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_TYPE_MAP, new EditorMap());
+	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_MODEL, new EditorModel());
+	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_MAP, new EditorMap());
 
 	// Editor 들은 모두 Begin 진행.
-	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_TYPE_MODEL)->BeginEditor();
-	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_TYPE_MAP)->BeginEditor();
+	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_MODEL)->BeginEditor();
+	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_MAP)->BeginEditor();
 
 	return AK_TRUE;
 }
@@ -226,39 +226,39 @@ AkBool Application::InitUI()
 	GUIManager->AddUI(_pSysTextUI, UI_TYPE::UI_OBJ_SYS_INFO_TEXT);
 	GUIManager->OnUI(UI_TYPE::UI_OBJ_SYS_INFO_TEXT);
 
-	_pDynamicTextUI = new InputUI(256, 32, L"Consolas", 10);
-	_pDynamicTextUI->SetPosition(10, 500);
-	_pDynamicTextUI->SetScale(1.0f, 1.0f);
-	_pDynamicTextUI->SetFontColor(&_vDynamicTextFontColor);
-	_pDynamicTextUI->SetDrawBackGround(AK_TRUE);
+	//_pDynamicTextUI = new InputUI(256, 32, L"Consolas", 10);
+	//_pDynamicTextUI->SetPosition(10, 500);
+	//_pDynamicTextUI->SetScale(1.0f, 1.0f);
+	//_pDynamicTextUI->SetFontColor(&_vDynamicTextFontColor);
+	//_pDynamicTextUI->SetDrawBackGround(AK_TRUE);
 
-	GUIManager->AddUI(_pDynamicTextUI, UI_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
-	GUIManager->OnUI(UI_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
+	//GUIManager->AddUI(_pDynamicTextUI, UI_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
+	//GUIManager->OnUI(UI_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
 
-	TextUI* pStaticTextUI = new TextUI(256, 32, L"Consolas", 10);
-	pStaticTextUI->SetPosition(10, 32 + 10 + 10);
-	pStaticTextUI->SetScale(1.0f, 1.0f);
-	pStaticTextUI->SetFontColor(&_vSysFontColor);
-	pStaticTextUI->WriteText(L"Test Static Text\n");
+	//TextUI* pStaticTextUI = new TextUI(256, 32, L"Consolas", 10);
+	//pStaticTextUI->SetPosition(10, 32 + 10 + 10);
+	//pStaticTextUI->SetScale(1.0f, 1.0f);
+	//pStaticTextUI->SetFontColor(&_vSysFontColor);
+	//pStaticTextUI->WriteText(L"Test Static Text\n");
 
-	GUIManager->AddUI(pStaticTextUI, UI_TYPE::UI_OBJ_TEST_STATIC_TEXT);
+	//GUIManager->AddUI(pStaticTextUI, UI_TYPE::UI_OBJ_TEST_STATIC_TEXT);
 
-	UPanelUI* pTextureUI = new UPanelUI(L"../../assets/ui_01.dds", 0, 0, 2545, 1867);
-	pTextureUI->SetPosition(500, 10);
-	pTextureUI->SetScale(0.1f, 0.2f);
-	pTextureUI->SetDrawBackGround(AK_TRUE);
-	pTextureUI->SetResolution((AkU32)(0.1f * 2545), (AkU32)(0.2f * 1867));
+	//UPanelUI* pTextureUI = new UPanelUI(L"../../assets/ui_01.dds", 0, 0, 2545, 1867);
+	//pTextureUI->SetPosition(500, 10);
+	//pTextureUI->SetScale(0.1f, 0.2f);
+	//pTextureUI->SetDrawBackGround(AK_TRUE);
+	//pTextureUI->SetResolution((AkU32)(0.1f * 2545), (AkU32)(0.2f * 1867));
 
-	GUIManager->AddUI(pTextureUI, UI_TYPE::UI_OBJ_EXIT);
+	//GUIManager->AddUI(pTextureUI, UI_TYPE::UI_OBJ_EXIT);
 
-	UBtnUI* pBtnUI = new UBtnUI(L"../../assets/Exit_Btn.dds", 0, 0, 225, 49);
-	pBtnUI->SetRelativePosition(10, 10);
-	pBtnUI->SetScale(1.0f, 1.0f);
-	pBtnUI->SetDrawBackGround(AK_TRUE);
-	pBtnUI->SetResolution(225, 49);
-	pBtnUI->SetClickFunc(&Application::ExitGame);
+	//UBtnUI* pBtnUI = new UBtnUI(L"../../assets/Exit_Btn.dds", 0, 0, 225, 49);
+	//pBtnUI->SetRelativePosition(10, 10);
+	//pBtnUI->SetScale(1.0f, 1.0f);
+	//pBtnUI->SetDrawBackGround(AK_TRUE);
+	//pBtnUI->SetResolution(225, 49);
+	//pBtnUI->SetClickFunc(&Application::ExitGame);
 
-	pTextureUI->AddChildUI(pBtnUI);
+	//pTextureUI->AddChildUI(pBtnUI);
 
 	return AK_TRUE;
 }
@@ -324,12 +324,12 @@ void Application::UpdateEnviroment()
 		if (_bChangeEditor)
 		{
 			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
-			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_TYPE_MODEL;
+			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_MODEL;
 		}
 		else
 		{
 			tEvent.eEventType = EVENT_TYPE::EDITOR_TO_SCENE_CHANGE;
-			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::SCENE_TYPE_INGANE;
+			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::INGANE;
 		}
 		GEventManager->AddEvent(&tEvent);
 	}
@@ -348,7 +348,7 @@ void Application::UpdateEnviroment()
 
 void Application::UpdateText()
 {
-	SceneInGame* pSceneInGame = (SceneInGame*)GSceneManager->GetScene(SCENE_TYPE::SCENE_TYPE_INGANE);
+	SceneInGame* pSceneInGame = (SceneInGame*)GSceneManager->GetScene(SCENE_TYPE::INGANE);
 
 	AkI32 iTextWidth = 0;
 	AkI32 iTextHeight = 0;

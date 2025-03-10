@@ -6,7 +6,7 @@
 #include "SpriteObject.h"
 #include "SkyboxObject.h"
 #include "LineObject.h"
-#include "D3DUtils.h"
+#include "BillboardObject.h"
 
 /*
 ==============
@@ -152,6 +152,12 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 			{
 				FLineObject* pLineObj = (FLineObject*)pItem->pObjHandle;
 				pLineObj->Draw(uThreadIndex, pCmdList, pItem->tLineObjParam._pWorld);
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD:
+			{
+				FBillboardObjects* pBillboards = (FBillboardObjects*)pItem->pObjHandle;
+				pBillboards->Draw(uThreadIndex, pCmdList, pItem->tLineObjParam._pWorld); // replace line obj param.
 			}
 			break;
 			default:

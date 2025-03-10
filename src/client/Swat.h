@@ -11,6 +11,7 @@ public:
 	{
 		/*Idle*/
 		IDLE,
+		RIFLE_IDLE,
 
 		/*Walk*/
 		F_WALK,
@@ -21,15 +22,18 @@ public:
 		BL_WALK,
 		BR_WALK,
 		B_WALK,
+		RIFLE_F_WALK,
 
 		/*Run*/
 		F_RUN,
 		FL_RUN,
 		FR_RUN,
+		RIFLE_RUN,
 
 		/*Attack*/
 		PUNCHING_01,
 		PUNCHING_02,
+		RIFLE_FIRE,
 
 		/*Jump*/
 		RUN_JUMP,
@@ -40,6 +44,8 @@ public:
 	} AnimState;
 
 	const wchar_t* ANIM_CLIP[(AkU32)ANIM_STATE::COUNT] = {};
+<<<<<<< HEAD
+=======
 	//{
 	//	 L"SwatGuy_Idle.anim",
 	//	 L"SwatGuy_FrontWalk.anim",
@@ -58,6 +64,7 @@ public:
 	//	 L"SwatGuy_RunJump.anim",
 	//	 L"SwatGuy_IdleJump.anim"
 	//};
+>>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 
 public:
 	Swat();
@@ -75,10 +82,13 @@ public:
 
 	void SetIdle();
 	void SetNextPunching();
+	void SetNextFire();
 	void SetAnimation(ANIM_STATE eState, AkF32 fSpeed = 1.5f);
 
-	AkF32 GetRunSpeed() { return _fRunSpeed; }
 	AkF32 GetWalkSpeed() { return _fWalkSpeed; }
+	AkF32 GetRunSpeed() { return _fRunSpeed; }
+
+	void ActionReaction(Collider* pOther);
 
 private:
 	void CleanUp();
@@ -87,6 +97,8 @@ private:
 	void UpdateWeapon();
 	void UpdateFire();
 	void FinalUpdateWeapon();
+
+	void SetWeaponRelativePosition();
 
 private:
 	Matrix _mHandAnimTransform = Matrix();
@@ -99,4 +111,4 @@ public:
 
 void SetIdle(Actor* pSwat);
 void SetNextPunching(Actor* pSwat);
-
+void SetNextFire(Actor* pSwat);

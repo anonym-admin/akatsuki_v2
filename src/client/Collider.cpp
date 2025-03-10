@@ -46,7 +46,6 @@ AkBool Collider::Intersect(Collider* pCollider)
 		return BoxIntersect((BoxCollider*)pCollider);
 	case COLLIDER_TYPE::SQUARE:
 		return SqaureIntersect();
-
 	}
 	return AK_FALSE;
 }
@@ -56,8 +55,6 @@ void Collider::Update()
 	_pTransform->SetParent(&_pOwner->GetTransform()->GetWorldTransform());
 
 	_pTransform->Update();
-
-	// printf("%lf %lf %lf\n", _pTransform->GetPosition().x, _pTransform->GetPosition().y, _pTransform->GetPosition().z);
 }
 
 void Collider::Render()

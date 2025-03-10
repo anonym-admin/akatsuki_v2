@@ -37,6 +37,7 @@ AkBool Swat::Initialize()
 	memcpy(ANIM_CLIP, pAnimContainer->wcClipName, sizeof(wchar_t*) * COUNT);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[RIFLE_FIRE], this, ::SetNextFire);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
 	SetAnimation(IDLE);
@@ -118,83 +119,46 @@ void Swat::RenderShadow()
 
 void Swat::OnCollisionEnter(Collider* pOther)
 {
-	printf("Swat Collision\n");
-
-
-	/*Actor* pOwner = pOther->GetOwner();
-	const wchar_t* wcName = pOwner->Name;
-
-	if (!wcscmp(L"Map", wcName))
+	Actor* pOtherOwner = pOther->GetOwner();
+	if (!wcscmp(pOtherOwner->Name, L"BRS_74"))
 	{
-		AkTriangle_t* pTri = pOther->GetTriangle();
-		AkF32 fNdotY = pTri->vNormal.Dot(Vector3(0.0f, 1.0f, 0.0f));
-		if (0.0f <= fNdotY - 1.0f && fNdotY - 1.0f <= 1e-5f)
-		{
-			GroundCollision = AK_TRUE;
-		}
-
-		AkSphere_t* pSphere = GetCollider()->GetBoundingSphere();
-		Vector3 vTriToSphere = pSphere->vCenter - pTri->vP[0];
-		AkF32 fDistance = vTriToSphere.Dot(pTri->vNormal);
-		Vector3 vProjectedCenter = pSphere->vCenter - pTri->vNormal * (fDistance - pSphere->fRadius);
-
-		_pTransform->SetPosition(&vProjectedCenter);
+		((Weapon*)pOtherOwner)->AttachOwner(this);
+		SetWeapon((Weapon*)pOtherOwner);
 	}
-	if (!wcscmp(L"Dancer", wcName))
-	{
-	}
-	if (!wcscmp(L"BRS_74", wcName))
-	{
-		Weapon* pWeapon = (Weapon*)pOwner;
-		pWeapon->AttachOwner(this);
-	}
-	if (!wcscmp(L"Box", wcName))
-	{
-
-	}*/
 }
 
 void Swat::OnCollision(Collider* pOther)
 {
-	//Actor* pOwner = pOther->GetOwner();
-	//const wchar_t* wcName = pOwner->Name;
-
-	//if (!wcscmp(L"Map", wcName))
-	//{
-	//	AkTriangle_t* pTri = pOther->GetTriangle();
-	//	AkF32 fNdotY = pTri->vNormal.Dot(Vector3(0.0f, 1.0f, 0.0f));
-	//	if (0.0f <= fNdotY - 1.0f && fNdotY - 1.0f <= 1e-5f)
-	//	{
-	//		GroundCollision = AK_TRUE;
-	//	}
-
-	//	AkSphere_t* pSphere = GetCollider()->GetBoundingSphere();
-	//	Vector3 vTriToSphere = pSphere->vCenter - pTri->vP[0];
-	//	AkF32 fDistance = vTriToSphere.Dot(pTri->vNormal);
-	//	Vector3 vProjectedCenter = pSphere->vCenter - pTri->vNormal * (fDistance - pSphere->fRadius);
-
-	//	_pTransform->SetPosition(&vProjectedCenter);
-	//}
-	//if (!wcscmp(L"Dancer", wcName))
-	//{
-	//}
-	//if (!wcscmp(L"Ground", wcName))
-	//{
-	//}
-	//if (!wcscmp(L"Box", wcName))
-	//{
-	//}
+	Actor* pOtherOwner = pOther->GetOwner();
+	if (!wcscmp(pOtherOwner->Name, L"BRS_74"))
+	{
+		((Weapon*)pOtherOwner)->AttachOwner(this);
+	}
 }
 
 void Swat::OnCollisionExit(Collider* pOther)
 {
-	//Actor* pOwner = pOther->GetOwner();
-	//const wchar_t* wcName = pOwner->Name;
 
-	//if (!wcscmp(L"Map", wcName))
-	//{
-	//	GroundCollision = AK_FALSE;
-	//}
+}
+
+void Swat::ActionReaction(Collider* pOther)
+{
+	// 대상 충돌체가 육면체일 경우 대각선과 가로 세로의 반지름이 달라 진동하는 현상이 발생한다.
+
+	Vector3 vOtherPos = pOther->GetTransform()->GetPosition();
+	Vector3 vMyPos = _pCollider->GetTransform()->GetPosition();
+	Vector3 vDir = vOtherPos - vMyPos;
+
+	AkF32 fRa = pOther->Radius();
+	AkF32 fRb = _pCollider->Radius();
+
+	AkF32 fDist = vDir.Length();
+
+	AkF32 fOverlapped = (fRa + fRb) - fDist;
+
+	Vector3 vPos = _pTransform->GetPosition();
+	vPos -= (vDir * fOverlapped) * 0.5f; // 진동현상을 줄이기 위해 0.5f 스케일 적용...
+	_pTransform->SetPosition(&vPos);
 }
 
 void Swat::CleanUp()
@@ -204,10 +168,11 @@ void Swat::CleanUp()
 
 void Swat::SetIdle()
 {
-	Attack = AK_FALSE;
 	Jumping = AK_FALSE;
+	Attack = AK_FALSE;
+	Fire = AK_FALSE;
 
-	SetAnimation(IDLE);
+	BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
 }
 
 void Swat::SetNextPunching()
@@ -215,6 +180,18 @@ void Swat::SetNextPunching()
 
 	SetAnimation(PUNCHING_02);
 
+}
+
+void Swat::SetNextFire()
+{
+	AkF32 fTime = 0.0f;
+	while (fTime <= 1000.0f)
+	{
+		fTime += DT;
+		SetAnimation(RIFLE_FIRE);
+	}
+	
+	SetIdle();
 }
 
 void Swat::UpdateMove()
@@ -235,7 +212,7 @@ void Swat::UpdateMove()
 		// [] > 60
 		if (0.866025f < fCosValue0)
 		{
-			SetAnimation(F_WALK);
+			 BindWeapon ? SetAnimation(RIFLE_F_WALK) : SetAnimation(F_WALK);
 		}
 		// 30 <= [] <= 60
 		else if (0.5f <= fCosValue0 && fCosValue0 <= 0.866025f)
@@ -276,16 +253,16 @@ void Swat::UpdateMove()
 	else if (vVelocity.Length() > 3.0f)
 	{
 		// Run.
-		SetAnimation(F_RUN);
+		BindWeapon ? SetAnimation(RIFLE_RUN) : SetAnimation(F_RUN);
 	}
 	else if (0.0f >= vVelocity.Length())
 	{
 		// Idle.
-		if (F_WALK <= AnimState && AnimState <= B_WALK)
-			SetAnimation(IDLE);
+		if (F_WALK <= AnimState && AnimState <= RIFLE_F_WALK)
+			BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
 
-		if (F_RUN == AnimState)
-			SetAnimation(IDLE);
+		if (F_RUN == AnimState || RIFLE_RUN == AnimState)
+			BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
 
 		// Return Walk Speed.
 		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
@@ -294,88 +271,99 @@ void Swat::UpdateMove()
 
 void Swat::UpdateWeapon()
 {
-	//if (!BindWeapon)
-	//	return;
+	if (!BindWeapon)
+		return;
 
-	//if (MOVE_STATE::PLAYER_MOVE_STATE_NONE == MoveState)
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(7.079f), DirectX::XMConvertToRadians(14.038f), DirectX::XMConvertToRadians(149.514f));
-	//	_pWeapon->GetTransform()->SetPosition(0.433f, 0.283f, 0.047f);
-	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+	Vector3 vVelocity = _pRigidBody->GetVelocity();
 
-	//	LeftHand = AK_TRUE;
-	//	RightHand = AK_FALSE;
-	//}
-	//if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK)
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(0.807f), DirectX::XMConvertToRadians(-2.340f), DirectX::XMConvertToRadians(142.585f));
-	//	_pWeapon->GetTransform()->SetPosition(0.46f, 0.289f, 0.068f);
-	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 2.8f)
+	{
+		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(0.807f), DirectX::XMConvertToRadians(-2.340f), DirectX::XMConvertToRadians(142.585f));
+		_pWeapon->GetTransform()->SetPosition(0.46f, 0.289f, 0.068f);
+		_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+	}
+	else if (vVelocity.Length() > 3.0f)
+	{
+		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-10.821f), DirectX::XMConvertToRadians(17.809f), DirectX::XMConvertToRadians(155.865f));
+		_pWeapon->GetTransform()->SetPosition(0.437f, 0.293f, 0.053f);
+		_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+	}
+	else if (0.0f >= vVelocity.Length())
+	{
+		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(7.079f), DirectX::XMConvertToRadians(14.038f), DirectX::XMConvertToRadians(149.514f));
+		_pWeapon->GetTransform()->SetPosition(0.433f, 0.283f, 0.047f);
+		_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
+	}
 
-	//	LeftHand = AK_TRUE;
-	//	RightHand = AK_FALSE;
-	//}
-	//if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN)
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-10.821f), DirectX::XMConvertToRadians(17.809f), DirectX::XMConvertToRadians(155.865f));
-	//	_pWeapon->GetTransform()->SetPosition(0.437f, 0.293f, 0.053f);
-	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
-
-	//	LeftHand = AK_TRUE;
-	//	RightHand = AK_FALSE;
-	//}
+	LeftHand = AK_TRUE;
+	RightHand = AK_FALSE;
 }
 
 void Swat::UpdateFire()
 {
-	//if (!Fire)
-	//	return;
+	static AkBool PrevFire = AK_FALSE;
 
-	//if (MOVE_STATE::PLAYER_MOVE_STATE_NONE == MoveState)
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(6.16f), DirectX::XMConvertToRadians(-2.817f), DirectX::XMConvertToRadians(178.809f));
-	//	_pWeapon->GetTransform()->SetPosition(0.426f, 0.297f, 0.058f);
+	if (!Fire)
+	{
+		if (PrevFire)
+		{
+			SetWeaponRelativePosition();
+		}
 
-	//	SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_IDLE_FIRE);
-	//}
-	//else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_WALK <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_WALK)
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(16.092f), DirectX::XMConvertToRadians(-21.279f), DirectX::XMConvertToRadians(-166.074f));
-	//	_pWeapon->GetTransform()->SetPosition(0.410f, 0.301f, 0.014f);
+		// IDLE 상태 전환으로 인한 Fire 애니메이션의 부자연스러운 현상 방지.
+		PrevFire = Fire;
 
-	//	SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_WALK_FIRE);
-	//}
-	//else if (MOVE_STATE::PLAYER_MOVE_STATE_FRONT_RUN <= MoveState && MoveState <= MOVE_STATE::PLAYER_MOVE_STATE_DIAGONAL_LEFT_BACK_RUN)
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-23.338f), DirectX::XMConvertToRadians(-20.093f), DirectX::XMConvertToRadians(-167.379f));
-	//	_pWeapon->GetTransform()->SetPosition(0.410f, 0.309f, 0.014f);
+		return;
+	}
 
-	//	SetAnimation(ANIM_STATE::PLAYER_ANIM_STATE_RIFLE_RUN_FIRE);
-	//}
+	SetWeaponRelativePosition();
+
+	PrevFire = Fire;
 }
 
 void Swat::FinalUpdateWeapon()
 {
-	//if (!BindWeapon)
-	//{
-	//	return;
-	//}
+	if (!BindWeapon)
+	{
+		return;
+	}
 
-	//Matrix* pFinalTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetFinalTransforms();
+	Matrix* pFinalTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetBoneTransforms(); // ID 검색 기능 추가.
 
-	//// Gun model default matrix.
-	//if (RightHand)
-	//{
-	//	Matrix mRightHandAnimTransfrom = pFinalTransform[34].Transpose();
-	//	_mHandAnimTransform = mRightHandAnimTransfrom;
-	//}
-	//if (LeftHand)
-	//{
-	//	Matrix mLeftHandAnimTransform = pFinalTransform[10].Transpose();
-	//	_mHandAnimTransform = mLeftHandAnimTransform;
-	//}
+	// Gun model default matrix.
+	if (RightHand)
+	{
+		Matrix mRightHandAnimTransfrom = pFinalTransform[34].Transpose();
+		_mHandAnimTransform = mRightHandAnimTransfrom;
+	}
+	if (LeftHand)
+	{
+		Matrix mLeftHandAnimTransform = pFinalTransform[10].Transpose();
+		_mHandAnimTransform = mLeftHandAnimTransform;
+	}
 
-	//_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
+	_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
+}
+
+void Swat::SetWeaponRelativePosition()
+{
+	Vector3 vVelocity = _pRigidBody->GetVelocity();
+
+	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 2.8f)
+	{
+		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(16.092f), DirectX::XMConvertToRadians(-21.279f), DirectX::XMConvertToRadians(-166.074f));
+		_pWeapon->GetTransform()->SetPosition(0.410f, 0.301f, 0.014f);
+	}
+	else if (vVelocity.Length() > 3.0f)
+	{
+		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-23.338f), DirectX::XMConvertToRadians(-20.093f), DirectX::XMConvertToRadians(-167.379f));
+		_pWeapon->GetTransform()->SetPosition(0.410f, 0.309f, 0.014f);
+	}
+	else if (0.0f >= vVelocity.Length())
+	{
+		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(6.16f), DirectX::XMConvertToRadians(-2.817f), DirectX::XMConvertToRadians(178.809f));
+		_pWeapon->GetTransform()->SetPosition(0.426f, 0.297f, 0.058f);
+	}
 }
 
 void Swat::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)
@@ -395,4 +383,9 @@ void SetIdle(Actor* pSwat)
 void SetNextPunching(Actor* pSwat)
 {
 	((Swat*)pSwat)->SetNextPunching();
+}
+
+void SetNextFire(Actor* pSwat)
+{
+	((Swat*)pSwat)->SetNextFire();
 }

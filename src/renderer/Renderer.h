@@ -39,10 +39,11 @@ public:
 	virtual void Present() override;
 	virtual IMeshObject* CreateBasicMeshObject() override;
 	virtual IMeshObject* CreateSkinnedMeshObject() override;
-	virtual ISpriteObject* CreateSpriteObject() override;
-	virtual ISpriteObject* CreateSpriteObjectWidthTex(const wchar_t* wcTexFilename, AkI32 iPosX, AkI32 iPosY, AkI32 iWidth, AkI32 iHeight) override;
-	virtual ISkyboxObject* CreateSkyboxObject() override;
+	virtual ISprite* CreateSpriteObject() override;
+	virtual ISprite* CreateSpriteObjectWidthTex(const wchar_t* wcTexFilename, AkI32 iPosX, AkI32 iPosY, AkI32 iWidth, AkI32 iHeight) override;
+	virtual ISkybox* CreateSkyboxObject() override;
 	virtual ILineObject* CreateLineObject() override;
+	virtual IBillboard* CreateBillboards() override;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB) override;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) override;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) override;
@@ -64,8 +65,9 @@ public:
 	virtual void RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) override;
 	virtual void RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, const Vector3* pFontColor) override;
 	virtual void RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ) override;
-	virtual void RenderSkybox(ISkyboxObject* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) override;
+	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) override;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) override;
+	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) override;
 	virtual void RotateXCamera(AkF32 fRadian) override;
 	virtual void RotateYCamera(AkF32 fRadian) override;
 	virtual void RotateYawPitchRollCamera(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll) override;

@@ -24,5 +24,8 @@ public:
 	virtual void OnCollisionExit(Collider* pOther) override;
 
 	virtual UBRS_74* Clone() override;
+
+private:
+	AkU32 _uMaxFireBullet = 5;
 };
 

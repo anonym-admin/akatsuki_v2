@@ -28,19 +28,19 @@ public:
 
 private:
 	// Mini map
-	ISpriteObject* _pMiniMapSprite = nullptr;
-	ISpriteObject* _pMiniMapOutlineSprite = nullptr;
+	ISprite* _pMiniMapSprite = nullptr;
+	ISprite* _pMiniMapOutlineSprite = nullptr;
 	AkI32 _iMiniMapPosX = 0;
 	AkI32 _iMiniMapPosY = 0;
 	AkI32 _iOffset = 10;
 
 	// Location point
-	ISpriteObject* _pLocationPointSprite = nullptr;
+	ISprite* _pLocationPointSprite = nullptr;
 	AkI32 _iPosX = 0;
 	AkI32 _iPosY = 0;
 
 	// Skybox
-	ISkyboxObject* _pSkyboxObj = nullptr;
+	ISkybox* _pSkyboxObj = nullptr;
 	Matrix _mSkyboxTransform = Matrix();
 
 	// World Map Container.

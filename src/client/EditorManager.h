@@ -30,7 +30,7 @@ private:
 	void CleanUp();
 
 private:
-	Editor* _pEditorList[(AkU32)EDITOR_TYPE::EDITOR_TYPE_COUNT] = {};
+	Editor* _pEditorList[(AkU32)EDITOR_TYPE::COUNT] = {};
 	Editor* _pCurEditor = nullptr;
 	EDITOR_TYPE _eType = {};
 	AkU32 _uEditorNum = 0;

@@ -33,6 +33,6 @@ private:
 private:
 	AkBool _bClone = AK_FALSE;
 	IRenderer* _pRenderer = nullptr;
-	ISpriteObject* _pTexSpriteObj = nullptr;
+	ISprite* _pTexSpriteObj = nullptr;
 	void* _pTexHandle = nullptr;
 };

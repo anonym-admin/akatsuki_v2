@@ -179,11 +179,14 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="BaseObject.h" />
+    <ClInclude Include="BillboardModel.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="BRS_74.h" />
     <ClInclude Include="BtnUI.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
+    <ClInclude Include="Casing.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="Container.h" />
     <ClInclude Include="Controller.h" />
@@ -228,6 +231,7 @@
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="TreeBillboards.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="Dancer.h" />
     <ClInclude Include="Sound.h" />
@@ -249,11 +253,14 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="BaseObject.cpp" />
+    <ClCompile Include="BillboardModel.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="BRS_74.cpp" />
     <ClCompile Include="BtnUI.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />
+    <ClCompile Include="Casing.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="Container.cpp" />
@@ -302,6 +309,7 @@
     <ClCompile Include="Dancer.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TreeBillboards.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="UI.cpp" />

@@ -1,8 +1,15 @@
 #include "pch.h"
 #include "BaseObject.h"
 #include "SkinnedModel.h"
+#include "BillboardModel.h"
 #include "AssetManager.h"
 #include "Transform.h"
+
+/*
+==========
+BaseObject
+==========
+*/
 
 BaseObject::BaseObject()
 {
@@ -39,6 +46,12 @@ Model* BaseObject::CreateModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const 
 	{
 		pModel = new Model(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive);
 	}
+	return pModel;
+}
+
+Model* BaseObject::CreateBillboardModel(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)
+{
+	Model* pModel = new BillboardModels(pBillboardVertices, uPointNum);
 	return pModel;
 }
 

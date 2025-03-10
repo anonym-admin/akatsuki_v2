@@ -45,3 +45,9 @@ struct LineVertex_t
 	Vector3 vPosition = Vector3(0.0f);
 	Vector3 vColor = Vector3(0.0f);
 };
+
+struct BillboardVertex_t
+{
+	Vector3 vPosition = Vector3(0.0f);
+	Vector2 vSize = Vector2(1.0f);
+};

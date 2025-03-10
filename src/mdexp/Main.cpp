@@ -31,8 +31,8 @@ Global Variable
 HWND g_hWnd = nullptr;
 unsigned int g_uScreenWidth = 0;
 unsigned int g_uScreenHeight = 0;
-bool g_bEnableDebugLayer = true;
-bool g_bEnableGBV = true;
+bool g_bEnableDebugLayer = false;
+bool g_bEnableGBV = false;
 HMODULE g_hRendererDLL = nullptr;
 IRenderer* g_pRenderer = nullptr;
 void* g_pIrradianceTexHandle;
@@ -92,7 +92,7 @@ void ProcessMeshData(MeshData_t* pMeshData, int iMeshCount, std::vector<MeshData
 void DestroyMeshData(MeshData_t* pMeshData, int iMeshCount);
 Model* CreateModel(MeshData_t* pMeshData, int uMeshDataNum);
 SkinnedModel* CreateModel(MeshData_t* pMeshData, int uMeshDataNum, AnimationData* pAnimData);
-ModelImporter* CreateModelImporter(string strOpenFilePath, string strOpenFileName, string strOutputFilrPath, bool bNormalRevert);
+ModelImporter* CreateModelImporter(string strOpenFilePath, string strOpenFileName, string strOutputFilrPath, bool bNormalRevert, bool bAnim = true);
 void CleanUpRenderer();
 void CleanUpIBLResource();
 void CleanUpModelList();
@@ -446,7 +446,7 @@ void OpenWeaponFile()
 		// PathRemoveFileSpec(ofn.lpstrFile);
 		SetCurrentDirectory(L"../");
 
-		ModelImporter* importer = CreateModelImporter(g_strOpenFilePath, g_strOpenFileName, g_strOutputFilePath, false);
+		ModelImporter* importer = CreateModelImporter(g_strOpenFilePath, g_strOpenFileName, g_strOutputFilePath, false, false);
 
 		PathRemoveExtension(ofn.lpstrFile);
 		g_strOpenFileName = ToString(PathFindFileName(ofn.lpstrFile));
@@ -864,11 +864,11 @@ SkinnedModel* CreateModel(MeshData_t* pMeshData, int iMeshDataNum, AnimationData
 	return pModel;
 }
 
-ModelImporter* CreateModelImporter(string strOpenFilePath, string strOpenFileName, string strOutputFilrPath, bool bNormalRevert)
+ModelImporter* CreateModelImporter(string strOpenFilePath, string strOpenFileName, string strOutputFilrPath, bool bNormalRevert, bool bAnim)
 {
 	ModelImporter* importer = new ModelImporter;
 	importer->Load(strOpenFilePath, strOpenFileName, strOutputFilrPath, bNormalRevert); // 텍스처 파일은 ../Asset/ 경로에 생성된다.
-	g_vecModelImp.push_back(make_pair(importer, true));
+	g_vecModelImp.push_back(make_pair(importer, bAnim));
 	return importer;
 }
 

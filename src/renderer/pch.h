@@ -43,3 +43,4 @@ using namespace DirectX;
 #include "utils/ProcessInfo.h"
 
 #include "RendererType.h"
+#include "D3DUtils.h"

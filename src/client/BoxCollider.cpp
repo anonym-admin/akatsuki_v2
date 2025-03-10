@@ -115,15 +115,21 @@ void BoxCollider::OnCollisionExit(Collider* pCollider)
 Vector3 BoxCollider::GetMinWorld()
 {
 	Vector3 vMinWorld = Vector3(0.0f);
-	vMinWorld = Vector3::Transform(vMinWorld, _pTransform->GetWorldTransform());
+	vMinWorld = Vector3::Transform(_vMin, _pTransform->GetWorldTransform());
 	return vMinWorld;
 }
 
 Vector3 BoxCollider::GetMaxWorld()
 {
 	Vector3 vMaxWorld = Vector3(0.0f);
-	vMaxWorld = Vector3::Transform(vMaxWorld, _pTransform->GetWorldTransform());
+	vMaxWorld = Vector3::Transform(_vMax, _pTransform->GetWorldTransform());
 	return vMaxWorld;
+}
+
+AkF32 BoxCollider::Radius()
+{
+	Vector3 vRadius = (GetMaxWorld() - GetMinWorld()) * 0.5f;
+	return vRadius.Length();
 }
 
 

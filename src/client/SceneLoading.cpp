@@ -40,11 +40,23 @@ AkBool SceneLoading::BeginScene()
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::SWATGUY, MODEL_FILE_PATH, L"SwatGuy.md3d", 1.0f, AK_TRUE);
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::DANCER, MODEL_FILE_PATH, L"Dancer.md3d", 1.0f, AK_TRUE);
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::BRS_74, MODEL_FILE_PATH, L"BRS-74.md3d", 1.0f, AK_FALSE);
+<<<<<<< HEAD
+		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::BULLET, MODEL_FILE_PATH, L"Bullet.md3d", 1.0f, AK_FALSE);
+		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::CASING, MODEL_FILE_PATH, L"Casing.md3d", 1.0f, AK_FALSE);
+=======
+>>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 	}
 
 	// Load Animation.
 	{
+<<<<<<< HEAD
+		// Idle
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Idle.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RifleIdle.anim");
+		// Walk
+=======
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Idle.anim");
+>>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontWalk.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontLeftWalk.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontRightWalk.anim");
@@ -53,25 +65,39 @@ AkBool SceneLoading::BeginScene()
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackLeftWalk.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackRightWalk.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackWalk.anim");
+<<<<<<< HEAD
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RifleWalking.anim");
+		// Run
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Run.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontLeftRun.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontRightRun.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RifleRun.anim");
+		// Attack
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_01.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_02.anim");
+		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RifleIdleFire.anim");
+		// Jump
+=======
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Run.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontLeftRun.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontRightRun.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_01.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_02.anim");
+>>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RunJump.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_IdleJump.anim");
 	}
 
 	// Image based lighting textures.
 	{
-		GAssetManager->AddCubeMapTexture(L"../../assets/skybox/", L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
+		GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
 	}
 
 	// Add Change Scene Event.
 	EventHandle_t tEventHandle = {};
 	tEventHandle.eEventType = EVENT_TYPE::SCENE_CHANGE;
-	tEventHandle.tSceneAndEditorChangeParam.eBeforeScene = SCENE_TYPE::SCENE_TYPE_LOADING;
-	tEventHandle.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::SCENE_TYPE_INGANE;
+	tEventHandle.tSceneAndEditorChangeParam.eBeforeScene = SCENE_TYPE::LOADING;
+	tEventHandle.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::INGANE;
 	GEventManager->AddEvent(&tEventHandle);
 
 	return AK_TRUE;
@@ -96,7 +122,7 @@ AkBool SceneLoading::EndScene()
 
 void SceneLoading::RenderLoadingScreenCallBack(const wchar_t* wcText)
 {
-	static wchar_t wcChunkText[1024] = {};
+	static wchar_t wcChunkText[2048] = {};
 
 	// Update status text
 	AkI32 iTextWidth = 0;

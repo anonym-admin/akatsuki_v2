@@ -57,7 +57,7 @@ private:
 
 private:
 	Application* _pApp = nullptr;
-	AkU32 _pCollisionCheckBitsTable[(AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT] = {};
+	AkU32 _pCollisionCheckBitsTable[(AkU32)GAME_OBJECT_GROUP_TYPE::COUNT] = {};
 
 	RbTreeNode_t* _pRBTree = nullptr;
 

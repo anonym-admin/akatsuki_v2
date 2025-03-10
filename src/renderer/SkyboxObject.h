@@ -10,7 +10,7 @@ SkyboxObject
 
 class FRenderer;
 
-class FSkyboxObject : public ISkyboxObject
+class FSkyboxObject : public ISkybox
 {
 public:
 	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 1;

@@ -3,6 +3,8 @@
 #include "Gravity.h"
 #include "Transform.h"
 #include "Application.h"
+#include "Bullet.h"
+#include "SceneInGame.h"
 
 /*
 ==========
@@ -28,9 +30,6 @@ AkBool Weapon::Initialize()
 	// Create Transform.
 	_pTransform = CreateTransform();
 
-	// Create Collider.
-	// _pCollider = CreateCollider();
-
 	// Create Gravity.
 	_pGravity = CreateGravity();
 
@@ -40,44 +39,21 @@ AkBool Weapon::Initialize()
 	return AK_TRUE;
 }
 
-void Weapon::SetOwnerRotationY(AkF32 fRot)
+Bullet* Weapon::CreateBullet()
 {
-	_fOwnerRotY = fRot;
+	Bullet* pBullet = new Bullet(this);
+	pBullet->tLink.pData = pBullet;
+	pBullet->Name = L"Bullet";
+	GSceneManager->GetCurrentScene()->AddGameObject(GAME_OBJECT_GROUP_TYPE::BULLET, pBullet);
+	return pBullet;
 }
 
-void Weapon::SetRelativeRotationX(AkF32 fRot)
+void Weapon::DeleteBullet(Bullet* pBullet)
 {
-	_vRelativeRot.x = fRot;
-}
-
-void Weapon::SetRelativeRotationY(AkF32 fRot)
-{
-	_vRelativeRot.y = fRot;
-}
-
-void Weapon::SetRelativeRotationZ(AkF32 fRot)
-{
-	_vRelativeRot.z = fRot;
-}
-
-void Weapon::SetRelativePosition(AkF32 fX, AkF32 fY, AkF32 fZ)
-{
-	_vRelativePos = Vector3(fX, fY, fZ);
-}
-
-void Weapon::SetRelativeRotation(const Vector3* pYawPitchRoll)
-{
-	_vRelativeRot = *pYawPitchRoll;
-}
-
-void Weapon::SetRelativePosition(const Vector3* pPos)
-{
-	_vRelativePos = *pPos;
-}
-
-void Weapon::SetAnimTransform(Matrix* pMat)
-{
-	_mAnimTransform = *pMat;
+	if (pBullet)
+	{
+		delete pBullet;
+	}
 }
 
 void Weapon::CleanUp()
@@ -85,7 +61,8 @@ void Weapon::CleanUp()
 	AkU32 uRefCount = _uInstanceCount - 1;
 	if (uRefCount)
 	{
-		return;
+		// 총알은 각 총마다 고유하게 가지고 있는 데이터.
+
 	}
 }
 

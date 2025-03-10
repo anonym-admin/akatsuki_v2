@@ -31,7 +31,7 @@ private:
 	void CleanUp();
 
 private:
-	Scene* _pSceneList[(AkU32)SCENE_TYPE::SCENE_TYPE_COUNT] = {};
+	Scene* _pSceneList[(AkU32)SCENE_TYPE::COUNT] = {};
 	Scene* _pCurScene = nullptr;
 	SCENE_TYPE _eType = {};
 	AkU32 _uSceneNum = 0;

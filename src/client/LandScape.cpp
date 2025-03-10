@@ -247,9 +247,9 @@ AkBool LandScape::Initialize(const wchar_t* wcRawSetUpFilename)
 
 void LandScape::Update(const AkF32 fDeltaTime)
 {
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
+	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 	{
-		if (GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP == (GAME_OBJECT_GROUP_TYPE)i)
+		if (GAME_OBJECT_GROUP_TYPE::MAP == (GAME_OBJECT_GROUP_TYPE)i)
 		{
 			continue;
 		}

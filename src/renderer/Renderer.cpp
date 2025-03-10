@@ -15,6 +15,7 @@
 #include "SkinnedMeshObject.h"
 #include "SkyboxObject.h"
 #include "LineObject.h"
+#include "BillboardObject.h"
 #include "PostProcess.h"
 
 // For ImGui;
@@ -466,7 +467,7 @@ IMeshObject* FRenderer::CreateSkinnedMeshObject()
 	return pSkinnedMeshObj;
 }
 
-ISpriteObject* FRenderer::CreateSpriteObject()
+ISprite* FRenderer::CreateSpriteObject()
 {
 	FSpriteObject* pSpriteObject = new FSpriteObject;
 	pSpriteObject->Initialize(this);
@@ -474,7 +475,7 @@ ISpriteObject* FRenderer::CreateSpriteObject()
 	return pSpriteObject;
 }
 
-ISpriteObject* FRenderer::CreateSpriteObjectWidthTex(const wchar_t* wcTexFilename, AkI32 iPosX, AkI32 iPosY, AkI32 iWidth, AkI32 iHeight)
+ISprite* FRenderer::CreateSpriteObjectWidthTex(const wchar_t* wcTexFilename, AkI32 iPosX, AkI32 iPosY, AkI32 iWidth, AkI32 iHeight)
 {
 	FSpriteObject* pSpriteObject = new FSpriteObject;
 
@@ -489,7 +490,7 @@ ISpriteObject* FRenderer::CreateSpriteObjectWidthTex(const wchar_t* wcTexFilenam
 	return pSpriteObject;
 }
 
-ISkyboxObject* FRenderer::CreateSkyboxObject()
+ISkybox* FRenderer::CreateSkyboxObject()
 {
 	FSkyboxObject* pSkyboxObj = new FSkyboxObject;
 	pSkyboxObj->Initialize(this);
@@ -503,6 +504,13 @@ ILineObject* FRenderer::CreateLineObject()
 	pLineObj->Initialize(this);
 
 	return pLineObj;
+}
+
+IBillboard* FRenderer::CreateBillboards()
+{
+	FBillboardObjects* pBillboard = new FBillboardObjects;
+	pBillboard->Initialize(this);
+	return pBillboard;
 }
 
 void* FRenderer::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB)
@@ -757,7 +765,7 @@ void FRenderer::RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, A
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
-void FRenderer::RenderSkybox(ISkyboxObject* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR)
+void FRenderer::RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKYBOX_OBJ;
@@ -781,6 +789,22 @@ void FRenderer::RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat)
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_LINE_OBJ;
 	tItem.pObjHandle = pLineObj;
+	tItem.tLineObjParam._pWorld = pWorldMat;
+
+	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	{
+		__debugbreak();
+	}
+
+	_uCurThreadIndex++;
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+}
+
+void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD;
+	tItem.pObjHandle = pBillboard;
 	tItem.tLineObjParam._pWorld = pWorldMat;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))

@@ -462,6 +462,7 @@ void Animation::UpdateAnimator(Animator_t* pAnimator)
 
 		pAnimator->fFrameWeight += (DT * pClip->uTickPerSecond * _fAnimScale);
 
+		// Frame 이 증가할수록 애니메이션이 느려지는 현상 // TODO
 		if (pAnimator->fFrameWeight >= 1.0f) // 프레임 사이를 보간
 		{
 			pAnimator->fFrameWeight = 0.0f;

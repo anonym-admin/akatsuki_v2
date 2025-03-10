@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "Container.h"
-#include "GeometryGenerator.h"
 #include "Transform.h"
 #include "Model.h"
 #include "Collider.h"
+#include "Swat.h"
 
 Container::Container()
 {
@@ -66,11 +66,20 @@ void Container::RenderShadow()
 
 void Container::OnCollisionEnter(Collider* pOther)
 {
-    printf("Container Collision\n");
+    Actor* pOtherOwner = pOther->GetOwner();
+    if (!wcscmp(pOtherOwner->Name, L"Swat"))
+    {
+        ((Swat*)pOtherOwner)->ActionReaction(_pCollider);
+    }
 }
 
 void Container::OnCollision(Collider* pOther)
 {
+    Actor* pOtherOwner = pOther->GetOwner();
+    if (!wcscmp(pOtherOwner->Name, L"Swat"))
+    {
+        ((Swat*)pOtherOwner)->ActionReaction(_pCollider);
+    }
 }
 
 void Container::OnCollisionExit(Collider* pOther)

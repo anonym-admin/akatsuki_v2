@@ -7,9 +7,6 @@
     <Filter Include="common">
       <UniqueIdentifier>{732c8dfc-2015-4f55-ad43-06eae47f2c40}</UniqueIdentifier>
     </Filter>
-    <Filter Include="utils">
-      <UniqueIdentifier>{fe4502e9-1056-43d7-bd17-924de2973b1c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\entry">
       <UniqueIdentifier>{580b4412-e15c-4060-8d5f-f1da0d035a71}</UniqueIdentifier>
     </Filter>
@@ -79,16 +76,19 @@
     <Filter Include="src\comp\anim">
       <UniqueIdentifier>{faf9db47-cc97-42e2-b9ea-5e290c83bce4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\obj\utils">
+      <UniqueIdentifier>{fe4502e9-1056-43d7-bd17-924de2973b1c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\HashTable.h">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\LinkedList.h">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\ProcessInfo.h">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>src\comp\anim</Filter>
@@ -106,7 +106,7 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\UtilFunc.h">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>src\scene</Filter>
@@ -172,7 +172,7 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\RedBlackTree.h">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClInclude>
     <ClInclude Include="TextUI.h">
       <Filter>src\ui</Filter>
@@ -187,10 +187,10 @@
       <Filter>src\mgr</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\Queue.h">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\Stack.h">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClInclude>
     <ClInclude Include="WorldMap.h">
       <Filter>src\map</Filter>
@@ -288,16 +288,28 @@
     <ClInclude Include="Container.h">
       <Filter>src\obj</Filter>
     </ClInclude>
+    <ClInclude Include="Casing.h">
+      <Filter>src\obj\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>src\obj\weapon</Filter>
+    </ClInclude>
+    <ClInclude Include="BillboardModel.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeBillboards.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\LinkedList.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\ProcessInfo.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClCompile>
     <ClCompile Include="EntryPoint.cpp">
       <Filter>src\entry</Filter>
@@ -306,7 +318,7 @@
       <Filter>src\comp\anim</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\UtilFunc.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>src\scene</Filter>
@@ -369,7 +381,7 @@
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\RedBlackTree.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClCompile>
     <ClCompile Include="TextUI.cpp">
       <Filter>src\ui</Filter>
@@ -384,10 +396,10 @@
       <Filter>src\mgr</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\Queue.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\Stack.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\obj\utils</Filter>
     </ClCompile>
     <ClCompile Include="WorldMap.cpp">
       <Filter>src\map</Filter>
@@ -468,6 +480,18 @@
       <Filter>src\comp\collider</Filter>
     </ClCompile>
     <ClCompile Include="Container.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>src\obj\weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="Casing.cpp">
+      <Filter>src\obj\weapon</Filter>
+    </ClCompile>
+    <ClCompile Include="BillboardModel.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeBillboards.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
   </ItemGroup>

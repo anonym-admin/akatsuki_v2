@@ -32,7 +32,7 @@ public:
 	GameObjContainer_t** GetAllGameObject() { return _pGameObjContainerList; }
 	AkU32 GetGameObjectNum() { return _uGameObjNum; }
 	void* GetCommonFontObject() { return _pFontObj; }
-	ISpriteObject* GetCommonSpriteObject() { return _pSpriteObj; }
+	ISprite* GetCommonSpriteObject() { return _pSpriteObj; }
 
 protected:
 	void CreateCommonFontObject(const wchar_t* wcFontFamilyName, AkF32 fFontSize);
@@ -47,10 +47,10 @@ private:
 private:
 	// Common sprite obj.
 	void* _pFontObj = nullptr;
-	ISpriteObject* _pSpriteObj = nullptr;
+	ISprite* _pSpriteObj = nullptr;
 
 	// Game obj.
-	GameObjContainer_t* _pGameObjContainerList[(AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT] = {};
+	GameObjContainer_t* _pGameObjContainerList[(AkU32)GAME_OBJECT_GROUP_TYPE::COUNT] = {};
 	AkU32 _uGameObjNum = 0;
 
 public:

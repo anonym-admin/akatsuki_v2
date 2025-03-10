@@ -32,6 +32,41 @@ void Controller::Update()
 	KeyBoard();
 }
 
+void Controller::Mouse()
+{
+	static Swat::ANIM_STATE PrevAnimState = Swat::IDLE;
+
+	Swat* pSwat = (Swat*)_pOwner;
+	Swat::ANIM_STATE AnimState = pSwat->AnimState;
+
+	if (LBTN_DOWN)
+	{
+		if (Swat::IDLE == AnimState)
+		{
+			pSwat->Attack = AK_TRUE;
+			if (Swat::IDLE == PrevAnimState)
+			{
+				pSwat->SetAnimation(Swat::PUNCHING_01);
+				PrevAnimState = Swat::PUNCHING_01;
+
+			}
+			else if (Swat::PUNCHING_01 == PrevAnimState)
+			{
+				pSwat->SetAnimation(Swat::PUNCHING_02);
+				PrevAnimState = Swat::IDLE; // Return Idle.
+			}
+		}
+	}
+	if (LBTN_HOLD)
+	{
+		if (Swat::RIFLE_IDLE == AnimState)
+		{
+			pSwat->Fire = AK_TRUE;
+			pSwat->SetAnimation(Swat::RIFLE_FIRE);
+		}
+	}
+}
+
 void Controller::KeyBoard()
 {
 	Swat* pSwat = (Swat*)_pOwner;
@@ -44,7 +79,7 @@ void Controller::KeyBoard()
 
 	Vector3 vVelocity = Vector3(0.0f);
 	AkF32 fMoveSpeed = 0.15f;
-	
+
 	if (KEY_HOLD(KEY_INPUT_W))
 	{
 		vVelocity += pSwat->GetTransform()->Front();
@@ -77,7 +112,7 @@ void Controller::KeyBoard()
 			pSwat->Jumping = AK_TRUE;
 			pSwat->SetAnimation(Swat::RUN_JUMP);
 		}
-		if (Swat::IDLE == AnimState)
+		if (Swat::IDLE == AnimState || Swat::RIFLE_IDLE == AnimState)
 		{
 			pSwat->Jumping = AK_TRUE;
 			pSwat->SetAnimation(Swat::IDLE_JUMP);
@@ -87,30 +122,4 @@ void Controller::KeyBoard()
 	vVelocity.Normalize();
 	vVelocity *= fMoveSpeed;
 	pRigidBody->AddVelocity(&vVelocity);
-}
-
-void Controller::Mouse()
-{
-	static Swat::ANIM_STATE PrevAnimState = Swat::IDLE;
-
-	Swat* pSwat = (Swat*)_pOwner;
-	Swat::ANIM_STATE AnimState = pSwat->AnimState;
-
-	if (LBTN_DOWN)
-	{
-		if (Swat::IDLE == AnimState)
-		{
-			pSwat->Attack = AK_TRUE;
-			if (Swat::IDLE == PrevAnimState)
-			{
-				pSwat->SetAnimation(Swat::PUNCHING_01);
-				PrevAnimState = Swat::PUNCHING_01;
-			}
-			else if (Swat::PUNCHING_01 == PrevAnimState)
-			{
-				pSwat->SetAnimation(Swat::PUNCHING_02);
-				PrevAnimState = Swat::IDLE; // Return Idle.
-			}
-		}
-	}
 }

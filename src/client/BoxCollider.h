@@ -26,6 +26,8 @@ public:
 	virtual void OnCollision(Collider* pCollider) override;
 	virtual void OnCollisionExit(Collider* pCollider) override;
 
+	virtual AkF32 Radius() override;
+
 	Vector3 GetMinWorld();
 	Vector3 GetMaxWorld();
 

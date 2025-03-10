@@ -111,5 +111,5 @@ private:
 	AkBool _bIsChanging = AK_FALSE;
 	AkF32 _fChangedTime = 0.0f;
 	AkF32 _fBlendTime = 0.0f;
-	AkF32 _fAnimScale = 1.5f;
+	AkF32 _fAnimScale = 1.0f;
 };

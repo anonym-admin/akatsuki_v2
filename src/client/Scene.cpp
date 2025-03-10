@@ -20,7 +20,7 @@ void Scene::Update()
 	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
 
 	// Update game obj.
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
+	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 	{
 		if (pGameObjContainerList[i])
 		{
@@ -41,7 +41,7 @@ void Scene::FinalUpdate()
 	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
 
 	// Final Update game obj.
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
+	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 	{
 		if (pGameObjContainerList[i])
 		{
@@ -62,7 +62,7 @@ void Scene::RenderShadow()
 	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
 
 	// Render game obj.
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
+	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 	{
 		if (pGameObjContainerList[i])
 		{
@@ -83,7 +83,7 @@ void Scene::Render()
 	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
 
 	// Render game obj.
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
+	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 	{
 		if (pGameObjContainerList[i])
 		{
@@ -131,7 +131,7 @@ void Scene::CreateCommonSpriteObject()
 
 void Scene::CleanUp()
 {
-	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; i++)
+	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 	{
 		if (_pGameObjContainerList[i])
 		{

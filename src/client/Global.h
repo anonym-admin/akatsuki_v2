@@ -2,7 +2,7 @@
 
 extern HWND GhWnd;
 extern IRenderer* GRenderer;
-extern ISpriteObject* GCommonSprite;
+extern ISprite* GCommonSprite;
 extern struct ImGuiContext* GImGui;
 extern class Window* GWindow;
 extern class Application* GApp;

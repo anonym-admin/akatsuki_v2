@@ -14,7 +14,7 @@ SpriteObject
 
 class FRenderer;
 
-class FSpriteObject : public ISpriteObject
+class FSpriteObject : public ISprite
 {
 public:
 	static const AkU32 DESCRIPTOR_COUNT_FOR_DRAW = 2;	// | Constant Buffer | Tex |

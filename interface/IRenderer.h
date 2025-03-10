@@ -16,7 +16,7 @@ interface IMeshObject : public IUnknown
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };
 
-interface ISpriteObject : public IUnknown
+interface ISprite : public IUnknown
 {
 	virtual void SetDrawBackground(AkBool bDrawBackground) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
@@ -24,7 +24,7 @@ interface ISpriteObject : public IUnknown
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };
 
-interface ISkyboxObject : public IUnknown
+interface ISkybox : public IUnknown
 {
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
@@ -41,6 +41,15 @@ interface ILineObject : public IUnknown
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };
 
+interface IBillboard : public IUnknown
+{
+	virtual AkBool CreateBillboardBuffer(const BillboardVertex_t* pBillboardVertices, AkU32 uPointNum) = 0;
+	virtual void SetTextureArray(void* pTexHandle) = 0;
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
+	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
+	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
+};
+
 interface IRenderer : public IUnknown
 {
 	virtual AkBool Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnableGBV) = 0;
@@ -51,10 +60,11 @@ interface IRenderer : public IUnknown
 	virtual void Present() = 0;
 	virtual IMeshObject* CreateBasicMeshObject() = 0;
 	virtual IMeshObject* CreateSkinnedMeshObject() = 0;
-	virtual ISpriteObject* CreateSpriteObject() = 0;
-	virtual ISpriteObject* CreateSpriteObjectWidthTex(const wchar_t* wcTexFilename, AkI32 iPosX, AkI32 iPosY, AkI32 iWidth, AkI32 iHeight) = 0;
-	virtual ISkyboxObject* CreateSkyboxObject() = 0;
+	virtual ISprite* CreateSpriteObject() = 0;
+	virtual ISprite* CreateSpriteObjectWidthTex(const wchar_t* wcTexFilename, AkI32 iPosX, AkI32 iPosY, AkI32 iWidth, AkI32 iHeight) = 0;
+	virtual ISkybox* CreateSkyboxObject() = 0;
 	virtual ILineObject* CreateLineObject() = 0;
+	virtual IBillboard* CreateBillboards() = 0;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB) = 0;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) = 0;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) = 0;
@@ -75,8 +85,9 @@ interface IRenderer : public IUnknown
 	virtual void RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) = 0;
 	virtual void RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, const Vector3* pFontColor = nullptr) = 0;
 	virtual void RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ) = 0;
-	virtual void RenderSkybox(ISkyboxObject* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) = 0;
+	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) = 0;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) = 0;
+	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) = 0;
 	virtual void RotateXCamera(AkF32 fRadian) = 0;
 	virtual void RotateYCamera(AkF32 fRadian) = 0;

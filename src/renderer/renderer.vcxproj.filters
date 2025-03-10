@@ -124,6 +124,9 @@
     <ClCompile Include="..\..\utils\Stack.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="BillboardObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -219,6 +222,9 @@
     <ClInclude Include="..\..\utils\Stack.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="BillboardObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\BasicShader.hlsl">
@@ -240,6 +246,9 @@
       <Filter>shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\shader\DepthOnlyShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
   </ItemGroup>

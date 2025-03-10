@@ -9,3 +9,4 @@ bool ReadBitmapFile(const wchar_t* wcFilename, unsigned __int8** pDestImage, uns
 float GenterateRandomFloat(float fMin, float fMax);
 std::string GetFileExtension(const std::string& filePath);
 std::string GetFilePath(const std::string& fullPath);
+void CalcColliderMinMax(MeshData_t* pMeshData, AkU32 uMeshDataNum, Vector3* pOutMin, Vector3* pOutMax);

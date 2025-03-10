@@ -1,5 +1,11 @@
 #pragma once
 
+/*
+==========
+BaseObject
+==========
+*/
+
 class Model;
 class Transform;
 
@@ -22,6 +28,7 @@ public:
 protected:
 	Model* CreateModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned);
 	Model* CreateModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned);
+	Model* CreateBillboardModel(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum);
 	Transform* CreateTransform();
 
 private:

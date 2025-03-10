@@ -15,7 +15,7 @@ public:
 	virtual ~UUI() = 0;
 
 	AkBool Initialize();
-	ISpriteObject* GetCommonSpriteObj() { return sm_pCommonSpriteObj; }
+	ISprite* GetCommonSpriteObj() { return sm_pCommonSpriteObj; }
 	void GetRelativePosition(AkI32* pOutPosX, AkI32* pOutPosY);
 	List_t* GetChildUIListHead() { return _pChildUIHead; }
 	AkBool IsMouseOn() { return _bIsMouseOn; }
@@ -62,7 +62,7 @@ private:
 	UUI* _pParentUI = nullptr;
 
 protected:
-	static ISpriteObject* sm_pCommonSpriteObj;
+	static ISprite* sm_pCommonSpriteObj;
 	AkI32 _iPosX = 0;
 	AkI32 _iPosY = 0;
 	AkU32 _uWidth = 0;

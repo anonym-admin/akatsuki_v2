@@ -34,10 +34,13 @@ public:
 	virtual void OnCollision(Collider* pCollider) = 0;
 	virtual void OnCollisionExit(Collider* pCollider) = 0;
 
+	virtual AkF32 Radius() = 0;
+
 	void Update();
 	void Render();
 
 	Transform* GetTransform() { return _pTransform; }
+	Actor* GetOwner() { return _pOwner; }
 	AkI32 GetID() { return _iID; }
 	void SetColor(const Vector3* pColor);
 

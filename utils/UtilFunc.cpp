@@ -134,3 +134,25 @@ std::string GetFilePath(const std::string& fullPath)
 	}
 	return fullPath.substr(0, pos + 1);
 }
+
+void CalcColliderMinMax(MeshData_t* pMeshData, AkU32 uMeshDataNum, Vector3* pOutMin, Vector3* pOutMax)
+{
+	Vector3 vMin = Vector3(AK_MAX_F32);
+	Vector3 vMax = Vector3(-AK_MAX_F32);
+	for (AkU32 i = 0; i < uMeshDataNum; i++)
+	{
+		for (AkU32 j = 0; j < pMeshData[i].uVerticeNum; j++)
+		{
+			vMin.x = min(vMin.x, pMeshData[i].pVertices[j].vPosition.x);
+			vMin.y = min(vMin.y, pMeshData[i].pVertices[j].vPosition.y);
+			vMin.z = min(vMin.z, pMeshData[i].pVertices[j].vPosition.z);
+
+			vMax.x = max(vMax.x, pMeshData[i].pVertices[j].vPosition.x);
+			vMax.y = max(vMax.y, pMeshData[i].pVertices[j].vPosition.y);
+			vMax.z = max(vMax.z, pMeshData[i].pVertices[j].vPosition.z);
+		}
+	}
+
+	*pOutMin = vMin;
+	*pOutMax = vMax;
+}

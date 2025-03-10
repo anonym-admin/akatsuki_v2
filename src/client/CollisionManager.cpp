@@ -71,13 +71,13 @@ void CollisionManager::CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE eLeft, GAME_OB
 
 void CollisionManager::Update()
 {
-	for (AkU32 uRow = 0; uRow < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; uRow++)
+	for (AkU32 uRow = 0; uRow < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; uRow++)
 	{
-		for (AkU32 uCol = 0; uCol < (AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_COUNT; uCol++)
+		for (AkU32 uCol = 0; uCol < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; uCol++)
 		{
 			if (_pCollisionCheckBitsTable[uRow] & (1 << uCol))
 			{
-				if ((AkU32)GAME_OBJECT_GROUP_TYPE::GAME_OBJ_GROUP_TYPE_MAP == uCol)
+				if ((AkU32)GAME_OBJECT_GROUP_TYPE::MAP == uCol)
 				{
 					CollisionStaticObjectUpdate((GAME_OBJECT_GROUP_TYPE)uRow);
 				}

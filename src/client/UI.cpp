@@ -10,7 +10,7 @@ UI
 */
 
 AkU32 UUI::sm_pInitRefCount;
-ISpriteObject* UUI::sm_pCommonSpriteObj;
+ISprite* UUI::sm_pCommonSpriteObj;
 
 UUI::UUI()
 {
