@@ -44,27 +44,6 @@ public:
 	} AnimState;
 
 	const wchar_t* ANIM_CLIP[(AkU32)ANIM_STATE::COUNT] = {};
-<<<<<<< HEAD
-=======
-	//{
-	//	 L"SwatGuy_Idle.anim",
-	//	 L"SwatGuy_FrontWalk.anim",
-	//	 L"SwatGuy_FrontLeftWalk.anim",
-	//	 L"SwatGuy_FrontRightWalk.anim",
-	//	 L"SwatGuy_LeftWalk.anim",
-	//	 L"SwatGuy_RightWalk.anim",
-	//	 L"SwatGuy_BackLeftWalk.anim",
-	//	 L"SwatGuy_BackRightWalk.anim",
-	//	 L"SwatGuy_BackWalk.anim",
-	//	 L"SwatGuy_Run.anim",
-	//	 L"SwatGuy_FrontLeftRun.anim",
-	//	 L"SwatGuy_FrontRightRun.anim",
-	//	 L"SwatGuy_Punching_01.anim",
-	//	 L"SwatGuy_Punching_02.anim",
-	//	 L"SwatGuy_RunJump.anim",
-	//	 L"SwatGuy_IdleJump.anim"
-	//};
->>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 
 public:
 	Swat();

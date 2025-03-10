@@ -1,6 +1,6 @@
 #pragma once
 
-#define MULTI_THREAD_RENDERING
+// #define MULTI_THREAD_RENDERING
 
 /*
 =======================

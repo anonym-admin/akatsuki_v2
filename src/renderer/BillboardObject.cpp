@@ -36,13 +36,13 @@ AkBool FBillboardObjects::Initialize(FRenderer* pRenderer)
 	return bResult;
 }
 
-AkBool FBillboardObjects::CreateBillboardBuffer(const BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)
+AkBool FBillboardObjects::CreateBillboardBuffer(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)
 {
 	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
 	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
 	ID3D12Resource* pVertexBuffer = nullptr;
 
-	if (pResourceManager->CreateVertexBuffer(sizeof(BillboardVertex_t), uPointNum, &tVBView, &pVertexBuffer, &pVertexBuffer))
+	if (pResourceManager->CreateVertexBuffer(sizeof(BillboardVertex_t), uPointNum, &tVBView, &pVertexBuffer, pBillboardVertices))
 	{
 		_pVertexBuffer = pVertexBuffer;
 		_tVertexBufferView = tVBView;
@@ -148,6 +148,9 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 	// Obj (root param 0)
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
 	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
+	pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
 	pCmdList->IASetVertexBuffers(0, 1, &_tVertexBufferView);
 	pCmdList->DrawInstanced(_uPointNum, 1, 0, 0);
 }
@@ -309,10 +312,10 @@ AkBool FBillboardObjects::CreatePipelineState()
 	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	tPsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
-	//psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	//tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	tPsoDesc.SampleMask = UINT_MAX;
 	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
 	tPsoDesc.NumRenderTargets = 1;

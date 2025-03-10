@@ -18,7 +18,7 @@ public:
 	~FBillboardObjects();
 
 	AkBool Initialize(FRenderer* pRenderer);
-	virtual AkBool CreateBillboardBuffer(const BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)  override;
+	virtual AkBool CreateBillboardBuffer(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)  override;
 	virtual void SetTextureArray(void* pTexHandle) override;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) override;

@@ -43,7 +43,7 @@ interface ILineObject : public IUnknown
 
 interface IBillboard : public IUnknown
 {
-	virtual AkBool CreateBillboardBuffer(const BillboardVertex_t* pBillboardVertices, AkU32 uPointNum) = 0;
+	virtual AkBool CreateBillboardBuffer(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum) = 0;
 	virtual void SetTextureArray(void* pTexHandle) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;

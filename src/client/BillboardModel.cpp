@@ -17,12 +17,14 @@ BillboardModels::BillboardModels(BillboardVertex_t* pBillboardVertices, AkU32 uP
 
 BillboardModels::~BillboardModels()
 {
+    CleanUp();
 }
 
 AkBool BillboardModels::Initialize(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)
 {
     _pBillboard = GRenderer->CreateBillboards();
     _pBillboard->CreateBillboardBuffer(pBillboardVertices, uPointNum);
+
     return AK_TRUE;
 }
 

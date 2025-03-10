@@ -40,23 +40,19 @@ AkBool SceneLoading::BeginScene()
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::SWATGUY, MODEL_FILE_PATH, L"SwatGuy.md3d", 1.0f, AK_TRUE);
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::DANCER, MODEL_FILE_PATH, L"Dancer.md3d", 1.0f, AK_TRUE);
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::BRS_74, MODEL_FILE_PATH, L"BRS-74.md3d", 1.0f, AK_FALSE);
-<<<<<<< HEAD
+
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::BULLET, MODEL_FILE_PATH, L"Bullet.md3d", 1.0f, AK_FALSE);
 		GAssetManager->AddMeshData(ASSET_MESH_DATA_TYPE::CASING, MODEL_FILE_PATH, L"Casing.md3d", 1.0f, AK_FALSE);
-=======
->>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
+
 	}
 
 	// Load Animation.
 	{
-<<<<<<< HEAD
+
 		// Idle
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Idle.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RifleIdle.anim");
 		// Walk
-=======
-		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Idle.anim");
->>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontWalk.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontLeftWalk.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontRightWalk.anim");
@@ -65,7 +61,6 @@ AkBool SceneLoading::BeginScene()
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackLeftWalk.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackRightWalk.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_BackWalk.anim");
-<<<<<<< HEAD
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RifleWalking.anim");
 		// Run
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Run.anim");
@@ -77,13 +72,6 @@ AkBool SceneLoading::BeginScene()
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_02.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RifleIdleFire.anim");
 		// Jump
-=======
-		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Run.anim");
-		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontLeftRun.anim");
-		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_FrontRightRun.anim");
-		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_01.anim");
-		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Punching_02.anim");
->>>>>>> f2e096c130c4bec98199dd6ba2311eb016150af2
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RunJump.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_IdleJump.anim");
 	}
@@ -122,23 +110,23 @@ AkBool SceneLoading::EndScene()
 
 void SceneLoading::RenderLoadingScreenCallBack(const wchar_t* wcText)
 {
-	static wchar_t wcChunkText[2048] = {};
+	//static std::wstring wcTextChunk = L"";
 
-	// Update status text
-	AkI32 iTextWidth = 0;
-	AkI32 iTextHeight = 0;
+	//// Update status text
+	//AkI32 iTextWidth = 0;
+	//AkI32 iTextHeight = 0;
 
-	wcscat_s(wcChunkText, wcText);
-	AkU32 uTxtLen = (AkU32)wcslen(wcChunkText);
+	//wcTextChunk += std::wstring(wcText);
+	//AkU32 uTxtLen = (AkU32)wcslen(wcTextChunk.c_str());
 
-	// 텍스트가 변경된 경우
-	GRenderer->WriteTextToBitmap(_pScreenImage, _uScreenWidth, _uScreenHeight, _uScreenWidth * 4, &iTextWidth, &iTextHeight, GetCommonFontObject(), wcChunkText, uTxtLen);
-	GRenderer->UpdateTextureWidthImage(_pScreenTextureHandle, _pScreenImage, _uScreenWidth, _uScreenHeight);
+	//// 텍스트가 변경된 경우
+	//GRenderer->WriteTextToBitmap(_pScreenImage, _uScreenWidth, _uScreenHeight, _uScreenWidth * 4, &iTextWidth, &iTextHeight, GetCommonFontObject(), wcTextChunk.c_str(), uTxtLen);
+	//GRenderer->UpdateTextureWidthImage(_pScreenTextureHandle, _pScreenImage, _uScreenWidth, _uScreenHeight);
 
-	GRenderer->BeginRender();
+	//GRenderer->BeginRender();
 
-	GRenderer->RenderSpriteWithTex(GetCommonSpriteObject(), 0, 0, 1.0f, 1.0f, nullptr, 0.0f, _pScreenTextureHandle);
+	//GRenderer->RenderSpriteWithTex(GetCommonSpriteObject(), 0, 0, 1.0f, 1.0f, nullptr, 0.0f, _pScreenTextureHandle);
 
-	GRenderer->EndRender();
-	GRenderer->Present();
+	//GRenderer->EndRender();
+	//GRenderer->Present();
 }

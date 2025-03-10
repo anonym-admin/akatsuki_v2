@@ -65,7 +65,8 @@ void GSMain(point BillboardGSInput input[1], uint primID : SV_PrimitiveID, inout
     [unroll]
     for (int i = 0; i < 4; i++)
     {
-        output.posProj = mul(v[i], view);
+        output.posProj = mul(v[i], world);
+        output.posProj = mul(output.posProj, view);
         output.posProj = mul(output.posProj, proj);
         output.posModel = v[i].xyz;
         output.normal = look;
@@ -79,7 +80,9 @@ void GSMain(point BillboardGSInput input[1], uint primID : SV_PrimitiveID, inout
 float4 PSMain(BillboardPSInput input) : SV_TARGET
 {
     float3 uvw = float3(input.texCoord, input.primID % 3);
-    float4 color = textureArray.Sample(anisotropicWrapSS, uvw);
+    float4 color = textureArray.Sample(linearClampSS, uvw);
+    
+    clip(color.a - 0.1f);
     
     return color;
 }

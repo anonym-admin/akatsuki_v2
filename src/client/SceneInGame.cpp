@@ -66,10 +66,10 @@ AkBool SceneInGame::BeginScene()
 
 	// Tree Billboard.
 	{
-		//TreeBillboard* pTreeBillboards = new TreeBillboard;
-		//pTreeBillboards->Name = L"Tree";
-		//pTreeBillboards->tLink.pData = pTreeBillboards;
-		//AddGameObject(GAME_OBJECT_GROUP_TYPE::TREE, pTreeBillboards);
+		TreeBillboard* pTreeBillboards = new TreeBillboard;
+		pTreeBillboards->Name = L"Tree";
+		pTreeBillboards->tLink.pData = pTreeBillboards;
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::TREE, pTreeBillboards);
 	}
 
 	// World Map Containter.
