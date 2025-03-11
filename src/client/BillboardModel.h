@@ -15,7 +15,6 @@ public:
 	~BillboardModels();
 
 	AkBool Initialize(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum);
-	void SetTextureArray(void* pTexHandle);
 	virtual void Render() override;
 
 private:
@@ -23,5 +22,7 @@ private:
 
 private:
 	IBillboard* _pBillboard = nullptr;
+
+	void* _pTreeTextureArray = nullptr;
 };
 

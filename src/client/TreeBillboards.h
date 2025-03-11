@@ -28,6 +28,5 @@ private:
 	void CleanUp();
 
 private:
-	void* _pTreeTextureArray = nullptr;
 };
 

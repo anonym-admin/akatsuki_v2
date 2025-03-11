@@ -44,7 +44,6 @@ interface ILineObject : public IUnknown
 interface IBillboard : public IUnknown
 {
 	virtual AkBool CreateBillboardBuffer(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum) = 0;
-	virtual void SetTextureArray(void* pTexHandle) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
@@ -87,7 +86,7 @@ interface IRenderer : public IUnknown
 	virtual void RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ) = 0;
 	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) = 0;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) = 0;
-	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
+	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle) = 0;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) = 0;
 	virtual void RotateXCamera(AkF32 fRadian) = 0;
 	virtual void RotateYCamera(AkF32 fRadian) = 0;

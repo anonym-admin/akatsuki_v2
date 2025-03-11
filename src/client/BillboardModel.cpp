@@ -25,21 +25,23 @@ AkBool BillboardModels::Initialize(BillboardVertex_t* pBillboardVertices, AkU32 
     _pBillboard = GRenderer->CreateBillboards();
     _pBillboard->CreateBillboardBuffer(pBillboardVertices, uPointNum);
 
-    return AK_TRUE;
-}
+    _pTreeTextureArray = GRenderer->CreateTextureFromFile(L"../../assets/tree02S.dds", AK_TRUE);
 
-void BillboardModels::SetTextureArray(void* pTexHandle)
-{
-    _pBillboard->SetTextureArray(pTexHandle);
+    return AK_TRUE;
 }
 
 void BillboardModels::Render()
 {
-    GRenderer->RenderBillboard(_pBillboard, &_mWorldRow);
+    GRenderer->RenderBillboard(_pBillboard, &_mWorldRow, _pTreeTextureArray);
 }
 
 void BillboardModels::CleanUp()
 {
+    if (_pTreeTextureArray)
+    {
+        GRenderer->DestroyTexture(_pTreeTextureArray);
+        _pTreeTextureArray = nullptr;
+    }
     if (_pBillboard)
     {
         _pBillboard->Release();

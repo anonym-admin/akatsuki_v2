@@ -151,13 +151,13 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_LINE_OBJ:
 			{
 				FLineObject* pLineObj = (FLineObject*)pItem->pObjHandle;
-				pLineObj->Draw(uThreadIndex, pCmdList, pItem->tLineObjParam._pWorld);
+				pLineObj->Draw(uThreadIndex, pCmdList, pItem->tLineObjParam.pWorld);
 			}
 			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD:
 			{
 				FBillboardObjects* pBillboards = (FBillboardObjects*)pItem->pObjHandle;
-				pBillboards->Draw(uThreadIndex, pCmdList, pItem->tLineObjParam._pWorld); // replace line obj param.
+				pBillboards->Draw(uThreadIndex, pCmdList, pItem->tBillboardParam.pWorld, pItem->tBillboardParam.pTexHandle); // replace line obj param.
 			}
 			break;
 			default:

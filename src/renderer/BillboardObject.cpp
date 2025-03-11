@@ -53,11 +53,6 @@ AkBool FBillboardObjects::CreateBillboardBuffer(BillboardVertex_t* pBillboardVer
 	return AK_TRUE;
 }
 
-void FBillboardObjects::SetTextureArray(void* pTexHandle)
-{
-	_pTexArray = (TextureHandle_t*)pTexHandle;
-}
-
 HRESULT __stdcall FBillboardObjects::QueryInterface(REFIID riid, void** ppvObject)
 {
 	return E_NOTIMPL;
@@ -79,7 +74,7 @@ ULONG __stdcall FBillboardObjects::Release(void)
 	return uRefCount;
 }
 
-void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
+void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, void* pTexHandle)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
@@ -134,9 +129,10 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 	hDest.Offset(1, uDescriptorSize);
 
 	// Per Billboard (t0 ~ )
-	if (_pTexArray->hSRV.ptr)
+	TextureHandle_t* pTextureHandle = (TextureHandle_t*)pTexHandle;
+	if (pTextureHandle->hSRV.ptr)
 	{
-		pDevice->CopyDescriptorsSimple(1, hDest, _pTexArray->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		pDevice->CopyDescriptorsSimple(1, hDest, pTextureHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
 	}
 
@@ -315,7 +311,6 @@ AkBool FBillboardObjects::CreatePipelineState()
 	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
 	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	//tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	tPsoDesc.SampleMask = UINT_MAX;
 	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
 	tPsoDesc.NumRenderTargets = 1;

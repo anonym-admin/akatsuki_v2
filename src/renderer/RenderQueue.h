@@ -46,7 +46,13 @@ struct RenderSpriteObjParam_t
 
 struct RenderLineObjParam_t
 {
-	const Matrix* _pWorld = nullptr;
+	const Matrix* pWorld = nullptr;
+};
+
+struct RenderBillboardParam_t
+{
+	const Matrix* pWorld = nullptr;
+	void* pTexHandle = nullptr;
 };
 
 struct RenderItem_t
@@ -60,6 +66,7 @@ struct RenderItem_t
 		RenderSkyboxObjParam_t tSkyboxObjParam;
 		RenderSpriteObjParam_t tSpriteObjParam;
 		RenderLineObjParam_t tLineObjParam;
+		RenderBillboardParam_t tBillboardParam;
 	};
 };
 

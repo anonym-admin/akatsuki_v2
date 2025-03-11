@@ -62,5 +62,6 @@ private:
 	TextureHandle_t* _pEnvHDR = nullptr;
 	TextureHandle_t* _pDiffuseHDR = nullptr;
 	TextureHandle_t* _pSpecularHDR = nullptr;
-};
 
+	AkF32 _fScale = 500.0f;
+};
