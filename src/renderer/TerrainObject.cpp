@@ -128,7 +128,10 @@ void FTerrainObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdLis
 	}
 
 	BrushConstantBuffer_t* pBrushConstantBuffer = reinterpret_cast<BrushConstantBuffer_t*>(pBrushCBContainer->pSystemMemAddr);
-	memcpy(pBrushConstantBuffer, pBrush, sizeof(BrushConstantBuffer_t));
+	if (pBrush)
+		memcpy(pBrushConstantBuffer, pBrush, sizeof(BrushConstantBuffer_t));
+	else
+		memset(pBrushConstantBuffer, 0, sizeof(BrushConstantBuffer_t));
 
 	// Per Obj (b2).
 	pDevice->CopyDescriptorsSimple(1, hDest, pBrushCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -467,8 +470,32 @@ void FTerrainObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matri
 	}
 }
 
-void FTerrainObject::CreateStaticMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
+AkBool FTerrainObject::CreateStaticMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
 {
+	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
+	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
+	D3D12_INDEX_BUFFER_VIEW tIBView = {};
+	ID3D12Resource* pVertexBuffer = nullptr;
+	ID3D12Resource* pIndexBuffer = nullptr;
+
+	_pMeshes = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
+	_uMeshNum = 1;
+
+	if (pResourceManager->CreateVertexBuffer(sizeof(TerrainVertex_t), uVerticeNum, &tVBView, &pVertexBuffer, pVertices))
+	{
+		_pMeshes[0].pVB = pVertexBuffer;
+		_pMeshes[0].tVBView = tVBView;
+	}
+
+	if (pResourceManager->CreateIndexBuffer(uIndiceNum, &tIBView, &pIndexBuffer, pIndices))
+	{
+		_pMeshes[0].pIB = pIndexBuffer;
+		_pMeshes[0].tIBView = tIBView;
+		_pMeshes[0].uVertexCountPerInstance = uVerticeNum;
+		_pMeshes[0].uIndexCountPerInstance = uIndiceNum;
+	}
+
+	return AK_TRUE;
 }
 
 void* FTerrainObject::CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
@@ -480,7 +507,7 @@ void* FTerrainObject::CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32
 
 	memset(_pMeshes, 0, sizeof(Mesh_t));
 
-	return CreateVertexAndIndexBuffer(pVertices, uVerticeNum, pIndices, uIndiceNum);
+	return CreateDynamicVertexAndIndexBuffer(pVertices, uVerticeNum, pIndices, uIndiceNum);
 }
 
 void FTerrainObject::SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename, const wchar_t* wcNormalFilename, const wchar_t* wcEmissvieFilename, const wchar_t* wcMetallicFilename, const wchar_t* wcRoughnessFilename, const wchar_t* wcAOFilename)
@@ -583,6 +610,14 @@ AkBool FTerrainObject::UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32
 	return AK_TRUE;
 }
 
+void FTerrainObject::DestoryDynamicVertexBuferHandle(void* pDVHandle)
+{
+	if (pDVHandle)
+	{
+		delete pDVHandle;
+	}
+}
+
 HRESULT __stdcall FTerrainObject::QueryInterface(REFIID riid, void** ppvObject)
 {
 	return E_NOTIMPL;
@@ -676,7 +711,7 @@ void FTerrainObject::CleanUp()
 	DestroyCommonResources();
 }
 
-DynamicVertexHandle_t* FTerrainObject::CreateVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
+DynamicVertexHandle_t* FTerrainObject::CreateDynamicVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
 {
 	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
 	D3D12_VERTEX_BUFFER_VIEW tVBView = {};

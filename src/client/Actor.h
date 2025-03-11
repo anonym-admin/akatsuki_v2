@@ -32,6 +32,8 @@ public:
 	Collider* CreateBoxCollider(const Vector3* pMin = nullptr, const Vector3* pMax = nullptr, const Vector3* pColor = nullptr);
 	Collider* CreateSphereCollider(AkF32 fRadius = 0.5f, AkU32 uStack = 16, AkU32 uSlice = 32, const Vector3* pColor = nullptr);
 	Collider* CreateCapsuleCollider(AkF32 fRadius = 0.5f, AkF32 fHeight = 1.0f, AkU32 uStack = 16, AkU32 uSlice = 32, const Vector3* pColor = nullptr);
+	Collider* CreateSquareCollider();
+	
 	RigidBody* CreateRigidBody();
 	Gravity* CreateGravity();
 	Camera* CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll = nullptr);

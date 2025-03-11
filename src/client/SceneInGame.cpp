@@ -42,7 +42,7 @@ AkBool SceneInGame::BeginScene()
 		pSwat->Name = L"Swat";
 		pSwat->tLink.pData = pSwat;
 		pSwat->GetTransform()->SetRotation(DirectX::XM_PI, 0.0f, 0.0f);
-		pSwat->GetTransform()->SetPosition(-3.0f, 1.5f, 0.0f);
+		pSwat->GetTransform()->SetPosition(-10.0f, 1.5f, 0.0f);
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pSwat);
 	}
 
@@ -292,6 +292,7 @@ AkBool SceneInGame::BeginScene()
 	// Collision check.
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::CONTAINER);
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::WEAPON);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
 
 	// Create Frustum.
 	_pFrustum = CreateFrustum(GRenderer);

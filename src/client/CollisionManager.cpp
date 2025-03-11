@@ -341,5 +341,11 @@ void CollisionManager::TraversKDTree(KDTreeNode_t* pNode, Collider* pCollider)
 
 AkBool CollisionManager::IsCollision(Collider* pLeft, Collider* pRight)
 {
+	// Terrain 일 경우 충돌을 했다고 가정.
+	if (!wcscmp(pLeft->GetOwner()->Name, L"Terrain") || !wcscmp(pRight->GetOwner()->Name, L"Terrain"))
+	{
+		return AK_TRUE;
+	}
+
 	return pLeft->Intersect(pRight);
 }

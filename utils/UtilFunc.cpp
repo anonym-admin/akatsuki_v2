@@ -107,6 +107,63 @@ bool ReadBitmapFile(const wchar_t* wcFilename, unsigned __int8** pDestImage, uns
 	return true;
 }
 
+void ReadImage(const wchar_t* pFilename, unsigned __int8** ppOutImage, unsigned __int32* pOutWidth, unsigned __int32* pOutHeight)
+{
+	HRESULT hResult = S_OK;
+
+	DirectX::ScratchImage image;
+
+	std::wstring ext = GetFileExtension(pFilename);
+	if (ext == L"dds")
+	{
+		hResult = DirectX::LoadFromDDSFile(pFilename, DirectX::DDS_FLAGS_NONE, nullptr, image);
+	}
+	else if (ext == L"bmp")
+	{
+		hResult = ReadBitmapFile(pFilename, ppOutImage, pOutWidth, pOutHeight);
+	}
+	else if (ext == L"ext")
+	{
+		
+	}
+	else if (ext == L"tga")
+	{
+		hResult = DirectX::LoadFromTGAFile(pFilename, nullptr, image);
+	}
+	else
+	{
+		hResult = DirectX::LoadFromWICFile(pFilename, DirectX::WIC_FLAGS_FORCE_RGB, nullptr, image);
+	}
+
+	if (FAILED(hResult))
+	{
+		__debugbreak();
+	}
+
+	uint8_t* src = image.GetPixels();
+	unsigned int size = (unsigned int)image.GetPixelsSize();
+
+	uint8_t* dest = new unsigned __int8[size];
+	memcpy(dest, src, sizeof(unsigned __int8) * size);
+
+	*ppOutImage = dest;
+	*pOutWidth = (unsigned int)image.GetMetadata().width;
+	*pOutHeight = (unsigned int)image.GetMetadata().height;
+}
+
+void ImageToPixel(unsigned __int8* pImage, Vector4* pPixels, unsigned int iPixelSize)
+{
+	const float fScale = 1.0f / 255.0f;
+
+	for (unsigned int i = 0; i < iPixelSize / 4; i++)
+	{
+		pPixels[i].x = pImage[4 * i + 0] * fScale;
+		pPixels[i].y = pImage[4 * i + 1] * fScale;
+		pPixels[i].z = pImage[4 * i + 2] * fScale;
+		pPixels[i].w = pImage[4 * i + 3] * fScale;
+	}
+}
+
 float GenterateRandomFloat(float fMin, float fMax)
 {
 	float fScale = rand() / (float)RAND_MAX;
@@ -131,6 +188,28 @@ std::string GetFilePath(const std::string& fullPath)
 	size_t pos = fullPath.find_last_of("/\\");
 	if (pos == std::string::npos) {
 		return "";
+	}
+	return fullPath.substr(0, pos + 1);
+}
+
+std::wstring GetFileExtension(const std::wstring& filePath)
+{
+	size_t dotPos = filePath.find_last_of(L'.');
+	if (dotPos == std::wstring::npos) {
+		return L"";
+	}
+	size_t slashPos = filePath.find_last_of(L"/\\");
+	if (slashPos != std::string::npos && slashPos > dotPos) {
+		return L"";
+	}
+	return filePath.substr(dotPos + 1);
+}
+
+std::wstring GetFilePath(const std::wstring& fullPath)
+{
+	size_t pos = fullPath.find_last_of(L"/\\");
+	if (pos == std::string::npos) {
+		return L"";
 	}
 	return fullPath.substr(0, pos + 1);
 }

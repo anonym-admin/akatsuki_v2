@@ -227,6 +227,7 @@
     <ClInclude Include="SkinnedModel.h" />
     <ClInclude Include="Spawn.h" />
     <ClInclude Include="SphereColiider.h" />
+    <ClInclude Include="SquareCollider.h" />
     <ClInclude Include="Swat.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TextUI.h" />
@@ -304,6 +305,7 @@
     <ClCompile Include="SkinnedModel.cpp" />
     <ClCompile Include="Spawn.cpp" />
     <ClCompile Include="SphereColiider.cpp" />
+    <ClCompile Include="SquareCollider.cpp" />
     <ClCompile Include="Swat.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TextUI.cpp" />

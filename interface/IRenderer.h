@@ -51,7 +51,7 @@ interface IBillboard : public IUnknown
 
 interface ITerrain : public IUnknown
 {
-	virtual void CreateStaticMeshBuffers(TerrainVertex_t * pVertices, AkU32 uVerticeNum, AkU32 * pIndices, AkU32 uIndiceNum) = 0;
+	virtual AkBool CreateStaticMeshBuffers(TerrainVertex_t * pVertices, AkU32 uVerticeNum, AkU32 * pIndices, AkU32 uIndiceNum) = 0;
 	virtual void* CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) = 0;
 	virtual void SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename = nullptr, const wchar_t* wcNormalFilename = nullptr, const wchar_t* wcEmissvieFilename = nullptr, const wchar_t* wcMetallicFilename = nullptr, const wchar_t* wcRoughnessFilename = nullptr, const wchar_t* wcAOFilename = nullptr) = 0;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;

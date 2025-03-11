@@ -30,15 +30,36 @@ private:
 	void CleanUp();
 
 	void CreateMeshData();
+	void DestroyMeshData();
+
+	void ComputeNormals();
+	void ComputeTangents();
+
 	void LoadHeightMap(const wchar_t* wcHeightFile);
+	void LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32 iSplattingID);
+
+	void UpdateHeight(Actor* pActor);
 
 private:
 	AkU32 _uWidth = 100;
 	AkU32 _uHeight = 100;
 
-	IMeshObject* _pMeshObj = nullptr;
+	ITerrain* _pTerrain = nullptr;
+	TerrainVertex_t* _pVertices = nullptr;
+	AkU32* _pIndices = nullptr;
+	AkU32 _uVerticeNum = 0;
+	AkU32 _uIndiceNum = 0;
+	Vector2 _vTexScale = Vector2(16.0f);
 
-	MeshData_t* _pGrid = nullptr;
+	AkU8* _pHeightMapImg = nullptr;
+
+	const AkF32 MAX_HEIGHT = 30.0f;
+
+	const wchar_t* wcSplatingFilenames[2] =
+	{
+		L"../../assets/map/grass.dds",
+		L"../../assets/map/stone.dds",
+	};
 };
 
 /*
@@ -66,13 +87,18 @@ public:
 	void UpdateEditor();
 	void Render();
 
-	void Load(const wchar_t* wcHeightFile);
-	void Save(const wchar_t* wcHeightFile);
+	void LoadHeightMap(const wchar_t* wcHeightFile);
+	void SaveHeightMap(const wchar_t* wcHeightFile);
+	void LoadSplatingTexture(const wchar_t* wcAlphaFile);
+	void SaveSplatingTexture(const wchar_t* wcAlphaFile);
 
 private:
 	void CleanUp();
 
 	void CreateMeshData();
+	void CreateRenderObject();
+	void DestroyMeshData();
+	void DestroyRenderObject();
 
 	void ComputeHeight();
 	void ComputeNormals();
@@ -99,16 +125,23 @@ private:
 	Matrix _mWorldRow = Matrix();
 
 	void* _pDVHandle = nullptr;
-	
+
 	Vector3 _vPickPos = Vector3(0.0f);
 	AkF32 _fPickDist = 0.0f;
 	AkF32 _fMoveRatio = 0.0f;
 	AkF32 _fHeightScale = 50.0f;
-	AkF32 _fHeightMin = 0.0f;
 
 	AkF32 _fPaintScale = 5.0f;
 	AkI32 _iSelectedTexture = 0;
 
 	AkI32 _iEditType = 0; // 0 : Paint , 1 : Height
+
+	const AkF32 MAX_ALPHA = 1.0f;
+	const AkF32 MAX_HEIGHT = 30.0f;
+	AkF32 MIN_HEIGHT = 0.0f;
+
+	AkU8* _pHeightMapImg = nullptr;
+
+	Vector2 _vTexScale = Vector2(1.0f);
 };
 

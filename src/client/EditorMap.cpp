@@ -77,10 +77,15 @@ void EditorMap::FinalUpdate()
 
 	ImGui::Begin("Map Editor");
 	ImGui::Checkbox("FPV", &_bFPV);
-	if (ImGui::Button("Load"))
-		Load();
-	if (ImGui::Button("Save"))
-		Save();
+	if (ImGui::Button("Load Height"))
+		_pTerrainEdit->LoadHeightMap(L"Test");
+	if (ImGui::Button("Save Height"))
+		_pTerrainEdit->SaveHeightMap(L"Test");
+	if (ImGui::Button("Load Splatting"))
+		_pTerrainEdit->LoadSplatingTexture(L"Splating");
+	if (ImGui::Button("Save Splatting"))
+		_pTerrainEdit->SaveSplatingTexture(L"Splating");
+
 	ImGui::End();
 }
 
@@ -95,16 +100,12 @@ void EditorMap::RenderShadow()
 
 void EditorMap::Load()
 {
-	_pTerrainEdit->Load(L"Test.map");
 
-	ImGui::Text("Load End");
 }
 
 void EditorMap::Save()
 {
-	_pTerrainEdit->Save(L"Test.map");
 
-	ImGui::Text("Save End");
 }
 
 void EditorMap::CleanUp()

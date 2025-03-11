@@ -24,19 +24,20 @@ public:
     void DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
     void DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
-    virtual void CreateStaticMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
+    virtual AkBool CreateStaticMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
     virtual void* CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
     virtual void SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename, const wchar_t* wcNormalFilename, const wchar_t* wcEmissvieFilename, const wchar_t* wcMetallicFilename, const wchar_t* wcRoughnessFilename, const wchar_t* wcAOFilename) override;
     virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) override;
     virtual void EnableWireFrame() override { _bIsWire = AK_TRUE; }
     virtual void DisableWireFrame() override { _bIsWire = AK_FALSE; }
+    virtual void DestoryDynamicVertexBuferHandle(void* pDVHandle);
     virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
     virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
     virtual ULONG __stdcall Release(void) override;
 
 protected:
     void CleanUp();
-    virtual DynamicVertexHandle_t* CreateVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
+    virtual DynamicVertexHandle_t* CreateDynamicVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
     virtual AkBool CreateCommonResources();
     virtual AkBool CreateRootSignature();
     virtual AkBool CreatePipelineState();

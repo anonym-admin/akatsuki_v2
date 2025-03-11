@@ -1,14 +1,7 @@
 #include "pch.h"
 #include "Actor.h"
-#include "GameInput.h"
 #include "Application.h"
-#include "RigidBody.h"
-#include "Gravity.h"
 #include "Camera.h"
-#include "BoxCollider.h"
-#include "SphereColiider.h"
-#include "CapsuleCollider.h"
-#include "Animation.h"
 
 /*
 =========
@@ -42,6 +35,12 @@ Collider* Actor::CreateSphereCollider(AkF32 fRadius, AkU32 uStack, AkU32 uSlice,
 Collider* Actor::CreateCapsuleCollider(AkF32 fRadius, AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
 {
 	_pCollider = new CapsuleCollider(this, fRadius, fHeight, uStack, uSlice, pColor);
+	return _pCollider;
+}
+
+Collider* Actor::CreateSquareCollider()
+{
+	_pCollider = new SquareCollider(this);
 	return _pCollider;
 }
 
