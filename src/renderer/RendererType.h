@@ -14,6 +14,7 @@ enum class CONSTANT_BUFFER_TYPE
 	CONSTANT_BUFFER_TYPE_LINE,
 	CONSTANT_BUFFER_TYPE_MATERIAL,
 	CONSTANT_BUFFER_TYPE_SPRITE,
+	CONSTANT_BUFFER_TYPE_TERRAIN_BRUSH,
 	CONSTANT_BUFFER_TYPE_COUNT
 };
 
@@ -103,6 +104,14 @@ struct SpriteConstantBuffer_t
 	Vector3 vFontColor;
 };
 
+struct BrushConstantBuffer_t // Terrain.h
+{
+	AkI32 iType = 0;
+	Vector3 vPos = Vector3(0.0f);
+	AkF32 fRange = 10.0f;
+	Vector3 vColor = Vector3(0.0f, 0.5f, 0.0f);
+};
+
 struct TextureHandle_t
 {
 	ID3D12Resource* pTextureResource = nullptr;
@@ -136,4 +145,12 @@ struct FontHandle_t
 	IDWriteTextFormat* pTextFormat;
 	float fFontSize;
 	WCHAR wchFontFamilyName[512];
+};
+
+struct DynamicVertexHandle_t
+{
+	ID3D12Resource* pUploadBuffer = nullptr;
+	AkU32 uSizePerVertex = 0;
+	AkU32 uVertexNum = 0;
+	AkBool bUpdated = AK_FALSE;
 };

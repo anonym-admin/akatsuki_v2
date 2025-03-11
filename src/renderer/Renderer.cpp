@@ -16,6 +16,7 @@
 #include "SkyboxObject.h"
 #include "LineObject.h"
 #include "BillboardObject.h"
+#include "TerrainObject.h"
 #include "PostProcess.h"
 
 // For ImGui;
@@ -289,8 +290,8 @@ void FRenderer::BeginRender()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart());
 
 	// Render taget Å¬¸®¾î
-	const AkF32 fClearColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	pCmdList->ClearRenderTargetView(hRTVHeap, fClearColor, 0, nullptr);
+	// const AkF32 fClearColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+	pCmdList->ClearRenderTargetView(hRTVHeap, _pRTVClearColor, 0, nullptr);
 	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	pCmdListPool->CloseAndExecute(_pCmdQueue);
@@ -513,6 +514,13 @@ IBillboard* FRenderer::CreateBillboards()
 	return pBillboard;
 }
 
+ITerrain* FRenderer::CreateTerrain()
+{
+	FTerrainObject* pTerrainObj = new FTerrainObject;
+	pTerrainObj->Initialize(this);
+	return pTerrainObj;
+}
+
 void* FRenderer::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB)
 {
 	TextureHandle_t* pTexHandle = _pTextureManager->CreateTextureFromFile(wcFilename, bUseSRGB);
@@ -620,6 +628,15 @@ void FRenderer::DestroyTexture(void* pTexHandle)
 void FRenderer::DestroyFontObject(void* pFontHandle)
 {
 	_pFontManager->DeleteFontObject(reinterpret_cast<FontHandle_t*>(pFontHandle));
+}
+
+void FRenderer::DestroyDynamicVertex(void* pDVHandle)
+{
+	// TODO
+	if (pDVHandle)
+	{
+		delete pDVHandle;
+	}
 }
 
 void FRenderer::RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
@@ -817,6 +834,23 @@ void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat,
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
+void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ;
+	tItem.pObjHandle = pTerrain;
+	tItem.tTerrianParam.pWorld = pWorldMat;
+	tItem.tTerrianParam.pBrush = pBrush;
+
+	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	{
+		__debugbreak();
+	}
+
+	_uCurThreadIndex++;
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+}
+
 void FRenderer::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)
 {
 	_vCamPos.x = fX;
@@ -950,6 +984,43 @@ AkBool FRenderer::MousePickingToPlane(DirectX::SimpleMath::Plane* pPlane, AkF32 
 		*pHitDist = fHitDist;
 		*pRatio = fHitDist / fRayLength;
 
+		return AK_TRUE;
+	}
+
+	return AK_FALSE;
+}
+
+AkBool FRenderer::MousePickingToTriangle(Vector3* pV0, Vector3* pV1, Vector3* pV2, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio)
+{
+	DirectX::SimpleMath::Ray tRay = {};
+	AkF32 fRayLength = 0.0f;
+	CalculateMousePickingRayCast(fNdcX, fNdcY, &tRay, &fRayLength);
+
+	AkF32 fHitDist = 0.0f;
+	if (tRay.Intersects(*pV0, *pV1, *pV2, fHitDist))
+	{
+		*pHitPos = tRay.position + fHitDist * tRay.direction;
+		*pHitDist = fHitDist;
+		*pRatio = fHitDist / fRayLength;
+
+		return AK_TRUE;
+	}
+
+	return AK_FALSE;
+}
+
+AkBool FRenderer::MousePickingToSqaure(Vector3* pV0, Vector3* pV1, Vector3* pV2, Vector3* pV3, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio)
+{
+	// v0 -> v1 -> v2
+	AkBool bPick = MousePickingToTriangle(pV0, pV1, pV2, fNdcX, fNdcY, pHitPos, pHitDist, pRatio);
+	if (bPick)
+	{
+		return AK_TRUE;
+	}
+	// v0 -> v2 -> v3
+	bPick = MousePickingToTriangle(pV0, pV2, pV3, fNdcX, fNdcY, pHitPos, pHitDist, pRatio);
+	if (bPick)
+	{
 		return AK_TRUE;
 	}
 
@@ -1797,6 +1868,24 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 		// Projection Matrix.
 		_pShadowOrthoProj[i] = XMMatrixOrthographicOffCenterLH(fMinX, fMaxX, fMinY, fMaxY, fMinZ, fMaxZ);
 	}
+}
+
+void FRenderer::UpdateDynamicVertices(void* pDVHandle, const MeshData_t* pMeshData, AkU32 uMeshDataNum)
+{
+	DynamicVertexHandle_t* pDynamicVertexHandle = (DynamicVertexHandle_t*)pDVHandle;
+	ID3D12Resource* pUploadBuffer = pDynamicVertexHandle->pUploadBuffer;
+	AkU32 uSizePerVertex = pDynamicVertexHandle->uSizePerVertex;
+	AkU32 uVertexNum = pDynamicVertexHandle->uVertexNum;
+
+	BYTE* pMappedPtr = nullptr;
+	CD3DX12_RANGE writeRange(0, 0);
+	HRESULT hr = pUploadBuffer->Map(0, &writeRange, reinterpret_cast<void**>(&pMappedPtr));
+	if (FAILED(hr))
+		__debugbreak();
+
+	memcpy(pMappedPtr, pMeshData->pVertices, uSizePerVertex * uVertexNum);
+
+	pUploadBuffer->Unmap(0, nullptr);
 }
 
 void FRenderer::DestroyDevice()

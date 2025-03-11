@@ -75,12 +75,15 @@ Editor* EditorManager::AddEditor(EDITOR_TYPE eType, Editor* pScene)
 Editor* EditorManager::BindCurrnetEditor(EDITOR_TYPE eType)
 {
     _pCurEditor = _pEditorList[(AkU32)eType];
+    if (_pCurEditor)
+        _pCurEditor->BeginEditor();
     _eType = eType;
     return _pCurEditor;
 }
 
 void EditorManager::UnBindCurrentEditor()
 {
+    _pCurEditor->EndEditor();
     _pCurEditor = nullptr;
 }
 

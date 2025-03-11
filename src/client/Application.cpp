@@ -5,13 +5,12 @@
 #include "PanelUI.h"
 #include "BtnUI.h"
 #include "InputUI.h"
-
 #include "SceneInGame.h"
 #include "SceneLoading.h"
 #include "EditorModel.h"
 #include "EditorMap.h"
-
 #include "Collider.h"
+#include "Terrain.h"
 
 #include "Sound.h"
 
@@ -72,11 +71,11 @@ void Application::RunApplication()
 {
 	GTimer->Tick();
 
-	//// Start the Dear ImGui frame
-	//ImGui_ImplDX12_NewFrame();
-	//ImGui_ImplWin32_NewFrame();
-	//ImGui::NewFrame();
-	//ImGuiIO& io = ImGui::GetIO();
+	// Start the Dear ImGui frame
+	ImGui_ImplDX12_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+	ImGuiIO& io = ImGui::GetIO();
 
 	// Update.
 	Update();
@@ -98,8 +97,8 @@ void Application::RunApplication()
 	// Render.
 	Render();
 
-	//// ImGui Render.
-	//ImGui::Render();
+	// ImGui Render.
+	ImGui::Render();
 
 	// End render.
 	GRenderer->EndRender();
@@ -125,8 +124,10 @@ AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 
 void Application::CleanUp()
 {
-	// GRenderer->UnBindImGui();
-
+	if (GImGui)
+	{
+		GRenderer->UnBindImGui();
+	}
 	if (GRenderer)
 	{
 		GRenderer->Release();
@@ -141,7 +142,7 @@ void Application::CleanUp()
 	}
 }
 
-AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV)
+AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, AkBool bEnableImGui)
 {
 	const wchar_t* wcRendererDLLFilename = nullptr;
 
@@ -189,7 +190,8 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 
 	GRenderer = pRenderer;
 
-	// GRenderer->BindImGui((void**)&GImGui);
+	if(bEnableImGui)
+		GRenderer->BindImGui((void**)&GImGui);
 
 	return AK_TRUE;
 }
@@ -324,7 +326,7 @@ void Application::UpdateEnviroment()
 		if (_bChangeEditor)
 		{
 			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
-			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_MODEL;
+			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_MAP;
 		}
 		else
 		{
@@ -333,9 +335,11 @@ void Application::UpdateEnviroment()
 		}
 		GEventManager->AddEvent(&tEvent);
 	}
+	// For Debug
 	if (KEY_DOWN(KEY_INPUT_F2))
 	{
 		Collider::DRAW_COLLIDER = !Collider::DRAW_COLLIDER;
+		Terrain::DRAW_WIRE = !Terrain::DRAW_WIRE;
 	}
 
 	// TODO!!

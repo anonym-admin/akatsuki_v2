@@ -8,6 +8,7 @@ enum class RENDER_ITEM_TYPE
 	RENDER_ITEM_TYPE_SPRITE_OBJ,
 	RENDER_ITEM_TYPE_LINE_OBJ,
 	RENDER_ITEM_TYPE_BILLBOARD,
+	RENDER_ITEM_TYPE_TERRAIN_OBJ,
 };
 
 struct RenderMeshObjParam_t
@@ -55,6 +56,12 @@ struct RenderBillboardParam_t
 	void* pTexHandle = nullptr;
 };
 
+struct RenderTerrainParam_t
+{
+	const Matrix* pWorld = nullptr;
+	void* pBrush = nullptr;
+};
+
 struct RenderItem_t
 {
 	RENDER_ITEM_TYPE eItemType = {};
@@ -67,6 +74,7 @@ struct RenderItem_t
 		RenderSpriteObjParam_t tSpriteObjParam;
 		RenderLineObjParam_t tLineObjParam;
 		RenderBillboardParam_t tBillboardParam;
+		RenderTerrainParam_t tTerrianParam;
 	};
 };
 

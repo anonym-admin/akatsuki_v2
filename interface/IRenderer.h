@@ -49,6 +49,17 @@ interface IBillboard : public IUnknown
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };
 
+interface ITerrain : public IUnknown
+{
+	virtual void* CreateDynamicMeshBuffers(MeshData_t * pMeshData, AkU32 uMeshDataNum) = 0;
+	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;
+	virtual void EnableWireFrame() = 0;
+	virtual void DisableWireFrame() = 0;
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
+	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
+	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
+};
+
 interface IRenderer : public IUnknown
 {
 	virtual AkBool Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnableGBV) = 0;
@@ -64,6 +75,7 @@ interface IRenderer : public IUnknown
 	virtual ISkybox* CreateSkyboxObject() = 0;
 	virtual ILineObject* CreateLineObject() = 0;
 	virtual IBillboard* CreateBillboards() = 0;
+	virtual ITerrain* CreateTerrain() = 0;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB) = 0;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) = 0;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) = 0;
@@ -74,8 +86,11 @@ interface IRenderer : public IUnknown
 	virtual AkBool WriteTextToBitmap(AkU8* pDestImage, AkU32 uDestWidth, AkU32 uDestHeight, AkU32 uDestPitch, AkI32* pWidth, AkI32* pHeight, void* pFontHandle, const wchar_t* wcText, AkU32 uTextLength, FONT_COLOR_TYPE eFontColor = FONT_COLOR_TYPE::FONT_COLOR_TYPE_WHITE) = 0;
 	virtual AkBool UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight) = 0;
 	virtual void UpdateTextureWidthImage(void* pTexHandle, const AkU8* pSrcImage, AkU32 uSrcWidth, AkU32 uSrcHeight) = 0;
+	virtual void UpdateCascadeOrthoProjMatrix() = 0;
+	virtual void UpdateDynamicVertices(void* pDVHandle, const MeshData_t* pMeshData, AkU32 uMeshDataNum) = 0;
 	virtual void DestroyTexture(void* pTexHandle) = 0;
 	virtual void DestroyFontObject(void* pFontHandle) = 0;
+	virtual void DestroyDynamicVertex(void* pDVHandle) = 0;
 	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
@@ -87,6 +102,7 @@ interface IRenderer : public IUnknown
 	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) = 0;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle) = 0;
+	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) = 0;
 	virtual void RotateXCamera(AkF32 fRadian) = 0;
 	virtual void RotateYCamera(AkF32 fRadian) = 0;
@@ -101,12 +117,12 @@ interface IRenderer : public IUnknown
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) = 0;
 	virtual void GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat) = 0;
 	virtual AkBool MousePickingToPlane(DirectX::SimpleMath::Plane* pPlane, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
+	virtual AkBool MousePickingToTriangle(Vector3* pV0, Vector3* pV1, Vector3* pV2, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
+	virtual AkBool MousePickingToSqaure(Vector3* pV0, Vector3* pV1, Vector3* pV2, Vector3* pV3, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
 	virtual AkBool MousePickingToSphere(DirectX::BoundingSphere* pSphere, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
 	virtual AkBool MousePickingToBox(DirectX::BoundingBox* pBox, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
 	virtual void GetFrustum(AkPlane_t* ppOutPlane) = 0;
 	virtual void SetVSync(AkBool bUseVSync) = 0;
-
-	virtual void UpdateCascadeOrthoProjMatrix() = 0;
 
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;

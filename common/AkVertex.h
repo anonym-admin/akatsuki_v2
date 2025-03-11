@@ -2,6 +2,7 @@
 
 #include "AkType.h"
 #include <directxtk/SimpleMath.h>
+#include <directxmesh.h>
 
 using DirectX::SimpleMath::Quaternion;
 using DirectX::SimpleMath::Matrix;

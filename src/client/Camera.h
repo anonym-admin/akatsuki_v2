@@ -17,6 +17,7 @@ public:
 
 	AkBool Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll);
 	void Update();
+	void UpdateEditor();
 	void Render();
 	void SetOwner(Actor* pOwner);
 	void ToggleViewMode();
@@ -28,6 +29,7 @@ private:
 	void MoveFree();
 	void MoveEditor();
 	void MoveFollow();
+	void RotateFree();
 	void RotateEditor();
 	void RotateFollow();
 

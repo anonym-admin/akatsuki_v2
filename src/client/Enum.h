@@ -29,6 +29,7 @@ enum class GAME_OBJECT_GROUP_TYPE
 	BULLET,
 	CASING,
 	TREE,
+	TERRAIN,
 	COUNT = 32,
 };
 

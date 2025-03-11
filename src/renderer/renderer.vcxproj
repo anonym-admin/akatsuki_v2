@@ -196,6 +196,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3DUtils.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="TerrainObject.cpp" />
     <ClCompile Include="PostProcess.cpp" />
     <ClCompile Include="LineObject.cpp" />
     <ClCompile Include="pch.cpp">
@@ -234,6 +235,7 @@
     <ClInclude Include="DescriptorPool.h" />
     <ClInclude Include="DescriptorAllocator.h" />
     <ClInclude Include="FontManager.h" />
+    <ClInclude Include="TerrainObject.h" />
     <ClInclude Include="PostProcess.h" />
     <ClInclude Include="LineObject.h" />
     <ClInclude Include="pch.h" />
@@ -284,6 +286,11 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\shader\TerrainEditorShader.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>

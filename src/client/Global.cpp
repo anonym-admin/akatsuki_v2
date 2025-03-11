@@ -32,7 +32,7 @@ class UGlobal
 public:
 	UGlobal()
 	{
-		GWindow = new Window(L"Simple Engine", L"Window Program");
+		GWindow = new Window(L"Akatsuki Engine v1.0", L"Window Program");
 		GTimer = new Timer;
 		GGameInput = new GameInput;
 		GAssetManager = new AssetManager;

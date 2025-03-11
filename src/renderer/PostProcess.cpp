@@ -50,8 +50,8 @@ void FPostProcess::ApplyPostProcess(AkU32 uThreadIndex, ID3D12GraphicsCommandLis
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
 	AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
 
-	const AkF32 fClearColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	pCmdList->ClearRenderTargetView(hBackBufferRTV, fClearColor, 0, nullptr);
+	// const AkF32 fClearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	pCmdList->ClearRenderTargetView(hBackBufferRTV, _pRenderer->GetRTVClearColor(), 0, nullptr);
 
 	pCmdList->RSSetViewports(1, pViewport);
 	pCmdList->RSSetScissorRects(1, pScissorRect);

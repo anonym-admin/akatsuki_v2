@@ -25,9 +25,6 @@
     <Filter Include="src\comp">
       <UniqueIdentifier>{c67deb61-b962-43cd-b726-242ae58bf3ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\app">
-      <UniqueIdentifier>{3b47a064-7380-42a4-900f-252e1b07cf19}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\landscape">
       <UniqueIdentifier>{64bb799a-e6d5-4b38-a736-bb361d37d4e1}</UniqueIdentifier>
     </Filter>
@@ -76,19 +73,31 @@
     <Filter Include="src\comp\anim">
       <UniqueIdentifier>{faf9db47-cc97-42e2-b9ea-5e290c83bce4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\obj\utils">
+    <Filter Include="src\framework\app">
+      <UniqueIdentifier>{3b47a064-7380-42a4-900f-252e1b07cf19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\obj\landscape">
+      <UniqueIdentifier>{81ca60d3-7522-4928-b614-b1efca4c5c1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
       <UniqueIdentifier>{fe4502e9-1056-43d7-bd17-924de2973b1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\obj\human">
+      <UniqueIdentifier>{d79c5a75-fb05-44cc-b647-bd0aba73e768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\obj\field">
+      <UniqueIdentifier>{b3a00020-5464-49ba-a305-e90eba4a7c96}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\HashTable.h">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\LinkedList.h">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\ProcessInfo.h">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>src\comp\anim</Filter>
@@ -106,7 +115,7 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\UtilFunc.h">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>src\scene</Filter>
@@ -126,14 +135,11 @@
     <ClInclude Include="Actor.h">
       <Filter>src\obj</Filter>
     </ClInclude>
-    <ClInclude Include="Dancer.h">
-      <Filter>src\obj</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>src\model</Filter>
     </ClInclude>
     <ClInclude Include="Application.h">
-      <Filter>src\app</Filter>
+      <Filter>src\framework\app</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>src\framework</Filter>
@@ -172,7 +178,7 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\RedBlackTree.h">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="TextUI.h">
       <Filter>src\ui</Filter>
@@ -187,10 +193,10 @@
       <Filter>src\mgr</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\Queue.h">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\Stack.h">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="WorldMap.h">
       <Filter>src\map</Filter>
@@ -229,9 +235,6 @@
       <Filter>src\model</Filter>
     </ClInclude>
     <ClInclude Include="Spawn.h">
-      <Filter>src\obj</Filter>
-    </ClInclude>
-    <ClInclude Include="Swat.h">
       <Filter>src\obj</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -285,9 +288,6 @@
     <ClInclude Include="CapsuleCollider.h">
       <Filter>src\comp\collider</Filter>
     </ClInclude>
-    <ClInclude Include="Container.h">
-      <Filter>src\obj</Filter>
-    </ClInclude>
     <ClInclude Include="Casing.h">
       <Filter>src\obj\weapon</Filter>
     </ClInclude>
@@ -298,18 +298,30 @@
       <Filter>src\model</Filter>
     </ClInclude>
     <ClInclude Include="TreeBillboards.h">
-      <Filter>src\obj</Filter>
+      <Filter>src\obj\landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>src\obj\landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Dancer.h">
+      <Filter>src\obj\human</Filter>
+    </ClInclude>
+    <ClInclude Include="Swat.h">
+      <Filter>src\obj\human</Filter>
+    </ClInclude>
+    <ClInclude Include="Container.h">
+      <Filter>src\obj\field</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\LinkedList.cpp">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\ProcessInfo.cpp">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="EntryPoint.cpp">
       <Filter>src\entry</Filter>
@@ -318,7 +330,7 @@
       <Filter>src\comp\anim</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\UtilFunc.cpp">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>src\scene</Filter>
@@ -338,14 +350,11 @@
     <ClCompile Include="Actor.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
-    <ClCompile Include="Dancer.cpp">
-      <Filter>src\obj</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>src\model</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
-      <Filter>src\app</Filter>
+      <Filter>src\framework\app</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>src\framework</Filter>
@@ -381,7 +390,7 @@
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\RedBlackTree.cpp">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="TextUI.cpp">
       <Filter>src\ui</Filter>
@@ -396,10 +405,10 @@
       <Filter>src\mgr</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\Queue.cpp">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\Stack.cpp">
-      <Filter>src\obj\utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="WorldMap.cpp">
       <Filter>src\map</Filter>
@@ -429,9 +438,6 @@
       <Filter>src\model</Filter>
     </ClCompile>
     <ClCompile Include="Spawn.cpp">
-      <Filter>src\obj</Filter>
-    </ClCompile>
-    <ClCompile Include="Swat.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
@@ -479,9 +485,6 @@
     <ClCompile Include="SphereColiider.cpp">
       <Filter>src\comp\collider</Filter>
     </ClCompile>
-    <ClCompile Include="Container.cpp">
-      <Filter>src\obj</Filter>
-    </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>src\obj\weapon</Filter>
     </ClCompile>
@@ -491,8 +494,20 @@
     <ClCompile Include="BillboardModel.cpp">
       <Filter>src\model</Filter>
     </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>src\obj\landscape</Filter>
+    </ClCompile>
     <ClCompile Include="TreeBillboards.cpp">
-      <Filter>src\obj</Filter>
+      <Filter>src\obj\landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Dancer.cpp">
+      <Filter>src\obj\human</Filter>
+    </ClCompile>
+    <ClCompile Include="Swat.cpp">
+      <Filter>src\obj\human</Filter>
+    </ClCompile>
+    <ClCompile Include="Container.cpp">
+      <Filter>src\obj\field</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

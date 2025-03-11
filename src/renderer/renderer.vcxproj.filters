@@ -127,6 +127,9 @@
     <ClCompile Include="BillboardObject.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -225,6 +228,9 @@
     <ClInclude Include="BillboardObject.h">
       <Filter>src\obj</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\BasicShader.hlsl">
@@ -249,6 +255,9 @@
       <Filter>shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\TerrainEditorShader.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
   </ItemGroup>

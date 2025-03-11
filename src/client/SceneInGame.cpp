@@ -10,6 +10,7 @@
 #include "BRS_74.h"
 #include "Container.h"
 #include "TreeBillboards.h"
+#include "Terrain.h"
 
 /*
 =============
@@ -27,13 +28,21 @@ AkBool SceneInGame::BeginScene()
 	// Set IBL Strength
 	GRenderer->SetIBLStrength(0.25f);
 
+	// Terrain
+	{
+		Terrain* pTerrain = new Terrain;
+		pTerrain->Name = L"Terrain";
+		pTerrain->tLink.pData = pTerrain;
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::TERRAIN, pTerrain);
+	}
+
 	// Player.A
 	{
-		Swat* pSwat = new Swat();
+		Swat* pSwat = new Swat;
 		pSwat->Name = L"Swat";
 		pSwat->tLink.pData = pSwat;
 		pSwat->GetTransform()->SetRotation(DirectX::XM_PI, 0.0f, 0.0f);
-		pSwat->GetTransform()->SetPosition(-3.0f, 1.5f, 1025.0f);
+		pSwat->GetTransform()->SetPosition(-3.0f, 10.5f, 0.0f);
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pSwat);
 	}
 

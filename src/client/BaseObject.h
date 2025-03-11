@@ -28,8 +28,11 @@ public:
 protected:
 	Model* CreateModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned);
 	Model* CreateModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned);
-	Model* CreateBillboardModel(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum);
 	Transform* CreateTransform();
+
+
+
+	Model* CreateBillboardModel(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum); // 삭제 진행 => Billboard 모델을 없애고 Actor 에서 자체적으로 생성.
 
 private:
 	void CleanUp();

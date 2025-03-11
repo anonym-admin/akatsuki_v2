@@ -57,6 +57,15 @@ void Camera::Update()
 	}
 }
 
+void Camera::UpdateEditor()
+{
+	ImGui::Begin("Camera");
+	ImGui::Text("Position: %lf %lf %lf", _pTransform->GetPosition().x, _pTransform->GetPosition().y, _pTransform->GetPosition().z);
+	ImGui::Text("YawPitchRoll: %lf %lf %lf", _pTransform->GetRotation().x, _pTransform->GetRotation().y, _pTransform->GetRotation().z);
+	ImGui::SliderFloat("Speed", &_fSpeed, 0.0f, 100.0f);
+	ImGui::End();
+}
+
 void Camera::Render()
 {
 
@@ -148,7 +157,7 @@ void Camera::RotateEditor()
 {
 	Vector3 vYawPitchRoll = Vector3(0.0f);
 
-	vYawPitchRoll.x = NDC_ACC_X * DirectX::XM_PI; // Yaw
+	vYawPitchRoll.x = NDC_X * DirectX::XM_PI; // Yaw
 	vYawPitchRoll.y = -NDC_Y * DirectX::XM_PIDIV2; // Pitch
 
 	SetRotation(&vYawPitchRoll);

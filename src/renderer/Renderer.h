@@ -44,6 +44,7 @@ public:
 	virtual ISkybox* CreateSkyboxObject() override;
 	virtual ILineObject* CreateLineObject() override;
 	virtual IBillboard* CreateBillboards() override;
+	virtual ITerrain* CreateTerrain() override;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB) override;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) override;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) override;
@@ -55,8 +56,10 @@ public:
 	virtual AkBool UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight) override;
 	virtual void UpdateTextureWidthImage(void* pTexHandle, const AkU8* pSrcImage, AkU32 uSrcWidth, AkU32 uSrcHeight) override;
 	virtual void UpdateCascadeOrthoProjMatrix() override;
+	virtual void UpdateDynamicVertices(void* pDVHandle, const MeshData_t* pMeshData, AkU32 uMeshDataNum) override;
 	virtual void DestroyTexture(void* pTexHandle) override;
 	virtual void DestroyFontObject(void* pFontHandle) override;
+	virtual void DestroyDynamicVertex(void* pDVHandle) override;
 	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
@@ -68,6 +71,7 @@ public:
 	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) override;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) override;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle) override;
+	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
 	virtual void RotateXCamera(AkF32 fRadian) override;
 	virtual void RotateYCamera(AkF32 fRadian) override;
 	virtual void RotateYawPitchRollCamera(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll) override;
@@ -84,6 +88,8 @@ public:
 	virtual void GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat) override;
 	virtual void GetFrustum(AkPlane_t* ppOutPlane) override;
 	virtual AkBool MousePickingToPlane(DirectX::SimpleMath::Plane* pPlane, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
+	virtual AkBool MousePickingToTriangle(Vector3* pV0, Vector3* pV1, Vector3* pV2, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
+	virtual AkBool MousePickingToSqaure(Vector3* pV0, Vector3* pV1, Vector3* pV2, Vector3* pV3, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
 	virtual AkBool MousePickingToSphere(DirectX::BoundingSphere* pSphere, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
 	virtual AkBool MousePickingToBox(DirectX::BoundingBox* pBox, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
 
@@ -112,6 +118,7 @@ public:
 	DXGI_FORMAT GetBackBufferRTVFormat() { return _tBackBufferFormat; }
 	DXGI_FORMAT GetFloatRTVFormat() { return _tResolvedBufferFormat; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetFloatBufferSrvCpu() { return _hResolvedBufferSrvCpu; }
+	AkF32* GetRTVClearColor() { return _pRTVClearColor; }
 
 	void EnsureCompleted();
 
@@ -208,6 +215,7 @@ private:
 	AkF32 _fNear = 0.1f;
 	AkF32 _fFar = 1000.0f;
 	AkBool _bFullScreen = AK_FALSE;
+	AkF32 _pRTVClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	volatile AkU32 _uActiveThreadCount = 0;
 	TextureHandle_t* _pIrradianceIBLTexHandle = nullptr;
 	TextureHandle_t* _pSpecularIBLTexHandle = nullptr;

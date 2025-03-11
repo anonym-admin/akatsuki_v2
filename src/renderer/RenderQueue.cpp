@@ -7,6 +7,7 @@
 #include "SkyboxObject.h"
 #include "LineObject.h"
 #include "BillboardObject.h"
+#include "TerrainObject.h"
 
 /*
 ==============
@@ -158,6 +159,18 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 			{
 				FBillboardObjects* pBillboards = (FBillboardObjects*)pItem->pObjHandle;
 				pBillboards->Draw(uThreadIndex, pCmdList, pItem->tBillboardParam.pWorld, pItem->tBillboardParam.pTexHandle); // replace line obj param.
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ:
+			{
+				FTerrainObject* pTerrainObj = (FTerrainObject*)pItem->pObjHandle;
+				pTerrainObj->Draw(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld, pItem->tTerrianParam.pBrush);
+
+				// Draw normal.
+				if (pItem->tMeshObjParam.bDrawNormal)
+				{
+					pTerrainObj->DrawNormal(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
+				}
 			}
 			break;
 			default:

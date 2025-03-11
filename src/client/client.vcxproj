@@ -228,6 +228,7 @@
     <ClInclude Include="Spawn.h" />
     <ClInclude Include="SphereColiider.h" />
     <ClInclude Include="Swat.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="TextUI.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
@@ -304,6 +305,7 @@
     <ClCompile Include="Spawn.cpp" />
     <ClCompile Include="SphereColiider.cpp" />
     <ClCompile Include="Swat.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Dancer.cpp" />
