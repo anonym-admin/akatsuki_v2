@@ -52,3 +52,12 @@ struct BillboardVertex_t
 	Vector3 vPosition = Vector3(0.0f);
 	Vector2 vSize = Vector2(1.0f);
 };
+
+struct TerrainVertex_t
+{
+	Vector3 vPosition = Vector3(0.0f);
+	Vector3 vNormalModel = Vector3(0.0f);
+	Vector2 vTexCoord = Vector2(0.0f);
+	Vector3 vTangentModel = Vector3(0.0f);
+	AkF32 pAlpha[4] = {};
+};

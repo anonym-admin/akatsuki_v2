@@ -76,24 +76,28 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ:
 			{
 				FBasicMeshObject* pMeshObj = (FBasicMeshObject*)pItem->pObjHandle;
-				pMeshObj->Draw(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
-
 				// Draw normal.
 				if (pItem->tMeshObjParam.bDrawNormal)
 				{
 					pMeshObj->DrawNormal(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
+				}
+				else
+				{
+					pMeshObj->Draw(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
 				}
 			}
 			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ:
 			{
 				FSkinnedMeshObject* pMeshObj = (FSkinnedMeshObject*)pItem->pObjHandle;
-				pMeshObj->Draw(uThreadIndex, pCmdList, pItem->tSkinnedMeshObjParam.pWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
-
 				// Draw normal with skinned mesh obj.
 				if (pItem->tSkinnedMeshObjParam.bDrawNormal)
 				{
 					pMeshObj->DrawNormal(uThreadIndex, pCmdList, pItem->tSkinnedMeshObjParam.pWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
+				}
+				else
+				{
+					pMeshObj->Draw(uThreadIndex, pCmdList, pItem->tSkinnedMeshObjParam.pWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
 				}
 			}
 			break;
@@ -164,12 +168,14 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ:
 			{
 				FTerrainObject* pTerrainObj = (FTerrainObject*)pItem->pObjHandle;
-				pTerrainObj->Draw(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld, pItem->tTerrianParam.pBrush);
-
 				// Draw normal.
-				if (pItem->tMeshObjParam.bDrawNormal)
+				if (pItem->tTerrianParam.bDrawNormal)
 				{
-					pTerrainObj->DrawNormal(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
+					pTerrainObj->DrawNormal(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld);
+				}
+				else
+				{
+					pTerrainObj->Draw(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld, pItem->tTerrianParam.pBrush);
 				}
 			}
 			break;

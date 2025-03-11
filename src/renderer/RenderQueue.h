@@ -60,6 +60,7 @@ struct RenderTerrainParam_t
 {
 	const Matrix* pWorld = nullptr;
 	void* pBrush = nullptr;
+	AkBool bDrawNormal = AK_FALSE;
 };
 
 struct RenderItem_t

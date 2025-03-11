@@ -228,6 +228,30 @@ void FTerrainObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdLis
 		}
 		hDest.Offset(1, uDescriptorSize);
 
+		// Second
+		pTexHandle = _pSecondTexHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Third
+		pTexHandle = _pThirdTexHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
 		// Irradiance IBL.
 		if (pIrradianceTexHandle)
 		{
@@ -443,123 +467,107 @@ void FTerrainObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matri
 	}
 }
 
-void* FTerrainObject::CreateDynamicMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDataNum)
+void FTerrainObject::CreateStaticMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
 {
-	if (uMeshDataNum != 1)
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
+}
 
-	FTextureManager* pTextureManager = _pRenderer->GetTextureManager();
+void* FTerrainObject::CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
+{
 	DynamicVertexHandle_t* pDVHandle = nullptr;
 
-	_pMeshes = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t) * uMeshDataNum));
-	_pMaterials = reinterpret_cast<MaterialConstantBuffer_t*>(malloc(sizeof(MaterialConstantBuffer_t) * uMeshDataNum));
+	_pMeshes = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
+	_uMeshNum = 1;
 
-	memset(_pMeshes, 0, sizeof(Mesh_t) * uMeshDataNum);
-	memset(_pMaterials, 0, sizeof(MaterialConstantBuffer_t) * uMeshDataNum);
+	memset(_pMeshes, 0, sizeof(Mesh_t));
 
-	_uMeshNum = uMeshDataNum;
+	return CreateVertexAndIndexBuffer(pVertices, uVerticeNum, pIndices, uIndiceNum);
+}
 
-	for (AkU32 i = 0; i < uMeshDataNum; i++)
+void FTerrainObject::SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename, const wchar_t* wcNormalFilename, const wchar_t* wcEmissvieFilename, const wchar_t* wcMetallicFilename, const wchar_t* wcRoughnessFilename, const wchar_t* wcAOFilename)
+{
+	FTextureManager* pTextureManager = _pRenderer->GetTextureManager();
+	_pMaterials = reinterpret_cast<MaterialConstantBuffer_t*>(malloc(sizeof(MaterialConstantBuffer_t)));
+
+	memset(_pMaterials, 0, sizeof(MaterialConstantBuffer_t));
+
+	// Second Tex
+	if (!wcSecondFilename)
 	{
-		pDVHandle = CreateVertexAndIndexBuffer(pMeshData, i);
-
-		// Albedo
-		if (!wcscmp(pMeshData[i].wcAlbedoTextureFilename, L""))
-		{
-			_pMeshes[i].pAldedoTextureHandle = pTextureManager->CreateNullTexture();
-		}
-		else
-		{
-			_pMeshes[i].pAldedoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcAlbedoTextureFilename, AK_TRUE));
-			_pMaterials[i].uUseAlbedoMap = AK_TRUE;
-		}
-		// Normal
-		if (!wcscmp(pMeshData[i].wcNormalTextureFilename, L""))
-		{
-			_pMeshes[i].pNormalTextureHandle = pTextureManager->CreateNullTexture();
-		}
-		else
-		{
-			_pMeshes[i].pNormalTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcNormalTextureFilename, AK_FALSE));
-			_pMaterials[i].uUseNormalMap = AK_TRUE;
-		}
-		// Emissive
-		if (!wcscmp(pMeshData[i].wcEmissiveTextureFilename, L""))
-		{
-			_pMeshes[i].pEmissiveTextureHandle = pTextureManager->CreateNullTexture();
-		}
-		else
-		{
-			_pMeshes[i].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcEmissiveTextureFilename, AK_TRUE));
-			_pMaterials[i].uUseEimissiveMap = AK_TRUE;
-		}
-		//// Height
-		//if (!wcscmp(pMeshData[i].wcHeightTextureFilename, L""))
-		//{
-		//	_pMeshes[i].pEmissiveTextureHandle = pTextureManager->CreateNullTexture();
-		//}
-		//else
-		//{
-		//	_pMeshes[i].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcHeightTextureFilename, AK_FALSE));
-		//}
-
-		// Metallic.
-		if (!wcscmp(pMeshData[i].wcMetallicTextureFilename, L""))
-		{
-			_pMeshes[i].pMetallicTextureHandle = pTextureManager->CreateNullTexture();
-		}
-		else
-		{
-			_pMeshes[i].pMetallicTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcMetallicTextureFilename, AK_FALSE));
-			_pMaterials[i].uUseMetallicMap = AK_TRUE;
-		}
-
-		// Roughness
-		if (!wcscmp(pMeshData[i].wcRoughnessTextureFilename, L""))
-		{
-			_pMeshes[i].pRoughnessTextureHandle = pTextureManager->CreateNullTexture();
-		}
-		else
-		{
-			_pMeshes[i].pRoughnessTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcRoughnessTextureFilename, AK_FALSE));
-			_pMaterials[i].uUseRoughnessMap = AK_TRUE;
-		}
-
-		// Ambient Occulusion
-		if (!wcscmp(pMeshData[i].wcAoTextureFilename, L""))
-		{
-			_pMeshes[i].pAoTextureHandle = pTextureManager->CreateNullTexture();
-		}
-		else
-		{
-			_pMeshes[i].pAoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcAoTextureFilename, AK_FALSE));
-			_pMaterials[i].uUseAOMap = AK_TRUE;
-		}
-
-		//// Opacity
-		//if (!wcscmp(pMeshData[i].wcOpacityTextureFilename, L""))
-		//{
-		//	_pMeshes[i].pEmissiveTextureHandle = pTextureManager->CreateNullTexture();
-		//}
-		//else
-		//{
-		//	_pMeshes[i].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcRoughnessTextureFilename, AK_FALSE));
-		//	_pMaterials[i].uUseEimissiveMap = AK_TRUE;
-		//}
-
-		//// For Debuging.
-		//printf("MeshObj Albedo [%p]\n", _pMeshes[i].pAldedoTextureHandle);
-		//printf("MeshObj Normal [%p]\n", _pMeshes[i].pNormalTextureHandle);
-		//printf("MeshObj Emissive [%p]\n", _pMeshes[i].pEmissiveTextureHandle);
-		//printf("MeshObj Metallic [%p]\n", _pMeshes[i].pMetallicTextureHandle);
-		//printf("MeshObj Roughness [%p]\n", _pMeshes[i].pRoughnessTextureHandle);
-		//printf("MeshObj AO [%p]\n", _pMeshes[i].pAoTextureHandle);
+		_pSecondTexHandle = pTextureManager->CreateNullTexture();
 	}
-
-	return pDVHandle;
+	else
+	{
+		_pSecondTexHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcSecondFilename, AK_TRUE));
+	}
+	// Third Tex
+	if (!wcThirdFilename)
+	{
+		_pThirdTexHandle = pTextureManager->CreateNullTexture();
+	}
+	else
+	{
+		_pThirdTexHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcThirdFilename, AK_TRUE));
+	}
+	// Albedo
+	if (!wcAlbedoFilename)
+	{
+		_pMeshes[0].pAldedoTextureHandle = pTextureManager->CreateNullTexture();
+	}
+	else
+	{
+		_pMeshes[0].pAldedoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcAlbedoFilename, AK_TRUE));
+		_pMaterials[0].uUseAlbedoMap = AK_TRUE;
+	}
+	// Normal
+	if (!wcNormalFilename)
+	{
+		_pMeshes[0].pNormalTextureHandle = pTextureManager->CreateNullTexture();
+	}
+	else
+	{
+		_pMeshes[0].pNormalTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcNormalFilename, AK_FALSE));
+		_pMaterials[0].uUseNormalMap = AK_TRUE;
+	}
+	// Emissive
+	if (!wcEmissvieFilename)
+	{
+		_pMeshes[0].pEmissiveTextureHandle = pTextureManager->CreateNullTexture();
+	}
+	else
+	{
+		_pMeshes[0].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcEmissvieFilename, AK_TRUE));
+		_pMaterials[0].uUseEimissiveMap = AK_TRUE;
+	}
+	// Metallic.
+	if (!wcMetallicFilename)
+	{
+		_pMeshes[0].pMetallicTextureHandle = pTextureManager->CreateNullTexture();
+	}
+	else
+	{
+		_pMeshes[0].pMetallicTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcMetallicFilename, AK_FALSE));
+		_pMaterials[0].uUseMetallicMap = AK_TRUE;
+	}
+	// Roughness
+	if (!wcRoughnessFilename)
+	{
+		_pMeshes[0].pRoughnessTextureHandle = pTextureManager->CreateNullTexture();
+	}
+	else
+	{
+		_pMeshes[0].pRoughnessTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcRoughnessFilename, AK_FALSE));
+		_pMaterials[0].uUseRoughnessMap = AK_TRUE;
+	}
+	// Ambient Occulusion
+	if (!wcAOFilename)
+	{
+		_pMeshes[0].pAoTextureHandle = pTextureManager->CreateNullTexture();
+	}
+	else
+	{
+		_pMeshes[0].pAoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcAOFilename, AK_FALSE));
+		_pMaterials[0].uUseAOMap = AK_TRUE;
+	}
 }
 
 AkBool FTerrainObject::UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor)
@@ -654,11 +662,21 @@ void FTerrainObject::CleanUp()
 		free(_pMaterials);
 		_pMaterials = nullptr;
 	}
+	if (_pSecondTexHandle)
+	{
+		_pRenderer->DestroyTexture(_pSecondTexHandle);
+		_pSecondTexHandle = nullptr;
+	}
+	if (_pThirdTexHandle)
+	{
+		_pRenderer->DestroyTexture(_pThirdTexHandle);
+		_pThirdTexHandle = nullptr;
+	}
 
 	DestroyCommonResources();
 }
 
-DynamicVertexHandle_t* FTerrainObject::CreateVertexAndIndexBuffer(MeshData_t* pMeshData, AkU32 uMeshDataIndex)
+DynamicVertexHandle_t* FTerrainObject::CreateVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
 {
 	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
 	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
@@ -667,23 +685,23 @@ DynamicVertexHandle_t* FTerrainObject::CreateVertexAndIndexBuffer(MeshData_t* pM
 	ID3D12Resource* pIndexBuffer = nullptr;
 	DynamicVertexHandle_t* pDVHandle = nullptr;
 
-	if (pResourceManager->CreateDynamicVertices(sizeof(Vertex_t), pMeshData[uMeshDataIndex].uVerticeNum, &tVBView, &pVertexBuffer))
+	if (pResourceManager->CreateDynamicVertices(sizeof(TerrainVertex_t), uVerticeNum, &tVBView, &pVertexBuffer))
 	{
-		_pMeshes[uMeshDataIndex].pVB = pVertexBuffer;
-		_pMeshes[uMeshDataIndex].tVBView = tVBView;
+		_pMeshes[0].pVB = pVertexBuffer;
+		_pMeshes[0].tVBView = tVBView;
 
 		pDVHandle = new DynamicVertexHandle_t;
 		pDVHandle->pUploadBuffer = pVertexBuffer;
-		pDVHandle->uSizePerVertex = sizeof(Vertex_t);
-		pDVHandle->uVertexNum = pMeshData[uMeshDataIndex].uVerticeNum;
+		pDVHandle->uSizePerVertex = sizeof(TerrainVertex_t);
+		pDVHandle->uVertexNum = uVerticeNum;
 	}
 
-	if (pResourceManager->CreateIndexBuffer(pMeshData[uMeshDataIndex].uIndicesNum, &tIBView, &pIndexBuffer, pMeshData[uMeshDataIndex].pIndices))
+	if (pResourceManager->CreateIndexBuffer(uIndiceNum, &tIBView, &pIndexBuffer, pIndices))
 	{
-		_pMeshes[uMeshDataIndex].pIB = pIndexBuffer;
-		_pMeshes[uMeshDataIndex].tIBView = tIBView;
-		_pMeshes[uMeshDataIndex].uVertexCountPerInstance = pMeshData[uMeshDataIndex].uVerticeNum;
-		_pMeshes[uMeshDataIndex].uIndexCountPerInstance = pMeshData[uMeshDataIndex].uIndicesNum;
+		_pMeshes[0].pIB = pIndexBuffer;
+		_pMeshes[0].tIBView = tIBView;
+		_pMeshes[0].uVertexCountPerInstance = uVerticeNum;
+		_pMeshes[0].uIndexCountPerInstance = uIndiceNum;
 	}
 
 	return pDVHandle;
@@ -725,7 +743,7 @@ AkBool FTerrainObject::CreateRootSignature()
 
 	CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[4] = {};
 	tRangesPerTriGroup[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2: Constant Buffer View per Mesh
-	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 6, 0);	// t0~t5 : Shader Resource View(Tex) per Mesh.
+	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0);	// t0~t5 : Shader Resource View(Tex) per Mesh.
 	tRangesPerTriGroup[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 11);	// t10, t11, t12, t13 : Shader Resource View(Tex) per Mesh. (IBL Texture)
 	tRangesPerTriGroup[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 15);	// t15, t16, t17, t18, t19 : Shadow Map
 
@@ -796,7 +814,7 @@ AkBool FTerrainObject::CreatePipelineState()
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/BasicShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pBasicVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/TerrainEditorShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pBasicVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -867,6 +885,7 @@ AkBool FTerrainObject::CreatePipelineState()
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,	0, 24,	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{ "ALPHA", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 	};
 
 	// Describe and create the graphics pipeline state object (PSO).

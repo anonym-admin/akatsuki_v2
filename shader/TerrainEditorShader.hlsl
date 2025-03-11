@@ -9,9 +9,32 @@ Texture2D metallicTex : register(t3);
 Texture2D roughnessTex : register(t4);
 Texture2D aoTex : register(t5);
 
+Texture2D secondTex : register(t6);
+Texture2D thirdTex : register(t7);
+
 static const float3 Fdielectric = 0.04; // 비금속(Dielectric) 재질의 F0
 
-float3 GetNormal(PSInput input)
+struct TerrainVSInput
+{
+    float3 posModel : POSITION;
+    float3 normalModel : NORMAL;
+    float2 texCoord : TEXCOORD;
+    float3 tangentModel : TANGENT;
+    float4 alpha : ALPHA;
+};
+
+struct TerrainPSInput
+{
+    float4 posProj : SV_POSITION;
+    float3 posWorld : POSITION0;
+    float3 posModel : POSITION1;
+    float3 normalWorld : NORMAL;
+    float2 texCoord : TEXCOORD;
+    float3 tangentWorld : TANGENT;
+    float4 alpha : ALPHA;
+};
+
+float3 GetNormal(TerrainPSInput input)
 {
     float3 normalWorld = normalize(input.normalWorld);
     
@@ -198,6 +221,27 @@ float3 LightRadiance(LightConsts light, float3 representativePoint, float3 posWo
     return radiance;
 }
 
+// Vertex Shader
+TerrainPSInput VSMain(TerrainVSInput input)
+{    
+    TerrainPSInput output;
+    
+    matrix vpMat = mul(view, proj); // view x proj
+    matrix wvpMat = mul(world, vpMat); // world x view x proj
+    
+    output.posModel = input.posModel;
+    
+    output.posWorld = mul(float4(input.posModel, 1.0), world);
+    
+    output.posProj = mul(float4(input.posModel, 1.0), wvpMat); // pojtected vertex = vertex x world x view x proj
+    output.normalWorld = mul(float4(input.normalModel, 0.0), worldIT).xyz;
+    output.texCoord = input.texCoord;
+    output.tangentWorld = mul(float4(input.tangentModel, 0.0), world).xyz;
+    output.alpha = input.alpha;
+    
+    return output;
+}
+
 cbuffer BrushConsts : register(b3)
 {
     uint type;
@@ -233,12 +277,17 @@ float3 BrushColor(float3 posWorld)
     return float3(0, 0, 0);
 }
 
-float4 PSMain(PSInput input) : SV_TARGET
+float4 PSMain(TerrainPSInput input) : SV_TARGET
 {
     float3 pixelToEye = normalize(eyeWorld - input.posWorld);
     float3 normalWorld = GetNormal(input);
     
     float4 albedo = useAlbedoMap ? albedoTex.Sample(linearWrapSS, input.texCoord) * float4(albedoFactor, 1.0) : float4(albedoFactor, 1.0);
+    float4 second = secondTex.Sample(linearWrapSS, input.texCoord);
+    float4 third = thirdTex.Sample(linearWrapSS, input.texCoord);
+    albedo = lerp(albedo, second, input.alpha.r);
+    albedo = lerp(albedo, third, input.alpha.g);
+    
     float ao = useAOMap ? aoTex.Sample(linearWrapSS, input.texCoord).r : 1.0;
     float metallic = useMetallicMap ? metallicTex.Sample(linearWrapSS, input.texCoord).r : metallicFactor;
     float roughness = useRoughnessMap ? roughnessTex.Sample(linearWrapSS, input.texCoord).r : roughnessFactor;

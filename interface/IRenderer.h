@@ -51,7 +51,9 @@ interface IBillboard : public IUnknown
 
 interface ITerrain : public IUnknown
 {
-	virtual void* CreateDynamicMeshBuffers(MeshData_t * pMeshData, AkU32 uMeshDataNum) = 0;
+	virtual void CreateStaticMeshBuffers(TerrainVertex_t * pVertices, AkU32 uVerticeNum, AkU32 * pIndices, AkU32 uIndiceNum) = 0;
+	virtual void* CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) = 0;
+	virtual void SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename = nullptr, const wchar_t* wcNormalFilename = nullptr, const wchar_t* wcEmissvieFilename = nullptr, const wchar_t* wcMetallicFilename = nullptr, const wchar_t* wcRoughnessFilename = nullptr, const wchar_t* wcAOFilename = nullptr) = 0;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;
 	virtual void EnableWireFrame() = 0;
 	virtual void DisableWireFrame() = 0;
@@ -87,7 +89,7 @@ interface IRenderer : public IUnknown
 	virtual AkBool UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight) = 0;
 	virtual void UpdateTextureWidthImage(void* pTexHandle, const AkU8* pSrcImage, AkU32 uSrcWidth, AkU32 uSrcHeight) = 0;
 	virtual void UpdateCascadeOrthoProjMatrix() = 0;
-	virtual void UpdateDynamicVertices(void* pDVHandle, const MeshData_t* pMeshData, AkU32 uMeshDataNum) = 0;
+	virtual void UpdateDynamicVertices(void* pDVHandle, const void* pData) = 0;
 	virtual void DestroyTexture(void* pTexHandle) = 0;
 	virtual void DestroyFontObject(void* pFontHandle) = 0;
 	virtual void DestroyDynamicVertex(void* pDVHandle) = 0;
@@ -103,6 +105,7 @@ interface IRenderer : public IUnknown
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle) = 0;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
+	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) = 0;
 	virtual void RotateXCamera(AkF32 fRadian) = 0;
 	virtual void RotateYCamera(AkF32 fRadian) = 0;

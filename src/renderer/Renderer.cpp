@@ -851,6 +851,24 @@ void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void*
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
+void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ;
+	tItem.pObjHandle = pTerrain;
+	tItem.tTerrianParam.pWorld = pWorldMat;
+	tItem.tTerrianParam.pBrush = pBrush;
+	tItem.tTerrianParam.bDrawNormal = AK_TRUE;
+
+	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	{
+		__debugbreak();
+	}
+
+	_uCurThreadIndex++;
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+}
+
 void FRenderer::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)
 {
 	_vCamPos.x = fX;
@@ -1870,7 +1888,7 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 	}
 }
 
-void FRenderer::UpdateDynamicVertices(void* pDVHandle, const MeshData_t* pMeshData, AkU32 uMeshDataNum)
+void FRenderer::UpdateDynamicVertices(void* pDVHandle, const void* pData)
 {
 	DynamicVertexHandle_t* pDynamicVertexHandle = (DynamicVertexHandle_t*)pDVHandle;
 	ID3D12Resource* pUploadBuffer = pDynamicVertexHandle->pUploadBuffer;
@@ -1883,7 +1901,7 @@ void FRenderer::UpdateDynamicVertices(void* pDVHandle, const MeshData_t* pMeshDa
 	if (FAILED(hr))
 		__debugbreak();
 
-	memcpy(pMappedPtr, pMeshData->pVertices, uSizePerVertex * uVertexNum);
+	memcpy(pMappedPtr, pData, uSizePerVertex * uVertexNum);
 
 	pUploadBuffer->Unmap(0, nullptr);
 }

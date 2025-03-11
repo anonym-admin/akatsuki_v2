@@ -78,6 +78,8 @@ private:
 	void ComputeNormals();
 	void ComputeTangents();
 
+	void PaintBrush();
+
 	void UpdateMousePicking();
 
 private:
@@ -88,7 +90,10 @@ private:
 	AkBool _bPicked = AK_FALSE;
 	AkBool _bPositive = AK_TRUE;
 
-	MeshData_t* _pGrid = nullptr;
+	TerrainVertex_t* _pVertices = nullptr;
+	AkU32* _pIndices = nullptr;
+	AkU32 _uVerticeNum = 0;
+	AkU32 _uIndiceNum = 0;
 
 	ITerrain* _pTerrain = nullptr;
 	Matrix _mWorldRow = Matrix();
@@ -100,5 +105,10 @@ private:
 	AkF32 _fMoveRatio = 0.0f;
 	AkF32 _fHeightScale = 50.0f;
 	AkF32 _fHeightMin = 0.0f;
+
+	AkF32 _fPaintScale = 5.0f;
+	AkI32 _iSelectedTexture = 0;
+
+	AkI32 _iEditType = 0; // 0 : Paint , 1 : Height
 };
 

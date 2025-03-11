@@ -56,7 +56,7 @@ public:
 	virtual AkBool UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight) override;
 	virtual void UpdateTextureWidthImage(void* pTexHandle, const AkU8* pSrcImage, AkU32 uSrcWidth, AkU32 uSrcHeight) override;
 	virtual void UpdateCascadeOrthoProjMatrix() override;
-	virtual void UpdateDynamicVertices(void* pDVHandle, const MeshData_t* pMeshData, AkU32 uMeshDataNum) override;
+	virtual void UpdateDynamicVertices(void* pDVHandle, const void* pData) override;
 	virtual void DestroyTexture(void* pTexHandle) override;
 	virtual void DestroyFontObject(void* pFontHandle) override;
 	virtual void DestroyDynamicVertex(void* pDVHandle) override;
@@ -72,6 +72,7 @@ public:
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) override;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle) override;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
+	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
 	virtual void RotateXCamera(AkF32 fRadian) override;
 	virtual void RotateYCamera(AkF32 fRadian) override;
 	virtual void RotateYawPitchRollCamera(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll) override;

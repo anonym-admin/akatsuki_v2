@@ -12,7 +12,7 @@ class FTerrainObject : public ITerrain
 {
 public:
     static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 3;
-    static const AkU32 DESCRIPTOR_COUNT_PER_MESH = 6 + 3 + 1 + 5; // albedo, normal ... (t0~t5) / IBL (t11, t12, t13) / material cb (b2) / Shadow Map (t15, t16, 17)
+    static const AkU32 DESCRIPTOR_COUNT_PER_MESH = 6 + 3 + 1 + 5 + 2; // albedo, normal ... (t0~t5) / IBL (t11, t12, t13) / material cb (b2) / Shadow Map (t15, t16, 17) / t6, t7
     static const AkU32 MAX_MESH_COUNT_PER_OBJ = 1;
     static const AkU32 MAX_DESCRIPTOR_COUNT_FOR_DRAW = DESCRIPTOR_COUNT_PER_OBJ + (DESCRIPTOR_COUNT_PER_MESH * MAX_MESH_COUNT_PER_OBJ);
 
@@ -24,7 +24,9 @@ public:
     void DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
     void DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
-    virtual void* CreateDynamicMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDataNum) override;
+    virtual void CreateStaticMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
+    virtual void* CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
+    virtual void SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename, const wchar_t* wcNormalFilename, const wchar_t* wcEmissvieFilename, const wchar_t* wcMetallicFilename, const wchar_t* wcRoughnessFilename, const wchar_t* wcAOFilename) override;
     virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) override;
     virtual void EnableWireFrame() override { _bIsWire = AK_TRUE; }
     virtual void DisableWireFrame() override { _bIsWire = AK_FALSE; }
@@ -34,7 +36,7 @@ public:
 
 protected:
     void CleanUp();
-    virtual DynamicVertexHandle_t* CreateVertexAndIndexBuffer(MeshData_t* pMeshData, AkU32 uMeshDataIndex);
+    virtual DynamicVertexHandle_t* CreateVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
     virtual AkBool CreateCommonResources();
     virtual AkBool CreateRootSignature();
     virtual AkBool CreatePipelineState();
@@ -62,5 +64,8 @@ protected:
     TextureHandle_t* _pBrdfTexHandle = nullptr;
 
     MaterialConstantBuffer_t* _pMaterials = nullptr;
+
+    TextureHandle_t* _pSecondTexHandle = nullptr;
+    TextureHandle_t* _pThirdTexHandle = nullptr;
 };
 
