@@ -325,14 +325,15 @@ void FRenderer::EndRender()
 
 	D3D12_RESOURCE_BARRIER pBarriers0[] =
 	{
-		CD3DX12_RESOURCE_BARRIER::Transition(_ppBackBufferRT[_uRTIndex], D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET),
-		CD3DX12_RESOURCE_BARRIER::Transition(_pResolvedBufferRT, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE),
+		CD3DX12_RESOURCE_BARRIER::Transition(_ppBackBuffer[_uRTIndex], D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET),
+		CD3DX12_RESOURCE_BARRIER::Transition(_pFloatBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_RESOLVE_SOURCE),
 	};
 
 	pCmdList->ResourceBarrier(_countof(pBarriers0), pBarriers0);
 
 	// Post Process
-	_pPostProcess->ApplyPostProcess(0, pCmdList, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
+	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
+	_pPostProcess->Process(0, pCmdList, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
 
 	if (_bUseImgui)
 	{
@@ -342,8 +343,8 @@ void FRenderer::EndRender()
 
 	D3D12_RESOURCE_BARRIER pBarriers1[] =
 	{
-		CD3DX12_RESOURCE_BARRIER::Transition(_ppBackBufferRT[_uRTIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT),
-		CD3DX12_RESOURCE_BARRIER::Transition(_pResolvedBufferRT, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET),
+		CD3DX12_RESOURCE_BARRIER::Transition(_ppBackBuffer[_uRTIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT),
+		CD3DX12_RESOURCE_BARRIER::Transition(_pFloatBuffer, D3D12_RESOURCE_STATE_RESOLVE_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET),
 	};
 
 	pCmdList->ResourceBarrier(_countof(pBarriers1), pBarriers1);
@@ -416,13 +417,18 @@ AkBool FRenderer::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 
 	for (AkU32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
 	{
-		_ppBackBufferRT[i]->Release();
-		_ppBackBufferRT[i] = nullptr;
+		_ppBackBuffer[i]->Release();
+		_ppBackBuffer[i] = nullptr;
 	}
-	if (_pResolvedBufferRT)
+	if (_pFloatBuffer)
 	{
-		_pResolvedBufferRT->Release();
-		_pResolvedBufferRT = nullptr;
+		_pFloatBuffer->Release();
+		_pFloatBuffer = nullptr;
+	}
+	if (_pResolvedBuffer)
+	{
+		_pResolvedBuffer->Release();
+		_pResolvedBuffer = nullptr;
 	}
 	if (_pMainDS)
 	{
@@ -440,6 +446,8 @@ AkBool FRenderer::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 	CreateRTVs();
 	CreateRTVsAndSRVsForPBR();
 	CreateDSVs(uScreenWidth, uScreenHeight);
+
+	_pPostProcess->CreateBuffers(uScreenWidth, uScreenHeight);
 
 	InitViewports((AkF32)uScreenWidth, (AkF32)uScreenHeight);
 	InitScissorRect(uScreenWidth, uScreenHeight);
@@ -1497,7 +1505,7 @@ AkBool FRenderer::CreateCmdQueue()
 AkBool FRenderer::CreateDescriptorForRTV()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC tRtvHeapDesc = {};
-	tRtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT + 1; // Resolved Rtv.
+	tRtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT + 2 + _uBloomLevels; // Float Rtv + Resolved Rtv.
 	tRtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	tRtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	if (FAILED(_pDevice->CreateDescriptorHeap(&tRtvHeapDesc, IID_PPV_ARGS(&_pRTVHeap))))
@@ -1568,8 +1576,8 @@ AkBool FRenderer::CreateRTVs()
 
 	for (AkU32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
 	{
-		_pSwapChain->GetBuffer(i, IID_PPV_ARGS(&_ppBackBufferRT[i]));
-		_pDevice->CreateRenderTargetView(_ppBackBufferRT[i], nullptr, hRtvCpu);
+		_pSwapChain->GetBuffer(i, IID_PPV_ARGS(&_ppBackBuffer[i]));
+		_pDevice->CreateRenderTargetView(_ppBackBuffer[i], nullptr, hRtvCpu);
 		hRtvCpu.Offset(1, _uRTVDesciptorSize);
 	}
 
@@ -1578,33 +1586,95 @@ AkBool FRenderer::CreateRTVs()
 
 AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 {
+	// 멀티 샘플링 체크
+	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS tQualityLevels = {};
+	tQualityLevels.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; 
+	tQualityLevels.SampleCount = 4;
+	tQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+
+	HRESULT hr = _pDevice->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &tQualityLevels, sizeof(tQualityLevels));
+
+	if (SUCCEEDED(hr))
+	{
+		if (tQualityLevels.NumQualityLevels > 0) 
+		{
+			// 멀티샘플링 지원
+			printf("Num Quality Levels: %u\n", tQualityLevels.NumQualityLevels);
+		}
+		else {
+			// 멀티샘플링 미지원
+			printf("Multisampling is supported.\n");
+		}
+	}
+	else 
+	{
+		printf("CheckFeatureSupport Failed.\n");
+	}
+
+	_uNumQualityLevels = tQualityLevels.NumQualityLevels;
+
 	// Float RTV & SRV
 	D3D12_RESOURCE_DESC tRtvDesc = {};
-	tRtvDesc = _ppBackBufferRT[0]->GetDesc();
+	tRtvDesc = _ppBackBuffer[0]->GetDesc();
 	tRtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	if (_bUseMSAA && _uNumQualityLevels)
+	{
+		tRtvDesc.SampleDesc.Count = 4;
+		tRtvDesc.SampleDesc.Quality = _uNumQualityLevels - 1;
+	}
+	else
+	{
+		tRtvDesc.SampleDesc.Count = 1;
+		tRtvDesc.SampleDesc.Quality = 0;
+	}
 
 	D3D12_CLEAR_VALUE tClearValue = {};
-	const AkF32 fClearColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
-	memcpy(tClearValue.Color, fClearColor, sizeof(fClearColor));
+	memcpy(tClearValue.Color, _pRTVClearColor, sizeof(_pRTVClearColor));
 	tClearValue.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
-	if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tRtvDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &tClearValue, IID_PPV_ARGS(&_pResolvedBufferRT))))
+	// PBR 에 이용될 Float Buffer 생성.
 	{
-		__debugbreak();
-		return AK_FALSE;
+		if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tRtvDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &tClearValue, IID_PPV_ARGS(&_pFloatBuffer))))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), 3, _uRTVDesciptorSize);
+
+		_pDevice->CreateRenderTargetView(_pFloatBuffer, nullptr, hRtvCpu);
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hSrvCpu = {};
+		if (_pDescriptorAllocator->AllocDescriptorHandle(&hSrvCpu))
+		{
+			_pDevice->CreateShaderResourceView(_pFloatBuffer, nullptr, hSrvCpu);
+		}
+
+		_hFloatBufferSrvCpu = hSrvCpu;
 	}
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), 3, _uRTVDesciptorSize);
-
-	_pDevice->CreateRenderTargetView(_pResolvedBufferRT, nullptr, hRtvCpu);
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hSrvCpu = {};
-	if (_pDescriptorAllocator->AllocDescriptorHandle(&hSrvCpu))
+	// MSAA 를 끈 Resolved Buffer 생성 => Shader 에서 블룸 계산을 위해.
 	{
-		_pDevice->CreateShaderResourceView(_pResolvedBufferRT, nullptr, hSrvCpu);
-	}
+		tRtvDesc.SampleDesc.Count = 1;
+		tRtvDesc.SampleDesc.Quality = 0;
+		if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tRtvDesc, D3D12_RESOURCE_STATE_RESOLVE_DEST, &tClearValue, IID_PPV_ARGS(&_pResolvedBuffer))))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
 
-	_hResolvedBufferSrvCpu = hSrvCpu;
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), 4, _uRTVDesciptorSize);
+
+		_pDevice->CreateRenderTargetView(_pResolvedBuffer, nullptr, hRtvCpu);
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hSrvCpu = {};
+		if (_pDescriptorAllocator->AllocDescriptorHandle(&hSrvCpu))
+		{
+			_pDevice->CreateShaderResourceView(_pResolvedBuffer, nullptr, hSrvCpu);
+		}
+
+		_hResolvedBufferSrvCpu = hSrvCpu;
+	}
 
 	return AK_TRUE;
 }
@@ -1615,7 +1685,7 @@ AkBool FRenderer::CreateDSVs(AkU32 uWidth, AkU32 uHeight)
 	{
 		D3D12_DEPTH_STENCIL_VIEW_DESC tDepthStencilDesc = {};
 		tDepthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-		tDepthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		tDepthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2DMS;
 		tDepthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
 
 		D3D12_CLEAR_VALUE tDepthOptimizedClearValue = {};
@@ -1635,6 +1705,12 @@ AkBool FRenderer::CreateDSVs(AkU32 uWidth, AkU32 uHeight)
 			0,
 			D3D12_TEXTURE_LAYOUT_UNKNOWN,
 			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+		if (_bUseMSAA && _uNumQualityLevels)
+		{
+			tDepthDesc.SampleDesc.Count = 4;
+			tDepthDesc.SampleDesc.Quality = _uNumQualityLevels - 1;
+		}
 
 		if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tDepthDesc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &tDepthOptimizedClearValue, IID_PPV_ARGS(&_pMainDS))))
 		{
@@ -1760,7 +1836,7 @@ AkBool FRenderer::CreateRenderThreadPool(AkU32 uThreadCount)
 AkBool FRenderer::CreatePostProcess()
 {
 	_pPostProcess = new FPostProcess;
-	if (!_pPostProcess->Initialize(this))
+	if (!_pPostProcess->Initialize(this, _uBloomLevels, _uScreenWidth, _uScreenHeight))
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -1879,7 +1955,7 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 
 		// View Matrix.
 		_tGlobalLight.vDirection.Normalize();
-		_pShadowView[i] = XMMatrixLookAtLH(vCenter + _tGlobalLight.vDirection, vCenter, Vector3(0.0f, 1.0f, 0.0f)); 
+		_pShadowView[i] = XMMatrixLookAtLH(vCenter + _tGlobalLight.vDirection, vCenter, Vector3(0.0f, 1.0f, 0.0f));
 
 		AkF32 fMinX = AK_MAX_F32;
 		AkF32 fMaxX = -AK_MAX_F32;
@@ -1974,20 +2050,25 @@ void FRenderer::DestroyRTVs()
 {
 	for (AkU32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
 	{
-		if (_ppBackBufferRT[i])
+		if (_ppBackBuffer[i])
 		{
-			_ppBackBufferRT[i]->Release();
-			_ppBackBufferRT[i] = nullptr;
+			_ppBackBuffer[i]->Release();
+			_ppBackBuffer[i] = nullptr;
 		}
 	}
 }
 
 void FRenderer::DestroyRTVsAndSRVsForPBR()
 {
-	if (_pResolvedBufferRT)
+	if (_pFloatBuffer)
 	{
-		_pResolvedBufferRT->Release();
-		_pResolvedBufferRT = nullptr;
+		_pFloatBuffer->Release();
+		_pFloatBuffer = nullptr;
+	}
+	if (_pResolvedBuffer)
+	{
+		_pResolvedBuffer->Release();
+		_pResolvedBuffer = nullptr;
 	}
 }
 

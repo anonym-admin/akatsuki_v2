@@ -359,7 +359,8 @@ AkBool FLineObject::CreatePipelineState()
 	tPsoDesc.NumRenderTargets = 1;
 	tPsoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	tPsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	tPsoDesc.SampleDesc.Count = 1;
+	tPsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
+	tPsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
 	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pLinePSO))))
 	{
 		__debugbreak();

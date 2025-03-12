@@ -821,7 +821,8 @@ AkBool FBillboardObjects::CreatePipelineState()
 	tPsoDesc.NumRenderTargets = 1;
 	tPsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
 	tPsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	tPsoDesc.SampleDesc.Count = 1;
+	tPsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
+	tPsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
 	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pBillboardGeoPSO))))
 	{
 		__debugbreak();
@@ -840,6 +841,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pBasicBillboardVS->GetBufferPointer(), pBasicBillboardVS->GetBufferSize());
 	tPsoDesc.GS = {};
 	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pBasicBillboardPS->GetBufferPointer(), pBasicBillboardPS->GetBufferSize());
+	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pBillboardBasicPSO))))
 	{
 		__debugbreak();

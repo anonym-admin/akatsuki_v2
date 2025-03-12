@@ -1,5 +1,18 @@
-Texture2D resolvedTex : register(t0);
+Texture2D tex0 : register(t0);
+Texture2D tex1 : register(t1);
 SamplerState linearWrapSS : register(s0);
+
+cbuffer Const : register(b0)
+{
+    float dx;
+    float dy;
+    float threshold;
+    float strength;
+    float exposure;
+    float gamma;
+    float option3;
+    float option4;
+};
 
 struct PostProcessVSInput
 {
@@ -23,9 +36,6 @@ PostProcessPSInput VSMain(PostProcessVSInput input)
     return output;
 }
 
-static const float exposure = 1.0;
-static const float gamma = 2.2;
-
 float3 LinearToneMapping(float3 color)
 {
     float3 invGamma = float3(1, 1, 1) / gamma;
@@ -37,10 +47,12 @@ float3 LinearToneMapping(float3 color)
 
 float4 PSMain(PostProcessPSInput input) : SV_TARGET
 {
-    float3 baseColor = resolvedTex.Sample(linearWrapSS, input.texCoord).xyz;
-    float3 toneMappingColor = float3(0.0, 0.0, 0.0);
+    float3 color0 = tex0.Sample(linearWrapSS, input.texCoord).rgb;
+    float3 color1 = tex1.Sample(linearWrapSS, input.texCoord).rgb;
     
-    toneMappingColor = LinearToneMapping(baseColor);
+    float3 combined = (1.0 - strength) * color0 + strength * color1;
+
+    combined = LinearToneMapping(combined);
     
-    return float4(toneMappingColor, 1.0);
+    return float4(combined, 1.0);
 }

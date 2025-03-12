@@ -278,7 +278,8 @@ AkBool FSkyboxObject::CreatePipelineState()
 	tOpaquePsoDesc.NumRenderTargets = 1;
 	tOpaquePsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
 	tOpaquePsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	tOpaquePsoDesc.SampleDesc.Count = 1;
+	tOpaquePsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
+	tOpaquePsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
 	if (FAILED(pD3DDeivce->CreateGraphicsPipelineState(&tOpaquePsoDesc, IID_PPV_ARGS(&sm_pSkyboxPSO))))
 	{
 		__debugbreak();

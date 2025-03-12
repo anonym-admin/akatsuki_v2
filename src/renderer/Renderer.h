@@ -100,6 +100,7 @@ public:
 	virtual ULONG STDMETHODCALLTYPE Release(void) override;
 
 	/*dll inner*/
+	HWND GetHwnd() { return _hWnd; }
 	ID3D12Device* GetDevice() { return _pDevice; }
 	FDescriptorAllocator* GetDescriptorAllocator() { return _pDescriptorAllocator; }
 	FDescriptorPool* GetDescriptorPool(AkU32 uThreadIndex) { return _ppDescriptorPool[_uCurContextIndex][uThreadIndex]; }
@@ -118,9 +119,17 @@ public:
 	void GetShadowMapSrv(D3D12_CPU_DESCRIPTOR_HANDLE* pOutHandle, AkU32 uCascadeIndex);
 	AkU32 GetCascadeIndex() { return _uCascadeIndex; }
 	DXGI_FORMAT GetBackBufferRTVFormat() { return _tBackBufferFormat; }
-	DXGI_FORMAT GetFloatRTVFormat() { return _tResolvedBufferFormat; }
-	D3D12_CPU_DESCRIPTOR_HANDLE GetFloatBufferSrvCpu() { return _hResolvedBufferSrvCpu; }
+	DXGI_FORMAT GetFloatRTVFormat() { return _tFloatBufferFormat; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetBackBufferRtvCpu() { return CD3DX12_CPU_DESCRIPTOR_HANDLE(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize); }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetFloatBufferSrvCpu() { return _hFloatBufferSrvCpu; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetResolvedBufferSrvCpu() { return _hResolvedBufferSrvCpu; }
+	ID3D12Resource* GetResolvedBuffer() { return _pResolvedBuffer; }
+	ID3D12DescriptorHeap* GetRtvHeap() { return _pRTVHeap; }
+	AkU32 GetRtvDescriptorSize() { return _uRTVDesciptorSize; }
+	AkU32 GetDsvDescriptorSize() { return _uDSVDescriptorSize; }
 	AkF32* GetRTVClearColor() { return _pRTVClearColor; }
+	AkBool UseMSAA() { return _bUseMSAA; }
+	AkU32 GetNumQualityLevel() { return _uNumQualityLevels; }
 
 	void EnsureCompleted();
 
@@ -174,7 +183,7 @@ private:
 	ID3D12DescriptorHeap* _pDSVHeap = nullptr;
 	ID3D12DescriptorHeap* _pImGuiHeap = nullptr;
 	IDXGISwapChain3* _pSwapChain = nullptr;
-	ID3D12Resource* _ppBackBufferRT[SWAP_CHAIN_FRAME_COUNT];
+	ID3D12Resource* _ppBackBuffer[SWAP_CHAIN_FRAME_COUNT];
 	ID3D12Resource* _pMainDS = nullptr;
 	ID3D12Resource* _pShadowDS[CASCADE_SHADOW_MAP_LEVEL] = {};
 	ID3D12Fence* _pFence = nullptr;
@@ -235,11 +244,16 @@ private:
 	Vector3 _vLightPos = Vector3(0.0f, 2.5f, 1025.0f);
 	D3D12_CPU_DESCRIPTOR_HANDLE _pShadowMapSrvCpu[CASCADE_SHADOW_MAP_LEVEL] = {};
 	// For PBR.
-	ID3D12Resource* _pResolvedBufferRT = nullptr;
+	ID3D12Resource* _pFloatBuffer = nullptr;
+	ID3D12Resource* _pResolvedBuffer = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE _hFloatBufferSrvCpu = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE _hResolvedBufferSrvCpu = {};
 	FPostProcess* _pPostProcess = nullptr;
 	DXGI_FORMAT _tBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	DXGI_FORMAT _tResolvedBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	DXGI_FORMAT _tFloatBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	AkF32 _fIBLStrength = 1.0f;
+	AkBool _bUseMSAA = AK_TRUE;
+	AkU32 _uNumQualityLevels = 0;
+	AkU32 _uBloomLevels = 4;
 };
 
