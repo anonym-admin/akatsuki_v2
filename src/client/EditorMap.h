@@ -32,6 +32,7 @@ private:
 	void CleanUp();
 
 	void UpdateControl();
+	void UpdateFileDialog();
 
 private:
 	Camera* _pCamera = nullptr;
@@ -41,5 +42,12 @@ private:
 	AkBool _bFPV = AK_TRUE;
 	AkBool _bLoad = AK_FALSE;
 	AkBool _bSave = AK_FALSE;
+
+	AkI32 _iSelectMode = 0; // 0: Height 1: Splating 2: Texture
+	AkI32 _iTextureType = 0; // 0: Albedo 1: Second 2: Third
+
+	std::wstring _wcFileName = L"";
+	std::wstring _wcFileNameExcExt = L"";
+	std::wstring _wcFilePath = L"";
 };
 

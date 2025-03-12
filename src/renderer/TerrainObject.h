@@ -35,15 +35,17 @@ public:
     virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
     virtual ULONG __stdcall Release(void) override;
 
-protected:
+private:
     void CleanUp();
-    virtual DynamicVertexHandle_t* CreateDynamicVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
-    virtual AkBool CreateCommonResources();
-    virtual AkBool CreateRootSignature();
-    virtual AkBool CreatePipelineState();
-    virtual void DestroyCommonResources();
-    virtual void DestroyRootSignature();
-    virtual void DestroyPipelineState();
+    DynamicVertexHandle_t* CreateDynamicVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
+    AkBool CreateCommonResources();
+    AkBool CreateRootSignature();
+    AkBool CreatePipelineState();
+    void DestroyCommonResources();
+    void DestroyRootSignature();
+    void DestroyPipelineState();
+
+    void DeleteTextures();
 
 private:
     static ID3D12RootSignature* sm_pRootSignature;

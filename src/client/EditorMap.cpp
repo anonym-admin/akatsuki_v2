@@ -75,16 +75,45 @@ void EditorMap::FinalUpdate()
 	_pCamera->UpdateEditor();
 	_pTerrainEdit->UpdateEditor();
 
+	IGFD::FileDialogConfig tConfig = {};
+	tConfig.filePathName = "../../assets/";
+
 	ImGui::Begin("Map Editor");
 	ImGui::Checkbox("FPV", &_bFPV);
+
+	const char* pTex[] = { "Albedo", "Second", "Third" };
+	if (ImGui::Combo("Texture Type", &_iTextureType, pTex, IM_ARRAYSIZE(pTex)))
+	{
+		_bLoad = AK_TRUE;
+		_iSelectMode = 2;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", tConfig);
+	}
 	if (ImGui::Button("Load Height"))
-		_pTerrainEdit->LoadHeightMap(L"Test");
+	{
+		_bLoad = AK_TRUE;
+		_iSelectMode = 0;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", tConfig);
+	}
 	if (ImGui::Button("Save Height"))
-		_pTerrainEdit->SaveHeightMap(L"Test");
+	{
+		_bSave = AK_TRUE;
+		_iSelectMode = 0;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", tConfig);
+	}
 	if (ImGui::Button("Load Splatting"))
-		_pTerrainEdit->LoadSplatingTexture(L"Splating");
+	{
+		_bLoad = AK_TRUE;
+		_iSelectMode = 1;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", tConfig);
+	}
 	if (ImGui::Button("Save Splatting"))
-		_pTerrainEdit->SaveSplatingTexture(L"Splating");
+	{
+		_bSave = AK_TRUE;
+		_iSelectMode = 1;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", tConfig);
+	}
+
+	UpdateFileDialog();
 
 	ImGui::End();
 }
@@ -127,6 +156,80 @@ void EditorMap::UpdateControl()
 	if (KEY_DOWN(KEY_INPUT_F))
 	{
 		_bFPV = !_bFPV;
+	}
+}
+
+void EditorMap::UpdateFileDialog()
+{
+	// display
+	if (_bLoad)
+	{
+		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
+		{
+			if (ImGuiFileDialog::Instance()->IsOk() == true)
+			{
+				std::string cFilename = GetFileName(ImGuiFileDialog::Instance()->GetFilePathName());
+				std::string cFilenameExcludeExt = GetFileNmaeExcludeExt(cFilename);
+				std::string cFilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+				_wcFileName.assign(cFilename.begin(), cFilename.end());
+				_wcFileNameExcExt.assign(cFilenameExcludeExt.begin(), cFilenameExcludeExt.end());
+				_wcFilePath.assign(cFilePath.begin(), cFilePath.end());
+			}
+
+			switch (_iSelectMode)
+			{
+			case 0:
+				_pTerrainEdit->LoadHeightMap(_wcFileNameExcExt.c_str());
+				break;
+			case 1:
+				_pTerrainEdit->LoadSplatingTexture(_wcFileNameExcExt.c_str());
+				break;
+			case 2:
+				if (0 == _iTextureType)
+					_pTerrainEdit->SetTextures((_wcFilePath + _wcFileName).c_str(), nullptr, nullptr);
+				else if (1 == _iTextureType)
+					_pTerrainEdit->SetTextures(nullptr, (_wcFilePath + _wcFileName).c_str(), nullptr);
+				else if (2 == _iTextureType)
+					_pTerrainEdit->SetTextures(nullptr, nullptr, (_wcFilePath + _wcFileName).c_str());
+				break;
+			default:
+				__debugbreak();
+				break;
+			}
+
+			// close
+			ImGuiFileDialog::Instance()->Close();
+			_bLoad = AK_FALSE;
+		}
+	}
+	else if (_bSave)
+	{
+		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
+		{
+			std::string cFilenameExcludeExt = GetFileNmaeExcludeExt(GetFileName(ImGuiFileDialog::Instance()->GetFilePathName()));
+			std::string cFilePath = ImGuiFileDialog::Instance()->GetCurrentPath();
+
+			_wcFileNameExcExt.assign(cFilenameExcludeExt.begin(), cFilenameExcludeExt.end());
+			_wcFilePath.assign(cFilePath.begin(), cFilePath.end());
+
+			switch (_iSelectMode)
+			{
+			case 0:
+				_pTerrainEdit->SaveHeightMap(_wcFileNameExcExt.c_str());
+				break;
+			case 1:
+				_pTerrainEdit->SaveSplatingTexture(_wcFileNameExcExt.c_str());
+				break;
+			default:
+				__debugbreak();
+				break;
+			}
+
+			// close
+			ImGuiFileDialog::Instance()->Close();
+			_bSave = AK_FALSE;
+		}
 	}
 }
 

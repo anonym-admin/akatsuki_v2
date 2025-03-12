@@ -23,7 +23,8 @@ TreeBillboard::~TreeBillboard()
 }
 
 AkBool TreeBillboard::Initialize()
-{/*
+{
+	/*
 	BillboardVertex_t pVertices[5] = {};
 	pVertices[0].vPosition = Vector3(-5.0f, 0.0f, 0.0f);
 	pVertices[0].vSize = Vector2(1.0f);
@@ -45,6 +46,7 @@ AkBool TreeBillboard::Initialize()
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissvie = Vector3(0.0f);
 	_pModel = CreateBillboardModel(pSquare, 1, &vAlbedo, 0.0f, 1.0f, &vEmissvie);
+	GeometryGenerator::DestroyGeometry(pSquare, 1);
 
 	// Create transform.
 	_pTransform = CreateTransform();

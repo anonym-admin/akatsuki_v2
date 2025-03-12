@@ -273,6 +273,8 @@ void FTextureManager::FreeTextureHandle(TextureHandle_t* pTexHandle)
 		}
 		if (pTexHandle->pSearchHandle)
 		{
+			wprintf_s(L"%s\n", (const wchar_t*)(((Bucket_t*)pTexHandle->pSearchHandle)->pKey));
+
 			HT_Delete(_pHashTable, pTexHandle->pSearchHandle);
 			pTexHandle->pSearchHandle = nullptr;
 		}

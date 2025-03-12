@@ -92,6 +92,8 @@ public:
 	void LoadSplatingTexture(const wchar_t* wcAlphaFile);
 	void SaveSplatingTexture(const wchar_t* wcAlphaFile);
 
+	void SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wcSecondTexFilePath, const wchar_t* wcThirdTexFilePath);
+
 private:
 	void CleanUp();
 
@@ -143,5 +145,9 @@ private:
 	AkU8* _pHeightMapImg = nullptr;
 
 	Vector2 _vTexScale = Vector2(1.0f);
+
+	std::wstring _wcAlbedoFilePath = L"";
+	std::wstring _wcSecondTexFilePath = L"";
+	std::wstring _wcThirdTexFilePath = L"";
 };
 

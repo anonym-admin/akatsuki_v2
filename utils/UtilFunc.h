@@ -14,8 +14,14 @@ void CalcColliderMinMax(MeshData_t* pMeshData, AkU32 uMeshDataNum, Vector3* pOut
 
 std::string GetFileExtension(const std::string& filePath);
 std::string GetFilePath(const std::string& fullPath);
+std::string GetFileName(const std::string& filePath);
 std::wstring GetFileExtension(const std::wstring& filePath);
-std::wstring GetFilePath(const std::wstring& fullPath);
+std::wstring GetFilePath(const std::wstring& filePath);
+std::wstring GetFileName(const std::wstring& filePath);
+std::string GetFileNmaeExcludeExt(const std::string& fileName);
+std::wstring GetFileNmaeExcludeExt(const std::wstring& fileName);
+std::wstring ToWString(const std::string& str);
+std::string ToString(const std::wstring& str);
 
 bool ReadBitmapFile(const wchar_t* wcFilename, unsigned __int8** pDestImage, unsigned __int32* pWidth, unsigned __int32* pHeight);
 void ReadImage(const wchar_t* pFilename, unsigned __int8** ppOutImage, unsigned __int32* pOutWidth, unsigned __int32* pOutHeight);

@@ -479,6 +479,7 @@ AkBool FTerrainObject::CreateStaticMeshBuffers(TerrainVertex_t* pVertices, AkU32
 	ID3D12Resource* pIndexBuffer = nullptr;
 
 	_pMeshes = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
+	memset(_pMeshes, 0, sizeof(Mesh_t));
 	_uMeshNum = 1;
 
 	if (pResourceManager->CreateVertexBuffer(sizeof(TerrainVertex_t), uVerticeNum, &tVBView, &pVertexBuffer, pVertices))
@@ -512,10 +513,14 @@ void* FTerrainObject::CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32
 
 void FTerrainObject::SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename, const wchar_t* wcNormalFilename, const wchar_t* wcEmissvieFilename, const wchar_t* wcMetallicFilename, const wchar_t* wcRoughnessFilename, const wchar_t* wcAOFilename)
 {
-	FTextureManager* pTextureManager = _pRenderer->GetTextureManager();
-	_pMaterials = reinterpret_cast<MaterialConstantBuffer_t*>(malloc(sizeof(MaterialConstantBuffer_t)));
+	DeleteTextures();
 
-	memset(_pMaterials, 0, sizeof(MaterialConstantBuffer_t));
+	FTextureManager* pTextureManager = _pRenderer->GetTextureManager();
+	if (!_pMaterials)
+	{
+		_pMaterials = reinterpret_cast<MaterialConstantBuffer_t*>(malloc(sizeof(MaterialConstantBuffer_t)));
+		memset(_pMaterials, 0, sizeof(MaterialConstantBuffer_t));
+	}
 
 	// Second Tex
 	if (!wcSecondFilename)
@@ -594,6 +599,57 @@ void FTerrainObject::SetTextures(const wchar_t* wcSecondFilename, const wchar_t*
 	{
 		_pMeshes[0].pAoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcAOFilename, AK_FALSE));
 		_pMaterials[0].uUseAOMap = AK_TRUE;
+	}
+}
+
+void FTerrainObject::DeleteTextures()
+{
+	if (_pMeshes)
+	{
+		for (AkU32 i = 0; i < _uMeshNum; i++)
+		{
+			if (_pMeshes[i].pAldedoTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pAldedoTextureHandle);
+				_pMeshes[i].pAldedoTextureHandle = nullptr;
+			}
+			if (_pMeshes[i].pNormalTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pNormalTextureHandle);
+				_pMeshes[i].pNormalTextureHandle = nullptr;
+			}
+			if (_pMeshes[i].pEmissiveTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pEmissiveTextureHandle);
+				_pMeshes[i].pEmissiveTextureHandle = nullptr;
+			}
+			if (_pMeshes[i].pMetallicTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pMetallicTextureHandle);
+				_pMeshes[i].pMetallicTextureHandle = nullptr;
+			}
+			if (_pMeshes[i].pRoughnessTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pRoughnessTextureHandle);
+				_pMeshes[i].pRoughnessTextureHandle = nullptr;
+			}
+			if (_pMeshes[i].pAoTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pAoTextureHandle);
+				_pMeshes[i].pAoTextureHandle = nullptr;
+			}
+		}
+	}
+
+	if (_pSecondTexHandle)
+	{
+		_pRenderer->DestroyTexture(_pSecondTexHandle);
+		_pSecondTexHandle = nullptr;
+	}
+	if (_pThirdTexHandle)
+	{
+		_pRenderer->DestroyTexture(_pThirdTexHandle);
+		_pThirdTexHandle = nullptr;
 	}
 }
 

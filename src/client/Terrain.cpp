@@ -130,6 +130,9 @@ void Terrain::CreateMeshData()
 	_uVerticeNum = pGrid->uVerticeNum;
 	_uIndiceNum = pGrid->uIndicesNum;
 
+	memset(_pVertices, 0, sizeof(TerrainVertex_t) * _uVerticeNum);
+	memset(_pIndices, 0, sizeof(AkU32) * _uIndiceNum);
+
 	for (AkU32 i = 0; i < pGrid->uVerticeNum; i++)
 	{
 		_pVertices[i].vPosition = pGrid->pVertices[i].vPosition;
@@ -461,9 +464,15 @@ void TerrainEdit::UpdateEditor()
 	ImGui::Combo("Edit Type", &_iEditType, pEditType, IM_ARRAYSIZE(pEditType));
 	const char* pBrushType[] = { "Sphere", "Square" };
 	ImGui::Combo("Brush Type", &_tBrush.iType, pBrushType, IM_ARRAYSIZE(pBrushType));
-	if (_iEditType == 0)
+	if (_iEditType == 0 && (!_wcSecondTexFilePath.empty() || !_wcThirdTexFilePath.empty()))
 	{
-		const char* pTex[] = { "Grass", "Stone" };
+		std::string cSecondFilename = "";
+		std::string cThirdFilename = "";
+		if (!_wcSecondTexFilePath.empty())
+			cSecondFilename = GetFileNmaeExcludeExt(GetFileName(ToString(_wcSecondTexFilePath)));
+		if (!_wcThirdTexFilePath.empty())
+			cThirdFilename = GetFileNmaeExcludeExt(GetFileName(ToString(_wcThirdTexFilePath)));
+		const char* pTex[] = { cSecondFilename.c_str(), cThirdFilename .c_str()};
 		ImGui::Combo("Texture", &_iSelectedTexture, pTex, IM_ARRAYSIZE(pTex));
 	}
 	ImGui::End();
@@ -631,6 +640,23 @@ void TerrainEdit::SaveSplatingTexture(const wchar_t* wcAlphaFile)
 	pPixels = nullptr;
 }
 
+void TerrainEdit::SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wcSecondTexFilePath, const wchar_t* wcThirdTexFilePath)
+{
+	if (!_pTerrain)
+		return;
+
+	if (_wcAlbedoFilePath.empty() && wcAlbedoFilePath)
+		_wcAlbedoFilePath = wcAlbedoFilePath;
+	if (_wcSecondTexFilePath.empty() && wcSecondTexFilePath)
+		_wcSecondTexFilePath = wcSecondTexFilePath;
+	if (_wcThirdTexFilePath.empty() && wcThirdTexFilePath)
+		_wcThirdTexFilePath = wcThirdTexFilePath;
+
+	_pTerrain->SetTextures(!_wcSecondTexFilePath.empty() ? _wcSecondTexFilePath.c_str() : wcSecondTexFilePath,
+						   !_wcThirdTexFilePath.empty() ? _wcThirdTexFilePath.c_str() : wcThirdTexFilePath, 
+						   !_wcAlbedoFilePath.empty() ? _wcAlbedoFilePath.c_str() : wcAlbedoFilePath);
+}
+
 void TerrainEdit::CleanUp()
 {
 	DestroyMeshData();
@@ -700,7 +726,7 @@ void TerrainEdit::CreateRenderObject()
 	_pTerrain = GRenderer->CreateTerrain();
 
 	_pDVHandle = _pTerrain->CreateDynamicMeshBuffers(_pVertices, _uVerticeNum, _pIndices, _uIndiceNum);
-	_pTerrain->SetTextures(L"../../assets/map/grass.dds", L"../../assets/map/stone.dds"); // TODO
+	_pTerrain->SetTextures(nullptr, nullptr); 
 
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissive = Vector3(0.0f);
