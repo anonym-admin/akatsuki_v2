@@ -65,12 +65,11 @@ void EditorModel::BlendMode()
 
 }
 
-void EditorModel::Load()
+void EditorModel::Load(const std::wstring& wcFilePath)
 {
-
 }
 
-void EditorModel::Save()
+void EditorModel::Save(const std::wstring& wcFilePath)
 {
-
 }
+

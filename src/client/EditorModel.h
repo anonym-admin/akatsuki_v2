@@ -20,8 +20,8 @@ private:
 	void ModifiedAnimation();
 
 	void BlendMode();
-	virtual void Load() override;
-	virtual void Save() override;
+	virtual void Load(const std::wstring& wcFilePath) override;
+	virtual void Save(const std::wstring& wcFilePath) override;
 
 private:
 	Vector3 _vSceneCamPos = Vector3(0.0f);

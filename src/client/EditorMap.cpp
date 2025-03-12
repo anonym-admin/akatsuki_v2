@@ -112,6 +112,18 @@ void EditorMap::FinalUpdate()
 		_iSelectMode = 1;
 		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".png,.jpg,.dds", tConfig);
 	}
+	if (ImGui::Button("Load Map"))
+	{
+		_bLoad = AK_TRUE;
+		_iSelectMode = 3;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".map", tConfig);
+	}
+	if (ImGui::Button("Save Map"))
+	{
+		_bSave = AK_TRUE;
+		_iSelectMode = 3;
+		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".map", tConfig);
+	}
 
 	UpdateFileDialog();
 
@@ -127,14 +139,51 @@ void EditorMap::RenderShadow()
 {
 }
 
-void EditorMap::Load()
+void EditorMap::Load(const std::wstring& wcFilePath)
 {
+	FILE* fp = nullptr;
+	_wfopen_s(&fp, wcFilePath.c_str(), L"wt");
+	if (!fp)
+	{
+		__debugbreak();
+	}
 
+
+
+
+
+
+	if (fp)
+	{
+		fclose(fp);
+		fp = nullptr;
+	}
 }
 
-void EditorMap::Save()
+void EditorMap::Save(const std::wstring& wcFilePath)
 {
+	FILE* fp = nullptr;
+	_wfopen_s(&fp, wcFilePath.c_str(), L"wt");
+	if (!fp)
+	{
+		__debugbreak();
+	}
 
+	// 01. Texture name
+	fwprintf_s(fp, L"%s\n", _wcAlbedoFilename.empty() ? L"None" : _wcAlbedoFilename.c_str());
+	fwprintf_s(fp, L"%s\n", _wcSecondFilename.empty() ? L"None" : _wcSecondFilename.c_str());
+	fwprintf_s(fp, L"%s\n", _wcThirdFilename.empty() ? L"None" : _wcThirdFilename.c_str());
+	// 02. Height Map
+	fwprintf_s(fp, L"%s\n", _wcHeightFilename.empty() ? L"None" : _wcHeightFilename.c_str());
+	// 03. Splatting Alpha Map
+	fwprintf_s(fp, L"%s\n", _wcAlphaFilenames[0].empty() ? L"None" : _wcAlphaFilenames[0].c_str());
+	fwprintf_s(fp, L"%s\n", _wcAlphaFilenames[1].empty() ? L"None" : _wcAlphaFilenames[1].c_str());
+
+	if (fp)
+	{
+		fclose(fp);
+		fp = nullptr;
+	}
 }
 
 void EditorMap::CleanUp()
@@ -175,27 +224,59 @@ void EditorMap::UpdateFileDialog()
 				_wcFileName.assign(cFilename.begin(), cFilename.end());
 				_wcFileNameExcExt.assign(cFilenameExcludeExt.begin(), cFilenameExcludeExt.end());
 				_wcFilePath.assign(cFilePath.begin(), cFilePath.end());
-			}
 
-			switch (_iSelectMode)
-			{
-			case 0:
-				_pTerrainEdit->LoadHeightMap(_wcFileNameExcExt.c_str());
-				break;
-			case 1:
-				_pTerrainEdit->LoadSplatingTexture(_wcFileNameExcExt.c_str());
-				break;
-			case 2:
-				if (0 == _iTextureType)
-					_pTerrainEdit->SetTextures((_wcFilePath + _wcFileName).c_str(), nullptr, nullptr);
-				else if (1 == _iTextureType)
-					_pTerrainEdit->SetTextures(nullptr, (_wcFilePath + _wcFileName).c_str(), nullptr);
-				else if (2 == _iTextureType)
-					_pTerrainEdit->SetTextures(nullptr, nullptr, (_wcFilePath + _wcFileName).c_str());
-				break;
-			default:
-				__debugbreak();
-				break;
+				if (!_wcFileName.length())
+				{
+					ImGuiFileDialog::Instance()->Close();
+					_bLoad = AK_FALSE;
+					return;
+				}
+
+				switch (_iSelectMode)
+				{
+				case 0:
+				{
+					_pTerrainEdit->LoadHeightMap(_wcFileNameExcExt.c_str());
+					_wcHeightFilename =  _wcFileNameExcExt;
+					break;
+				}
+				case 1:
+				{
+					AkI32 iSelectedID = 0;
+					_pTerrainEdit->LoadSplatingTexture(_wcFileNameExcExt.c_str(), &iSelectedID);
+					_wcAlphaFilenames[iSelectedID] = _wcFileNameExcExt;
+					break;
+				}
+				case 2:
+				{
+					if (0 == _iTextureType) // Albedo
+					{
+						_wcAlbedoFilename = _wcFilePath + _wcFileName;
+						_pTerrainEdit->SetTextures((_wcFilePath + _wcFileName).c_str(), nullptr, nullptr);
+					}
+					else if (1 == _iTextureType) // Second
+					{
+						_wcSecondFilename = _wcFilePath + _wcFileName;
+						_pTerrainEdit->SetTextures(nullptr, (_wcFilePath + _wcFileName).c_str(), nullptr);
+					}
+					else if (2 == _iTextureType) // Third
+					{
+						_wcThirdFilename = _wcFilePath + _wcFileName;
+						_pTerrainEdit->SetTextures(nullptr, nullptr, (_wcFilePath + _wcFileName).c_str());
+					}
+					break;
+				}
+				case 3:
+				{
+					Load((_wcFilePath + _wcFileName).c_str());
+					break;
+				}
+				default:
+				{
+					__debugbreak();
+					break;
+				}
+				}
 			}
 
 			// close
@@ -207,23 +288,52 @@ void EditorMap::UpdateFileDialog()
 	{
 		if (ImGuiFileDialog::Instance()->Display("ChooseFileDlgKey"))
 		{
-			std::string cFilenameExcludeExt = GetFileNmaeExcludeExt(GetFileName(ImGuiFileDialog::Instance()->GetFilePathName()));
-			std::string cFilePath = ImGuiFileDialog::Instance()->GetCurrentPath();
-
-			_wcFileNameExcExt.assign(cFilenameExcludeExt.begin(), cFilenameExcludeExt.end());
-			_wcFilePath.assign(cFilePath.begin(), cFilePath.end());
-
-			switch (_iSelectMode)
+			if (ImGuiFileDialog::Instance()->IsOk() == true)
 			{
-			case 0:
-				_pTerrainEdit->SaveHeightMap(_wcFileNameExcExt.c_str());
-				break;
-			case 1:
-				_pTerrainEdit->SaveSplatingTexture(_wcFileNameExcExt.c_str());
-				break;
-			default:
-				__debugbreak();
-				break;
+				std::string cFilename = GetFileName(ImGuiFileDialog::Instance()->GetFilePathName());
+				std::string cFilenameExcludeExt = GetFileNmaeExcludeExt(cFilename);
+				std::string cFilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+				_wcFileName.assign(cFilename.begin(), cFilename.end());
+				_wcFileNameExcExt.assign(cFilenameExcludeExt.begin(), cFilenameExcludeExt.end());
+				_wcFilePath.assign(cFilePath.begin(), cFilePath.end());
+
+				if (!_wcFileName.length())
+				{
+					ImGuiFileDialog::Instance()->Close();
+					_bLoad = AK_FALSE;
+					return;
+				}
+
+				switch (_iSelectMode)
+				{
+				case 0:
+				{
+					_pTerrainEdit->SaveHeightMap(_wcFileNameExcExt.c_str());
+					_wcHeightFilename = _wcFileNameExcExt;
+					break;
+				}
+				case 1:
+				{
+					AkI32 iSelectedID = 0;
+					_pTerrainEdit->SaveSplatingTexture(_wcFileNameExcExt.c_str(), &iSelectedID);
+					_wcAlphaFilenames[iSelectedID] = _wcFileNameExcExt;
+					break;
+				}
+				case 2:
+					// Don`t save texture.
+					break;
+				case 3:
+				{
+					Save((_wcFilePath + _wcFileName).c_str());
+					break;
+				}
+				default:
+				{
+					__debugbreak();
+					break;
+				}
+				}
 			}
 
 			// close

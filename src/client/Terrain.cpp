@@ -11,9 +11,9 @@ Terrain
 
 AkBool Terrain::DRAW_WIRE;
 
-Terrain::Terrain()
+Terrain::Terrain(const wchar_t* wcSetUpFile)
 {
-	if (!Initialize())
+	if (!Initialize(wcSetUpFile))
 	{
 		__debugbreak();
 	}
@@ -24,19 +24,26 @@ Terrain::~Terrain()
 	CleanUp();
 }
 
-AkBool Terrain::Initialize()
+AkBool Terrain::Initialize(const wchar_t* wcSetUpFile)
 {
+	// Load Map file.
+	LoadSetUpFile(wcSetUpFile);
+
 	// Load Resource.
-	LoadHeightMap(L"Test");
+	LoadHeightMap(wcHeightMapFilename);
 	for (AkU32 i = 0; i < _countof(wcSplatingFilenames); i++)
 	{
-		LoadSplatingTexture(L"Splating", i);
+		if(wcSplatingFilenames[i])
+		{
+			AkI32 iSplatingID = 0;
+			LoadSplatingTexture(wcAlphaFilenames[i], &iSplatingID);
+		}
 	}
 
 	// Create Render obj.
 	_pTerrain = GRenderer->CreateTerrain();
 	_pTerrain->CreateStaticMeshBuffers(_pVertices, _uVerticeNum, _pIndices, _uIndiceNum);
-	_pTerrain->SetTextures(wcSplatingFilenames[0], wcSplatingFilenames[1], L"../../assets/map/soil.dds");
+	_pTerrain->SetTextures(wcSplatingFilenames[0], wcSplatingFilenames[1], wcAlbedoFilename);
 
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissvie = Vector3(0.0f);
@@ -250,6 +257,34 @@ void Terrain::ComputeTangents()
 	delete[] biTangent;
 }
 
+void Terrain::LoadSetUpFile(const wchar_t* wcSetUpFile)
+{
+	wchar_t wcFilePath[_MAX_PATH] = {};
+	wcscat_s(wcFilePath, MAP_FILE_PATH);
+	wcscat_s(wcFilePath, wcSetUpFile);
+
+	FILE* fp = nullptr;
+	_wfopen_s(&fp, wcFilePath, L"rt");
+	if (!fp)
+	{
+		__debugbreak();
+	}
+
+	// 01. Texture name
+	fwscanf_s(fp, L"%s", wcAlbedoFilename, _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcSplatingFilenames[0], _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcSplatingFilenames[1], _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcHeightMapFilename, _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcAlphaFilenames[0], _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcAlphaFilenames[1], _MAX_PATH);
+
+	if (fp)
+	{
+		fclose(fp);
+		fp = nullptr;
+	}
+}
+
 void Terrain::LoadHeightMap(const wchar_t* wcHeightFile)
 {
 	AkU8* uImg = nullptr;
@@ -277,19 +312,34 @@ void Terrain::LoadHeightMap(const wchar_t* wcHeightFile)
 	}
 }
 
-void Terrain::LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32 iSplattingID)
+void Terrain::LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSplattingID)
 {
 	AkU8* uImg = nullptr;
 	AkU32 uWidth = 0;
 	AkU32 uHeight = 0;
 
-	wchar_t wcTemp[2] = {};
-	_itow_s(iSplattingID, wcTemp, 10);
+	wchar_t wcTemp[_MAX_PATH] = {};
+	AkU32 uPos = 0;
+	AkU32 uLen = (AkU32)wcslen(wcAlphaFile);
+	for (AkU32 i = uLen - 1; i >= 0; i--)
+	{
+		if (wcAlphaFile[i] == L'_')
+		{
+			uPos = i;
+			break;
+		}
+	}
+	AkU32 j = 0;
+	for (AkU32 i = uPos + 1; i < uLen; i++)
+	{
+		wcTemp[j++] = wcAlphaFile[i];
+	}
+
+	*pOutSplattingID = _wtoi(wcTemp);
+
 	wchar_t wcPath[_MAX_PATH] = {};
 	wcscat_s(wcPath, MAP_FILE_PATH);
 	wcscat_s(wcPath, wcAlphaFile);
-	wcscat_s(wcPath, L"_");
-	wcscat_s(wcPath, wcTemp);
 	wcscat_s(wcPath, L".png");
 
 	ReadImage(wcPath, &uImg, &uWidth, &uHeight);
@@ -306,13 +356,13 @@ void Terrain::LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32 iSplattingID
 
 		for (AkU32 i = 0; i < _uVerticeNum; i++)
 		{
-			switch (iSplattingID)
+			switch (*pOutSplattingID)
 			{
 			case 0:
-				_pVertices[i].pAlpha[iSplattingID] = pPixels[i].x;
+				_pVertices[i].pAlpha[*pOutSplattingID] = pPixels[i].x;
 				break;
 			case 1:
-				_pVertices[i].pAlpha[iSplattingID] = pPixels[i].y;
+				_pVertices[i].pAlpha[*pOutSplattingID] = pPixels[i].y;
 				break;
 			default:
 				__debugbreak();
@@ -545,19 +595,34 @@ void TerrainEdit::SaveHeightMap(const wchar_t* wcHeightFile)
 	pPixels = nullptr;
 }
 
-void TerrainEdit::LoadSplatingTexture(const wchar_t* wcAlphaFile)
+void TerrainEdit::LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSelectedID)
 {
 	AkU8* uImg = nullptr;
 	AkU32 uWidth = 0;
 	AkU32 uHeight = 0;
 
-	wchar_t wcTemp[2] = {};
-	_itow_s(_iSelectedTexture, wcTemp, 10);
+	wchar_t wcTemp[_MAX_PATH] = {};
+	AkU32 uPos = 0;
+	AkU32 uLen = (AkU32)wcslen(wcAlphaFile);
+	for (AkU32 i = uLen - 1; i >= 0; i--)
+	{
+		if (wcAlphaFile[i] == L'_')
+		{
+			uPos = i;
+			break;
+		}
+	}
+	AkU32 j = 0;
+	for (AkU32 i = uPos + 1; i < uLen; i++)
+	{
+		wcTemp[j++] = wcAlphaFile[i];
+	}
+
+	_iSelectedTexture = _wtoi(wcTemp);
+
 	wchar_t wcPath[_MAX_PATH] = {};
 	wcscat_s(wcPath, MAP_FILE_PATH);
 	wcscat_s(wcPath, wcAlphaFile);
-	wcscat_s(wcPath, L"_");
-	wcscat_s(wcPath, wcTemp);
 	wcscat_s(wcPath, L".png");
 
 	ReadImage(wcPath, &uImg, &uWidth, &uHeight);
@@ -597,9 +662,11 @@ void TerrainEdit::LoadSplatingTexture(const wchar_t* wcAlphaFile)
 		delete uImg;
 		uImg = nullptr;
 	}
+
+	*pOutSelectedID = _iSelectedTexture;
 }
 
-void TerrainEdit::SaveSplatingTexture(const wchar_t* wcAlphaFile)
+void TerrainEdit::SaveSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSelectedID)
 {
 	using namespace DirectX;
 
@@ -636,6 +703,8 @@ void TerrainEdit::SaveSplatingTexture(const wchar_t* wcAlphaFile)
 
 	SaveToWICFile(tImage, WIC_FLAGS_FORCE_RGB, GetWICCodec(WIC_CODEC_PNG), wcPath);
 
+	*pOutSelectedID = _iSelectedTexture;
+
 	delete[] pPixels;
 	pPixels = nullptr;
 }
@@ -645,11 +714,11 @@ void TerrainEdit::SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wc
 	if (!_pTerrain)
 		return;
 
-	if (_wcAlbedoFilePath.empty() && wcAlbedoFilePath)
+	if (wcAlbedoFilePath)
 		_wcAlbedoFilePath = wcAlbedoFilePath;
-	if (_wcSecondTexFilePath.empty() && wcSecondTexFilePath)
+	if (wcSecondTexFilePath)
 		_wcSecondTexFilePath = wcSecondTexFilePath;
-	if (_wcThirdTexFilePath.empty() && wcThirdTexFilePath)
+	if (wcThirdTexFilePath)
 		_wcThirdTexFilePath = wcThirdTexFilePath;
 
 	_pTerrain->SetTextures(!_wcSecondTexFilePath.empty() ? _wcSecondTexFilePath.c_str() : wcSecondTexFilePath,

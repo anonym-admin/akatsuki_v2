@@ -26,8 +26,8 @@ public:
 	void SetName(const wchar_t* wcName) { Name = wcName; }
 
 protected:
-	virtual void Load() = 0;
-	virtual void Save() = 0;
+	virtual void Load(const std::wstring& wcFilePath) = 0;
+	virtual void Save(const std::wstring& wcFilePath) = 0;
 
 	Model* CreateModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned);
 	Camera* CreateCamera();

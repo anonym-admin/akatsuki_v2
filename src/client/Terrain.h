@@ -13,10 +13,10 @@ class Terrain : public Actor
 public:
 	static AkBool DRAW_WIRE;
 
-	Terrain();
+	Terrain(const wchar_t* wcSetUpFile);
 	~Terrain();
 
-	AkBool Initialize();
+	AkBool Initialize(const wchar_t* wcSetUpFile);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
 	virtual void RenderShadow() override;
@@ -35,8 +35,9 @@ private:
 	void ComputeNormals();
 	void ComputeTangents();
 
+	void LoadSetUpFile(const wchar_t* wcSetUpFile);
 	void LoadHeightMap(const wchar_t* wcHeightFile);
-	void LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32 iSplattingID);
+	void LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSplattingID);
 
 	void UpdateHeight(Actor* pActor);
 
@@ -55,11 +56,10 @@ private:
 
 	const AkF32 MAX_HEIGHT = 30.0f;
 
-	const wchar_t* wcSplatingFilenames[2] =
-	{
-		L"../../assets/map/grass.dds",
-		L"../../assets/map/stone.dds",
-	};
+	wchar_t wcSplatingFilenames[2][_MAX_PATH] = {};
+	wchar_t wcAlphaFilenames[2][_MAX_PATH] = {};
+	wchar_t wcHeightMapFilename[_MAX_PATH] = {};
+	wchar_t wcAlbedoFilename[_MAX_PATH] = {};
 };
 
 /*
@@ -89,8 +89,8 @@ public:
 
 	void LoadHeightMap(const wchar_t* wcHeightFile);
 	void SaveHeightMap(const wchar_t* wcHeightFile);
-	void LoadSplatingTexture(const wchar_t* wcAlphaFile);
-	void SaveSplatingTexture(const wchar_t* wcAlphaFile);
+	void LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSelectedID);
+	void SaveSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSelectedID);
 
 	void SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wcSecondTexFilePath, const wchar_t* wcThirdTexFilePath);
 

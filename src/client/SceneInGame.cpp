@@ -30,7 +30,7 @@ AkBool SceneInGame::BeginScene()
 
 	// Terrain
 	{
-		Terrain* pTerrain = new Terrain;
+		Terrain* pTerrain = new Terrain(L"main.map");
 		pTerrain->Name = L"Terrain";
 		pTerrain->tLink.pData = pTerrain;
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::TERRAIN, pTerrain);
@@ -292,7 +292,7 @@ AkBool SceneInGame::BeginScene()
 	// Collision check.
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::CONTAINER);
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::WEAPON);
-	// GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
 
 	// Create Frustum.
 	_pFrustum = CreateFrustum(GRenderer);
