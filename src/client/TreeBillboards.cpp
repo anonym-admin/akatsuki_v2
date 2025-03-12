@@ -23,7 +23,7 @@ TreeBillboard::~TreeBillboard()
 }
 
 AkBool TreeBillboard::Initialize()
-{
+{/*
 	BillboardVertex_t pVertices[5] = {};
 	pVertices[0].vPosition = Vector3(-5.0f, 0.0f, 0.0f);
 	pVertices[0].vSize = Vector2(1.0f);
@@ -36,12 +36,19 @@ AkBool TreeBillboard::Initialize()
 	pVertices[4].vPosition = Vector3(4.0f, 0.0f, 0.0f);
 	pVertices[4].vSize = Vector2(1.0f);
 
-	_pModel = CreateBillboardModel(pVertices, 5);
+	_pModel = CreateBillboardModel(pVertices, 5);*/
 
+	// Create Model
+	AkU32 uMeshDataNum = 0;
+	MeshData_t* pSquare = GeometryGenerator::MakeSquare(&uMeshDataNum, 1.0f);
+	wcscpy_s(pSquare->wcAlbedoTextureFilename, L"../../assets/tree02S.dds");
+	Vector3 vAlbedo = Vector3(1.0f);
+	Vector3 vEmissvie = Vector3(0.0f);
+	_pModel = CreateBillboardModel(pSquare, 1, &vAlbedo, 0.0f, 1.0f, &vEmissvie);
 
 	// Create transform.
 	_pTransform = CreateTransform();
-	_pTransform->SetPosition(0.0f, 1.5f, 1025.0f);
+	_pTransform->SetPosition(0.0f, 1.5f, 0.0f);
 
 	return AK_TRUE;
 }

@@ -4,6 +4,7 @@
 #include "IBLTexture.hlsli"
 #include "SamplerState.hlsli"
 #include "GlobalConsts.hlsli"
+#include "ShadingFunction.hlsli"
 
 #define LIGHT_OFF 0x00
 #define LIGHT_DIRECTIONAL 0x01

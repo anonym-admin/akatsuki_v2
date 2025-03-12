@@ -159,6 +159,10 @@ MeshData_t* GeometryGenerator::MakeSquare(AkU32* pMeshDataNum, const AkF32 fScal
 	AkU32 uMeshDataNum = 1;
 	pMeshData = new MeshData_t[uMeshDataNum];
 
+	Vector2 vTexScale = Vector2(1.0f);
+	if (pTexScale)
+		vTexScale = *pTexScale;
+
 	pMeshData->uVerticeNum = 4;
 	pMeshData->uIndicesNum = 6;
 	pMeshData->pVertices = new Vertex_t[pMeshData->uVerticeNum];
@@ -172,10 +176,10 @@ MeshData_t* GeometryGenerator::MakeSquare(AkU32* pMeshDataNum, const AkF32 fScal
 	pMeshData->pVertices[1].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
 	pMeshData->pVertices[2].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
 	pMeshData->pVertices[3].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
-	pMeshData->pVertices[0].vTexCoord = Vector2(0.0f, 0.0f) * (*pTexScale);
-	pMeshData->pVertices[1].vTexCoord = Vector2(1.0f, 0.0f) * (*pTexScale);
-	pMeshData->pVertices[2].vTexCoord = Vector2(1.0f, 1.0f) * (*pTexScale);
-	pMeshData->pVertices[3].vTexCoord = Vector2(0.0f, 1.0f) * (*pTexScale);
+	pMeshData->pVertices[0].vTexCoord = Vector2(0.0f, 0.0f) * vTexScale;
+	pMeshData->pVertices[1].vTexCoord = Vector2(1.0f, 0.0f) * vTexScale;
+	pMeshData->pVertices[2].vTexCoord = Vector2(1.0f, 1.0f) * vTexScale;
+	pMeshData->pVertices[3].vTexCoord = Vector2(0.0f, 1.0f) * vTexScale;
 
 	pMeshData->pIndices[0] = 0;
 	pMeshData->pIndices[1] = 1;

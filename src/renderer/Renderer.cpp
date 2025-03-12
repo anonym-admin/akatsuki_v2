@@ -817,13 +817,30 @@ void FRenderer::RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat)
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
-void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle)
+void FRenderer::RenderBillboardWithGS(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD;
 	tItem.pObjHandle = pBillboard;
 	tItem.tBillboardParam.pWorld = pWorldMat;
 	tItem.tBillboardParam.pTexHandle = pTexHandle;
+
+	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	{
+		__debugbreak();
+	}
+
+	_uCurThreadIndex++;
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+}
+
+void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD;
+	tItem.pObjHandle = pBillboard;
+	tItem.tBillboardParam.pWorld = pWorldMat;
+	tItem.tBillboardParam.pTexHandle = nullptr;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
 	{

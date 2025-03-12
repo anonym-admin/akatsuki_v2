@@ -44,6 +44,9 @@
     <None Include="..\..\shader\DiskSample.hlsli">
       <Filter>shader</Filter>
     </None>
+    <None Include="..\..\shader\ShadingFunction.hlsli">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">
@@ -254,10 +257,13 @@
     <CustomBuild Include="..\..\shader\DepthOnlyShader.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
+    <CustomBuild Include="..\..\shader\BillboardGeoShader.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\shader\TerrainEditorShader.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
   </ItemGroup>

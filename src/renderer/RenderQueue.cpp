@@ -162,7 +162,14 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD:
 			{
 				FBillboardObjects* pBillboards = (FBillboardObjects*)pItem->pObjHandle;
-				pBillboards->Draw(uThreadIndex, pCmdList, pItem->tBillboardParam.pWorld, pItem->tBillboardParam.pTexHandle); // replace line obj param.
+				if(pItem->tBillboardParam.pTexHandle)
+				{
+					pBillboards->Draw(uThreadIndex, pCmdList, pItem->tBillboardParam.pWorld, pItem->tBillboardParam.pTexHandle); // replace line obj param.
+				}
+				else
+				{
+					pBillboards->Draw(uThreadIndex, pCmdList, pItem->tBillboardParam.pWorld);
+				}
 			}
 			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ:

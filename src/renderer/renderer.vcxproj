@@ -176,6 +176,7 @@
     <None Include="..\..\shader\IBLTexture.hlsli" />
     <None Include="..\..\shader\Common.hlsli" />
     <None Include="..\..\shader\SamplerState.hlsli" />
+    <None Include="..\..\shader\ShadingFunction.hlsli" />
     <None Include="packages.config" />
     <None Include="Renderer.def" />
   </ItemGroup>
@@ -285,12 +286,17 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
+    <CustomBuild Include="..\..\shader\BillboardGeoShader.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\TerrainEditorShader.hlsl">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>

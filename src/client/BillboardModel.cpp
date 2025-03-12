@@ -15,6 +15,14 @@ BillboardModels::BillboardModels(BillboardVertex_t* pBillboardVertices, AkU32 uP
     }
 }
 
+BillboardModels::BillboardModels(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
+{
+    if (!Initialize(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive))
+    {
+        __debugbreak();
+    }
+}
+
 BillboardModels::~BillboardModels()
 {
     CleanUp();
@@ -30,9 +38,25 @@ AkBool BillboardModels::Initialize(BillboardVertex_t* pBillboardVertices, AkU32 
     return AK_TRUE;
 }
 
+AkBool BillboardModels::Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
+{
+    _pBillboard = GRenderer->CreateBillboards();
+    _pBillboard->CreateMeshBuffers(pMeshData, uMeshDataNum);
+    _pBillboard->UpdateMaterialBuffers(pAlbedo, fMetallic, fRoughness, pEmissive);
+
+    return AK_TRUE;
+}
+
 void BillboardModels::Render()
 {
-    GRenderer->RenderBillboard(_pBillboard, &_mWorldRow, _pTreeTextureArray);
+    if(_pTreeTextureArray)
+    {
+        GRenderer->RenderBillboardWithGS(_pBillboard, &_mWorldRow, _pTreeTextureArray);
+    }
+    else
+    {
+        GRenderer->RenderBillboard(_pBillboard, &_mWorldRow);
+    }
 }
 
 void BillboardModels::CleanUp()
