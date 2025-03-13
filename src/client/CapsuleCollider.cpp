@@ -54,7 +54,7 @@ AkBool CapsuleCollider::BoxIntersect(BoxCollider* pCollider)
 	Vector3 vA = pCollider->GetTransform()->GetPosition() - vO;
 
 	AkF32 t = vA.Dot(vUp);
-	t = max(0, t);
+	t = max(0.0f, t);
 	t = min(Height(), t);
 
 	Vector3 vP = vO + vUp * t;

@@ -31,3 +31,11 @@ private:
 	Animation* _pAnim = nullptr;
 };
 
+/*
+======================
+SkinnedModel Edit
+======================
+*/
+
+
+

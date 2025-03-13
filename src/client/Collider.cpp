@@ -45,7 +45,7 @@ AkBool Collider::Intersect(Collider* pCollider)
 	case COLLIDER_TYPE::CAPSULE:
 		return BoxIntersect((BoxCollider*)pCollider);
 	case COLLIDER_TYPE::SQUARE:
-		return SqaureIntersect();
+		return MouseIntersect();
 	}
 	return AK_FALSE;
 }

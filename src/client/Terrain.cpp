@@ -844,7 +844,7 @@ void TerrainEdit::ComputeHeight()
 
 			AkF32 fDistance = (c - p).Length();
 			AkF32 fCosValue = cos(DirectX::XM_PIDIV2 * fDistance / _tBrush.fRange);
-			AkF32 fTemp = _fHeightScale * max(0, fCosValue);
+			AkF32 fTemp = _fHeightScale * max(0.0f, fCosValue);
 			if (fDistance <= _tBrush.fRange)
 			{
 				if (_bPositive)
@@ -910,7 +910,7 @@ void TerrainEdit::PaintBrush()
 
 			AkF32 fDistance = (c - p).Length();
 			AkF32 fCosValue = cos(DirectX::XM_PIDIV2 * fDistance / _tBrush.fRange);
-			AkF32 fTemp = _fPaintScale * max(0, fCosValue);
+			AkF32 fTemp = _fPaintScale * max(0.0f, fCosValue);
 			if (fDistance <= _tBrush.fRange)
 			{
 				if (_bPositive)

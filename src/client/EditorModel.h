@@ -16,29 +16,10 @@ public:
 	virtual void RenderShadow() override;
 
 private:
-	void EditorSetting();
-	void ModifiedAnimation();
-
-	void BlendMode();
 	virtual void Load(const std::wstring& wcFilePath) override;
 	virtual void Save(const std::wstring& wcFilePath) override;
 
 private:
-	Vector3 _vSceneCamPos = Vector3(0.0f);
-	AkI32 _iCurAnimClip = 0;
-	AkI32 _iNextAnimClip = 0;
-	AkU32 _uAnimFrame = 0;
-	AkBool _bFPV = AK_FALSE;
-	AkBool _bLoad = AK_FALSE;
-	AkBool _bSave = AK_FALSE;
-	AkBool _bIsSkinned = AK_FALSE;
 
-	AkBool _bBlendMode = AK_FALSE;
-	AkF32 _fBlendTime = 0.0f;
-
-	AkU32 _uClipNum = 0;
-	const wchar_t* _wcCurClipName = nullptr;
-
-	AssetMeshDataContainer_t _tContainer = {};
 };
 

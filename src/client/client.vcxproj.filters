@@ -88,6 +88,9 @@
     <Filter Include="src\obj\field">
       <UniqueIdentifier>{b3a00020-5464-49ba-a305-e90eba4a7c96}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ui\new">
+      <UniqueIdentifier>{472a0322-42f4-42b1-90ea-ba0a27f2921e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\HashTable.h">
@@ -258,9 +261,6 @@
     <ClInclude Include="ModelType.h">
       <Filter>src\model</Filter>
     </ClInclude>
-    <ClInclude Include="ModelExporter.h">
-      <Filter>src\model</Filter>
-    </ClInclude>
     <ClInclude Include="FilePath.h">
       <Filter>src\framework</Filter>
     </ClInclude>
@@ -315,8 +315,16 @@
     <ClInclude Include="SquareCollider.h">
       <Filter>src\comp\collider</Filter>
     </ClInclude>
-    <ClInclude Include="PostProcess.h">
+    <ClInclude Include="PostRenderControl.h">
       <Filter>src\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="UIButton.h">
+      <Filter>src\ui\new</Filter>
+    </ClInclude>
+    <ClInclude Include="UIImage.h">
+      <Filter>src\ui\new</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -464,9 +472,6 @@
     <ClCompile Include="EditorManager.cpp">
       <Filter>src\mgr</Filter>
     </ClCompile>
-    <ClCompile Include="ModelExporter.cpp">
-      <Filter>src\model</Filter>
-    </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>src\comp\collider</Filter>
     </ClCompile>
@@ -518,8 +523,16 @@
     <ClCompile Include="SquareCollider.cpp">
       <Filter>src\comp\collider</Filter>
     </ClCompile>
-    <ClCompile Include="PostProcess.cpp">
+    <ClCompile Include="PostRenderControl.cpp">
       <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="UIButton.cpp">
+      <Filter>src\ui\new</Filter>
+    </ClCompile>
+    <ClCompile Include="UIImage.cpp">
+      <Filter>src\ui\new</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

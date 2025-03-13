@@ -265,6 +265,6 @@ private:
 	// Post Process Parameter
 	AkI32 _iToneMappingType = 0; // 0 : Linear, 1 : Uncharted, 2: Filmic
 	AkU32 _uBloomLevels = 4;
-	AkF32 _fBloomStrength = 0.5f;
+	AkF32 _fBloomStrength = 0.05f;
 };
 

@@ -9,6 +9,10 @@
 #include <imgui_impl_win32.h>
 #include <ImGuiFileDialog.h>
 #include <ImGuiFileDialogConfig.h>
+// assimp
+#include <assimp\Importer.hpp>
+#include <assimp\postprocess.h>
+#include <assimp\scene.h>
 
 // For Memory Debugging.
 #ifdef _DEBUG
@@ -23,6 +27,8 @@
 #include <time.h>
 #include <process.h>
 #include <conio.h>
+using std::max;
+using std::min;
 
 // My inc
 #include "common/AkType.h"
@@ -63,3 +69,10 @@
 #include "Gravity.h"
 #include "SkinnedModel.h"
 #include "Actor.h"
+
+
+
+
+#include "FileSystem.h"
+#include "StringUtils.h"
+

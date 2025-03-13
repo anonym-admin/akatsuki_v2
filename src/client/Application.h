@@ -16,7 +16,10 @@ Application
 
 class TextUI;
 class InputUI;
-class PostProcess;
+class PostRenderControl;
+
+class ModelExporter;
+class UIImage;
 
 class Application
 {
@@ -56,9 +59,16 @@ private:
 	Vector3 _vSysFontColor = Vector3(0.0f, 1.0f, 0.0f);
 	Vector3 _vDynamicTextFontColor = Vector3(1.0f);
 
-	PostProcess* _pPostProcess = nullptr;
+	// Post process control.
+	PostRenderControl* _pPostProcess = nullptr;
 	AkBool _bUseDebugMode = AK_FALSE;
 	AkBool _bUsePostProcessController = AK_FALSE;
+
+	// Model Export
+	ModelExporter* _pModelExporter = nullptr;
+
+	// UI
+	UIImage* _pUIImage = nullptr;
 };
 
 

@@ -7,6 +7,15 @@ Square Collider
 ================
 */
 
+SquareCollider::SquareCollider(AkI32 iLeft, AkI32 iTop, AkI32 iRight, AkI32 iBottom)
+    : Collider(nullptr)
+{
+    if (!Initialize())
+    {
+        __debugbreak();
+    }
+}
+
 SquareCollider::SquareCollider(Actor* pOwner)
     : Collider(pOwner)
 {
@@ -19,6 +28,18 @@ SquareCollider::SquareCollider(Actor* pOwner)
 SquareCollider::~SquareCollider()
 {
     CleanUp();
+}
+
+AkBool SquareCollider::Initialize(AkI32 iLeft, AkI32 iTop, AkI32 iRight, AkI32 iBottom)
+{
+    _eType = COLLIDER_TYPE::SQUARE;
+
+    _iLeft = iLeft;
+    _iTop = iTop;
+    _iRight = iRight;
+    _iBottom = iBottom;
+
+    return AK_TRUE;
 }
 
 AkBool SquareCollider::Initialize()
@@ -46,6 +67,18 @@ AkBool SquareCollider::SphereIntersect(SphereCollider* pCollider)
 AkBool SquareCollider::CapsuleIntersect(CapsuleCollider* pCapsule)
 {
     return AK_FALSE;
+}
+
+AkBool SquareCollider::MouseIntersect() // Mouse intersect
+{
+    if (_iLeft < MOUSE_X && MOUSE_X < _iRight && _iTop < MOUSE_Y && MOUSE_Y < _iBottom)
+    {
+        return AK_TRUE;
+    }
+    else
+    {
+        return AK_FALSE;
+    }
 }
 
 void SquareCollider::OnCollisionEnter(Collider* pCollider)

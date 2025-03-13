@@ -28,7 +28,7 @@ public:
 	virtual AkBool BoxIntersect(BoxCollider* pCollider) = 0;
 	virtual AkBool SphereIntersect(SphereCollider* pCollider) = 0;
 	virtual AkBool CapsuleIntersect(CapsuleCollider* pCapsule) = 0;
-	virtual AkBool SqaureIntersect() { return AK_TRUE; }
+	virtual AkBool MouseIntersect() { return AK_TRUE; }
 
 	virtual void OnCollisionEnter(Collider* pCollider) = 0;
 	virtual void OnCollision(Collider* pCollider) = 0;

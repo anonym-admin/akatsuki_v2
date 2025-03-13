@@ -50,21 +50,6 @@ void EditorModel::RenderShadow()
 
 }
 
-void EditorModel::EditorSetting()
-{
-
-}
-
-void EditorModel::ModifiedAnimation()
-{
-
-}
-
-void EditorModel::BlendMode()
-{
-
-}
-
 void EditorModel::Load(const std::wstring& wcFilePath)
 {
 }

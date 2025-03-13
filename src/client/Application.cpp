@@ -11,9 +11,12 @@
 #include "EditorMap.h"
 #include "Collider.h"
 #include "Terrain.h"
-#include "PostProcess.h"
+#include "PostRenderControl.h"
 
 #include "Sound.h"
+
+#include "Model.h"
+#include "UIImage.h"
 
 /*
 ===============
@@ -63,7 +66,18 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 	}
 
 	// Create Post process
-	_pPostProcess = new PostProcess;
+	_pPostProcess = new PostRenderControl;
+
+	// Create Model Exporter
+	// _pModelExporter = new ModelExporter("../../assets/model_new/fbx/SwatGuy_BackLeft.fbx");
+	// _pModelExporter->ExportMaterial(L"SwatGuy_BackLeft");
+	// _pModelExporter->ExportMesh(L"SwatGuy_BackLeft");
+
+	RECT rt = {};
+	GetClientRect(GhWnd, &rt);
+
+	// Create New UI Object.
+	_pUIImage = new UIImage(L"../../assets/ui_01.dds", 250, 0, (rt.right - rt.left) / 2, 100, 0, 0);
 
 	// Reset timer.
 	GTimer->Reset();
@@ -101,8 +115,11 @@ void Application::RunApplication()
 	// Render.
 	Render();
 
+	// Test.
+	_pUIImage->Render();
+
 	// Post Process Control.
-	if(_bUsePostProcessController)
+	if (_bUsePostProcessController)
 		_pPostProcess->RenderPost();
 
 	// ImGui Render.
@@ -132,6 +149,11 @@ AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 
 void Application::CleanUp()
 {
+	if (_pUIImage)
+	{
+		delete _pUIImage;
+		_pUIImage = nullptr;
+	}
 	if (_pPostProcess)
 	{
 		delete _pPostProcess;
@@ -161,19 +183,19 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 
 #if defined(_M_AMD64)
 
-	#if defined(_DEBUG) || defined(DEBUG)
-		wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
-	#else
-		wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
-	#endif
+#if defined(_DEBUG) || defined(DEBUG)
+	wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
+#else
+	wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
+#endif
 
 #elif defined(_M_IX86)
 
-	#if defined(_DEBUG) | defined(DEBUG)
-		wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
-	#else
-		wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
-	#endif
+#if defined(_DEBUG) | defined(DEBUG)
+	wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
+#else
+	wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
+#endif
 
 #endif
 
@@ -203,7 +225,7 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 
 	GRenderer = pRenderer;
 
-	if(bEnableImGui)
+	if (bEnableImGui)
 		GRenderer->BindImGui((void**)&GImGui);
 
 	return AK_TRUE;

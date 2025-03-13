@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include <Windows.h>
 
+
+#include "src/client/StringUtils.h"
+
+
+
 int Clamp(const int iValue, const int iMin, const int iMax)
 {
 	if (iValue < iMin)
@@ -168,96 +173,6 @@ float GenterateRandomFloat(float fMin, float fMax)
 {
 	float fScale = rand() / (float)RAND_MAX;
 	return fMin + fScale * (fMax - fMin);
-}
-
-std::string GetFileExtension(const std::string& filePath)
-{
-	size_t dotPos = filePath.find_last_of('.');
-	if (dotPos == std::string::npos) {
-		return "";
-	}
-	size_t slashPos = filePath.find_last_of("/\\");
-	if (slashPos != std::string::npos && slashPos > dotPos) {
-		return "";
-	}
-	return filePath.substr(dotPos + 1);
-}
-
-std::string GetFilePath(const std::string& filePath)
-{
-	size_t pos = filePath.find_last_of("/\\");
-	if (pos == std::string::npos) {
-		return "";
-	}
-	return filePath.substr(0, pos + 1);
-}
-
-std::string GetFileName(const std::string& filePath)
-{
-	size_t pos = filePath.find_last_of("/\\");
-	if (pos == std::string::npos) {
-		return "";
-	}
-	return filePath.substr(pos + 1);
-}
-
-std::wstring GetFileExtension(const std::wstring& filePath)
-{
-	size_t dotPos = filePath.find_last_of(L'.');
-	if (dotPos == std::wstring::npos) {
-		return L"";
-	}
-	size_t slashPos = filePath.find_last_of(L"/\\");
-	if (slashPos != std::string::npos && slashPos > dotPos) {
-		return L"";
-	}
-	return filePath.substr(dotPos + 1);
-}
-
-std::wstring GetFilePath(const std::wstring& fullPath)
-{
-	size_t pos = fullPath.find_last_of(L"/\\");
-	if (pos == std::string::npos) {
-		return L"";
-	}
-	return fullPath.substr(0, pos + 1);
-}
-
-std::wstring GetFileName(const std::wstring& filePath)
-{
-	size_t pos = filePath.find_last_of(L"/\\");
-	if (pos == std::string::npos) {
-		return L"";
-	}
-	return filePath.substr(pos + 1);
-}
-
-std::string GetFileNmaeExcludeExt(const std::string& fileName)
-{
-	size_t pos = fileName.find_last_of(".");
-	if (pos == std::string::npos) {
-		return "";
-	}
-	return fileName.substr(0, pos);
-}
-
-std::wstring GetFileNmaeExcludeExt(const std::wstring& fileName)
-{
-	size_t pos = fileName.find_last_of(L".");
-	if (pos == std::string::npos) {
-		return L"";
-	}
-	return fileName.substr(0, pos + 1);
-}
-
-std::wstring ToWString(const std::string& str)
-{
-	return std::wstring(str.begin(), str.end());
-}
-
-std::string ToString(const std::wstring& str)
-{
-	return std::string(str.begin(), str.end());
 }
 
 void CalcColliderMinMax(MeshData_t* pMeshData, AkU32 uMeshDataNum, Vector3* pOutMin, Vector3* pOutMax)

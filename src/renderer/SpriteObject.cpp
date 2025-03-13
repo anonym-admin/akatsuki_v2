@@ -328,9 +328,6 @@ AkBool FSpriteObject::Initialize(FRenderer* pRenderer, const wchar_t* wcTexFileN
 		AkU32 uTexHeight = 1;
 		_pTexHandle = (TextureHandle_t*)_pRenderer->CreateTextureFromFile(wcTexFileName, AK_TRUE);
 		
-		//// For Debugging.
-		//printf("Sprite Tex [%p]\n", _pTexHandle);
-
 		if (_pTexHandle)
 		{
 			D3D12_RESOURCE_DESC tDesc = _pTexHandle->pTextureResource->GetDesc();
@@ -356,6 +353,12 @@ AkBool FSpriteObject::Initialize(FRenderer* pRenderer, const wchar_t* wcTexFileN
 		}
 	}
 	return bResult;
+}
+
+void FSpriteObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, float Z)
+{
+	Vector2 Scale = { _vScale.x * pScale->x, _vScale.y * pScale->y };
+	DrawWithTex(uThreadIndex, pCommandList, pPos, &Scale, &_vRect, Z, _pTexHandle, nullptr);
 }
 
 void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, const RECT* pRect, float Z, TextureHandle_t* pTexHandle, const Vector3* pFontColor)
@@ -452,12 +455,6 @@ void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* p
 	pCommandList->IASetVertexBuffers(0, 1, &sm_tVertexBufferView);
 	pCommandList->IASetIndexBuffer(&sm_tIndexBufferView);
 	pCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-}
-
-void FSpriteObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, float Z)
-{
-	Vector2 Scale = { _vScale.x * pScale->x, _vScale.y * pScale->y };
-	DrawWithTex(uThreadIndex, pCommandList, pPos, &Scale, &_vRect, Z, _pTexHandle, nullptr);
 }
 
 FSpriteObject::FSpriteObject()
