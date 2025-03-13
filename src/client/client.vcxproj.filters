@@ -315,6 +315,9 @@
     <ClInclude Include="SquareCollider.h">
       <Filter>src\comp\collider</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcess.h">
+      <Filter>src\framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -514,6 +517,9 @@
     </ClCompile>
     <ClCompile Include="SquareCollider.cpp">
       <Filter>src\comp\collider</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcess.cpp">
+      <Filter>src\framework</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

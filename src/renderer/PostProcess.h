@@ -53,8 +53,8 @@ private:
 	D3D12_INDEX_BUFFER_VIEW _tIndexBufferView = {};
 	ID3D12Resource** _ppBloomBuffers = nullptr;
 
-	D3D12_CPU_DESCRIPTOR_HANDLE _hSrvCpu[4] = {};
-	D3D12_CPU_DESCRIPTOR_HANDLE _hRtvCpu[4] = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE _hSrvCpu[MAX_BLOOM_LEVEL] = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE _hRtvCpu[MAX_BLOOM_LEVEL] = {};
 
 	FImageFilter** _ppBloomDownFilters = nullptr;
 	FImageFilter** _ppBloomUpFilters = nullptr;

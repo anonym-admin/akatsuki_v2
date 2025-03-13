@@ -61,9 +61,10 @@ void FImageFilter::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList,
     memset(pPostProcessConstantBuffer, 0, sizeof(PostProcessConstantBuffer_t));
     pPostProcessConstantBuffer->fDx = 1.0f / (AkF32)_uWidth;
     pPostProcessConstantBuffer->fDy = 1.0f / (AkF32)_uHeight;
-    pPostProcessConstantBuffer->fStrength = 0.075f;
+    pPostProcessConstantBuffer->fStrength = _pRenderer->GetBloomStrength();
     pPostProcessConstantBuffer->fExposure = 1.0f;
     pPostProcessConstantBuffer->fGamma = 2.2f;
+    pPostProcessConstantBuffer->uOption0 = (AkU32)_pRenderer->GetToneMappingType(); // Default : Linear
 
     // b0
     CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(*pCPU, 0, uDecriptorSize);

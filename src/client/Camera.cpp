@@ -13,6 +13,8 @@ Camera base class
 ===================
 */
 
+AkBool Camera::UPDATE_CAMERA = AK_TRUE;
+
 Camera::Camera(const Vector3* pPos, const Vector3* pYawPirchRoll)
 {
 	Initialize(pPos, pYawPirchRoll);
@@ -37,6 +39,9 @@ AkBool Camera::Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll)
 
 void Camera::Update()
 {
+	if (!UPDATE_CAMERA)
+		return;
+
 	_pTransform->Update();
 
 	switch (Mode)

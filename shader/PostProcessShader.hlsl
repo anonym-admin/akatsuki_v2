@@ -10,8 +10,8 @@ cbuffer Const : register(b0)
     float strength;
     float exposure;
     float gamma;
-    float option3;
-    float option4;
+    uint option0;
+    float option1;
 };
 
 struct PostProcessVSInput
@@ -45,6 +45,31 @@ float3 LinearToneMapping(float3 color)
     return color;
 }
 
+float3 Uncharted2ToneMapping(float3 color)
+{
+    float A = 0.15;
+    float B = 0.50;
+    float C = 0.10;
+    float D = 0.20;
+    float E = 0.02;
+    float F = 0.30;
+    float W = 11.2;
+    
+    color *= exposure;
+    color = ((color * (A * color + C * B) + D * E) / (color * (A * color + B) + D * F)) - E / F;
+    float white = ((W * (A * W + C * B) + D * E) / (W * (A * W + B) + D * F)) - E / F;
+    color /= white;
+    color = pow(color, float3(1.0, 1.0, 1.0) / gamma);
+    return color;
+}
+
+float3 FilmicToneMapping(float3 color)
+{
+    color = max(float3(0, 0, 0), color);
+    color = (color * (6.2 * color + .5)) / (color * (6.2 * color + 1.7) + 0.06);
+    return color;
+}
+
 float4 PSMain(PostProcessPSInput input) : SV_TARGET
 {
     float3 color0 = tex0.Sample(linearWrapSS, input.texCoord).rgb;
@@ -52,7 +77,13 @@ float4 PSMain(PostProcessPSInput input) : SV_TARGET
     
     float3 combined = (1.0 - strength) * color0 + strength * color1;
 
-    combined = LinearToneMapping(combined);
+    [flatten]
+    if (0 == option0)
+        combined = LinearToneMapping(combined);
+    else if (1 == option0)
+        combined = Uncharted2ToneMapping(combined);
+    else if (2 == option0)
+        combined = FilmicToneMapping(combined);
     
     return float4(combined, 1.0);
 }

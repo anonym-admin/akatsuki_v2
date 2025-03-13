@@ -12,6 +12,8 @@ class Actor;
 class Camera
 {
 public:
+	static AkBool UPDATE_CAMERA;
+
 	Camera(const Vector3* pPos, const Vector3* pYawPirchRoll);
 	~Camera();
 

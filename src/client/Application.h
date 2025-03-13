@@ -16,6 +16,7 @@ Application
 
 class TextUI;
 class InputUI;
+class PostProcess;
 
 class Application
 {
@@ -54,6 +55,10 @@ private:
 	InputUI* _pDynamicTextUI = nullptr;
 	Vector3 _vSysFontColor = Vector3(0.0f, 1.0f, 0.0f);
 	Vector3 _vDynamicTextFontColor = Vector3(1.0f);
+
+	PostProcess* _pPostProcess = nullptr;
+	AkBool _bUseDebugMode = AK_FALSE;
+	AkBool _bUsePostProcessController = AK_FALSE;
 };
 
 

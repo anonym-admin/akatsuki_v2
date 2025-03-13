@@ -121,7 +121,7 @@ struct PostProcessConstantBuffer_t
 	AkF32 fStrength;
 	AkF32 fExposure;
 	AkF32 fGamma;
-	AkF32 fOption0;
+	AkU32 uOption0;
 	AkF32 fOption1;
 };
 

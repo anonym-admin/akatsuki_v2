@@ -84,6 +84,9 @@ public:
 	virtual void SetCamera(const Vector3* pCamPos, const Vector3* pCamDir, Vector3* pCamUp) override;
 	virtual void SetIBLStrength(AkF32 fIBLStrength) override;
 	virtual void SetVSync(AkBool bUseVSync) override;
+	virtual void SetToneMappingType(AkI32 iType) override { _iToneMappingType = iType; }
+	virtual void SetBloomLevels(AkU32 uLevel) override { _uBloomLevels = uLevel; }
+	virtual void SetBloomStrength(AkF32 uStrength) override { _fBloomStrength = uStrength; }
 	virtual void GetCameraPosition(AkF32* pX, AkF32* pY, AkF32* pZ) override;
 	virtual Vector3 GetWorldNearPosition(AkF32 fNdcX, AkF32 fNdcY) override;
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) override;
@@ -130,6 +133,9 @@ public:
 	AkF32* GetRTVClearColor() { return _pRTVClearColor; }
 	AkBool UseMSAA() { return _bUseMSAA; }
 	AkU32 GetNumQualityLevel() { return _uNumQualityLevels; }
+	AkU32 GetBloomLevel() { return _uBloomLevels; }
+	AkI32 GetToneMappingType() { return _iToneMappingType; }
+	AkF32 GetBloomStrength() { return _fBloomStrength; }
 
 	void EnsureCompleted();
 
@@ -243,7 +249,8 @@ private:
 	AkU32 _uSpotLightsNum = 0;
 	Vector3 _vLightPos = Vector3(0.0f, 2.5f, 1025.0f);
 	D3D12_CPU_DESCRIPTOR_HANDLE _pShadowMapSrvCpu[CASCADE_SHADOW_MAP_LEVEL] = {};
-	// For PBR.
+
+	// For PBR Variable
 	ID3D12Resource* _pFloatBuffer = nullptr;
 	ID3D12Resource* _pResolvedBuffer = nullptr;
 	D3D12_CPU_DESCRIPTOR_HANDLE _hFloatBufferSrvCpu = {};
@@ -254,6 +261,10 @@ private:
 	AkF32 _fIBLStrength = 1.0f;
 	AkBool _bUseMSAA = AK_TRUE;
 	AkU32 _uNumQualityLevels = 0;
+
+	// Post Process Parameter
+	AkI32 _iToneMappingType = 0; // 0 : Linear, 1 : Uncharted, 2: Filmic
 	AkU32 _uBloomLevels = 4;
+	AkF32 _fBloomStrength = 0.5f;
 };
 

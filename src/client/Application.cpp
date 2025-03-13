@@ -11,6 +11,7 @@
 #include "EditorMap.h"
 #include "Collider.h"
 #include "Terrain.h"
+#include "PostProcess.h"
 
 #include "Sound.h"
 
@@ -61,6 +62,9 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 		return AK_FALSE;
 	}
 
+	// Create Post process
+	_pPostProcess = new PostProcess;
+
 	// Reset timer.
 	GTimer->Reset();
 
@@ -97,6 +101,10 @@ void Application::RunApplication()
 	// Render.
 	Render();
 
+	// Post Process Control.
+	if(_bUsePostProcessController)
+		_pPostProcess->RenderPost();
+
 	// ImGui Render.
 	ImGui::Render();
 
@@ -124,6 +132,11 @@ AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 
 void Application::CleanUp()
 {
+	if (_pPostProcess)
+	{
+		delete _pPostProcess;
+		_pPostProcess = nullptr;
+	}
 	if (GImGui)
 	{
 		GRenderer->UnBindImGui();
@@ -340,6 +353,15 @@ void Application::UpdateEnviroment()
 	{
 		Collider::DRAW_COLLIDER = !Collider::DRAW_COLLIDER;
 		Terrain::DRAW_WIRE = !Terrain::DRAW_WIRE;
+		_bUseDebugMode = AK_TRUE;
+	}
+	if (_bUseDebugMode)
+	{
+		if (KEY_DOWN(KEY_INPUT_P))
+		{
+			_bUsePostProcessController = !_bUsePostProcessController;
+			Camera::UPDATE_CAMERA = !Camera::UPDATE_CAMERA;
+		}
 	}
 
 	// TODO!!
