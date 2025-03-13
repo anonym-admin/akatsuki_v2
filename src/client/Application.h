@@ -57,7 +57,6 @@ private:
 
 	TextUI* _pSysTextUI = nullptr;
 	InputUI* _pDynamicTextUI = nullptr;
-	Vector3 _vSysFontColor = Vector3(0.0f, 1.0f, 0.0f);
 	Vector3 _vDynamicTextFontColor = Vector3(1.0f);
 
 	// Post process control.

@@ -193,10 +193,9 @@ AkBool FSpriteObject::CreatePipelineState()
 	tOpaquePsoDesc.SampleMask = UINT_MAX;
 	tOpaquePsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	tOpaquePsoDesc.NumRenderTargets = 1;
-	tOpaquePsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
+	tOpaquePsoDesc.RTVFormats[0] = _pRenderer->GetBackBufferRTVFormat();
 	tOpaquePsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	tOpaquePsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
-	tOpaquePsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
+	tOpaquePsoDesc.SampleDesc.Count = 1;
 	if (FAILED(pDeivce->CreateGraphicsPipelineState(&tOpaquePsoDesc, IID_PPV_ARGS(&sm_pDefaultPSO))))
 	{
 		__debugbreak();
@@ -326,7 +325,7 @@ AkBool FSpriteObject::Initialize(FRenderer* pRenderer, const wchar_t* wcTexFileN
 	{
 		AkU32 uTexWidth = 1;
 		AkU32 uTexHeight = 1;
-		_pTexHandle = (TextureHandle_t*)_pRenderer->CreateTextureFromFile(wcTexFileName, AK_TRUE);
+		_pTexHandle = (TextureHandle_t*)_pRenderer->CreateTextureFromFile(wcTexFileName, AK_FALSE);
 		
 		if (_pTexHandle)
 		{
@@ -450,7 +449,7 @@ void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* p
 
 	pCommandList->SetGraphicsRootDescriptorTable(0, hGPU);
 
-	pCommandList->SetPipelineState(sm_pDefaultPSO);
+	pCommandList->SetPipelineState(sm_pAccumulatePSO);
 	pCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pCommandList->IASetVertexBuffers(0, 1, &sm_tVertexBufferView);
 	pCommandList->IASetIndexBuffer(&sm_tIndexBufferView);

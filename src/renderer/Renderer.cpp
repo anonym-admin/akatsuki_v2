@@ -311,13 +311,13 @@ void FRenderer::EndRender()
 
 #ifdef MULTI_THREAD_RENDERING
 	_uActiveThreadCount = _uRenderThreadCount;
-	for (AkU32 i = 0; i < _uRenderThreadCount; i++)
+	for (AkU32 i = 0; i < _uRenderThreadCount - 1; i++)
 	{
 		::SetEvent(_pRenderThreadDescList[i].hEventList[(AkU32)RENDER_THREAD_EVENT_TYPE::RENDER_THREAD_EVENT_TYPE_PROCESS]);
 	}
 	::WaitForSingleObject(_hCompleteEvent, INFINITE);
 #else
-	for (AkU32 i = 0; i < _uRenderThreadCount; i++)
+	for (AkU32 i = 0; i < _uRenderThreadCount - 1; i++)
 	{
 		_ppRenderQueue[i]->Process(i, pCmdListPool, _pCmdQueue, 400, hResolvedRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 	}
@@ -338,6 +338,18 @@ void FRenderer::EndRender()
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	_pPostProcess->Process(0, pCmdList, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
 
+	// MSAA 를 사용하지 않는 DSV Heap 영역에 접근
+	hDSVHeap.Offset(1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
+
+	// Render UI
+	_ppRenderQueue[_uUIThreadIndex]->Process(_uUIThreadIndex, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+
+	pCmdList = pCmdListPool->GetCurrentCmdList();
+	pCmdList->RSSetViewports(1, &_tViewport);
+	pCmdList->RSSetScissorRects(1, &_tScissorRect);
+	pCmdList->OMSetRenderTargets(1, &hBackBufferRTVHeap, AK_FALSE, &hDSVHeap);
+
+	// Render ImGui
 	if (_bUseImgui)
 	{
 		pCmdList->SetDescriptorHeaps(1, &_pImGuiHeap);
@@ -433,10 +445,10 @@ AkBool FRenderer::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 		_pResolvedBuffer->Release();
 		_pResolvedBuffer = nullptr;
 	}
-	if (_pMainDS)
+	if (_pMainDSwithMSAA)
 	{
-		_pMainDS->Release();
-		_pMainDS = nullptr;
+		_pMainDSwithMSAA->Release();
+		_pMainDSwithMSAA = nullptr;
 	}
 	if (FAILED(_pSwapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, uScreenWidth, uScreenHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _uSwapChainFlag)))
 	{
@@ -854,7 +866,7 @@ void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -871,7 +883,7 @@ void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void*
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -889,7 +901,7 @@ void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMa
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)
@@ -1520,7 +1532,7 @@ AkBool FRenderer::CreateDescriptorForRTV()
 AkBool FRenderer::CreateDescriptorForDSV()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC tDsvHeapDesc = {};
-	tDsvHeapDesc.NumDescriptors = 1 + CASCADE_SHADOW_MAP_LEVEL; // Main + Shadow Map.
+	tDsvHeapDesc.NumDescriptors = 2 + CASCADE_SHADOW_MAP_LEVEL; // Main MSAA + Main Not MSAA + Shadow Map.
 	tDsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 	tDsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	if (FAILED(_pDevice->CreateDescriptorHeap(&tDsvHeapDesc, IID_PPV_ARGS(&_pDSVHeap))))
@@ -1704,20 +1716,36 @@ AkBool FRenderer::CreateDSVs(AkU32 uWidth, AkU32 uHeight)
 			D3D12_TEXTURE_LAYOUT_UNKNOWN,
 			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 
-		if (_bUseMSAA && _uNumQualityLevels)
+		// Can be used MSAA
 		{
-			tDepthDesc.SampleDesc.Count = 4;
-			tDepthDesc.SampleDesc.Quality = _uNumQualityLevels - 1;
-		}
+			if (_bUseMSAA && _uNumQualityLevels)
+			{
+				tDepthDesc.SampleDesc.Count = 4;
+				tDepthDesc.SampleDesc.Quality = _uNumQualityLevels - 1;
+			}
 
-		if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tDepthDesc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &tDepthOptimizedClearValue, IID_PPV_ARGS(&_pMainDS))))
+			if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tDepthDesc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &tDepthOptimizedClearValue, IID_PPV_ARGS(&_pMainDSwithMSAA))))
+			{
+				__debugbreak();
+				return AK_FALSE;
+			}
+
+			CD3DX12_CPU_DESCRIPTOR_HANDLE hDsvHandle(_pDSVHeap->GetCPUDescriptorHandleForHeapStart());
+			_pDevice->CreateDepthStencilView(_pMainDSwithMSAA, &tDepthStencilDesc, hDsvHandle);
+		}
+		// Don`t use MSAA
 		{
-			__debugbreak();
-			return AK_FALSE;
-		}
+			tDepthDesc.SampleDesc.Count = 1;
+			tDepthDesc.SampleDesc.Quality = 0;
+			if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tDepthDesc, D3D12_RESOURCE_STATE_DEPTH_WRITE, &tDepthOptimizedClearValue, IID_PPV_ARGS(&_pMainDS))))
+			{
+				__debugbreak();
+				return AK_FALSE;
+			}
 
-		CD3DX12_CPU_DESCRIPTOR_HANDLE hDsvHandle(_pDSVHeap->GetCPUDescriptorHandleForHeapStart());
-		_pDevice->CreateDepthStencilView(_pMainDS, &tDepthStencilDesc, hDsvHandle);
+			CD3DX12_CPU_DESCRIPTOR_HANDLE hDsvHandle(_pDSVHeap->GetCPUDescriptorHandleForHeapStart(), 1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
+			_pDevice->CreateDepthStencilView(_pMainDS, &tDepthStencilDesc, hDsvHandle);
+		}
 	}
 
 	return AK_TRUE;
@@ -2076,6 +2104,11 @@ void FRenderer::DestroyDSVs()
 	{
 		_pMainDS->Release();
 		_pMainDS = nullptr;
+	}
+	if (_pMainDSwithMSAA)
+	{
+		_pMainDSwithMSAA->Release();
+		_pMainDSwithMSAA = nullptr;
 	}
 }
 

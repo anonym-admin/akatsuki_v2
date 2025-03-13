@@ -14,7 +14,6 @@
 
 HWND GhWnd;
 IRenderer* GRenderer;
-ISprite* GCommonSprite;
 Window* GWindow;
 Application* GApp;
 Timer* GTimer;
@@ -26,6 +25,8 @@ AssetManager* GAssetManager;
 CollisionManager* GCollisionManager;
 UIManager* GUIManager;
 SoundManager* GSoundManager;
+ISprite* GSprite;
+void* GFont;
 
 class UGlobal
 {

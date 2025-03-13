@@ -74,13 +74,6 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 	// _pModelExporter->ExportMaterial(L"SwatGuy_BackLeft");
 	// _pModelExporter->ExportMesh(L"SwatGuy_BackLeft");
 
-	RECT rt = {};
-	GetClientRect(GhWnd, &rt);
-
-	// Create New UI Object.
-	_pUIImage = new UIImage(L"../../assets/ui_01.dds", 250, 0, (rt.right - rt.left) / 2, 100, 0, 0);
-	_pUIButton = new UIButton(L"Button_01", L"../../assets/ui_01.dds", 0, 0, 256, 256, 0, 110);
-
 	// Reset timer.
 	GTimer->Reset();
 
@@ -100,9 +93,6 @@ void Application::RunApplication()
 	// Update.
 	Update();
 
-	// Test.
-	_pUIButton->Update();
-
 	// Update Shadow Map Matrix
 	GRenderer->UpdateCascadeOrthoProjMatrix();
 
@@ -121,13 +111,11 @@ void Application::RunApplication()
 	// Render.
 	Render();
 
-	// Test.
-	_pUIImage->Render();
-	_pUIButton->Render();
-
 	// Post Process Control.
 	if (_bUsePostProcessController)
+	{
 		_pPostProcess->RenderPost();
+	}
 
 	// ImGui Render.
 	ImGui::Render();
@@ -175,6 +163,16 @@ void Application::CleanUp()
 	{
 		GRenderer->UnBindImGui();
 	}
+	if (GFont)
+	{
+		GRenderer->DestroyFontObject(GFont);
+		GFont = nullptr;
+	}
+	if (GSprite)
+	{
+		GSprite->Release();
+		GSprite = nullptr;
+	}
 	if (GRenderer)
 	{
 		GRenderer->Release();
@@ -195,19 +193,19 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 
 #if defined(_M_AMD64)
 
-#if defined(_DEBUG) || defined(DEBUG)
-	wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
-#else
-	wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
-#endif
+	#if defined(_DEBUG) || defined(DEBUG)
+		wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
+	#else
+		wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
+	#endif
 
 #elif defined(_M_IX86)
-
-#if defined(_DEBUG) | defined(DEBUG)
-	wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
-#else
-	wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
-#endif
+	
+	#if defined(_DEBUG) | defined(DEBUG)
+		wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
+	#else
+		wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
+	#endif
 
 #endif
 
@@ -240,6 +238,12 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 	if (bEnableImGui)
 		GRenderer->BindImGui((void**)&GImGui);
 
+	// Create Common Sprite Obj.
+	GSprite = GRenderer->CreateSpriteObject();
+
+	// Create Font Obj
+	GFont = GRenderer->CreateFontObject(L"Consolas", 16);
+
 	return AK_TRUE;
 }
 
@@ -270,7 +274,6 @@ AkBool Application::InitUI()
 	_pSysTextUI = new TextUI(256, 32, L"Consolas", 10);
 	_pSysTextUI->SetPosition(10, 10);
 	_pSysTextUI->SetScale(1.0f, 1.0f);
-	_pSysTextUI->SetFontColor(&_vSysFontColor);
 
 	GUIManager->AddUI(_pSysTextUI, UI_TYPE::UI_OBJ_SYS_INFO_TEXT);
 	GUIManager->OnUI(UI_TYPE::UI_OBJ_SYS_INFO_TEXT);

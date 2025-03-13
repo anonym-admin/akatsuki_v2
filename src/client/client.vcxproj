@@ -241,6 +241,7 @@
     <ClInclude Include="Sound.h" />
     <ClInclude Include="UIButton.h" />
     <ClInclude Include="UIImage.h" />
+    <ClInclude Include="UIText.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WorldMap.h" />
     <ClInclude Include="UI.h" />
@@ -322,6 +323,7 @@
     <ClCompile Include="TreeBillboards.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIImage.cpp" />
+    <ClCompile Include="UIText.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="UI.cpp" />

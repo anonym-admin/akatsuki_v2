@@ -190,6 +190,7 @@ private:
 	ID3D12DescriptorHeap* _pImGuiHeap = nullptr;
 	IDXGISwapChain3* _pSwapChain = nullptr;
 	ID3D12Resource* _ppBackBuffer[SWAP_CHAIN_FRAME_COUNT];
+	ID3D12Resource* _pMainDSwithMSAA = nullptr;
 	ID3D12Resource* _pMainDS = nullptr;
 	ID3D12Resource* _pShadowDS[CASCADE_SHADOW_MAP_LEVEL] = {};
 	ID3D12Fence* _pFence = nullptr;

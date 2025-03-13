@@ -62,7 +62,7 @@ void TextUI::WriteText(const wchar_t* wcText)
 
 void TextUI::Render()
 {
-	GRenderer->RenderSpriteWithTex(sm_pCommonSpriteObj, _iPosX, _iPosY, _fScaleX, _fScaleY, _bUseRect ? &_tRect : nullptr, _fDepth, _pTextTextureHandle, &_vFontColor);
+	GRenderer->RenderSpriteWithTex(sm_pCommonSpriteObj, _iPosX, _iPosY, _fScaleX, _fScaleY, _bUseRect ? &_tRect : nullptr, _fDepth, _pTextTextureHandle, nullptr);
 
 	RenderChildUI();
 }

@@ -1,31 +1,24 @@
 #pragma once
 
-#include "UI.h"
-
 /*
-===========
+==========
 Text UI
-===========
+==========
 */
 
-class TextUI : public UUI 
+class UIText
 {
 public:
-	TextUI(AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
-	~TextUI();
+	UIText(AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
+	~UIText();
 
 	AkBool Initialize(AkU32 uTextTextureWidth, AkU32 uTextTextureHeight, const wchar_t* wcFontFamilyName, AkF32 fFontSize);
 	void WriteText(const wchar_t* wcText);
 
-	virtual void Render() override;
-
-	virtual void MouseOn() override;
-	virtual void MouseLBtnDown() override;
-	virtual void MouseLBtnUp() override;
-	virtual void MouseLBtnClick() override;
+	void Render();
 
 private:
-	virtual void CleanUp() override;
+	void CleanUp();
 
 private:
 	AkU32 _uTextTextureWidth = 0;
@@ -35,3 +28,4 @@ private:
 	wchar_t _wcText[256] = {};
 	void* _pFontObj = nullptr;
 };
+

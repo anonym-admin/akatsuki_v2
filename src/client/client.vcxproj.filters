@@ -326,6 +326,9 @@
     <ClInclude Include="UIImage.h">
       <Filter>src\ui\new</Filter>
     </ClInclude>
+    <ClInclude Include="UIText.h">
+      <Filter>src\ui\new</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -532,6 +535,9 @@
       <Filter>src\ui\new</Filter>
     </ClCompile>
     <ClCompile Include="UIImage.cpp">
+      <Filter>src\ui\new</Filter>
+    </ClCompile>
+    <ClCompile Include="UIText.cpp">
       <Filter>src\ui\new</Filter>
     </ClCompile>
   </ItemGroup>

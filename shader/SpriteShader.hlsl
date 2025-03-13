@@ -54,11 +54,15 @@ float4 PSMain(PSInput input) : SV_TARGET
 {
     float4 texColor = texDiffuse.Sample(samplerDiffuse, input.texCoord);
     
-    // 배경이 검정색일 경우 해당 픽셀을 그리지 않는다.
-    if (!c_drawBackground)
+    if (texColor.r == 0.0)
     {
-        clip(texColor.r + texColor.g + texColor.b < 0.3 ? -1 : 1);
+        texColor.a = 0.0;
+    }
+    else
+    {
+        texColor.rgb *= color;
+        texColor.a = 1.0;
     }
     
-    return texColor * float4(color, 1.0);
+    return texColor;
 }
