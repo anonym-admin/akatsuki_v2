@@ -750,7 +750,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeoShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pGeoBillboardVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeometry.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pGeoBillboardVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -759,7 +759,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeoShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pGeoBillboardGS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeometry.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pGeoBillboardGS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -768,7 +768,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeoShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pGeoBillboardPS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeometry.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pGeoBillboardPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -777,7 +777,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pBasicBillboardVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardBasic.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pBasicBillboardVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -786,7 +786,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pBasicBillboardPS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardBasic.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pBasicBillboardPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{

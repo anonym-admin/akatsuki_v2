@@ -147,7 +147,7 @@ AkBool FSpriteObject::CreatePipelineState()
 	//m_pRenderer->SetCurrentPathForShader();
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/SpriteShader.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/SpriteBlending.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -156,7 +156,7 @@ AkBool FSpriteObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/SpriteShader.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/SpriteBlending.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{

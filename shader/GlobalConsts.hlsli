@@ -1,3 +1,6 @@
+#ifndef __GLOBAL_CONSTS_INCLUDED__
+#define __GLOBAL_CONSTS_INCLUDED__
+
 #define MAX_LIGHTS_COUNT 3
 
 struct LightConsts
@@ -30,3 +33,5 @@ cbuffer GlobalConsts : register(b0)
 
     LightConsts lights[MAX_LIGHTS_COUNT];
 };
+
+#endif

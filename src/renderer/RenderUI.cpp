@@ -1,40 +1,35 @@
 #include "pch.h"
-#include "RenderQueue.h"
+#include "RenderUI.h"
 #include "Renderer.h"
+#include "RenderQueue.h"
 #include "CommandListPool.h"
-#include "SkinnedMeshObject.h"
 #include "SpriteObject.h"
-#include "SkyboxObject.h"
-#include "LineObject.h"
-#include "BillboardObject.h"
-#include "TerrainObject.h"
 
 /*
 ==============
-RenderQueue
+UI Render
 ==============
 */
 
-FRenderQueue::FRenderQueue()
+FRenderUI::FRenderUI()
 {
 }
 
-FRenderQueue::~FRenderQueue()
+FRenderUI::~FRenderUI()
 {
-    CleanUp();
+	CleanUp();
 }
 
-AkBool FRenderQueue::Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum)
+AkBool FRenderUI::Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum)
 {
 	_pRenderer = pRenderer;
 	_uMaxBufferSize = sizeof(RenderItem_t) * dwMaxItemNum;
 	_pBuffer = (AkU8*)malloc(_uMaxBufferSize);
 	memset(_pBuffer, 0, _uMaxBufferSize);
-
 	return AK_TRUE;
 }
 
-AkBool FRenderQueue::Add(const RenderItem_t* pItem)
+AkBool FRenderUI::Add(const RenderItem_t* pItem)
 {
 	AkBool bResult = AK_FALSE;
 	if (_uAllocatedSize + sizeof(RenderItem_t) > _uMaxBufferSize)
@@ -42,6 +37,8 @@ AkBool FRenderQueue::Add(const RenderItem_t* pItem)
 		__debugbreak();
 		return bResult;
 	}
+
+	// 정렬을 이곳에서?? 아니면 Client 단에서 시도?
 
 	AkU8* pDest = _pBuffer + _uAllocatedSize;
 	memcpy(pDest, pItem, sizeof(RenderItem_t));
@@ -53,7 +50,7 @@ AkBool FRenderQueue::Add(const RenderItem_t* pItem)
 	return bResult;
 }
 
-DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
+DWORD FRenderUI::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
@@ -64,6 +61,7 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 	DWORD dwProcessedCount = 0;
 	DWORD dwProcessedCountPerCommandList = 0;
 	const RenderItem_t* pItem = nullptr;
+
 	while (pItem = Dispatch())
 	{
 		pCmdList = pCmdListPool->GetCurrentCmdList();
@@ -73,34 +71,6 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 
 		switch (pItem->eItemType)
 		{
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ:
-			{
-				FBasicMeshObject* pMeshObj = (FBasicMeshObject*)pItem->pObjHandle;
-				// Draw normal.
-				if (pItem->tMeshObjParam.bDrawNormal)
-				{
-					pMeshObj->DrawNormal(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
-				}
-				else
-				{
-					pMeshObj->Draw(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
-				}
-			}
-			break;
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ:
-			{
-				FSkinnedMeshObject* pMeshObj = (FSkinnedMeshObject*)pItem->pObjHandle;
-				// Draw normal with skinned mesh obj.
-				if (pItem->tSkinnedMeshObjParam.bDrawNormal)
-				{
-					pMeshObj->DrawNormal(uThreadIndex, pCmdList, pItem->tSkinnedMeshObjParam.pWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
-				}
-				else
-				{
-					pMeshObj->Draw(uThreadIndex, pCmdList, pItem->tSkinnedMeshObjParam.pWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
-				}
-			}
-			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SPRITE_OBJ:
 			{
 				FSpriteObject* pSpriteObj = (FSpriteObject*)pItem->pObjHandle;
@@ -143,49 +113,6 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				}
 			}
 			break;
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKYBOX_OBJ:
-			{
-				FSkyboxObject* pSkyboxObj = (FSkyboxObject*)pItem->pObjHandle;
-				TextureHandle_t* pEnvHDR = (TextureHandle_t*)pItem->tSkyboxObjParam.pEnvHDR;
-				TextureHandle_t* pDiffuseHDR = (TextureHandle_t*)pItem->tSkyboxObjParam.pDiffuseHDR;
-				TextureHandle_t* pSpecularHDR = (TextureHandle_t*)pItem->tSkyboxObjParam.pSpecularHDR;
-
-				pSkyboxObj->Draw(uThreadIndex, pCmdList, pItem->tSkyboxObjParam.pWorld, pEnvHDR, pDiffuseHDR, pSpecularHDR);
-			}
-			break;
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_LINE_OBJ:
-			{
-				FLineObject* pLineObj = (FLineObject*)pItem->pObjHandle;
-				pLineObj->Draw(uThreadIndex, pCmdList, pItem->tLineObjParam.pWorld);
-			}
-			break;
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD:
-			{
-				FBillboardObjects* pBillboards = (FBillboardObjects*)pItem->pObjHandle;
-				if(pItem->tBillboardParam.pTexHandle)
-				{
-					pBillboards->Draw(uThreadIndex, pCmdList, pItem->tBillboardParam.pWorld, pItem->tBillboardParam.pTexHandle); // replace line obj param.
-				}
-				else
-				{
-					pBillboards->Draw(uThreadIndex, pCmdList, pItem->tBillboardParam.pWorld);
-				}
-			}
-			break;
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ:
-			{
-				FTerrainObject* pTerrainObj = (FTerrainObject*)pItem->pObjHandle;
-				// Draw normal.
-				if (pItem->tTerrianParam.bDrawNormal)
-				{
-					pTerrainObj->DrawNormal(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld);
-				}
-				else
-				{
-					pTerrainObj->Draw(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld, pItem->tTerrianParam.pBrush);
-				}
-			}
-			break;
 			default:
 			{
 				__debugbreak();
@@ -222,13 +149,13 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 	return dwProcessedCount;
 }
 
-void FRenderQueue::Reset()
+void FRenderUI::Reset()
 {
 	_uAllocatedSize = 0;
 	_uReadBufferPos = 0;
 }
 
-void FRenderQueue::CleanUp()
+void FRenderUI::CleanUp()
 {
 	if (_pBuffer)
 	{
@@ -237,7 +164,7 @@ void FRenderQueue::CleanUp()
 	}
 }
 
-const RenderItem_t* FRenderQueue::Dispatch()
+const RenderItem_t* FRenderUI::Dispatch()
 {
 	const RenderItem_t* pItem = nullptr;
 	if (_uReadBufferPos + sizeof(RenderItem_t) > _uAllocatedSize)

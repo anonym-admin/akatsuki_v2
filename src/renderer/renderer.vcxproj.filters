@@ -25,6 +25,15 @@
     <Filter Include="src\entry">
       <UniqueIdentifier>{1bbd0315-a260-4812-af14-278b319a86a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\post">
+      <UniqueIdentifier>{fb30e7f2-e8d6-44f3-a1d1-d35ab14a69d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\body">
+      <UniqueIdentifier>{387e3892-9a6c-49ec-ac8e-b03d6cc63ed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\pch">
+      <UniqueIdentifier>{fe835e0e-1ae2-4d12-990d-ee39b7213284}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -49,12 +58,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="ConstantBufferPool.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -78,12 +81,6 @@
     </ClCompile>
     <ClCompile Include="..\..\utils\IndexGenerator.cpp">
       <Filter>utils</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderThread.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderQueue.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\ProcessInfo.cpp">
       <Filter>utils</Filter>
@@ -118,9 +115,6 @@
     <ClCompile Include="LineObject.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
-    <ClCompile Include="PostProcess.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\utils\Queue.cpp">
       <Filter>utils</Filter>
     </ClCompile>
@@ -133,22 +127,31 @@
     <ClCompile Include="TerrainObject.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
+    <ClCompile Include="PostProcess.cpp">
+      <Filter>src\post</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>src\body</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>src\pch</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderQueue.cpp">
+      <Filter>src\body</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderThread.cpp">
+      <Filter>src\body</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderUI.cpp">
+      <Filter>src\body</Filter>
+    </ClCompile>
     <ClCompile Include="ImageFiler.cpp">
-      <Filter>src</Filter>
+      <Filter>src\post</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Renderer.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\interface\IRenderer.h">
       <Filter>interface</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="RendererType.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="ConstantBufferPool.h">
       <Filter>src</Filter>
@@ -186,12 +189,6 @@
     <ClInclude Include="..\..\utils\IndexGenerator.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="RenderThread.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderQueue.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\utils\ProcessInfo.h">
       <Filter>utils</Filter>
     </ClInclude>
@@ -222,9 +219,6 @@
     <ClInclude Include="LineObject.h">
       <Filter>src\obj</Filter>
     </ClInclude>
-    <ClInclude Include="PostProcess.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\utils\Queue.h">
       <Filter>utils</Filter>
     </ClInclude>
@@ -237,45 +231,66 @@
     <ClInclude Include="TerrainObject.h">
       <Filter>src\obj</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcess.h">
+      <Filter>src\post</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>src\body</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>src\pch</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderUI.h">
+      <Filter>src\body</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderQueue.h">
+      <Filter>src\body</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderThread.h">
+      <Filter>src\body</Filter>
+    </ClInclude>
     <ClInclude Include="ImageFiler.h">
-      <Filter>src</Filter>
+      <Filter>src\post</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererType.h">
+      <Filter>src\body</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\BasicShader.hlsl">
+    <CustomBuild Include="..\..\shader\Basic.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\SpriteShader.hlsl">
+    <CustomBuild Include="..\..\shader\SpriteBlending.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\SkyboxShader.hlsl">
+    <CustomBuild Include="..\..\shader\Skybox.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\LineShader.hlsl">
+    <CustomBuild Include="..\..\shader\Line.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\NormalShader.hlsl">
+    <CustomBuild Include="..\..\shader\Normal.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\PostProcessShader.hlsl">
+    <CustomBuild Include="..\..\shader\PostProcess.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\DepthOnlyShader.hlsl">
+    <CustomBuild Include="..\..\shader\DepthOnly.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\BillboardGeoShader.hlsl">
+    <CustomBuild Include="..\..\shader\BillboardGeometry.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\TerrainEditorShader.hlsl">
+    <CustomBuild Include="..\..\shader\Terrain.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
+    <CustomBuild Include="..\..\shader\BillboardBasic.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\BloomUpShader.hlsl">
+    <CustomBuild Include="..\..\shader\BloomUp.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\BloomDownShader.hlsl">
+    <CustomBuild Include="..\..\shader\BloomDown.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
   </ItemGroup>

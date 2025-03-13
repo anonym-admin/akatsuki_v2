@@ -644,7 +644,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 	};
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/BasicShader.hlsl", tD3dShaderMacro, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pSkinnedBasicVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Basic.hlsl", tD3dShaderMacro, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pSkinnedBasicVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -653,7 +653,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BasicShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pSkinnedBasicPS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Basic.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pSkinnedBasicPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -662,7 +662,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/NormalShader.hlsl", tD3dShaderMacro, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pSkinnedNormalVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Normal.hlsl", tD3dShaderMacro, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pSkinnedNormalVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -671,7 +671,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/NormalShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pSkinnedNormalGS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Normal.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pSkinnedNormalGS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -680,7 +680,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/NormalShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pSkinnedNormalPS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Normal.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pSkinnedNormalPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -689,7 +689,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/DepthOnlyShader.hlsl", tD3dShaderMacro, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pSkinnedDepthOnlyVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/DepthOnly.hlsl", tD3dShaderMacro, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pSkinnedDepthOnlyVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -698,7 +698,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/DepthOnlyShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pSkinnedDepthOnlyPS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/DepthOnly.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pSkinnedDepthOnlyPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{

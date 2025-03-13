@@ -1,3 +1,6 @@
+#ifndef __IBL_TEXTURE_INCLUDED__
+#define __IBL_TEXTURE_INCLUDED__
+
 TextureCube irradianceIBLTex : register(t11);
 TextureCube specularIBLTex : register(t12);
 Texture2D brdfTex : register(t13);
@@ -18,3 +21,5 @@ cbuffer MaterialConsts : register(b2)
     uint useRoughnessMap;
     float reserve0;
 };
+
+#endif

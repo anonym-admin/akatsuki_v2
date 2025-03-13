@@ -18,6 +18,7 @@
 #include "BillboardObject.h"
 #include "TerrainObject.h"
 #include "PostProcess.h"
+#include "RenderUI.h"
 
 // For ImGui;
 extern ImGuiContext* GImGui;
@@ -137,9 +138,6 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 		_uRenderThreadCount = MAX_RENDER_THREAD_COUNT;
 	}
 
-	// UI 랜더 전용
-	_uUIThreadIndex = _uRenderThreadCount - 1;
-
 #ifdef MULTI_THREAD_RENDERING
 	CreateRenderThreadPool(_uRenderThreadCount);
 #endif
@@ -211,6 +209,12 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 	{
 		__debugbreak();
 		return AK_FALSE;
+	}
+	
+	if (!CreateRenderUI())
+	{
+		__debugbreak();
+		return AK_TRUE;
 	}
 
 	// TODO!!
@@ -311,13 +315,13 @@ void FRenderer::EndRender()
 
 #ifdef MULTI_THREAD_RENDERING
 	_uActiveThreadCount = _uRenderThreadCount;
-	for (AkU32 i = 0; i < _uRenderThreadCount - 1; i++)
+	for (AkU32 i = 0; i < _uRenderThreadCount; i++)
 	{
 		::SetEvent(_pRenderThreadDescList[i].hEventList[(AkU32)RENDER_THREAD_EVENT_TYPE::RENDER_THREAD_EVENT_TYPE_PROCESS]);
 	}
 	::WaitForSingleObject(_hCompleteEvent, INFINITE);
 #else
-	for (AkU32 i = 0; i < _uRenderThreadCount - 1; i++)
+	for (AkU32 i = 0; i < _uRenderThreadCount; i++)
 	{
 		_ppRenderQueue[i]->Process(i, pCmdListPool, _pCmdQueue, 400, hResolvedRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 	}
@@ -342,7 +346,8 @@ void FRenderer::EndRender()
 	hDSVHeap.Offset(1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 
 	// Render UI
-	_ppRenderQueue[_uUIThreadIndex]->Process(_uUIThreadIndex, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	// Post Process의 Descriptor 유일설 보장을 위해 1번 쓰레드 인덱스로 실행.
+	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, & _tViewport, & _tScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
 	pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->RSSetViewports(1, &_tViewport);
@@ -370,6 +375,8 @@ void FRenderer::EndRender()
 	{
 		_ppRenderQueue[i]->Reset();
 	}
+
+	_pRenderUI->Reset();
 }
 
 void FRenderer::Present()
@@ -675,7 +682,7 @@ void FRenderer::RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorl
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
@@ -692,7 +699,7 @@ void FRenderer::RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matri
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
@@ -718,7 +725,7 @@ void FRenderer::RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWo
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
@@ -736,7 +743,7 @@ void FRenderer::RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Mat
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
@@ -773,7 +780,7 @@ void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 i
 	tItem.tSpriteObjParam.pTexHandle = pTexHandle;
 	tItem.tSpriteObjParam.fZ = fZ;
 
-	if (!_ppRenderQueue[_uUIThreadIndex]->Add(&tItem))
+	if (!_pRenderUI->Add(&tItem))
 	{
 		__debugbreak();
 	}
@@ -794,7 +801,7 @@ void FRenderer::RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, A
 	tItem.tSpriteObjParam.fZ = fZ;
 	tItem.tSpriteObjParam.pColor = pColor;
 
-	if (!_ppRenderQueue[_uUIThreadIndex]->Add(&tItem))
+	if (!_pRenderUI->Add(&tItem))
 	{
 		__debugbreak();
 	}
@@ -816,7 +823,7 @@ void FRenderer::RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void*
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat)
@@ -832,7 +839,7 @@ void FRenderer::RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat)
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderBillboardWithGS(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle)
@@ -849,7 +856,7 @@ void FRenderer::RenderBillboardWithGS(IBillboard* pBillboard, const Matrix* pWor
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
@@ -866,7 +873,7 @@ void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -883,7 +890,7 @@ void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void*
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -901,7 +908,7 @@ void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMa
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)
@@ -1353,6 +1360,8 @@ void FRenderer::CleanUp()
 			}
 		}
 	}
+
+	DestroyRenderUI();
 
 	DestroyPostProcess();
 
@@ -1901,6 +1910,12 @@ AkBool FRenderer::CreateImGuiInitResource()
 	return bResult;
 }
 
+AkBool FRenderer::CreateRenderUI()
+{
+	_pRenderUI = new FRenderUI;
+	return 	_pRenderUI->Initialize(this, 256);
+}
+
 void FRenderer::InitViewports(AkF32 fWidth, AkF32 fHeight)
 {
 	_tViewport.Width = fWidth;
@@ -2197,6 +2212,15 @@ void FRenderer::DestroyImGuiInitResource()
 	{
 		_pImGuiHeap->Release();
 		_pImGuiHeap = nullptr;
+	}
+}
+
+void FRenderer::DestroyRenderUI()
+{
+	if (_pRenderUI)
+	{
+		delete _pRenderUI;
+		_pRenderUI = nullptr;
 	}
 }
 

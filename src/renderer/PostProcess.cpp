@@ -272,7 +272,7 @@ AkBool FPostProcess::CreatePipelineState()
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/PostProcessShader.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pSamplingVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/PostProcess.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &pSamplingVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -281,7 +281,7 @@ AkBool FPostProcess::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/PostProcessShader.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pCombinePS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/PostProcess.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pCombinePS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -290,7 +290,7 @@ AkBool FPostProcess::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BloomUpShader.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pBloomUpPS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/BloomUp.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pBloomUpPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -299,7 +299,7 @@ AkBool FPostProcess::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BloomDownShader.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pBloomDownPS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/BloomDown.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pBloomDownPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{

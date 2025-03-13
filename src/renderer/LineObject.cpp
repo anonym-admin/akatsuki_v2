@@ -315,7 +315,7 @@ AkBool FLineObject::CreatePipelineState()
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/LineShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pVertexShader, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Line.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pVertexShader, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -324,7 +324,7 @@ AkBool FLineObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/LineShader.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pPixelShader, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Line.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pPixelShader, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{

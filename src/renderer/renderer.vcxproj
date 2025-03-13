@@ -198,6 +198,7 @@
     <ClCompile Include="D3DUtils.cpp" />
     <ClCompile Include="ImageFiler.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="RenderUI.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
     <ClCompile Include="PostProcess.cpp" />
     <ClCompile Include="LineObject.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="DescriptorAllocator.h" />
     <ClInclude Include="ImageFiler.h" />
     <ClInclude Include="FontManager.h" />
+    <ClInclude Include="RenderUI.h" />
     <ClInclude Include="TerrainObject.h" />
     <ClInclude Include="PostProcess.h" />
     <ClInclude Include="LineObject.h" />
@@ -253,60 +255,60 @@
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\BasicShader.hlsl">
+    <CustomBuild Include="..\..\shader\Basic.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\SpriteShader.hlsl">
+    <CustomBuild Include="..\..\shader\SpriteBlending.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\SkyboxShader.hlsl">
+    <CustomBuild Include="..\..\shader\Skybox.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\LineShader.hlsl">
+    <CustomBuild Include="..\..\shader\Line.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\NormalShader.hlsl">
+    <CustomBuild Include="..\..\shader\Normal.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\PostProcessShader.hlsl">
+    <CustomBuild Include="..\..\shader\PostProcess.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\DepthOnlyShader.hlsl">
+    <CustomBuild Include="..\..\shader\DepthOnly.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\BillboardGeoShader.hlsl">
+    <CustomBuild Include="..\..\shader\BillboardGeometry.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\TerrainEditorShader.hlsl">
+    <CustomBuild Include="..\..\shader\Terrain.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\BillboardShader.hlsl">
+    <CustomBuild Include="..\..\shader\BillboardBasic.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\BloomDownShader.hlsl">
+    <CustomBuild Include="..\..\shader\BloomDown.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\BloomUpShader.hlsl">
+    <CustomBuild Include="..\..\shader\BloomUp.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
