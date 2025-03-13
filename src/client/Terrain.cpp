@@ -895,6 +895,9 @@ void TerrainEdit::ComputeHeight()
 		}
 	}
 
+	ComputeNormals();
+	ComputeTangents();
+
 	GRenderer->UpdateDynamicVertices(_pDVHandle, _pVertices);
 }
 
