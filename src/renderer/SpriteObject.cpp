@@ -355,13 +355,13 @@ AkBool FSpriteObject::Initialize(FRenderer* pRenderer, const wchar_t* wcTexFileN
 	return bResult;
 }
 
-void FSpriteObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, float Z)
+void FSpriteObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, float Z, const Vector3* pColor)
 {
 	Vector2 Scale = { _vScale.x * pScale->x, _vScale.y * pScale->y };
-	DrawWithTex(uThreadIndex, pCommandList, pPos, &Scale, &_vRect, Z, _pTexHandle, nullptr);
+	DrawWithTex(uThreadIndex, pCommandList, pPos, &Scale, &_vRect, Z, _pTexHandle, pColor);
 }
 
-void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, const RECT* pRect, float Z, TextureHandle_t* pTexHandle, const Vector3* pFontColor)
+void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, const RECT* pRect, float Z, TextureHandle_t* pTexHandle, const Vector3* pColor)
 {
 	// 각각의 draw()작업의 무결성을 보장하려면 draw() 작업마다 다른 영역의 descriptor table(shader visible)과 다른 영역의 CBV를 사용해야 한다.
 	// 따라서 draw()할 때마다 CBV는 ConstantBuffer Pool로부터 할당받고, 렌더리용 descriptor table(shader visible)은 descriptor pool로부터 할당 받는다.
@@ -424,9 +424,9 @@ void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* p
 	pConstantBufferSprite->fZ = Z;
 	pConstantBufferSprite->fAlpha = 1.0f;
 	pConstantBufferSprite->uDrawBackground = _bDrawBackground;
-	if (pFontColor)
+	if (pColor)
 	{
-		pConstantBufferSprite->vFontColor = *pFontColor;
+		pConstantBufferSprite->vFontColor = *pColor;
 	}
 	else
 	{

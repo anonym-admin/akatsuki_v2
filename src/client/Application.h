@@ -20,6 +20,7 @@ class PostRenderControl;
 
 class ModelExporter;
 class UIImage;
+class UIButton;
 
 class Application
 {
@@ -69,6 +70,7 @@ private:
 
 	// UI
 	UIImage* _pUIImage = nullptr;
+	UIButton* _pUIButton = nullptr;
 };
 
 

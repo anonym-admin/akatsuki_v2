@@ -42,7 +42,7 @@ struct RenderSpriteObjParam_t
 	AkBool bUseRect;
 	AkF32 fZ;
 	void* pTexHandle;
-	const Vector3* pFontColor = nullptr;
+	const Vector3* pColor = nullptr;
 };
 
 struct RenderLineObjParam_t

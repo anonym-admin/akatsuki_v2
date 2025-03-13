@@ -137,6 +137,9 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 		_uRenderThreadCount = MAX_RENDER_THREAD_COUNT;
 	}
 
+	// UI 랜더 전용
+	_uUIThreadIndex = _uRenderThreadCount - 1;
+
 #ifdef MULTI_THREAD_RENDERING
 	CreateRenderThreadPool(_uRenderThreadCount);
 #endif
@@ -660,7 +663,7 @@ void FRenderer::RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorl
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
@@ -677,7 +680,7 @@ void FRenderer::RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matri
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
@@ -703,7 +706,7 @@ void FRenderer::RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWo
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
@@ -721,7 +724,7 @@ void FRenderer::RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Mat
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
@@ -733,7 +736,7 @@ void FRenderer::RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Mat
 	pSkinnedMeshObj->DrawShadow(pCmdList, pWorldMat, pBonesTransform);
 }
 
-void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, const Vector3* pFontColor)
+void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, const Vector3* pColor)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SPRITE_OBJ;
@@ -742,7 +745,7 @@ void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 i
 	tItem.tSpriteObjParam.iPosY = iPosY;
 	tItem.tSpriteObjParam.fScaleX = fScaleX;
 	tItem.tSpriteObjParam.fScaleY = fScaleY;
-	tItem.tSpriteObjParam.pFontColor = pFontColor;
+	tItem.tSpriteObjParam.pColor = pColor;
 
 	if (pRect)
 	{
@@ -758,16 +761,13 @@ void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 i
 	tItem.tSpriteObjParam.pTexHandle = pTexHandle;
 	tItem.tSpriteObjParam.fZ = fZ;
 
-	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	if (!_ppRenderQueue[_uUIThreadIndex]->Add(&tItem))
 	{
 		__debugbreak();
 	}
-
-	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
-void FRenderer::RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ)
+void FRenderer::RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ, const Vector3* pColor)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SPRITE_OBJ;
@@ -780,14 +780,12 @@ void FRenderer::RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, A
 	tItem.tSpriteObjParam.tRect = {};
 	tItem.tSpriteObjParam.pTexHandle = nullptr;
 	tItem.tSpriteObjParam.fZ = fZ;
+	tItem.tSpriteObjParam.pColor = pColor;
 
-	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	if (!_ppRenderQueue[_uUIThreadIndex]->Add(&tItem))
 	{
 		__debugbreak();
 	}
-
-	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR)
@@ -806,7 +804,7 @@ void FRenderer::RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void*
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat)
@@ -822,7 +820,7 @@ void FRenderer::RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat)
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderBillboardWithGS(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle)
@@ -839,7 +837,7 @@ void FRenderer::RenderBillboardWithGS(IBillboard* pBillboard, const Matrix* pWor
 	}
 
 	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	_uCurThreadIndex = _uCurThreadIndex % (_uRenderThreadCount - 1);
 }
 
 void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)

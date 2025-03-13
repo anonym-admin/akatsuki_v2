@@ -31,8 +31,8 @@ public:
 
 	AkBool Initialize(FRenderer* pRenderer);
 	AkBool Initialize(FRenderer* pRenderer, const wchar_t* wcTexFileName, const RECT* pRect);
-	void DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Vector2* pPos, const Vector2* pScale, const RECT* pRect, float Z, TextureHandle_t* pTexHandle, const Vector3* pFontColor);
-	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Vector2* pPos, const Vector2* pScale, float Z);
+	void DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Vector2* pPos, const Vector2* pScale, const RECT* pRect, float Z, TextureHandle_t* pTexHandle, const Vector3* pColor);
+	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Vector2* pPos, const Vector2* pScale, float Z, const Vector3* pColor);
 
 private:
 	void CleanUp();

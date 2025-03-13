@@ -3,7 +3,7 @@ SamplerState samplerDiffuse : register(s0);
 
 cbuffer SpriteConst : register(b0)
 {
-    float2 c_screenRes;
+    float2 screenRes;
     float2 c_pos;
     float2 c_scale;
     float2 c_texSize;
@@ -14,7 +14,7 @@ cbuffer SpriteConst : register(b0)
     float c_reserved0;
     float c_reserved1;
     uint c_drawBackground;
-    float3 c_fontColor;
+    float3 color;
 };
 
 struct VSInput
@@ -35,8 +35,8 @@ PSInput VSMain(VSInput input)
 {
     PSInput result = (PSInput) 0;
     
-    float2 scale = (c_texSize / c_screenRes) * c_scale;
-    float2 offset = (c_pos / c_screenRes); // float좌표계 기준 지정한 위치
+    float2 scale = (c_texSize / screenRes) * c_scale;
+    float2 offset = (c_pos / screenRes); // float좌표계 기준 지정한 위치
     float2 screenPosition = input.pos.xy * scale + offset;
     result.pos = float4(screenPosition.xy * float2(2, -2) + float2(-1, 1), c_depth, 1); // 정규좌표게로 변환
  
@@ -58,8 +58,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     if (!c_drawBackground)
     {
         clip(texColor.r + texColor.g + texColor.b < 0.3 ? -1 : 1);
-        texColor.rgb = c_fontColor;
     }
     
-    return texColor * input.color;
+    return texColor * float4(color, 1.0);
 }

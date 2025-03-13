@@ -10,7 +10,7 @@ Square Collider
 SquareCollider::SquareCollider(AkI32 iLeft, AkI32 iTop, AkI32 iRight, AkI32 iBottom)
     : Collider(nullptr)
 {
-    if (!Initialize())
+    if (!Initialize(iLeft, iTop, iRight, iBottom))
     {
         __debugbreak();
     }

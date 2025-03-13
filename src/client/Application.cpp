@@ -17,6 +17,7 @@
 
 #include "Model.h"
 #include "UIImage.h"
+#include "UIButton.h"
 
 /*
 ===============
@@ -78,6 +79,7 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 
 	// Create New UI Object.
 	_pUIImage = new UIImage(L"../../assets/ui_01.dds", 250, 0, (rt.right - rt.left) / 2, 100, 0, 0);
+	_pUIButton = new UIButton(L"Button_01", L"../../assets/ui_01.dds", 0, 0, 256, 256, 0, 110);
 
 	// Reset timer.
 	GTimer->Reset();
@@ -98,6 +100,10 @@ void Application::RunApplication()
 	// Update.
 	Update();
 
+	// Test.
+	_pUIButton->Update();
+
+	// Update Shadow Map Matrix
 	GRenderer->UpdateCascadeOrthoProjMatrix();
 
 	// Shadow Pass.
@@ -117,6 +123,7 @@ void Application::RunApplication()
 
 	// Test.
 	_pUIImage->Render();
+	_pUIButton->Render();
 
 	// Post Process Control.
 	if (_bUsePostProcessController)
@@ -149,6 +156,11 @@ AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 
 void Application::CleanUp()
 {
+	if (_pUIButton)
+	{
+		delete _pUIButton;
+		_pUIButton = nullptr;
+	}
 	if (_pUIImage)
 	{
 		delete _pUIImage;

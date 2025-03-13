@@ -18,6 +18,7 @@ UIButton::UIButton(const wchar_t* wcName, const wchar_t* wcTextureFilename, AkI3
 
 UIButton::~UIButton()
 {
+    CleanUp();
 }
 
 AkBool UIButton::Initialize(const wchar_t* wcName, const wchar_t* wcTextureFilename, AkI32 iTexPosX, AkI32 iTexPosY, AkI32 iTexOffsetX, AkI32 iTexOffsetY, AkI32 iRenderPosX, AkI32 iRenderPosY)
@@ -27,11 +28,12 @@ AkBool UIButton::Initialize(const wchar_t* wcName, const wchar_t* wcTextureFilen
     CreateTexture(wcTextureFilename, iTexPosX, iTexPosY, iTexOffsetX, iTexOffsetY, iRenderPosX, iRenderPosY);
     _pCollider = CreateCollider();
 
-    return AkBool();
+    return AK_TRUE;
 }
 
 void UIButton::Update()
 {
+    UpdateState();
 }
 
 void UIButton::FinalUpdate()
@@ -66,6 +68,27 @@ void UIButton::CreateTexture(const wchar_t* wcTextureFilename, AkI32 iTexPosX, A
 
 void UIButton::UpdateState()
 {
+    if (_pCollider->MouseIntersect())
+    {
+        _pUIImage->SetColor(&UIImage::IMAGE_COLOR_DOWN_01);
+
+        if (LBTN_HOLD || RBTN_HOLD)
+        {
+            _pUIImage->SetColor(&UIImage::IMAGE_COLOR_DOWN_02);
+        }
+        if (LBTN_UP)
+        {
+            // CallBack
+        }
+        if (RBTN_UP)
+        {
+            // CallBack
+        }
+    }
+    else
+    {
+        _pUIImage->SetColor(&UIImage::IMAGE_COLOR_NORMAL);
+    }
 }
 
 void UIButton::DestroyCollider()

@@ -7,6 +7,10 @@ UI Image
 ==========
 */
 
+Vector3 UIImage::IMAGE_COLOR_NORMAL = Vector3(1.0f);
+Vector3 UIImage::IMAGE_COLOR_DOWN_01 = Vector3(0.5f);
+Vector3 UIImage::IMAGE_COLOR_DOWN_02 = Vector3(0.25f);
+
 UIImage::UIImage(const wchar_t* wcTextureFilename, AkI32 iTexPosX, AkI32 iTexPosY, AkI32 iTexOffsetX, AkI32 iTexOffsetY, AkI32 iRenderPosX, AkI32 iRenderPosY)
 {
 	if (!Initialize(wcTextureFilename, iTexPosX, iTexPosY, iTexOffsetX, iTexOffsetY, iRenderPosX, iRenderPosY))
@@ -36,7 +40,7 @@ AkBool UIImage::Initialize(const wchar_t* wcTextureFilename, AkI32 iTexPosX, AkI
 
 void UIImage::Render()
 {
-	GRenderer->RenderSprite(_pSprite, _iRenderPosX, _iRenderPosY, 1.0f, 1.0f, 0.0f);
+	GRenderer->RenderSprite(_pSprite, _iRenderPosX, _iRenderPosY, 1.0f, 1.0f, 0.0f, &_vColor);
 }
 
 void UIImage::Rect(AkI32* pOutLeft, AkI32* pOutTop, AkI32* pOutRight, AkI32* pOutBottom)
