@@ -43,8 +43,7 @@ interface ILineObject : public IUnknown
 
 interface IBillboard : public IUnknown
 {
-	virtual AkBool CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDataNum) = 0;
-	virtual AkBool CreateBillboardBuffer(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum) = 0;
+	virtual AkBool CreateBillboardBuffer(BillboardData_t* pBillboardData) = 0;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
@@ -78,7 +77,7 @@ interface IRenderer : public IUnknown
 	virtual ISprite* CreateSpriteObjectWidthTex(const wchar_t* wcTexFilename, AkI32 iPosX, AkI32 iPosY, AkI32 iWidth, AkI32 iHeight) = 0;
 	virtual ISkybox* CreateSkyboxObject() = 0;
 	virtual ILineObject* CreateLineObject() = 0;
-	virtual IBillboard* CreateBillboards() = 0;
+	virtual IBillboard* CreateBillboard() = 0;
 	virtual ITerrain* CreateTerrain() = 0;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB) = 0;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) = 0;
@@ -105,7 +104,6 @@ interface IRenderer : public IUnknown
 	virtual void RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ, const Vector3* pColor = nullptr) = 0;
 	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) = 0;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) = 0;
-	virtual void RenderBillboardWithGS(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle) = 0;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;

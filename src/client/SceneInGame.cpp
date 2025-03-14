@@ -33,7 +33,7 @@ AkBool SceneInGame::BeginScene()
 		Terrain* pTerrain = new Terrain(L"main.map");
 		pTerrain->Name = L"Terrain";
 		pTerrain->tLink.pData = pTerrain;
-		// AddGameObject(GAME_OBJECT_GROUP_TYPE::TERRAIN, pTerrain);
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::TERRAIN, pTerrain);
 	}
 
 	// Player.A

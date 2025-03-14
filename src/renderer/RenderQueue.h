@@ -53,7 +53,6 @@ struct RenderLineObjParam_t
 struct RenderBillboardParam_t
 {
 	const Matrix* pWorld = nullptr;
-	void* pTexHandle = nullptr;
 };
 
 struct RenderTerrainParam_t

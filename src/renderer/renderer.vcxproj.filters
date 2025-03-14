@@ -53,9 +53,6 @@
     <None Include="..\..\shader\DiskSample.hlsli">
       <Filter>shader</Filter>
     </None>
-    <None Include="..\..\shader\ShadingFunction.hlsli">
-      <Filter>shader</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConstantBufferPool.cpp">

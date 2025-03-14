@@ -77,13 +77,27 @@ struct New_MeshData_t
 	wchar_t wcOpacityTextureFilename[_MAX_PATH] = {};
 };
 
-
 struct NodeData_t
 {
 	AkI32 iIndex = -1;
 	wchar_t wcName[_MAX_PATH] = {};
 	AkI32 iParent = -1;
 	Matrix mTransform = Matrix();
+};
+
+struct BillboardData_t
+{
+	BillboardVertex_t* pVertice = nullptr;
+	AkU32 uPointsNum = 0;
+
+	wchar_t wcAlbedoTextureFilename[_MAX_PATH] = {};
+	wchar_t wcEmissiveTextureFilename[_MAX_PATH] = {};
+	wchar_t wcHeightTextureFilename[_MAX_PATH] = {};
+	wchar_t wcNormalTextureFilename[_MAX_PATH] = {};
+	wchar_t wcMetallicTextureFilename[_MAX_PATH] = {};
+	wchar_t wcRoughnessTextureFilename[_MAX_PATH] = {};
+	wchar_t wcAoTextureFilename[_MAX_PATH] = {};
+	wchar_t wcOpacityTextureFilename[_MAX_PATH] = {};
 };
 
 struct LineData_t

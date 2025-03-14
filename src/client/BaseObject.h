@@ -32,8 +32,7 @@ protected:
 
 
 
-	Model* CreateBillboardModel(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum); // 삭제 진행 => Billboard 모델을 없애고 Actor 에서 자체적으로 생성.
-	Model* CreateBillboardModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
+	Model* CreateBillboardModel(BillboardData_t* pBillboardData); // 삭제 진행 => Billboard 모델을 없애고 Actor 에서 자체적으로 생성.
 
 private:
 	void CleanUp();

@@ -49,15 +49,9 @@ Model* BaseObject::CreateModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const 
 	return pModel;
 }
 
-Model* BaseObject::CreateBillboardModel(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)
+Model* BaseObject::CreateBillboardModel(BillboardData_t* pBillboardData)
 {
-	Model* pModel = new BillboardModels(pBillboardVertices, uPointNum);
-	return pModel;
-}
-
-Model* BaseObject::CreateBillboardModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
-{
-	Model* pModel = new BillboardModels(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive);
+	Model* pModel = new BillboardModels(pBillboardData);
 	return pModel;
 }
 

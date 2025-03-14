@@ -7,17 +7,9 @@ BillboardModel
 ===============
 */
 
-BillboardModels::BillboardModels(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)
+BillboardModels::BillboardModels(BillboardData_t* pBillboardData)
 {
-    if (!Initialize(pBillboardVertices, uPointNum))
-    {
-        __debugbreak();
-    }
-}
-
-BillboardModels::BillboardModels(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
-{
-    if (!Initialize(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive))
+    if (!Initialize(pBillboardData))
     {
         __debugbreak();
     }
@@ -28,35 +20,21 @@ BillboardModels::~BillboardModels()
     CleanUp();
 }
 
-AkBool BillboardModels::Initialize(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum)
+AkBool BillboardModels::Initialize(BillboardData_t* pBillboardData)
 {
-    _pBillboard = GRenderer->CreateBillboards();
-    _pBillboard->CreateBillboardBuffer(pBillboardVertices, uPointNum);
+    _pBillboard = GRenderer->CreateBillboard();
+    _pBillboard->CreateBillboardBuffer(pBillboardData);
 
-    _pTreeTextureArray = GRenderer->CreateTextureFromFile(L"../../assets/tree02S.dds", AK_TRUE);
-
-    return AK_TRUE;
-}
-
-AkBool BillboardModels::Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
-{
-    _pBillboard = GRenderer->CreateBillboards();
-    _pBillboard->CreateMeshBuffers(pMeshData, uMeshDataNum);
-    _pBillboard->UpdateMaterialBuffers(pAlbedo, fMetallic, fRoughness, pEmissive);
+    Vector3 vAlbedo = Vector3(1.0f);
+    Vector3 vEmissive = Vector3(0.0f);
+    _pBillboard->UpdateMaterialBuffers(&vAlbedo, 0.0f, 1.0f, &vEmissive);
 
     return AK_TRUE;
 }
 
 void BillboardModels::Render()
 {
-    if(_pTreeTextureArray)
-    {
-        GRenderer->RenderBillboardWithGS(_pBillboard, &_mWorldRow, _pTreeTextureArray);
-    }
-    else
-    {
-        GRenderer->RenderBillboard(_pBillboard, &_mWorldRow);
-    }
+    GRenderer->RenderBillboard(_pBillboard, &_mWorldRow);
 }
 
 void BillboardModels::CleanUp()

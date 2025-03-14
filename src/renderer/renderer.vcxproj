@@ -176,7 +176,6 @@
     <None Include="..\..\shader\IBLTexture.hlsli" />
     <None Include="..\..\shader\Common.hlsli" />
     <None Include="..\..\shader\SamplerState.hlsli" />
-    <None Include="..\..\shader\ShadingFunction.hlsli" />
     <None Include="packages.config" />
     <None Include="Renderer.def" />
   </ItemGroup>

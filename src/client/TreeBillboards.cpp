@@ -37,7 +37,12 @@ AkBool TreeBillboard::Initialize()
 	pVertices[4].vPosition = Vector3(4.0f, 0.0f, 0.0f);
 	pVertices[4].vSize = Vector2(1.0f);
 
-	_pModel = CreateBillboardModel(pVertices, 5);
+	BillboardData_t pBillboardData = {};
+	pBillboardData.pVertice = pVertices;
+	pBillboardData.uPointsNum = _countof(pVertices);
+	wcscpy_s(pBillboardData.wcAlbedoTextureFilename, L"../../assets/tree02S.dds");
+
+	_pModel = CreateBillboardModel(&pBillboardData);
 
 	//// Create Model
 	//AkU32 uMeshDataNum = 0;

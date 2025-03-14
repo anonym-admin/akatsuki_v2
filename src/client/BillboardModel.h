@@ -11,12 +11,10 @@ BillboardModel
 class BillboardModels : public Model
 {
 public:
-	BillboardModels(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum);
-	BillboardModels(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
+	BillboardModels(BillboardData_t* pBillboardData);
 	~BillboardModels();
 
-	AkBool Initialize(BillboardVertex_t* pBillboardVertices, AkU32 uPointNum);
-	AkBool Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
+	AkBool Initialize(BillboardData_t* pBillboardData);
 	virtual void Render() override;
 
 private:

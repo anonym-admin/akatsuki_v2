@@ -44,7 +44,7 @@ public:
 	virtual ISprite* CreateSpriteObjectWidthTex(const wchar_t* wcTexFilename, AkI32 iPosX, AkI32 iPosY, AkI32 iWidth, AkI32 iHeight) override;
 	virtual ISkybox* CreateSkyboxObject() override;
 	virtual ILineObject* CreateLineObject() override;
-	virtual IBillboard* CreateBillboards() override;
+	virtual IBillboard* CreateBillboard() override;
 	virtual ITerrain* CreateTerrain() override;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB) override;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) override;
@@ -71,7 +71,6 @@ public:
 	virtual void RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ, const Vector3* pColor) override;
 	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) override;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) override;
-	virtual void RenderBillboardWithGS(IBillboard* pBillboard, const Matrix* pWorldMat, void* pTexHandle) override;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) override;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
