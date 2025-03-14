@@ -44,7 +44,7 @@ AkBool FBillboardObjects::CreateBillboardBuffer(BillboardData_t* pBillboardData)
 	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
 	ID3D12Resource* pVertexBuffer = nullptr;
 
-	if (pResourceManager->CreateVertexBuffer(sizeof(BillboardVertex_t), pBillboardData->uPointsNum, &tVBView, &pVertexBuffer, pBillboardData->pVertice))
+	if (pResourceManager->CreateVertexBuffer(sizeof(VertexSize_t), pBillboardData->uPointsNum, &tVBView, &pVertexBuffer, pBillboardData->pVertice))
 	{
 		_pVertexBuffer = pVertexBuffer;
 		_tVertexBufferView = tVBView;

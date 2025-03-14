@@ -93,17 +93,17 @@ void Application::RunApplication()
 	// Update.
 	Update();
 
-	//// Update Shadow Map Matrix
-	//GRenderer->UpdateCascadeOrthoProjMatrix();
+	// Update Shadow Map Matrix
+	GRenderer->UpdateCascadeOrthoProjMatrix();
 
-	//// Shadow Pass.
-	//for (AkU32 i = 0; i < 5; i++)
-	//{
-	//	GRenderer->BeginCasterRenderPreparation();
-	//	GEditorManager->RenderShadow();
-	//	GSceneManager->RenderShadow();
-	//	GRenderer->EndCasterRenderPreparation();
-	//}
+	// Shadow Pass.
+	for (AkU32 i = 0; i < 5; i++)
+	{
+		GRenderer->BeginCasterRenderPreparation();
+		GEditorManager->RenderShadow();
+		GSceneManager->RenderShadow();
+		GRenderer->EndCasterRenderPreparation();
+	}
 
 	// Begin render.
 	GRenderer->BeginRender();

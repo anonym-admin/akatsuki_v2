@@ -24,8 +24,8 @@ public:
     void DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
     void DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
-    virtual AkBool CreateStaticMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
-    virtual void* CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
+    virtual AkBool CreateStaticMeshBuffers(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
+    virtual void* CreateDynamicMeshBuffers(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
     virtual void SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename, const wchar_t* wcNormalFilename, const wchar_t* wcEmissvieFilename, const wchar_t* wcMetallicFilename, const wchar_t* wcRoughnessFilename, const wchar_t* wcAOFilename) override;
     virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) override;
     virtual void EnableWireFrame() override { _bIsWire = AK_TRUE; }
@@ -37,7 +37,7 @@ public:
 
 private:
     void CleanUp();
-    DynamicVertexHandle_t* CreateDynamicVertexAndIndexBuffer(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
+    DynamicVertexHandle_t* CreateDynamicVertexAndIndexBuffer(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
     AkBool CreateCommonResources();
     AkBool CreateRootSignature();
     AkBool CreatePipelineState();

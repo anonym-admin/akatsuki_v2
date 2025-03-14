@@ -87,7 +87,7 @@ struct NodeData_t
 
 struct BillboardData_t
 {
-	BillboardVertex_t* pVertice = nullptr;
+	VertexSize_t* pVertice = nullptr;
 	AkU32 uPointsNum = 0;
 
 	wchar_t wcAlbedoTextureFilename[_MAX_PATH] = {};
@@ -103,7 +103,7 @@ struct BillboardData_t
 
 struct LineData_t
 {
-	LineVertex_t* pVertices = nullptr;
+	VertexColor_t* pVertices = nullptr;
 	AkU32* pIndices = nullptr;
 	AkU32 uVerticeNum = 0;
 	AkU32 uIndicesNum = 0;

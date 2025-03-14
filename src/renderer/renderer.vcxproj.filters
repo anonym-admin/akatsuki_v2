@@ -7,9 +7,6 @@
     <Filter Include="interface">
       <UniqueIdentifier>{4116e269-a4e2-4b1b-98a0-9311ac992fbb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="utils">
-      <UniqueIdentifier>{aa92f4b5-d801-4ea0-9f08-291dd89b7354}</UniqueIdentifier>
-    </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{52f03d11-10e8-40f5-b137-204a4e38e0b8}</UniqueIdentifier>
     </Filter>
@@ -33,6 +30,12 @@
     </Filter>
     <Filter Include="src\pch">
       <UniqueIdentifier>{fe835e0e-1ae2-4d12-990d-ee39b7213284}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
+      <UniqueIdentifier>{aa92f4b5-d801-4ea0-9f08-291dd89b7354}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\particle">
+      <UniqueIdentifier>{9d2fef40-00b3-43a8-bb67-499660c72b35}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -62,7 +65,7 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="D3DUtils.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="DescriptorPool.cpp">
       <Filter>src</Filter>
@@ -71,16 +74,16 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\HashTable.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\LinkedList.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\IndexGenerator.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\ProcessInfo.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="BasicMeshObject.cpp">
       <Filter>src\obj</Filter>
@@ -113,10 +116,10 @@
       <Filter>src\obj</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\Queue.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\Stack.cpp">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="BillboardObject.cpp">
       <Filter>src\obj</Filter>
@@ -145,6 +148,9 @@
     <ClCompile Include="ImageFiler.cpp">
       <Filter>src\post</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>src\particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\interface\IRenderer.h">
@@ -157,7 +163,7 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="D3DUtils.h">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\AkMacro.h">
       <Filter>common</Filter>
@@ -178,16 +184,16 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\HashTable.h">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\LinkedList.h">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\IndexGenerator.h">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\ProcessInfo.h">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="BasicMeshObject.h">
       <Filter>src\obj</Filter>
@@ -217,10 +223,10 @@
       <Filter>src\obj</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\Queue.h">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\Stack.h">
-      <Filter>utils</Filter>
+      <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="BillboardObject.h">
       <Filter>src\obj</Filter>
@@ -251,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="RendererType.h">
       <Filter>src\body</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>src\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

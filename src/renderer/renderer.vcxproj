@@ -147,6 +147,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>Renderer.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -168,6 +169,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>Renderer.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -195,6 +197,7 @@
     <ClCompile Include="DescriptorAllocator.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3DUtils.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ImageFiler.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="RenderUI.cpp" />
@@ -236,6 +239,7 @@
     <ClInclude Include="D3DUtils.h" />
     <ClInclude Include="DescriptorPool.h" />
     <ClInclude Include="DescriptorAllocator.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="ImageFiler.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="RenderUI.h" />

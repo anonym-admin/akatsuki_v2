@@ -33,7 +33,7 @@ interface ISkybox : public IUnknown
 
 interface ILineObject : public IUnknown
 {
-	virtual AkBool CreateLineBuffer(LineVertex_t* pStart, LineVertex_t* pEnd) = 0;
+	virtual AkBool CreateLineBuffer(VertexColor_t* pStart, VertexColor_t* pEnd) = 0;
 	virtual AkBool CreateLineBuffers(LineData_t* pLineData) = 0;
 	virtual void SetColor(AkF32 fR, AkF32 fG, AkF32 fB) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
@@ -52,12 +52,21 @@ interface IBillboard : public IUnknown
 
 interface ITerrain : public IUnknown
 {
-	virtual AkBool CreateStaticMeshBuffers(TerrainVertex_t * pVertices, AkU32 uVerticeNum, AkU32 * pIndices, AkU32 uIndiceNum) = 0;
-	virtual void* CreateDynamicMeshBuffers(TerrainVertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) = 0;
+	virtual AkBool CreateStaticMeshBuffers(VertexNormalTexcoordTangentAlpha_t * pVertices, AkU32 uVerticeNum, AkU32 * pIndices, AkU32 uIndiceNum) = 0;
+	virtual void* CreateDynamicMeshBuffers(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) = 0;
 	virtual void SetTextures(const wchar_t* wcSecondFilename, const wchar_t* wcThirdFilename, const wchar_t* wcAlbedoFilename = nullptr, const wchar_t* wcNormalFilename = nullptr, const wchar_t* wcEmissvieFilename = nullptr, const wchar_t* wcMetallicFilename = nullptr, const wchar_t* wcRoughnessFilename = nullptr, const wchar_t* wcAOFilename = nullptr) = 0;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;
 	virtual void EnableWireFrame() = 0;
 	virtual void DisableWireFrame() = 0;
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
+	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
+	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
+};
+
+interface IParticle : public IUnknown
+{
+	virtual AkBool CreateParticleBuffer(VertexSize_t * pVertices, AkU32 uVerticeNum) = 0;
+	virtual void SetTexture(const wchar_t* wcFilaname) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;

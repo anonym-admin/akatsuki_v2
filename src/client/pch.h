@@ -27,6 +27,9 @@
 #include <time.h>
 #include <process.h>
 #include <conio.h>
+#include <map>
+#include <vector>
+#include <string>
 using std::max;
 using std::min;
 

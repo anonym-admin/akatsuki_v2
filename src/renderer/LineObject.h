@@ -13,7 +13,7 @@ public:
 	AkBool Initialize(FRenderer* pRenderer);
 	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
-	virtual AkBool CreateLineBuffer(LineVertex_t* pStart, LineVertex_t* pEnd) override;
+	virtual AkBool CreateLineBuffer(VertexColor_t* pStart, VertexColor_t* pEnd) override;
 	virtual AkBool CreateLineBuffers(LineData_t* pLineData) override;
 	virtual void SetColor(AkF32 fR, AkF32 fG, AkF32 fB) override;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;

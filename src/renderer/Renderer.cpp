@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Renderer.h"
 #include "CommandListPool.h"
 #include "DescriptorAllocator.h"
@@ -241,7 +241,7 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 	return AK_TRUE;
 }
 
-// Multi thread rendering Àû¿ë.
+// Multi thread rendering ì ìš©.
 void FRenderer::BeginCasterRenderPreparation()
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
@@ -296,7 +296,7 @@ void FRenderer::BeginRender()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT, _uRTVDesciptorSize);
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart());
 
-	// Render taget Å¬¸®¾î
+	// Render taget í´ë¦¬ì–´
 	// const AkF32 fClearColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	pCmdList->ClearRenderTargetView(hRTVHeap, _pRTVClearColor, 0, nullptr);
 	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
@@ -342,12 +342,12 @@ void FRenderer::EndRender()
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	_pPostProcess->Process(0, pCmdList, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
 
-	// MSAA ¸¦ »ç¿ëÇÏÁö ¾Ê´Â DSV Heap ¿µ¿ª¿¡ Á¢±Ù
+	// MSAA ë¥¼ ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” DSV Heap ì˜ì—­ì— ì ‘ê·¼
 	hDSVHeap.Offset(1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 
 	// Render UI
-	// Post ProcessÀÇ Descriptor À¯ÀÏ¼³ º¸ÀåÀ» À§ÇØ 1¹ø ¾²·¹µå ÀÎµ¦½º·Î ½ÇÇà.
-	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, & _tViewport, & _tScissorRect); // Depth Stencil Buffer Format º¯°æ ÇÊ¿ä.
+	// Post Processì˜ Descriptor ìœ ì¼ì„¤ ë³´ì¥ì„ ìœ„í•´ 1ë²ˆ ì“°ë ˆë“œ ì¸ë±ìŠ¤ë¡œ ì‹¤í–‰.
+	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, & _tViewport, & _tScissorRect); // Depth Stencil Buffer Format ë³€ê²½ í•„ìš”.
 
 	pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->RSSetViewports(1, &_tViewport);
@@ -456,6 +456,11 @@ AkBool FRenderer::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 	{
 		_pMainDSwithMSAA->Release();
 		_pMainDSwithMSAA = nullptr;
+	}
+	if (_pMainDS)
+	{
+		_pMainDS->Release();
+		_pMainDS = nullptr;
 	}
 	if (FAILED(_pSwapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, uScreenWidth, uScreenHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _uSwapChainFlag)))
 	{
@@ -952,7 +957,7 @@ void FRenderer::GetCameraPosition(AkF32* pX, AkF32* pY, AkF32* pZ)
 
 void FRenderer::SetCamera(const Vector3* pCamPos, const Vector3* pCamDir, Vector3* pCamUp)
 {
-	// ¾÷º¤ÅÍ¿Í Ä«¸Ş¶ó ¹æÇâº¤ÅÍ°¡ ÀÏÄ¡ÇÒ¶§ ¿¹¿ÜÃ³¸®
+	// ì—…ë²¡í„°ì™€ ì¹´ë©”ë¼ ë°©í–¥ë²¡í„°ê°€ ì¼ì¹˜í• ë•Œ ì˜ˆì™¸ì²˜ë¦¬
 	if (abs((*pCamUp).Dot(*pCamDir) - 1.0f) <= AK_F32_EPSILON)
 	{
 		*pCamUp = Vector3(0.0f, 0.0f, -1.0f);
@@ -1283,7 +1288,7 @@ void FRenderer::EnsureCompleted()
 
 void FRenderer::CleanUp()
 {
-	// Full screen mode ÇØÁ¦
+	// Full screen mode í•´ì œ
 	if (_pSwapChain)
 	{
 		_pSwapChain->SetFullscreenState(AK_FALSE, nullptr);
@@ -1587,7 +1592,7 @@ AkBool FRenderer::CreateRTVs()
 
 AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 {
-	// ¸ÖÆ¼ »ùÇÃ¸µ Ã¼Å©
+	// ë©€í‹° ìƒ˜í”Œë§ ì²´í¬
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS tQualityLevels = {};
 	tQualityLevels.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; 
 	tQualityLevels.SampleCount = 4;
@@ -1599,11 +1604,11 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 	{
 		if (tQualityLevels.NumQualityLevels > 0) 
 		{
-			// ¸ÖÆ¼»ùÇÃ¸µ Áö¿ø
+			// ë©€í‹°ìƒ˜í”Œë§ ì§€ì›
 			printf("Num Quality Levels: %u\n", tQualityLevels.NumQualityLevels);
 		}
 		else {
-			// ¸ÖÆ¼»ùÇÃ¸µ ¹ÌÁö¿ø
+			// ë©€í‹°ìƒ˜í”Œë§ ë¯¸ì§€ì›
 			printf("Multisampling is supported.\n");
 		}
 	}
@@ -1633,7 +1638,7 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 	memcpy(tClearValue.Color, _pRTVClearColor, sizeof(_pRTVClearColor));
 	tClearValue.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
-	// PBR ¿¡ ÀÌ¿ëµÉ Float Buffer »ı¼º.
+	// PBR ì— ì´ìš©ë  Float Buffer ìƒì„±.
 	{
 		if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tRtvDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &tClearValue, IID_PPV_ARGS(&_pFloatBuffer))))
 		{
@@ -1654,7 +1659,7 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 		_hFloatBufferSrvCpu = hSrvCpu;
 	}
 
-	// MSAA ¸¦ ²ö Resolved Buffer »ı¼º => Shader ¿¡¼­ ºí·ë °è»êÀ» À§ÇØ.
+	// MSAA ë¥¼ ëˆ Resolved Buffer ìƒì„± => Shader ì—ì„œ ë¸”ë£¸ ê³„ì‚°ì„ ìœ„í•´.
 	{
 		tRtvDesc.SampleDesc.Count = 1;
 		tRtvDesc.SampleDesc.Quality = 0;
@@ -1883,7 +1888,7 @@ AkBool FRenderer::CreateImGuiInitResource()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
+	ImGui::StyleColorsClassic();
 
 	// Setup Platform/Renderer backends
 	bResult = ImGui_ImplWin32_Init(_hWnd);
@@ -1963,7 +1968,7 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 					Vector4 vPoint = Vector4::Transform(Vector4(2.0f * x - 1.0f, 2.0f * y - 1.0f, (AkF32)z, 1.0f), mInvViewProj);
 					vPoint /= vPoint.w;
 
-					_pFrustumPoints[uConerNum++] = vPoint; // Frustum ÀÇ World Position.
+					_pFrustumPoints[uConerNum++] = vPoint; // Frustum ì˜ World Position.
 				}
 			}
 		}

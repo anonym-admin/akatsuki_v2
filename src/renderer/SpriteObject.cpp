@@ -246,7 +246,7 @@ AkBool FSpriteObject::CreateMesh()
 
 	// Create the vertex buffer.
 	// Define the geometry for a triangle.
-	SpriteVertex_t tVertices[] =
+	VertexColorTexcoord_t tVertices[] =
 	{
 		{ { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
 		{ { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f } },
@@ -263,7 +263,7 @@ AkBool FSpriteObject::CreateMesh()
 
 	const AkU32 uVertexBufferSize = sizeof(tVertices);
 
-	if (FAILED(pResourceManager->CreateVertexBuffer(sizeof(SpriteVertex_t), (AkU32)_countof(tVertices), &sm_tVertexBufferView, &sm_pVertexBuffer, tVertices)))
+	if (FAILED(pResourceManager->CreateVertexBuffer(sizeof(VertexColorTexcoord_t), (AkU32)_countof(tVertices), &sm_tVertexBufferView, &sm_pVertexBuffer, tVertices)))
 	{
 		__debugbreak();
 		return AK_FALSE;

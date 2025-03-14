@@ -8,7 +8,11 @@ Link Library
 */
 
 #pragma comment(lib, "fmod_vc.lib")
-#pragma comment(lib, "ImGuiFileDialog.lib")
+#ifdef _DEBUG
+#pragma comment(lib, "imgui.lib")
+#else
+#pragma comment(lib, "C:/Users/skdfw/My/akatsuki/bin/Release/imgui.lib")
+#endif
 
 extern "C" { __declspec(dllexport) AkU32 NvOptimusEnablement = 0x00000001; }
 

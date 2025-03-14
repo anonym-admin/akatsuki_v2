@@ -28,32 +28,32 @@ struct SkinnedVertex_t
 	AkU8 uBoneIndices[8] = {};
 };
 
-struct SpriteVertex_t
+struct VertexColorTexcoord_t
 {
 	Vector3 vPosition = Vector3(0.0f);
 	Vector4 vColors = Vector4(0.0f);
 	Vector2 vTexCoord = Vector2(0.0f);
 };
 
-struct PostProcessVertex_t
+struct VertexTexcoord_t
 {
 	Vector3 vPosition = Vector3(0.0f);
 	Vector2 vTexCoord = Vector2(0.0f);
 };
 
-struct LineVertex_t
+struct VertexColor_t
 {
 	Vector3 vPosition = Vector3(0.0f);
 	Vector3 vColor = Vector3(0.0f);
 };
 
-struct BillboardVertex_t
+struct VertexSize_t
 {
 	Vector3 vPosition = Vector3(0.0f);
 	Vector2 vSize = Vector2(1.0f);
 };
 
-struct TerrainVertex_t
+struct VertexNormalTexcoordTangentAlpha_t
 {
 	Vector3 vPosition = Vector3(0.0f);
 	Vector3 vNormalModel = Vector3(0.0f);

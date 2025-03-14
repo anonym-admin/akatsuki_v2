@@ -46,7 +46,7 @@ private:
 	AkU32 _uHeight = 100;
 
 	ITerrain* _pTerrain = nullptr;
-	TerrainVertex_t* _pVertices = nullptr;
+	VertexNormalTexcoordTangentAlpha_t* _pVertices = nullptr;
 	AkU32* _pIndices = nullptr;
 	AkU32 _uVerticeNum = 0;
 	AkU32 _uIndiceNum = 0;
@@ -118,7 +118,7 @@ private:
 	AkBool _bPicked = AK_FALSE;
 	AkBool _bPositive = AK_TRUE;
 
-	TerrainVertex_t* _pVertices = nullptr;
+	VertexNormalTexcoordTangentAlpha_t* _pVertices = nullptr;
 	AkU32* _pIndices = nullptr;
 	AkU32 _uVerticeNum = 0;
 	AkU32 _uIndiceNum = 0;

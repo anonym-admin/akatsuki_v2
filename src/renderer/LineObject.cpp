@@ -108,20 +108,20 @@ void FLineObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, 
 	pCmdList->DrawIndexedInstanced(_uIndiceCount, 1, 0, 0, 0);
 }
 
-AkBool FLineObject::CreateLineBuffer(LineVertex_t* pStart, LineVertex_t* pEnd)
+AkBool FLineObject::CreateLineBuffer(VertexColor_t* pStart, VertexColor_t* pEnd)
 {
 	ID3D12Device* pD3DDeivce = _pRenderer->GetDevice();
 	AkU32 uSrvDescriptorSize = pD3DDeivce->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
 	FDescriptorAllocator* pSingleDescriptorAllocator = _pRenderer->GetDescriptorAllocator();
 
-	LineVertex_t* pVertices = new LineVertex_t[2];
+	VertexColor_t* pVertices = new VertexColor_t[2];
 	pVertices[0] = *pStart;
 	pVertices[1] = *pEnd;
 
 	AkU32 pIndeics[2] = { 0, 1 };
 
-	if (FAILED(pResourceManager->CreateVertexBuffer(sizeof(LineVertex_t), 2, &_tVertexBufferView, &_pVertexBuffer, pVertices)))
+	if (FAILED(pResourceManager->CreateVertexBuffer(sizeof(VertexColor_t), 2, &_tVertexBufferView, &_pVertexBuffer, pVertices)))
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -149,7 +149,7 @@ AkBool FLineObject::CreateLineBuffers(LineData_t* pLineData)
 	ID3D12Resource* pVertexBuffer = nullptr;
 	ID3D12Resource* pIndexBuffer = nullptr;
 
-	if (pResourceManager->CreateVertexBuffer(sizeof(LineVertex_t), pLineData->uVerticeNum, &tVBView, &pVertexBuffer, pLineData->pVertices))
+	if (pResourceManager->CreateVertexBuffer(sizeof(VertexColor_t), pLineData->uVerticeNum, &tVBView, &pVertexBuffer, pLineData->pVertices))
 	{
 		_pVertexBuffer = pVertexBuffer;
 		_tVertexBufferView = tVBView;

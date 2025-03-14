@@ -383,7 +383,7 @@ AkBool FPostProcess::CreateMeshBuffers()
 {
 	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
 
-	PostProcessVertex_t tVertices[] =
+	VertexTexcoord_t tVertices[] =
 	{
 		{ { -1.0f, -1.0f, 0.0f }, { 0.0f, 1.0f } },
 		{ { -1.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } },
@@ -399,7 +399,7 @@ AkBool FPostProcess::CreateMeshBuffers()
 
 	const AkU32 uVertexBufferSize = sizeof(tVertices);
 
-	if (FAILED(pResourceManager->CreateVertexBuffer(sizeof(PostProcessVertex_t), (AkU32)_countof(tVertices), &_tVertexBufferView, &_pVertexBuffer, tVertices)))
+	if (FAILED(pResourceManager->CreateVertexBuffer(sizeof(VertexTexcoord_t), (AkU32)_countof(tVertices), &_tVertexBufferView, &_pVertexBuffer, tVertices)))
 	{
 		__debugbreak();
 		return AK_FALSE;

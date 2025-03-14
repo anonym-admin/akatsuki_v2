@@ -64,8 +64,8 @@ bool SkinnedModel::Init(MeshData_t* pMeshData, int iMeshCount, AnimationData* pA
 		Vector3 vEnd = Vector3::Transform(vBoneInitPos, pAnimData->offsetMatrices[iParentBoneId].Invert() * pAnimData->defaultTransform);
 		Vector3 vColor = Vector3(0.0f, 1.0f, 0.0f);
 
-		LineVertex_t tStart = { vStart, vColor };
-		LineVertex_t tEnd = { vEnd, vColor };
+		VertexColor_t tStart = { vStart, vColor };
+		VertexColor_t tEnd = { vEnd, vColor };
 		ILineObject* pLineObj = g_pRenderer->CreateLineObject();
 		pLineObj->CreateLineBuffer(&tStart, &tEnd);
 

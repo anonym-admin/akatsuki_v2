@@ -256,7 +256,7 @@ LineData_t* GeometryGenerator::MakeSphere(const AkF32 fRadius, const AkU32 uSlic
 	LineData_t* pLineData = new LineData_t;
 	pLineData->uVerticeNum = (uSlice + 1) * (uStack + 1);
 	pLineData->uIndicesNum = uSlice * uStack * 4;
-	pLineData->pVertices = new LineVertex_t[pLineData->uVerticeNum];
+	pLineData->pVertices = new VertexColor_t[pLineData->uVerticeNum];
 	pLineData->pIndices = new AkU32[pLineData->uIndicesNum];
 
 	AkU32 k = 0;
@@ -412,7 +412,7 @@ LineData_t* GeometryGenerator::MakeCube(const Vector3* pMin, const Vector3* pMax
 
 	pLineData->uVerticeNum = 8;
 	pLineData->uIndicesNum = 24;
-	pLineData->pVertices = new LineVertex_t[pLineData->uVerticeNum];
+	pLineData->pVertices = new VertexColor_t[pLineData->uVerticeNum];
 	pLineData->pIndices = new AkU32[pLineData->uIndicesNum];
 
 	pLineData->pVertices[0].vPosition = Vector3(pMin->x, pMin->y, pMin->z);
@@ -824,7 +824,7 @@ LineData_t* GeometryGenerator::MakeCapsule(const AkF32 fRadius, const AkF32 fHei
 	LineData_t* pLineData = new LineData_t;
 	pLineData->uVerticeNum = (uSlice + 1) * (uStack + 1);
 	pLineData->uIndicesNum = uSlice * uStack * 4;
-	pLineData->pVertices = new LineVertex_t[pLineData->uVerticeNum];
+	pLineData->pVertices = new VertexColor_t[pLineData->uVerticeNum];
 	pLineData->pIndices = new AkU32[pLineData->uIndicesNum];
 
 	AkU32 k = 0;

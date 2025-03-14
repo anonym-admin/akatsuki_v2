@@ -24,7 +24,7 @@ TreeBillboard::~TreeBillboard()
 
 AkBool TreeBillboard::Initialize()
 {
-	BillboardVertex_t pVertices[5] = {};
+	VertexSize_t pVertices[5] = {};
 	pVertices[0].vPosition = Vector3(-5.0f, 0.0f, 0.0f);
 	pVertices[0].vSize = Vector2(1.0f);
 	pVertices[1].vPosition = Vector3(-3.0f, 0.0f, 0.0f);

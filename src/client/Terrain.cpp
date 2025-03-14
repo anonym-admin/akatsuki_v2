@@ -132,12 +132,12 @@ void Terrain::CreateMeshData()
 	}
 
 	// Change Vertex Type
-	_pVertices = new TerrainVertex_t[pGrid->uVerticeNum];
+	_pVertices = new VertexNormalTexcoordTangentAlpha_t[pGrid->uVerticeNum];
 	_pIndices = new AkU32[pGrid->uIndicesNum];
 	_uVerticeNum = pGrid->uVerticeNum;
 	_uIndiceNum = pGrid->uIndicesNum;
 
-	memset(_pVertices, 0, sizeof(TerrainVertex_t) * _uVerticeNum);
+	memset(_pVertices, 0, sizeof(VertexNormalTexcoordTangentAlpha_t) * _uVerticeNum);
 	memset(_pIndices, 0, sizeof(AkU32) * _uIndiceNum);
 
 	for (AkU32 i = 0; i < pGrid->uVerticeNum; i++)
@@ -195,7 +195,7 @@ void Terrain::ComputeNormals()
 
 	for (AkU32 i = 0; i < _uVerticeNum; i++)
 	{
-		TerrainVertex_t v = {};
+		VertexNormalTexcoordTangentAlpha_t v = {};
 		if (_pVertices)
 		{
 			v = _pVertices[i];
@@ -230,7 +230,7 @@ void Terrain::ComputeTangents()
 
 	for (AkU32 i = 0; i < _uVerticeNum; i++)
 	{
-		TerrainVertex_t v = {};
+		VertexNormalTexcoordTangentAlpha_t v = {};
 		if (_pVertices)
 		{
 			v = _pVertices[i];
@@ -754,7 +754,7 @@ void TerrainEdit::CreateMeshData()
 	}
 
 	// Change Vertex Type
-	_pVertices = new TerrainVertex_t[pGrid->uVerticeNum];
+	_pVertices = new VertexNormalTexcoordTangentAlpha_t[pGrid->uVerticeNum];
 	_pIndices = new AkU32[pGrid->uIndicesNum];
 	_uVerticeNum = pGrid->uVerticeNum;
 	_uIndiceNum = pGrid->uIndicesNum;
@@ -969,7 +969,7 @@ void TerrainEdit::ComputeNormals()
 
 	for (AkU32 i = 0; i < _uVerticeNum; i++)
 	{
-		TerrainVertex_t v = {};
+		VertexNormalTexcoordTangentAlpha_t v = {};
 		if (_pVertices)
 		{
 			v = _pVertices[i];
@@ -1004,7 +1004,7 @@ void TerrainEdit::ComputeTangents()
 
 	for (AkU32 i = 0; i < _uVerticeNum; i++)
 	{
-		TerrainVertex_t v = {};
+		VertexNormalTexcoordTangentAlpha_t v = {};
 		if (_pVertices)
 		{
 			v = _pVertices[i];
