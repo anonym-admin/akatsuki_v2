@@ -79,7 +79,7 @@ interface IRenderer : public IUnknown
 	virtual ILineObject* CreateLineObject() = 0;
 	virtual IBillboard* CreateBillboard() = 0;
 	virtual ITerrain* CreateTerrain() = 0;
-	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB) = 0;
+	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray = AK_FALSE) = 0;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) = 0;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) = 0;
 	virtual void* CreateFontObject(const wchar_t* wcFontFamilyName, AkF32 fFontSize) = 0;

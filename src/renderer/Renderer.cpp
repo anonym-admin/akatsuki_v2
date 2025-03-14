@@ -551,9 +551,9 @@ ITerrain* FRenderer::CreateTerrain()
 	return pTerrainObj;
 }
 
-void* FRenderer::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB)
+void* FRenderer::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray)
 {
-	TextureHandle_t* pTexHandle = _pTextureManager->CreateTextureFromFile(wcFilename, bUseSRGB);
+	TextureHandle_t* pTexHandle = _pTextureManager->CreateTextureFromFile(wcFilename, bUseSRGB, bIsArray);
 	if (!pTexHandle)
 	{
 		__debugbreak();

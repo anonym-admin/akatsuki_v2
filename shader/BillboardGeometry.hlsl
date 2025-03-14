@@ -1,6 +1,8 @@
 #include "Common.hlsli"
 
-Texture2D tex : register(t0);
+Texture2D newAOTex : register(t0);
+Texture2D newAlbedoTex : register(t5);
+Texture2DArray arrayTex : register(t20);
 SamplerState samp : register(s0);
 
 struct BillboardVSInput
@@ -87,11 +89,12 @@ float4 PSMain(BillboardPSInput input) : SV_TARGET
     float3 pixelToEye = normalize(eyeWorld - input.posWorld);
     float3 normalWorld = GetNormal(input.normalWorld, input.texCoord, input.tangentWorld);
     
-    float4 albedo = tex.Sample(samp, input.texCoord);
+    float3 uvw = float3(input.texCoord, input.primID % 4);
+    float4 albedo = arrayTex.Sample(samp, uvw);
     
     clip(albedo.a - 0.1);
     
-    float ao = useAOMap ? aoTex.Sample(linearWrapSS, input.texCoord).r : 1.0;
+    float ao = useAOMap ? newAOTex.Sample(linearWrapSS, input.texCoord).r : 1.0;
     float metallic = useMetallicMap ? metallicTex.Sample(linearWrapSS, input.texCoord).r : metallicFactor;
     float roughness = useRoughnessMap ? roughnessTex.Sample(linearWrapSS, input.texCoord).r : roughnessFactor;
     float3 emission = useEimissiveMap ? emissiveTex.Sample(linearWrapSS, input.texCoord).rgb : emissionFactor;

@@ -12,7 +12,7 @@ class FBillboardObjects : public IBillboard
 {
 public:
 	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 2;
-	static const AkU32 DESCRIPTOR_COUNT_PER_MESH = 6 + 3 + 1 + 5;
+	static const AkU32 DESCRIPTOR_COUNT_PER_MESH = 6 + 3 + 1 + 5 + 1;
 
 	FBillboardObjects();
 	~FBillboardObjects();
@@ -45,6 +45,7 @@ private:
 	AkU32 _uPointNum = 0;
 	MaterialConstantBuffer_t* _pMaterials = nullptr;
 
+	TextureHandle_t* _pArrayTextureHandle = nullptr;
 	TextureHandle_t* _pAlbedoTextureHandle = nullptr;
 	TextureHandle_t* _pNormalTextureHandle = nullptr;
 	TextureHandle_t* _pEmissiveTextureHandle = nullptr;

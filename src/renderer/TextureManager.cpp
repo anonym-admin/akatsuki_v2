@@ -29,7 +29,7 @@ AkBool FTextureManager::Initialize(FRenderer* pRenderer, AkU32 uMaxBucketNum, Ak
 	return AK_TRUE;
 }
 
-TextureHandle_t* FTextureManager::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB)
+TextureHandle_t* FTextureManager::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorAllocator* pDescriptorAllocator = _pRenderer->GetDescriptorAllocator();
@@ -52,8 +52,18 @@ TextureHandle_t* FTextureManager::CreateTextureFromFile(const wchar_t* wcFilenam
 			D3D12_SHADER_RESOURCE_VIEW_DESC tSRVDesc = {};
 			tSRVDesc.Format = tDesc.Format;
 			tSRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-			tSRVDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-			tSRVDesc.Texture2D.MipLevels = tDesc.MipLevels;
+			tSRVDesc.ViewDimension = bIsArray ? D3D12_SRV_DIMENSION_TEXTURE2DARRAY : D3D12_SRV_DIMENSION_TEXTURE2D;
+			if (bIsArray)
+			{
+				tSRVDesc.Texture2DArray.ArraySize = tDesc.DepthOrArraySize;
+				tSRVDesc.Texture2DArray.FirstArraySlice = 0;
+				tSRVDesc.Texture2DArray.MipLevels = -1;
+				tSRVDesc.Texture2DArray.MostDetailedMip = 0;
+			}
+			else
+			{
+				tSRVDesc.Texture2D.MipLevels = tDesc.MipLevels;
+			}
 
 			if (pDescriptorAllocator->AllocDescriptorHandle(&hSRV))
 			{

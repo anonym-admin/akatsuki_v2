@@ -98,6 +98,7 @@ struct BillboardData_t
 	wchar_t wcRoughnessTextureFilename[_MAX_PATH] = {};
 	wchar_t wcAoTextureFilename[_MAX_PATH] = {};
 	wchar_t wcOpacityTextureFilename[_MAX_PATH] = {};
+	wchar_t wcArrayFilename[_MAX_PATH] = {};
 };
 
 struct LineData_t

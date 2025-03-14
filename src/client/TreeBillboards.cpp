@@ -24,7 +24,6 @@ TreeBillboard::~TreeBillboard()
 
 AkBool TreeBillboard::Initialize()
 {
-	
 	BillboardVertex_t pVertices[5] = {};
 	pVertices[0].vPosition = Vector3(-5.0f, 0.0f, 0.0f);
 	pVertices[0].vSize = Vector2(1.0f);
@@ -40,7 +39,7 @@ AkBool TreeBillboard::Initialize()
 	BillboardData_t pBillboardData = {};
 	pBillboardData.pVertice = pVertices;
 	pBillboardData.uPointsNum = _countof(pVertices);
-	wcscpy_s(pBillboardData.wcAlbedoTextureFilename, L"../../assets/tree02S.dds");
+	wcscpy_s(pBillboardData.wcArrayFilename, L"../../assets/treeArray2.dds");
 
 	_pModel = CreateBillboardModel(&pBillboardData);
 

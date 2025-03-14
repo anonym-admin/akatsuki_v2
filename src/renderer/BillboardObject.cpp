@@ -54,6 +54,16 @@ AkBool FBillboardObjects::CreateBillboardBuffer(BillboardData_t* pBillboardData)
 
 	_pMaterials = new MaterialConstantBuffer_t;
 
+	// Array
+	if (!wcscmp(pBillboardData->wcArrayFilename, L""))
+	{
+		_pArrayTextureHandle = pTextureManager->CreateNullTexture();
+	}
+	else
+	{
+		_pArrayTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pBillboardData->wcArrayFilename, AK_FALSE, AK_TRUE));
+		_pMaterials->uUseAOMap = AK_TRUE;
+	}
 	// Albedo
 	if (!wcscmp(pBillboardData->wcAlbedoTextureFilename, L""))
 	{
@@ -226,8 +236,8 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 		pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
 
-		// Albedo
-		TextureHandle_t* pTexHandle = _pAlbedoTextureHandle;
+		// AO
+		TextureHandle_t* pTexHandle = _pAoTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -286,8 +296,8 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 		}
 		hDest.Offset(1, uDescriptorSize);
 
-		// AO
-		pTexHandle = _pAoTextureHandle;
+		// Albedo
+		pTexHandle = _pAlbedoTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -346,6 +356,18 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 			}
 			hDest.Offset(1, uDescriptorSize);
 		}
+
+		// Array Tex
+		pTexHandle = _pArrayTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
 	}
 
 	// Set RootSignature.
@@ -403,7 +425,11 @@ void FBillboardObjects::CleanUp()
 		_pRenderer->DestroyTexture(_pAoTextureHandle);
 		_pAoTextureHandle = nullptr;
 	}
-
+	if (_pArrayTextureHandle)
+	{
+		_pRenderer->DestroyTexture(_pArrayTextureHandle);
+		_pArrayTextureHandle = nullptr;
+	}
 	if (_pMaterials)
 	{
 		free(_pMaterials);
@@ -446,11 +472,12 @@ AkBool FBillboardObjects::CreateRootSignature()
 	CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[1] = {};
 	tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0, b1: Constant Buffer View per Object.
 
-	CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[4] = {};
+	CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[5] = {};
 	tRangesPerTriGroup[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2: Constant Buffer View per Mesh
 	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 6, 0);	// t0~t5 : Shader Resource View(Tex) per Mesh.
 	tRangesPerTriGroup[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 11);	// t10, t11, t12, t13 : Shader Resource View(Tex) per Mesh. (IBL Texture)
 	tRangesPerTriGroup[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 15);	// t15, t16, t17, t18, t19 : Shadow Map
+	tRangesPerTriGroup[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 20); // t20 ~ texture array
 
 	CD3DX12_ROOT_PARAMETER tRootParameters[2] = {};
 	tRootParameters[0].InitAsDescriptorTable(_countof(tRangesPerObj), tRangesPerObj, D3D12_SHADER_VISIBILITY_ALL);

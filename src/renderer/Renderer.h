@@ -46,7 +46,7 @@ public:
 	virtual ILineObject* CreateLineObject() override;
 	virtual IBillboard* CreateBillboard() override;
 	virtual ITerrain* CreateTerrain() override;
-	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB) override;
+	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray = AK_FALSE) override;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) override;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) override;
 	virtual void* CreateFontObject(const wchar_t* wcFontFamilyName, AkF32 fFontSize) override;

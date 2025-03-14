@@ -16,7 +16,7 @@ public:
 	~FTextureManager();
 
 	AkBool Initialize(FRenderer* pRenderer, AkU32 uMaxBucketNum, AkU32 uMaxFileNum);
-	TextureHandle_t* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB);
+	TextureHandle_t* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray = AK_FALSE);
 	TextureHandle_t* CreateCubeMapTexture(const wchar_t* wcFilename);
 	TextureHandle_t* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight);
 	TextureHandle_t* CreateNullTexture();
