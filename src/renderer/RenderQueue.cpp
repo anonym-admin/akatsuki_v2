@@ -101,48 +101,6 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				}
 			}
 			break;
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SPRITE_OBJ:
-			{
-				FSpriteObject* pSpriteObj = (FSpriteObject*)pItem->pObjHandle;
-				TextureHandle_t* pTexureHandle = (TextureHandle_t*)pItem->tSpriteObjParam.pTexHandle;
-				AkF32 fZ = pItem->tSpriteObjParam.fZ;
-
-				if (pTexureHandle)
-				{
-					Vector2 vPos = { (AkF32)pItem->tSpriteObjParam.iPosX, (AkF32)pItem->tSpriteObjParam.iPosY };
-					Vector2 vScale = { pItem->tSpriteObjParam.fScaleX, pItem->tSpriteObjParam.fScaleY };
-
-					const RECT* pRect = nullptr;
-					if (pItem->tSpriteObjParam.bUseRect)
-					{
-						pRect = &pItem->tSpriteObjParam.tRect;
-					}
-
-					if (pTexureHandle->pUploadBuffer)
-					{
-						if (pTexureHandle->bUpdated)
-						{
-							FD3DUtils::UpdateTexture(pDevice, pCmdList, pTexureHandle->pTextureResource, pTexureHandle->pUploadBuffer);
-						}
-						else
-						{
-							// For Debugging.
-							AkI32 a = 0;
-						}
-						pTexureHandle->bUpdated = FALSE;
-					}
-					pSpriteObj->DrawWithTex(uThreadIndex, pCmdList, &vPos, &vScale, pRect, fZ, pTexureHandle, pItem->tSpriteObjParam.pColor);
-				}
-				else
-				{
-					FSpriteObject* pSpriteObj = (FSpriteObject*)pItem->pObjHandle;
-					Vector2 vPos = { (AkF32)pItem->tSpriteObjParam.iPosX, (AkF32)pItem->tSpriteObjParam.iPosY };
-					Vector2 vScale = { pItem->tSpriteObjParam.fScaleX, pItem->tSpriteObjParam.fScaleY };
-
-					pSpriteObj->Draw(uThreadIndex, pCmdList, &vPos, &vScale, fZ, pItem->tSpriteObjParam.pColor);
-				}
-			}
-			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKYBOX_OBJ:
 			{
 				FSkyboxObject* pSkyboxObj = (FSkyboxObject*)pItem->pObjHandle;

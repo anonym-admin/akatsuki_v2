@@ -1,6 +1,13 @@
-#include "Common.hlsli"
+#include "GlobalConsts.hlsli"
+
+cbuffer MeshConsts : register(b1)
+{
+    matrix world;
+    matrix worldIT;
+};
 
 Texture2D tex : register(t0);
+SamplerState samp : register(s0);
 
 struct BillboardVSInput
 {
@@ -79,9 +86,9 @@ void GSMain(point BillboardGSInput input[1], uint primID : SV_PrimitiveID, inout
 
 float4 PSMain(BillboardPSInput input) : SV_TARGET
 {
-    float4 color = tex.Sample(linearClampSS, input.texCoord);
+    float4 color = tex.Sample(samp, input.texCoord);
     
     clip(color.a - 0.1);
     
-    return tex.Sample(linearWrapSS, input.texCoord);
+    return tex.Sample(samp, input.texCoord);
 }

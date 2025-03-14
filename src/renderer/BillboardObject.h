@@ -12,7 +12,7 @@ class FBillboardObjects : public IBillboard
 {
 public:
 	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 2;
-	static const AkU32 DESCRIPTOR_COUNT_PER_BILLBOARD = 1;
+	static const AkU32 DESCRIPTOR_COUNT_PER_BILLBOARD = 5; // POINTS °¹¼ö ¸¸Å­
 	static const AkU32 DESCRIPTOR_COUNT_PER_MESH = 6 + 3 + 1 + 5;
 
 	FBillboardObjects();

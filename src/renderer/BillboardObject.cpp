@@ -188,7 +188,7 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
-	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ * DESCRIPTOR_COUNT_PER_BILLBOARD;
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ * _uPointNum;
 
 	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
 	{
@@ -813,7 +813,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	tPsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
 	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	tPsoDesc.SampleMask = UINT_MAX;

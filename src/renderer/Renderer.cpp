@@ -326,7 +326,7 @@ void FRenderer::EndRender()
 		_ppRenderQueue[i]->Process(i, pCmdListPool, _pCmdQueue, 400, hResolvedRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 	}
 #endif
-
+	
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hBackBufferRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize);
 
@@ -850,7 +850,7 @@ void FRenderer::RenderBillboardWithGS(IBillboard* pBillboard, const Matrix* pWor
 	tItem.tBillboardParam.pWorld = pWorldMat;
 	tItem.tBillboardParam.pTexHandle = pTexHandle;
 
-	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	if (!_ppRenderQueue[_uCurContextIndex]->Add(&tItem))
 	{
 		__debugbreak();
 	}
@@ -867,7 +867,7 @@ void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 	tItem.tBillboardParam.pWorld = pWorldMat;
 	tItem.tBillboardParam.pTexHandle = nullptr;
 
-	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	if (!_ppRenderQueue[_uCurContextIndex]->Add(&tItem))
 	{
 		__debugbreak();
 	}
