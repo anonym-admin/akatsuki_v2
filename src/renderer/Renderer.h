@@ -46,6 +46,7 @@ public:
 	virtual ILineObject* CreateLineObject() override;
 	virtual IBillboard* CreateBillboard() override;
 	virtual ITerrain* CreateTerrain() override;
+	virtual IParticle* CreateParticle() override;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray = AK_FALSE) override;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) override;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) override;
@@ -57,7 +58,8 @@ public:
 	virtual AkBool UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight) override;
 	virtual void UpdateTextureWidthImage(void* pTexHandle, const AkU8* pSrcImage, AkU32 uSrcWidth, AkU32 uSrcHeight) override;
 	virtual void UpdateCascadeOrthoProjMatrix() override;
-	virtual void UpdateDynamicVertices(void* pDVHandle, const void* pData) override;
+	virtual void UpdateDynamicDefaultBuffer(void* pDBHandle, const void* pData) override;
+	virtual void UpdateDynamicVertexBuffer(void* pDVHandle, const void* pData) override;
 	virtual void DestroyTexture(void* pTexHandle) override;
 	virtual void DestroyFontObject(void* pFontHandle) override;
 	virtual void DestroyDynamicVertex(void* pDVHandle) override;
@@ -74,6 +76,7 @@ public:
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) override;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
+	virtual void RenderParticle(IParticle* pParticle, void* pDBHandle) override;
 	virtual void RotateXCamera(AkF32 fRadian) override;
 	virtual void RotateYCamera(AkF32 fRadian) override;
 	virtual void RotateYawPitchRollCamera(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll) override;
@@ -127,6 +130,7 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetFloatBufferSrvCpu() { return _hFloatBufferSrvCpu; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetResolvedBufferSrvCpu() { return _hResolvedBufferSrvCpu; }
 	ID3D12Resource* GetResolvedBuffer() { return _pResolvedBuffer; }
+	ID3D12Resource* GetBackBuffer() { return _ppBackBuffer[_uRTIndex]; }
 	ID3D12DescriptorHeap* GetRtvHeap() { return _pRTVHeap; }
 	AkU32 GetRtvDescriptorSize() { return _uRTVDesciptorSize; }
 	AkU32 GetDsvDescriptorSize() { return _uDSVDescriptorSize; }

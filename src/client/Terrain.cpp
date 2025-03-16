@@ -489,14 +489,14 @@ void TerrainEdit::Update()
 		}
 		else
 		{
-			GRenderer->UpdateDynamicVertices(_pDVHandle, _pVertices);
+			GRenderer->UpdateDynamicVertexBuffer(_pDVHandle, _pVertices);
 			ComputeNormals();
 			ComputeTangents();
 		}
 	}
 	else
 	{
-		GRenderer->UpdateDynamicVertices(_pDVHandle, _pVertices);
+		GRenderer->UpdateDynamicVertexBuffer(_pDVHandle, _pVertices);
 	}
 }
 
@@ -898,7 +898,7 @@ void TerrainEdit::ComputeHeight()
 	ComputeNormals();
 	ComputeTangents();
 
-	GRenderer->UpdateDynamicVertices(_pDVHandle, _pVertices);
+	GRenderer->UpdateDynamicVertexBuffer(_pDVHandle, _pVertices);
 }
 
 void TerrainEdit::PaintBrush()
@@ -956,7 +956,7 @@ void TerrainEdit::PaintBrush()
 		}
 	}
 
-	GRenderer->UpdateDynamicVertices(_pDVHandle, _pVertices);
+	GRenderer->UpdateDynamicVertexBuffer(_pDVHandle, _pVertices);
 }
 
 void TerrainEdit::ComputeNormals()

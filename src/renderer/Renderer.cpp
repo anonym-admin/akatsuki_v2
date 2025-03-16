@@ -19,6 +19,7 @@
 #include "TerrainObject.h"
 #include "PostProcess.h"
 #include "RenderUI.h"
+#include "Particle.h"
 
 // For ImGui;
 extern ImGuiContext* GImGui;
@@ -556,6 +557,13 @@ ITerrain* FRenderer::CreateTerrain()
 	return pTerrainObj;
 }
 
+IParticle* FRenderer::CreateParticle()
+{
+	FParticle* pParticle = new FParticle;
+	pParticle->Initialize(this);
+	return pParticle;
+}
+
 void* FRenderer::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray)
 {
 	TextureHandle_t* pTexHandle = _pTextureManager->CreateTextureFromFile(wcFilename, bUseSRGB, bIsArray);
@@ -888,6 +896,22 @@ void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMa
 	tItem.tTerrianParam.pWorld = pWorldMat;
 	tItem.tTerrianParam.pBrush = pBrush;
 	tItem.tTerrianParam.bDrawNormal = AK_TRUE;
+
+	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	{
+		__debugbreak();
+	}
+
+	_uCurThreadIndex++;
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+}
+
+void FRenderer::RenderParticle(IParticle* pParticle, void* pDBHandle)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_PARTICLE;
+	tItem.pObjHandle = pParticle;
+	tItem.tParticleParam.pDBHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
 	{
@@ -2009,9 +2033,27 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 	}
 }
 
-void FRenderer::UpdateDynamicVertices(void* pDVHandle, const void* pData)
+void FRenderer::UpdateDynamicDefaultBuffer(void* pDBHandle, const void* pData)
 {
-	DynamicVertexHandle_t* pDynamicVertexHandle = (DynamicVertexHandle_t*)pDVHandle;
+	DynamicDefaultBufferHandle_t* pDynamicDefaultBufferHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
+	ID3D12Resource* pUploadBuffer = pDynamicDefaultBufferHandle->pUploadBuffer;
+	AkU32 uSizePerType = pDynamicDefaultBufferHandle->uSizePerType;
+	AkU32 uDataNum = pDynamicDefaultBufferHandle->uDataNum;
+
+	BYTE* pMappedPtr = nullptr;
+	CD3DX12_RANGE writeRange(0, 0);
+	HRESULT hr = pUploadBuffer->Map(0, &writeRange, reinterpret_cast<void**>(&pMappedPtr));
+	if (FAILED(hr))
+		__debugbreak();
+
+	memcpy(pMappedPtr, pData, uSizePerType * uDataNum);
+
+	pUploadBuffer->Unmap(0, nullptr);
+}
+
+void FRenderer::UpdateDynamicVertexBuffer(void* pDVHandle, const void* pData)
+{
+	DynamicVertexBufferHandle_t* pDynamicVertexHandle = (DynamicVertexBufferHandle_t*)pDVHandle;
 	ID3D12Resource* pUploadBuffer = pDynamicVertexHandle->pUploadBuffer;
 	AkU32 uSizePerVertex = pDynamicVertexHandle->uSizePerVertex;
 	AkU32 uVertexNum = pDynamicVertexHandle->uVertexNum;

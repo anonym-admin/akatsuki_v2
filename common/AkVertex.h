@@ -61,3 +61,12 @@ struct VertexNormalTexcoordTangentAlpha_t
 	Vector3 vTangentModel = Vector3(0.0f);
 	AkF32 pAlpha[4] = {};
 };
+
+struct Particle_t
+{
+	Vector3 vPosition = Vector3(0.0f);
+	Vector3 vVelocity = Vector3(0.0f);
+	Vector3 vColor = Vector3(1.0f);
+	AkF32 fRadius = 1.0f;
+	AkF32 fLife = -1.0f;
+};

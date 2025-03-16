@@ -39,6 +39,109 @@ AkBool FResourceManager::Initialize(ID3D12Device* pDevice)
 	return AK_TRUE;
 }
 
+AkBool FResourceManager::CreateDefaultBuffer(AkU64 u64BytesSize, void* pInitData, ID3D12Resource** ppOutBuffer)
+{
+	D3D12_VERTEX_BUFFER_VIEW tVertexBufferView = {};
+	ID3D12Resource* pDefaultBuffer = nullptr;
+	ID3D12Resource* pUploadBuffer = nullptr;
+
+	// create vertexbuffer for rendering
+	if (_pDevice->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer(u64BytesSize),
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&pDefaultBuffer)))
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+
+	if (pInitData)
+	{
+		if (FAILED(_pCmdAllocator->Reset()))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		if (FAILED(_pCmdList->Reset(_pCmdAllocator, nullptr)))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		if (_pDevice->CreateCommittedResource(
+			&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+			D3D12_HEAP_FLAG_NONE,
+			&CD3DX12_RESOURCE_DESC::Buffer(u64BytesSize),
+			D3D12_RESOURCE_STATE_COMMON,
+			nullptr,
+			IID_PPV_ARGS(&pUploadBuffer)))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		// Copy the triangle data to the vertex buffer.
+		AkU8* pVertexDataBegin = nullptr;
+		CD3DX12_RANGE tReadRange(0, 0);        // We do not intend to read from this resource on the CPU.
+
+		if (pUploadBuffer->Map(0, &tReadRange, reinterpret_cast<void**>(&pVertexDataBegin)))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		memcpy(pVertexDataBegin, pInitData, u64BytesSize);
+		pUploadBuffer->Unmap(0, nullptr);
+
+		_pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pDefaultBuffer, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_COPY_DEST));
+		_pCmdList->CopyBufferRegion(pDefaultBuffer, 0, pUploadBuffer, 0, u64BytesSize);
+		_pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pDefaultBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ));
+
+		_pCmdList->Close();
+
+		ID3D12CommandList* ppCmdLists[] = { _pCmdList };
+		_pCmdQueue->ExecuteCommandLists(_countof(ppCmdLists), ppCmdLists);
+
+		Fence();
+		WaitForFenceValue();
+	}
+
+	*ppOutBuffer = pDefaultBuffer;
+
+	if (pUploadBuffer)
+	{
+		pUploadBuffer->Release();
+		pUploadBuffer = nullptr;
+	}
+
+	return AK_TRUE;
+}
+
+AkBool FResourceManager::CreateDynamicDefaultBuffer(AkU64 u64BytesSize, ID3D12Resource** ppOutUploadBuffer)
+{
+	ID3D12Resource* pUploadBuffer = nullptr;
+
+	if (_pDevice->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer(u64BytesSize),
+		D3D12_RESOURCE_STATE_COMMON,
+		nullptr,
+		IID_PPV_ARGS(&pUploadBuffer)))
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+
+	*ppOutUploadBuffer = pUploadBuffer;
+
+	return AK_TRUE;
+}
+
 AkBool FResourceManager::CreateVertexBuffer(AkU32 uSizePerVertex, AkU32 uVertexNum, D3D12_VERTEX_BUFFER_VIEW* pOutVertexBufferView, ID3D12Resource** ppOutBuffer, void* pInitData)
 {
 	D3D12_VERTEX_BUFFER_VIEW tVertexBufferView = {};
@@ -128,7 +231,7 @@ AkBool FResourceManager::CreateVertexBuffer(AkU32 uSizePerVertex, AkU32 uVertexN
 	return AK_TRUE;
 }
 
-AkBool FResourceManager::CreateDynamicVertices(AkU32 uSizePerVertex, AkU32 uVertexNum, D3D12_VERTEX_BUFFER_VIEW* pOutVertexBufferView, ID3D12Resource** ppOutUploadBuffer)
+AkBool FResourceManager::CreateDynamicVertexBuffer(AkU32 uSizePerVertex, AkU32 uVertexNum, D3D12_VERTEX_BUFFER_VIEW* pOutVertexBufferView, ID3D12Resource** ppOutUploadBuffer)
 {
 	D3D12_VERTEX_BUFFER_VIEW tVertexBufferView = {};
 	ID3D12Resource* pUploadBuffer = nullptr;

@@ -9,6 +9,7 @@ enum class RENDER_ITEM_TYPE
 	RENDER_ITEM_TYPE_LINE_OBJ,
 	RENDER_ITEM_TYPE_BILLBOARD,
 	RENDER_ITEM_TYPE_TERRAIN_OBJ,
+	RENDER_ITEM_TYPE_PARTICLE,
 };
 
 struct RenderMeshObjParam_t
@@ -62,6 +63,11 @@ struct RenderTerrainParam_t
 	AkBool bDrawNormal = AK_FALSE;
 };
 
+struct ParticleParam_t
+{
+	DynamicDefaultBufferHandle_t* pDBHandle = nullptr;
+};
+
 struct RenderItem_t
 {
 	RENDER_ITEM_TYPE eItemType = {};
@@ -75,6 +81,7 @@ struct RenderItem_t
 		RenderLineObjParam_t tLineObjParam;
 		RenderBillboardParam_t tBillboardParam;
 		RenderTerrainParam_t tTerrianParam;
+		ParticleParam_t tParticleParam;
 	};
 };
 

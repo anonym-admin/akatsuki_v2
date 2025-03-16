@@ -351,7 +351,7 @@ void Application::Update()
 	GCollisionManager->Update();
 
 	// Update status text
-	UpdateText();
+	// UpdateText();
 
 	// Update UI Manager.
 	GUIManager->Update();

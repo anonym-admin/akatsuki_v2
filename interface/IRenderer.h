@@ -26,14 +26,14 @@ interface ISprite : public IUnknown
 
 interface ISkybox : public IUnknown
 {
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR * __RPC_FAR * ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };
 
 interface ILineObject : public IUnknown
 {
-	virtual AkBool CreateLineBuffer(VertexColor_t* pStart, VertexColor_t* pEnd) = 0;
+	virtual AkBool CreateLineBuffer(VertexColor_t * pStart, VertexColor_t * pEnd) = 0;
 	virtual AkBool CreateLineBuffers(LineData_t* pLineData) = 0;
 	virtual void SetColor(AkF32 fR, AkF32 fG, AkF32 fB) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
@@ -43,7 +43,7 @@ interface ILineObject : public IUnknown
 
 interface IBillboard : public IUnknown
 {
-	virtual AkBool CreateBillboardBuffer(BillboardData_t* pBillboardData) = 0;
+	virtual AkBool CreateBillboardBuffer(BillboardData_t * pBillboardData) = 0;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
@@ -65,8 +65,9 @@ interface ITerrain : public IUnknown
 
 interface IParticle : public IUnknown
 {
-	virtual AkBool CreateBasicParticleBuffer(VertexSize_t * pVertices, AkU32 uVerticeNum) = 0;
+	virtual void* CreateBasicParticleBuffer(Particle_t * pParticles, AkU32 uParticleNum) = 0;
 	virtual void SetTexture(void* pTexHandle) = 0;
+	virtual void DestroyBasicParticleBuffer(void* pDBHandle) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
@@ -88,6 +89,7 @@ interface IRenderer : public IUnknown
 	virtual ILineObject* CreateLineObject() = 0;
 	virtual IBillboard* CreateBillboard() = 0;
 	virtual ITerrain* CreateTerrain() = 0;
+	virtual IParticle* CreateParticle() = 0;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray = AK_FALSE) = 0;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) = 0;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) = 0;
@@ -99,7 +101,8 @@ interface IRenderer : public IUnknown
 	virtual AkBool UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight) = 0;
 	virtual void UpdateTextureWidthImage(void* pTexHandle, const AkU8* pSrcImage, AkU32 uSrcWidth, AkU32 uSrcHeight) = 0;
 	virtual void UpdateCascadeOrthoProjMatrix() = 0;
-	virtual void UpdateDynamicVertices(void* pDVHandle, const void* pData) = 0;
+	virtual void UpdateDynamicDefaultBuffer(void* pDBHandle, const void* pData) = 0;
+	virtual void UpdateDynamicVertexBuffer(void* pDVHandle, const void* pData) = 0;
 	virtual void DestroyTexture(void* pTexHandle) = 0;
 	virtual void DestroyFontObject(void* pFontHandle) = 0;
 	virtual void DestroyDynamicVertex(void* pDVHandle) = 0;
@@ -116,6 +119,7 @@ interface IRenderer : public IUnknown
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
+	virtual void RenderParticle(IParticle* pParticle, void* pDBHandle) = 0;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) = 0;
 	virtual void RotateXCamera(AkF32 fRadian) = 0;
 	virtual void RotateYCamera(AkF32 fRadian) = 0;

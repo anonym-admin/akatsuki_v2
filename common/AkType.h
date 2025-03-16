@@ -57,5 +57,4 @@ typedef AkI32 AkIntBool;
 #define LIGHT_SPOT 0x04
 #define LIGHT_SHADOW 0x10
 
-
 typedef AkBool(*DLL_CreateInstanceFuncPtr)(void** ppModule);

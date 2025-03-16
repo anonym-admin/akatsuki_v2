@@ -8,6 +8,7 @@
 #include "LineObject.h"
 #include "BillboardObject.h"
 #include "TerrainObject.h"
+#include "Particle.h"
 
 /*
 ==============
@@ -136,6 +137,12 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				{
 					pTerrainObj->Draw(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld, pItem->tTerrianParam.pBrush);
 				}
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_PARTICLE:
+			{
+				FParticle* pParticle = (FParticle*)pItem->pObjHandle;
+				pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pDBHandle);
 			}
 			break;
 			default:

@@ -160,10 +160,19 @@ struct FontHandle_t
 	WCHAR wchFontFamilyName[512];
 };
 
-struct DynamicVertexHandle_t
+struct DynamicVertexBufferHandle_t
 {
 	ID3D12Resource* pUploadBuffer = nullptr;
 	AkU32 uSizePerVertex = 0;
 	AkU32 uVertexNum = 0;
+	AkBool bUpdated = AK_FALSE;
+};
+
+struct DynamicDefaultBufferHandle_t
+{
+	ID3D12Resource* pUploadBuffer = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
+	AkU32 uSizePerType = 0;
+	AkU32 uDataNum = 0;
 	AkBool bUpdated = AK_FALSE;
 };

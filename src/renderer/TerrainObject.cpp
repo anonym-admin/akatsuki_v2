@@ -501,7 +501,7 @@ AkBool FTerrainObject::CreateStaticMeshBuffers(VertexNormalTexcoordTangentAlpha_
 
 void* FTerrainObject::CreateDynamicMeshBuffers(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
 {
-	DynamicVertexHandle_t* pDVHandle = nullptr;
+	DynamicVertexBufferHandle_t* pDVHandle = nullptr;
 
 	_pMeshes = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
 	_uMeshNum = 1;
@@ -767,21 +767,21 @@ void FTerrainObject::CleanUp()
 	DestroyCommonResources();
 }
 
-DynamicVertexHandle_t* FTerrainObject::CreateDynamicVertexAndIndexBuffer(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
+DynamicVertexBufferHandle_t* FTerrainObject::CreateDynamicVertexAndIndexBuffer(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
 {
 	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
 	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
 	D3D12_INDEX_BUFFER_VIEW tIBView = {};
 	ID3D12Resource* pVertexBuffer = nullptr;
 	ID3D12Resource* pIndexBuffer = nullptr;
-	DynamicVertexHandle_t* pDVHandle = nullptr;
+	DynamicVertexBufferHandle_t* pDVHandle = nullptr;
 
-	if (pResourceManager->CreateDynamicVertices(sizeof(VertexNormalTexcoordTangentAlpha_t), uVerticeNum, &tVBView, &pVertexBuffer))
+	if (pResourceManager->CreateDynamicVertexBuffer(sizeof(VertexNormalTexcoordTangentAlpha_t), uVerticeNum, &tVBView, &pVertexBuffer))
 	{
 		_pMeshes[0].pVB = pVertexBuffer;
 		_pMeshes[0].tVBView = tVBView;
 
-		pDVHandle = new DynamicVertexHandle_t;
+		pDVHandle = new DynamicVertexBufferHandle_t;
 		pDVHandle->pUploadBuffer = pVertexBuffer;
 		pDVHandle->uSizePerVertex = sizeof(VertexNormalTexcoordTangentAlpha_t);
 		pDVHandle->uVertexNum = uVerticeNum;

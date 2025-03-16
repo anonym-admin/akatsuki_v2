@@ -37,7 +37,7 @@ public:
 
 private:
     void CleanUp();
-    DynamicVertexHandle_t* CreateDynamicVertexAndIndexBuffer(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
+    DynamicVertexBufferHandle_t* CreateDynamicVertexAndIndexBuffer(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
     AkBool CreateCommonResources();
     AkBool CreateRootSignature();
     AkBool CreatePipelineState();
