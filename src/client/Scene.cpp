@@ -118,18 +118,27 @@ void Scene::AddGameObject(GAME_OBJECT_GROUP_TYPE eGameObjType, Actor* pGameObj)
 	_uGameObjNum++;
 }
 
-void Scene::CreateCommonFontObject(const wchar_t* wcFontFamilyName, AkF32 fFontSize)
+void Scene::DeleteGameObject(GAME_OBJECT_GROUP_TYPE eGameObjType, Actor* pGameObj)
 {
-	_pFontObj = GRenderer->CreateFontObject(wcFontFamilyName, fFontSize);
+	if (_pGameObjContainerList[(AkU32)eGameObjType])
+	{
+		List_t* pDel = _pGameObjContainerList[(AkU32)eGameObjType]->pGameObjHead;
+		while (pDel != nullptr)
+		{
+			List_t* pNext = pDel->pNext;
+			Actor* pActor = reinterpret_cast<Actor*>(pDel->pData);
+			if (pGameObj == pActor)
+			{
+				LL_Delete(&_pGameObjContainerList[(AkU32)eGameObjType]->pGameObjHead, &_pGameObjContainerList[(AkU32)eGameObjType]->pGameObjTail, &pGameObj->tLink);
+				delete pActor;
+			}
+
+			pDel = pNext;
+		}
+	}
 }
 
-void Scene::CreateCommonSpriteObject()
-{
-	_pSpriteObj = GRenderer->CreateSpriteObject();
-	_pSpriteObj->SetDrawBackground(AK_FALSE);
-}
-
-void Scene::CleanUp()
+void Scene::DeleteAllGameObject()
 {
 	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 	{
@@ -152,17 +161,11 @@ void Scene::CleanUp()
 			_pGameObjContainerList[i] = nullptr;
 		}
 	}
+}
 
-	if (_pFontObj)
-	{
-		GRenderer->DestroyFontObject(_pFontObj);
-		_pFontObj = nullptr;
-	}
-	if (_pSpriteObj)
-	{
-		_pSpriteObj->Release();
-		_pSpriteObj = nullptr;
-	}
+void Scene::CleanUp()
+{
+	DeleteAllGameObject();
 }
 
 GameObjContainer_t* Scene::AllocGameObjectContainer()

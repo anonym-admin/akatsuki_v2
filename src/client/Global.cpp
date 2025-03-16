@@ -56,16 +56,6 @@ public:
 			delete GUIManager;
 			GUIManager = nullptr;
 		}
-		if (GCollisionManager)
-		{
-			delete GCollisionManager;
-			GCollisionManager = nullptr;
-		}
-		if (GEditorManager)
-		{
-			delete GEditorManager;
-			GEditorManager = nullptr;
-		}
 		if (GEditorManager)
 		{
 			delete GEditorManager;
@@ -75,6 +65,11 @@ public:
 		{
 			delete GSceneManager;
 			GSceneManager = nullptr;
+		}
+		if (GCollisionManager)
+		{
+			delete GCollisionManager;
+			GCollisionManager = nullptr;
 		}
 		if (GEventManager)
 		{

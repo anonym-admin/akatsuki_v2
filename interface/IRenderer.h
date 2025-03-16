@@ -65,8 +65,8 @@ interface ITerrain : public IUnknown
 
 interface IParticle : public IUnknown
 {
-	virtual AkBool CreateParticleBuffer(VertexSize_t * pVertices, AkU32 uVerticeNum) = 0;
-	virtual void SetTexture(const wchar_t* wcFilaname) = 0;
+	virtual AkBool CreateBasicParticleBuffer(VertexSize_t * pVertices, AkU32 uVerticeNum) = 0;
+	virtual void SetTexture(void* pTexHandle) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;

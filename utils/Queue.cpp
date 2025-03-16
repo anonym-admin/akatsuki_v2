@@ -105,9 +105,9 @@ void CQ_Test()
 
     while (!CQ_IsEmpty(pQueue))
     {
-        void* pData = CQ_Dequeue(pQueue);
+        //void* pData = CQ_Dequeue(pQueue);
 
-        printf("%d\n", (int)pData);
+        //printf("%d\n", (int)pData);
     }
 
     CQ_DestroyQueue(pQueue);

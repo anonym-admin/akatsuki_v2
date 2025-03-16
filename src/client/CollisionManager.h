@@ -46,6 +46,8 @@ public:
 
 	void Update();
 
+	void Reset();
+
 private:
 	void CleanUp();
 

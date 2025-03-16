@@ -90,6 +90,11 @@ void CollisionManager::Update()
 	}
 }
 
+void CollisionManager::Reset()
+{
+	memset(_pCollisionCheckBitsTable, 0, sizeof(AkU32) * (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT);
+}
+
 void CollisionManager::CleanUp()
 {
 	if (_pRBTree)

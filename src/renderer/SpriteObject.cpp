@@ -29,6 +29,7 @@ AkBool FSpriteObject::CreateCommonResources()
 {
 	if (sm_uInitRefCount)
 	{
+		sm_uInitRefCount++;
 		return AK_TRUE;
 	}
 

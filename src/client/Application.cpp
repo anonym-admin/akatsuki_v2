@@ -7,6 +7,7 @@
 #include "InputUI.h"
 #include "SceneInGame.h"
 #include "SceneLoading.h"
+#include "SceneComputeShader.h"
 #include "EditorModel.h"
 #include "EditorMap.h"
 #include "Collider.h"
@@ -193,19 +194,19 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 
 #if defined(_M_AMD64)
 
-	#if defined(_DEBUG) || defined(DEBUG)
-		wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
-	#else
-		wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
-	#endif
+#if defined(_DEBUG) || defined(DEBUG)
+	wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
+#else
+	wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
+#endif
 
 #elif defined(_M_IX86)
-	
-	#if defined(_DEBUG) | defined(DEBUG)
-		wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
-	#else
-		wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
-	#endif
+
+#if defined(_DEBUG) | defined(DEBUG)
+	wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
+#else
+	wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
+#endif
 
 #endif
 
@@ -251,6 +252,7 @@ AkBool Application::InitScene()
 {
 	GSceneManager->AddScene(SCENE_TYPE::LOADING, new SceneLoading());
 	GSceneManager->AddScene(SCENE_TYPE::INGANE, new SceneInGame());
+	GSceneManager->AddScene(SCENE_TYPE::COMPUTE, new SceneComputeShader());
 
 	GSceneManager->BindCurrentScene(SCENE_TYPE::LOADING)->BeginScene();
 
@@ -271,6 +273,7 @@ AkBool Application::InitEditor()
 
 AkBool Application::InitUI()
 {
+
 	_pSysTextUI = new TextUI(256, 32, L"Consolas", 10);
 	_pSysTextUI->SetPosition(10, 10);
 	_pSysTextUI->SetScale(1.0f, 1.0f);
@@ -382,6 +385,16 @@ void Application::UpdateEnviroment()
 		{
 			tEvent.eEventType = EVENT_TYPE::EDITOR_TO_SCENE_CHANGE;
 			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::INGANE;
+		}
+		GEventManager->AddEvent(&tEvent);
+	}
+	if (KEY_DOWN(KEY_INPUT_F6))
+	{
+		EventHandle_t tEvent = {};
+		if(!_bChangeEditor)
+		{
+			tEvent.eEventType = EVENT_TYPE::SCENE_CHANGE;
+			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::COMPUTE;
 		}
 		GEventManager->AddEvent(&tEvent);
 	}

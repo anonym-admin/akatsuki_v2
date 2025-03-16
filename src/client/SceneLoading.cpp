@@ -20,12 +20,6 @@ SceneLoading::~SceneLoading()
 
 AkBool SceneLoading::BeginScene()
 {
-	// Create Font.
-	CreateCommonFontObject(L"Consolas", 12.0f);
-
-	// Create sprite obj.
-	CreateCommonSpriteObject();
-
 	// Create texture for loading screen text.
 	RECT tRect = {};
 	::GetClientRect(GhWnd, &tRect);
@@ -48,7 +42,6 @@ AkBool SceneLoading::BeginScene()
 
 	// Load Animation.
 	{
-
 		// Idle
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_Idle.anim");
 		GAssetManager->ReadClip(ASSET_ANIM_TYPE::SWATGUY, ANIM_FILE_PATH, L"SwatGuy_RifleIdle.anim");

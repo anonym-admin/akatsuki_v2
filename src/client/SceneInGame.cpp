@@ -302,6 +302,8 @@ AkBool SceneInGame::BeginScene()
 
 AkBool SceneInGame::EndScene()
 {
+	GCollisionManager->Reset();
+
 	if (_pHouseMeshObj)
 	{
 		_pHouseMeshObj->Release();
@@ -327,7 +329,6 @@ AkBool SceneInGame::EndScene()
 		_pBuildingMeshObj->Release();
 		_pBuildingMeshObj = nullptr;
 	}
-
 	if (_pSkyboxObj)
 	{
 		_pSkyboxObj->Release();
@@ -348,6 +349,8 @@ AkBool SceneInGame::EndScene()
 		_pMiniMapOutlineSprite->Release();
 		_pMiniMapOutlineSprite = nullptr;
 	}
+
+	DeleteAllGameObject();
 
 	return AK_TRUE;
 }

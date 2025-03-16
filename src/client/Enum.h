@@ -10,6 +10,7 @@ enum class SCENE_TYPE
 {
 	LOADING,
 	INGANE,
+	COMPUTE,
 	COUNT,
 };
 

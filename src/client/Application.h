@@ -55,7 +55,7 @@ private:
 	AkBool _bUseVSync = AK_FALSE;
 	AkBool _bChangeEditor = AK_FALSE;
 
-	TextUI* _pSysTextUI = nullptr;
+	TextUI * _pSysTextUI = nullptr;
 	InputUI* _pDynamicTextUI = nullptr;
 	Vector3 _vDynamicTextFontColor = Vector3(1.0f);
 
