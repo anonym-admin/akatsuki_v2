@@ -15,10 +15,8 @@ Particle
 */
 
 ID3D12RootSignature* FParticle::sm_pRootSignature;
-ID3D12PipelineState* FParticle::sm_pBasicPSO;
-ID3D12PipelineState* FParticle::sm_pSpritePSO;
-ID3D12PipelineState* FParticle::sm_pAccumulateBasicPSO;
-ID3D12PipelineState* FParticle::sm_pAccumulateSpritePSO;
+ID3D12PipelineState* FParticle::sm_pParticlePSO;
+ID3D12PipelineState* FParticle::sm_pAccumulateParticlePSO;
 AkU32 FParticle::sm_uInitRefCount;
 
 FParticle::FParticle()
@@ -41,7 +39,7 @@ AkBool FParticle::Initialize(FRenderer* pRenderer)
 	return bResult;
 }
 
-void* FParticle::CreateBasicParticleBuffer(Particle_t* pParticles, AkU32 uParticleNum)
+void* FParticle::CreateBasicParticleBuffer(VertexParticle_t* pVertices, AkU32 uNum)
 {
 	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
 	FDescriptorAllocator* pDescriptorAllocator = _pRenderer->GetDescriptorAllocator();
@@ -49,50 +47,20 @@ void* FParticle::CreateBasicParticleBuffer(Particle_t* pParticles, AkU32 uPartic
 	DynamicDefaultBufferHandle_t* pDynamicDefaultBufferHandle = new DynamicDefaultBufferHandle_t;
 	D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
 
-	AkU64 u64BytesSize = uParticleNum * sizeof(Particle_t);
+	AkU64 u64BytesSize = uNum * sizeof(VertexParticle_t);
 
 	if (pResourceManager->CreateDynamicDefaultBuffer(u64BytesSize, &pUploadBuffer))
 	{
 		if (pDescriptorAllocator->AllocDescriptorHandle(&hSRV))
 		{
-			pDynamicDefaultBufferHandle->uDataNum = uParticleNum;
+			pDynamicDefaultBufferHandle->uDataNum = uNum;
 			pDynamicDefaultBufferHandle->pUploadBuffer = pUploadBuffer;
 			pDynamicDefaultBufferHandle->hSRV = hSRV;
-			pDynamicDefaultBufferHandle->uSizePerType = sizeof(Particle_t);
+			pDynamicDefaultBufferHandle->uSizePerType = sizeof(VertexParticle_t);
 			pDynamicDefaultBufferHandle->bUpdated = AK_FALSE;
-			_uParticleNum = uParticleNum;
+			_uParticleNum = uNum;
 		}
 	}
-
-	_uType = 0;
-
-	return pDynamicDefaultBufferHandle;
-}
-
-void* FParticle::CreateSpriteParticleBuffer(ParticleSprite_t* pSprites, AkU32 uSpriteNum)
-{
-	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
-	FDescriptorAllocator* pDescriptorAllocator = _pRenderer->GetDescriptorAllocator();
-	ID3D12Resource* pUploadBuffer = nullptr;
-	DynamicDefaultBufferHandle_t* pDynamicDefaultBufferHandle = new DynamicDefaultBufferHandle_t;
-	D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
-
-	AkU64 u64BytesSize = uSpriteNum * sizeof(ParticleSprite_t);
-
-	if (pResourceManager->CreateDynamicDefaultBuffer(u64BytesSize, &pUploadBuffer))
-	{
-		if (pDescriptorAllocator->AllocDescriptorHandle(&hSRV))
-		{
-			pDynamicDefaultBufferHandle->uDataNum = uSpriteNum;
-			pDynamicDefaultBufferHandle->pUploadBuffer = pUploadBuffer;
-			pDynamicDefaultBufferHandle->hSRV = hSRV;
-			pDynamicDefaultBufferHandle->uSizePerType = sizeof(ParticleSprite_t);
-			pDynamicDefaultBufferHandle->bUpdated = AK_FALSE;
-			_uParticleNum = uSpriteNum;
-		}
-	}
-
-	_uType = 1;
 
 	return pDynamicDefaultBufferHandle;
 }
@@ -157,7 +125,7 @@ void FParticle::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, Dy
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
-	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + 1 + DESCRIPTOR_COUNT_PER_PARTICLES;
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + _uParticleNum;
 
 	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
 	{
@@ -200,25 +168,28 @@ void FParticle::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, Dy
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
 
-	if (_pTextureHandle && _pTextureHandle->hSRV.ptr)
+	// Per Obj (t1).
+	for(AkU32 i = 0; i < _uParticleNum; i++)
 	{
 		pDevice->CopyDescriptorsSimple(1, hDest, _pTextureHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
 	}
 
-
 	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
-	pCmdList->SetPipelineState(sm_pAccumulateBasicPSO);
+	pCmdList->SetPipelineState(sm_pAccumulateParticlePSO);
 
 	// Obj (root param 0)
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
 	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-	pCmdList->SetGraphicsRootShaderResourceView(1, pDBHandle->pUploadBuffer->GetGPUVirtualAddress());
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
+	pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
 
 	// 색을 모두 더하면서 그리는 accumulateBS 사용
 	const float blendColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	pCmdList->OMSetBlendFactor(blendColor);
+	pCmdList->SetGraphicsRootShaderResourceView(2, pDBHandle->pUploadBuffer->GetGPUVirtualAddress());
 	pCmdList->DrawInstanced(_uParticleNum, 1, 0, 0);
 }
 
@@ -259,17 +230,16 @@ AkBool FParticle::CreateRootSignature()
 	ID3DBlob* pSignature = nullptr;
 	ID3DBlob* pError = nullptr;
 
-	CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[2] = {};
-	tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0, b1: Constant Buffer View per Object.
-	tRangesPerObj[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1
-	
-	// CD3DX12_DESCRIPTOR_RANGE tRangesPerParticle[1] = {};
-	// tRangesPerParticle[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1
+	CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[1] = {};
+	tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 4, 0);	// b0 ~ b3: Constant Buffer View per Object.
+
+	CD3DX12_DESCRIPTOR_RANGE tRangesPerParticle[1] = {};
+	tRangesPerParticle[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1
 
 	CD3DX12_ROOT_PARAMETER tRootParameters[3] = {};
 	tRootParameters[0].InitAsDescriptorTable(_countof(tRangesPerObj), tRangesPerObj, D3D12_SHADER_VISIBILITY_ALL);
-	tRootParameters[1].InitAsShaderResourceView(0); // Structured buffer (t0)
-	// tRootParameters[2].InitAsDescriptorTable(_countof(tRangesPerParticle), tRangesPerParticle, D3D12_SHADER_VISIBILITY_ALL);
+	tRootParameters[1].InitAsDescriptorTable(_countof(tRangesPerParticle), tRangesPerParticle, D3D12_SHADER_VISIBILITY_ALL);
+	tRootParameters[2].InitAsShaderResourceView(0); // Structured buffer (t0)
 
 	// sampler
 	CD3DX12_STATIC_SAMPLER_DESC pSamplerDesc[7] = {};
@@ -320,9 +290,6 @@ AkBool FParticle::CreatePipelineState()
 	ID3DBlob* pParticleVS = nullptr;
 	ID3DBlob* pParticleGS = nullptr;
 	ID3DBlob* pParticlePS = nullptr;
-	ID3DBlob* pParticleSpriteVS = nullptr;
-	ID3DBlob* pParticleSpriteGS = nullptr;
-	ID3DBlob* pParticleSpritePS = nullptr;
 
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
@@ -359,33 +326,6 @@ AkBool FParticle::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/ParticleSprite.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pParticleSpriteVS, &pErrorBlob)))
-	{
-		if (pErrorBlob != nullptr)
-		{
-			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-			pErrorBlob->Release();
-		}
-		__debugbreak();
-	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/ParticleSprite.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pParticleSpriteGS, &pErrorBlob)))
-	{
-		if (pErrorBlob != nullptr)
-		{
-			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-			pErrorBlob->Release();
-		}
-		__debugbreak();
-	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/ParticleSprite.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pParticleSpritePS, &pErrorBlob)))
-	{
-		if (pErrorBlob != nullptr)
-		{
-			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-			pErrorBlob->Release();
-		}
-		__debugbreak();
-	}
 
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC tOpaquePsoDesc = {};
@@ -406,7 +346,7 @@ AkBool FParticle::CreatePipelineState()
 	tOpaquePsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	tOpaquePsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
 	tOpaquePsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
-	if (FAILED(pDevice->CreateGraphicsPipelineState(&tOpaquePsoDesc, IID_PPV_ARGS(&sm_pBasicPSO))))
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tOpaquePsoDesc, IID_PPV_ARGS(&sm_pParticlePSO))))
 	{
 		__debugbreak();
 	}
@@ -415,8 +355,8 @@ AkBool FParticle::CreatePipelineState()
 	D3D12_RENDER_TARGET_BLEND_DESC tTransparencyBlendDesc = {};
 	tTransparencyBlendDesc.BlendEnable = AK_TRUE;
 	tTransparencyBlendDesc.LogicOpEnable = AK_FALSE;
-	tTransparencyBlendDesc.SrcBlend = D3D12_BLEND_BLEND_FACTOR;
-	tTransparencyBlendDesc.DestBlend = D3D12_BLEND_BLEND_FACTOR;
+	tTransparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	tTransparencyBlendDesc.DestBlend = D3D12_BLEND_ONE;
 	tTransparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
 	tTransparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
 	tTransparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ONE;
@@ -427,39 +367,11 @@ AkBool FParticle::CreatePipelineState()
 	tAccumulatePSODesc.BlendState.AlphaToCoverageEnable = AK_TRUE;
 	tAccumulatePSODesc.BlendState.RenderTarget[0] = tTransparencyBlendDesc;
 
-	if (FAILED(pDevice->CreateGraphicsPipelineState(&tAccumulatePSODesc, IID_PPV_ARGS(&sm_pAccumulateBasicPSO))))
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tAccumulatePSODesc, IID_PPV_ARGS(&sm_pAccumulateParticlePSO))))
 	{
 		__debugbreak();
 	}
 
-	tOpaquePsoDesc.VS = CD3DX12_SHADER_BYTECODE(pParticleSpriteVS->GetBufferPointer(), pParticleSpriteVS->GetBufferSize());
-	tOpaquePsoDesc.GS = CD3DX12_SHADER_BYTECODE(pParticleSpriteGS->GetBufferPointer(), pParticleSpriteGS->GetBufferSize());
-	tOpaquePsoDesc.PS = CD3DX12_SHADER_BYTECODE(pParticleSpritePS->GetBufferPointer(), pParticleSpritePS->GetBufferSize());
-	if (FAILED(pDevice->CreateGraphicsPipelineState(&tOpaquePsoDesc, IID_PPV_ARGS(&sm_pSpritePSO))))
-	{
-		__debugbreak();
-	}
-
-	tAccumulatePSODesc.VS = CD3DX12_SHADER_BYTECODE(pParticleSpriteVS->GetBufferPointer(), pParticleSpriteVS->GetBufferSize());
-	tAccumulatePSODesc.GS = CD3DX12_SHADER_BYTECODE(pParticleSpriteGS->GetBufferPointer(), pParticleSpriteGS->GetBufferSize());
-	tAccumulatePSODesc.PS = CD3DX12_SHADER_BYTECODE(pParticleSpritePS->GetBufferPointer(), pParticleSpritePS->GetBufferSize());
-	if (FAILED(pDevice->CreateGraphicsPipelineState(&tAccumulatePSODesc, IID_PPV_ARGS(&sm_pAccumulateSpritePSO))))
-	{
-		__debugbreak();
-	}
-
-	if (pParticleSpritePS)
-	{
-		pParticleSpritePS->Release();
-	}
-	if (pParticleSpriteGS)
-	{
-		pParticleSpriteGS->Release();
-	}
-	if (pParticleSpriteVS)
-	{
-		pParticleSpriteVS->Release();
-	}
 	if (pParticlePS)
 	{
 		pParticlePS->Release();
@@ -502,24 +414,14 @@ void FParticle::DestroyRootSignature()
 
 void FParticle::DestroyPipelineState()
 {
-	if (sm_pBasicPSO)
+	if (sm_pParticlePSO)
 	{
-		sm_pBasicPSO->Release();
-		sm_pBasicPSO = nullptr;
+		sm_pParticlePSO->Release();
+		sm_pParticlePSO = nullptr;
 	}
-	if (sm_pSpritePSO)
+	if (sm_pAccumulateParticlePSO)
 	{
-		sm_pSpritePSO->Release();
-		sm_pSpritePSO = nullptr;
-	}
-	if (sm_pAccumulateBasicPSO)
-	{
-		sm_pAccumulateBasicPSO->Release();
-		sm_pAccumulateBasicPSO = nullptr;
-	}
-	if (sm_pAccumulateSpritePSO)
-	{
-		sm_pAccumulateSpritePSO->Release();
-		sm_pAccumulateSpritePSO = nullptr;
+		sm_pAccumulateParticlePSO->Release();
+		sm_pAccumulateParticlePSO = nullptr;
 	}
 }

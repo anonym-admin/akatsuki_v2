@@ -16,6 +16,8 @@ enum class CONSTANT_BUFFER_TYPE
 	CONSTANT_BUFFER_TYPE_SPRITE,
 	CONSTANT_BUFFER_TYPE_TERRAIN_BRUSH,
 	CONSTANT_BUFFER_TYPE_POSTPROCESS,
+	CONSTANT_BUFFER_TYPE_PARTICLE_COLOR,
+	CONSTANT_BUFFER_TYPE_PARTICLE_SPARK,
 	CONSTANT_BUFFER_TYPE_COUNT
 };
 
@@ -123,6 +125,23 @@ struct PostProcessConstantBuffer_t
 	AkF32 fGamma;
 	AkU32 uOption0;
 	AkF32 fOption1;
+};
+
+struct ParticleColorConstantBuffer_t
+{
+	Vector4 vStartColor = Vector4(1.0f);
+	Vector4 vColorOverLifeTime = Vector4(1.0f, 1.0f, 1.0f, 0.0f);
+};
+
+struct ParticleSparkConstantBuffer_t
+{
+	AkF32 fTime = 0.0f;
+	AkF32 fDuration = 0.0f;
+	Vector2 vStartSize = Vector2(0.0f);
+	Vector3 vStartDirection = Vector3(0.0f);
+	AkF32 fSizeOverLifeTime = 0.0f;
+	Vector3 vRotOverLifeTime = Vector3(0.0f);
+	AkF32 fPadding = 0.0f;
 };
 
 struct TextureHandle_t

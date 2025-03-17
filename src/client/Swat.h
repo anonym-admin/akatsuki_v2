@@ -84,6 +84,8 @@ private:
 	AkF32 _fWalkSpeed = 2.65f;
 	AkF32 _fRunSpeed = 3.5f;
 
+	class MuzzleFlash* _pMuzzleEffect = nullptr;
+
 public:
 	AkBool Attack = AK_FALSE;
 };

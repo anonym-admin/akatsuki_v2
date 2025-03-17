@@ -347,9 +347,9 @@ void FRenderer::EndRender()
 	pCmdList->ResourceBarrier(_countof(pBarriers0), pBarriers0);
 
 	// Render Particle.
-	// _pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	_pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
-	// pCmdList = pCmdListPool->GetCurrentCmdList();
+	pCmdList = pCmdListPool->GetCurrentCmdList();
 
 	// Copy To Resolved Buffer.
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
@@ -928,18 +928,18 @@ void FRenderer::RenderParticle(IParticle* pParticle, void* pDBHandle)
 	tItem.pObjHandle = pParticle;
 	tItem.tParticleParam.pDBHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
 
-	//if (!_pRenderParticle->Add(&tItem))
-	//{
-	//	__debugbreak();
-	//}
-
-	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	if (!_pRenderParticle->Add(&tItem))
 	{
 		__debugbreak();
 	}
 
-	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+	//if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	//{
+	//	__debugbreak();
+	//}
+
+	//_uCurThreadIndex++;
+	//_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)

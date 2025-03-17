@@ -308,8 +308,5 @@
     <CustomBuild Include="..\..\shader\ParticleBasic.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\ParticleSprite.hlsl">
-      <Filter>shader</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

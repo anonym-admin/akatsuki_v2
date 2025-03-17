@@ -11,16 +11,16 @@ class FRenderer;
 class FParticle : public IParticle
 {
 public:
-	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 2;
-	static const AkU32 DESCRIPTOR_COUNT_PER_PARTICLES = 1; // Structured Buffer.
-	static const AkU32 MAX_DESCRIPTOR_COUNT = DESCRIPTOR_COUNT_PER_OBJ + DESCRIPTOR_COUNT_PER_PARTICLES;
+	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 4;
+	static const AkU32 MAX_PARTICLE_COUNT = 1000;
+	static const AkU32 STRUCTURED_BUFFER_COUNT = 1;
+	static const AkU32 MAX_DESCRIPTOR_COUNT = DESCRIPTOR_COUNT_PER_OBJ + MAX_PARTICLE_COUNT + STRUCTURED_BUFFER_COUNT;
 
 	FParticle();
 	~FParticle();
 
 	AkBool Initialize(FRenderer* pRenderer);
-	virtual void* CreateBasicParticleBuffer(Particle_t* pParticles, AkU32 uParticleNum) override; 
-	virtual void* CreateSpriteParticleBuffer(ParticleSprite_t* pSprites, AkU32 uSpriteNum) override;
+	virtual void* CreateBasicParticleBuffer(VertexParticle_t* pParticles, AkU32 uParticleNum) override; 
 	virtual void SetTexture(void* pTexHandle) override;
 	virtual void DestroyBasicParticleBuffer(void* pDBHandle) override;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
@@ -41,23 +41,12 @@ private:
 
 private:
 	static ID3D12RootSignature* sm_pRootSignature;
-	static ID3D12PipelineState* sm_pBasicPSO;
-	static ID3D12PipelineState* sm_pSpritePSO;
-	static ID3D12PipelineState* sm_pAccumulateBasicPSO;
-	static ID3D12PipelineState* sm_pAccumulateSpritePSO;
+	static ID3D12PipelineState* sm_pParticlePSO;
+	static ID3D12PipelineState* sm_pAccumulateParticlePSO;
 	static AkU32 sm_uInitRefCount;
 	AkU32 _uRefCount = 1;
 	FRenderer* _pRenderer = nullptr;
 	AkU32 _uParticleNum = 0;
 	TextureHandle_t* _pTextureHandle = nullptr;
-
-	ID3D12Resource* _pInputBufferA = nullptr;
-	ID3D12Resource* _pInputBufferB = nullptr;
-	ID3D12Resource* _pOutputBuffer = nullptr;
-	ID3D12Resource* _pReadBackBuffer = nullptr;
-
-	static const AkU32 NUM_DATA = 32;
-
-	AkU32 _uType = 0;
 };
 

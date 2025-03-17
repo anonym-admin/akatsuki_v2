@@ -27,6 +27,8 @@ Swat::~Swat()
 
 AkBool Swat::Initialize()
 {
+	_pMuzzleEffect = new MuzzleFlash(L"../../assets/flare0.dds");
+
 	// Create Model.
 	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::SWATGUY);
 	Vector3 vAlbedo = Vector3(1.0f);
@@ -77,6 +79,8 @@ AkBool Swat::Initialize()
 
 void Swat::Update()
 {
+	_pMuzzleEffect->Play(nullptr);
+
 	UpdateMove();
 	UpdateWeapon();
 	UpdateFire();
@@ -105,6 +109,8 @@ void Swat::FinalUpdate()
 
 void Swat::Render()
 {
+	_pMuzzleEffect->Render();
+
 	// Render model.
 	_pModel->Render();
 

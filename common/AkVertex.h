@@ -62,21 +62,14 @@ struct VertexNormalTexcoordTangentAlpha_t
 	AkF32 pAlpha[4] = {};
 };
 
-struct Particle_t
+struct VertexParticle_t
 {
-	Vector3 vPosition = Vector3(0.0f);
-	Vector3 vVelocity = Vector3(0.0f);
-	Vector3 vColor = Vector3(1.0f);
-	AkF32 fLife = -1.0f;
-	AkF32 fRadius = 1.0f;
+	Vector4 vPosition = Vector4(0.0f);
+	Vector2 vSize = Vector2(1.0f);
+	Vector3 vDirection = Vector3(0.0f);
+	AkF32 fStartLifeTime = 1.0f;
+	AkF32 fSpeed = 1.0f;
+	Vector4 vColor = Vector4(1.0f);
+	AkF32 fPadding[2] = {};
 };
 
-struct ParticleSprite_t
-{
-	Vector2 vTexScale = Vector2(1.0f);
-	AkI32 iFrameIndex = -1;
-	AkI32 iFrameIndexNext = 0;
-	Vector3 vPosition = Vector3(0.0f);
-	AkF32 fLife = -1.0f;
-	AkF32 fRadius = 1.0f;
-};
