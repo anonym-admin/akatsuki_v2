@@ -228,3 +228,14 @@ AkBool IntersectFrustumToBox(AkFrustum_t* pFrustum, AkBox_t* pBox)
     return AK_TRUE;
 }
 
+AkI32 Random(AkI32 iMin, AkI32 iMax)
+{
+    return rand() % (iMax - iMin) + iMin;
+}
+
+AkF32 Random(AkF32 fMin, AkF32 fMax)
+{
+    AkF32 fN = rand() / (AkF32)RAND_MAX;
+    return fMin + (fMax - fMin) * fN;
+}
+

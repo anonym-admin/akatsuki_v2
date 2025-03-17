@@ -18,6 +18,7 @@ class FTextureManager;
 class FFontManager;
 class FRenderQueue;
 class FPostProcess;
+class FRenderParticle;
 class FRenderUI;
 
 class FRenderer : public IRenderer
@@ -162,6 +163,7 @@ private:
 	AkBool CreatePostProcess();
 	AkBool CreateImGuiInitResource();
 	AkBool CreateRenderUI();
+	AkBool CreateRenderParticle();
 	void InitViewports(AkF32 fWidth, AkF32 fHeight);
 	void InitScissorRect(AkU32 uWidth, AkU32 uHeight);
 	void InitCamera();
@@ -179,6 +181,7 @@ private:
 	void DestroyPostProcess();
 	void DestroyImGuiInitResource();
 	void DestroyRenderUI();
+	void DestroyRenderParticle();
 
 	void Fence();
 	void WaitForFenceValue(AkU64 u64ExpectedFenceValue);
@@ -276,5 +279,8 @@ private:
 
 	// For Rendering UI.
 	FRenderUI* _pRenderUI = nullptr;
+
+	// For Rendering Particle.
+	FRenderParticle* _pRenderParticle = nullptr;
 };
 

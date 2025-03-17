@@ -19,6 +19,7 @@
 #include "TerrainObject.h"
 #include "PostProcess.h"
 #include "RenderUI.h"
+#include "RenderParticle.h"
 #include "Particle.h"
 
 // For ImGui;
@@ -211,6 +212,12 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 		__debugbreak();
 		return AK_FALSE;
 	}
+
+	if (!CreateRenderParticle())
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
 	
 	if (!CreateRenderUI())
 	{
@@ -311,7 +318,7 @@ void FRenderer::EndRender()
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hResolvedRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT, _uRTVDesciptorSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hFloatRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT, _uRTVDesciptorSize);
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart());
 
 #ifdef MULTI_THREAD_RENDERING
@@ -324,7 +331,7 @@ void FRenderer::EndRender()
 #else
 	for (AkU32 i = 0; i < _uRenderThreadCount; i++)
 	{
-		_ppRenderQueue[i]->Process(i, pCmdListPool, _pCmdQueue, 400, hResolvedRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+		_ppRenderQueue[i]->Process(i, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 	}
 #endif
 	
@@ -339,8 +346,15 @@ void FRenderer::EndRender()
 
 	pCmdList->ResourceBarrier(_countof(pBarriers0), pBarriers0);
 
-	// Post Process
+	// Render Particle.
+	// _pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+
+	// pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	// Copy To Resolved Buffer.
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
+	
+	// Post Process	.
 	_pPostProcess->Process(0, pCmdList, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
 
 	// MSAA 를 사용하지 않는 DSV Heap 영역에 접근
@@ -377,6 +391,7 @@ void FRenderer::EndRender()
 		_ppRenderQueue[i]->Reset();
 	}
 
+	_pRenderParticle->Reset();
 	_pRenderUI->Reset();
 }
 
@@ -913,6 +928,11 @@ void FRenderer::RenderParticle(IParticle* pParticle, void* pDBHandle)
 	tItem.pObjHandle = pParticle;
 	tItem.tParticleParam.pDBHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
 
+	//if (!_pRenderParticle->Add(&tItem))
+	//{
+	//	__debugbreak();
+	//}
+
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
 	{
 		__debugbreak();
@@ -1371,6 +1391,8 @@ void FRenderer::CleanUp()
 			}
 		}
 	}
+
+	DestroyRenderParticle();
 
 	DestroyRenderUI();
 
@@ -1927,6 +1949,12 @@ AkBool FRenderer::CreateRenderUI()
 	return 	_pRenderUI->Initialize(this, 256);
 }
 
+AkBool FRenderer::CreateRenderParticle()
+{
+	_pRenderParticle = new FRenderParticle;
+	return _pRenderParticle->Initialize(this, 256);
+}
+
 void FRenderer::InitViewports(AkF32 fWidth, AkF32 fHeight)
 {
 	_tViewport.Width = fWidth;
@@ -2250,6 +2278,15 @@ void FRenderer::DestroyRenderUI()
 	{
 		delete _pRenderUI;
 		_pRenderUI = nullptr;
+	}
+}
+
+void FRenderer::DestroyRenderParticle()
+{
+	if (_pRenderParticle)
+	{
+		delete _pRenderParticle;
+		_pRenderParticle = nullptr;
 	}
 }
 

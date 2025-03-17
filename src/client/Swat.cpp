@@ -10,6 +10,8 @@
 #include "Camera.h"
 #include "Weapon.h"
 
+#include "MuzzleFlash.h"
+
 Swat::Swat()
 {
 	if (!Initialize())
@@ -89,8 +91,6 @@ void Swat::FinalUpdate()
 	_pRigidBody->Update();
 
 	_pTransform->Update();
-
-	_pCollider->Update();
 
 	_pCollider->Update();
 

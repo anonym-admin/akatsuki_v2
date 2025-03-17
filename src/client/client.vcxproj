@@ -212,6 +212,7 @@
     <ClInclude Include="EditorModel.h" />
     <ClInclude Include="ModelImporter.h" />
     <ClInclude Include="ModelType.h" />
+    <ClInclude Include="MuzzleFlash.h" />
     <ClInclude Include="PanelUI.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
@@ -220,7 +221,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneComputeShader.h" />
+    <ClInclude Include="SceneParticleTest.h" />
     <ClInclude Include="SceneInGame.h" />
     <ClInclude Include="SceneLoading.h" />
     <ClInclude Include="SceneManager.h" />
@@ -291,6 +292,7 @@
     <ClCompile Include="GeometryGenerator.cpp" />
     <ClCompile Include="EditorModel.cpp" />
     <ClCompile Include="ModelImporter.cpp" />
+    <ClCompile Include="MuzzleFlash.cpp" />
     <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -304,7 +306,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneComputeShader.cpp" />
+    <ClCompile Include="SceneParticleTest.cpp" />
     <ClCompile Include="SceneInGame.cpp" />
     <ClCompile Include="SceneLoading.cpp" />
     <ClCompile Include="SceneManager.cpp" />

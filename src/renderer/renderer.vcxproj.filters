@@ -151,6 +151,9 @@
     <ClCompile Include="Particle.cpp">
       <Filter>src\particle</Filter>
     </ClCompile>
+    <ClCompile Include="RenderParticle.cpp">
+      <Filter>src\body</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\interface\IRenderer.h">
@@ -261,6 +264,9 @@
     <ClInclude Include="Particle.h">
       <Filter>src\particle</Filter>
     </ClInclude>
+    <ClInclude Include="RenderParticle.h">
+      <Filter>src\body</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\Basic.hlsl">
@@ -299,7 +305,10 @@
     <CustomBuild Include="..\..\shader\BloomDown.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\Particle.hlsl">
+    <CustomBuild Include="..\..\shader\ParticleBasic.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\ParticleSprite.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -70,3 +70,13 @@ struct Particle_t
 	AkF32 fLife = -1.0f;
 	AkF32 fRadius = 1.0f;
 };
+
+struct ParticleSprite_t
+{
+	Vector2 vTexScale = Vector2(1.0f);
+	AkI32 iFrameIndex = -1;
+	AkI32 iFrameIndexNext = 0;
+	Vector3 vPosition = Vector3(0.0f);
+	AkF32 fLife = -1.0f;
+	AkF32 fRadius = 1.0f;
+};
