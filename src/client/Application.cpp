@@ -7,7 +7,7 @@
 #include "InputUI.h"
 #include "SceneInGame.h"
 #include "SceneLoading.h"
-#include "SceneComputeShader.h"
+#include "SceneParticleTest.h"
 #include "EditorModel.h"
 #include "EditorMap.h"
 #include "Collider.h"
@@ -252,7 +252,7 @@ AkBool Application::InitScene()
 {
 	GSceneManager->AddScene(SCENE_TYPE::LOADING, new SceneLoading());
 	GSceneManager->AddScene(SCENE_TYPE::INGANE, new SceneInGame());
-	GSceneManager->AddScene(SCENE_TYPE::COMPUTE, new SceneComputeShader());
+	GSceneManager->AddScene(SCENE_TYPE::COMPUTE, new SceneParticleTest());
 
 	GSceneManager->BindCurrentScene(SCENE_TYPE::LOADING)->BeginScene();
 

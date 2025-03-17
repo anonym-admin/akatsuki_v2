@@ -20,6 +20,7 @@ Controller::~Controller()
 AkBool Controller::Initialize(Player* pOwner)
 {
 	_pOwner = pOwner;
+
 	return AK_TRUE;
 }
 

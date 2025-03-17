@@ -91,6 +91,9 @@
     <Filter Include="src\ui\new">
       <UniqueIdentifier>{472a0322-42f4-42b1-90ea-ba0a27f2921e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\particle">
+      <UniqueIdentifier>{0b5ef280-680b-44e5-bd15-b5abdfdab03d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\HashTable.h">
@@ -329,8 +332,11 @@
     <ClInclude Include="UIText.h">
       <Filter>src\ui\new</Filter>
     </ClInclude>
-    <ClInclude Include="SceneComputeShader.h">
+    <ClInclude Include="SceneParticleTest.h">
       <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="MuzzleFlash.h">
+      <Filter>src\particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -543,8 +549,11 @@
     <ClCompile Include="UIText.cpp">
       <Filter>src\ui\new</Filter>
     </ClCompile>
-    <ClCompile Include="SceneComputeShader.cpp">
+    <ClCompile Include="SceneParticleTest.cpp">
       <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MuzzleFlash.cpp">
+      <Filter>src\particle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

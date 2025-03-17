@@ -66,6 +66,7 @@ interface ITerrain : public IUnknown
 interface IParticle : public IUnknown
 {
 	virtual void* CreateBasicParticleBuffer(Particle_t * pParticles, AkU32 uParticleNum) = 0;
+	virtual void* CreateSpriteParticleBuffer(ParticleSprite_t* pSprites, AkU32 uSpriteNum) = 0;
 	virtual void SetTexture(void* pTexHandle) = 0;
 	virtual void DestroyBasicParticleBuffer(void* pDBHandle) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;

@@ -79,3 +79,12 @@ AkBool IntersectSphereToTriangle(AkSphere_t* pSphere, AkTriangle_t* pTri);
 AkBool IntersectSphereToBox(AkSphere_t* pSphere, AkBox_t* pBox);
 AkBool IntersectSphereToSphere(AkSphere_t* pSphereA, AkSphere_t* pSphereB);
 AkBool IntersectFrustumToBox(AkFrustum_t* pFrustum, AkBox_t* pBox);
+
+/*
+===========
+Random
+===========
+*/
+
+AkI32 Random(AkI32 iMin, AkI32 iMax);
+AkF32 Random(AkF32 fMin, AkF32 fMax);

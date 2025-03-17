@@ -200,6 +200,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ImageFiler.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="RenderParticle.cpp" />
     <ClCompile Include="RenderUI.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
     <ClCompile Include="PostProcess.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ImageFiler.h" />
     <ClInclude Include="FontManager.h" />
+    <ClInclude Include="RenderParticle.h" />
     <ClInclude Include="RenderUI.h" />
     <ClInclude Include="TerrainObject.h" />
     <ClInclude Include="PostProcess.h" />
@@ -316,7 +318,12 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\Particle.hlsl">
+    <CustomBuild Include="..\..\shader\ParticleBasic.hlsl">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\shader\ParticleSprite.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
