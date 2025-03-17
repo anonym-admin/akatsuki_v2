@@ -28,7 +28,7 @@ GSInput VSMain(uint vertexID : SV_VertexID)
     
     GSInput output;
     
-    output.posModel = float4(p.position, 1.0);
+    output.posModel = p.position;
     output.color = p.color * saturate(p.life / fadeLife);
     output.life = p.life;
     output.size = p.size;
@@ -48,6 +48,9 @@ struct PSInput
 void GSMain(point GSInput input[1], uint primID : SV_PrimitiveID, inout TriangleStream<PSInput> outputStream)
 {
     PSInput output;
+    
+    if (input[0].life < 0.0f)
+        return;
     
     float3 up = float3(0.0, 1.0, 0.0);
     float3 look = eyeWorld - input[0].posModel; // eyeWorld 의 문제는 아님...
@@ -86,6 +89,8 @@ void GSMain(point GSInput input[1], uint primID : SV_PrimitiveID, inout Triangle
     }
 }
 
+Texture2D spriteTex : register(t1);
+
 // https://en.wikipedia.org/wiki/Smoothstep
 float smootherstep(float x, float edge0 = 0.0f, float edge1 = 1.0f)
 {
@@ -99,12 +104,21 @@ float smootherstep(float x, float edge0 = 0.0f, float edge1 = 1.0f)
 // 이 예제처럼 수식으로 패턴을 만들 수도 있습니다.
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    float dist = length(float2(0.5, 0.5) - input.texCoord) * 2;
-    float scale = smootherstep(1 - dist);
+    float2 uv = input.texCoord;
+    if (input.primID % 4 == 0 || input.primID % 4 == 2)
+    {
+        uv.x -= 0.5;
+        uv.x = -uv.x;
+        uv.x += 0.5;
+    }
+    if (input.primID % 4 == 1 || input.primID % 4 == 2)
+    {
+        uv.y -= 0.5;
+        uv.y = -uv.y;
+        uv.y += 0.5;
+    }
     
-    float4 color = float4(input.color.rgb * scale, 1);
-    
-    clip(color.r - 0.1);
-    
-    return color;
+    float4 sprite = spriteTex.Sample(linearWrapSS, uv);
+
+    return float4(input.color.rgb * sprite.rgb * sprite.a * 0.5, 1);
 }

@@ -11,7 +11,7 @@ class FRenderer;
 class FParticle : public IParticle
 {
 public:
-	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 2;
+	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 2 + 1;
 	static const AkU32 DESCRIPTOR_COUNT_PER_PARTICLES = 1; // Structured Buffer.
 	static const AkU32 MAX_DESCRIPTOR_COUNT = DESCRIPTOR_COUNT_PER_OBJ + DESCRIPTOR_COUNT_PER_PARTICLES;
 

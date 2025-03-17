@@ -168,9 +168,13 @@ void FParticle::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, Dy
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
 
+	// Per Obj (b1).
+	pDevice->CopyDescriptorsSimple(1, hDest, _pTextureHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
 	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
-	pCmdList->SetPipelineState(sm_pParticlePSO);
+	pCmdList->SetPipelineState(sm_pAccumulatePSO);
 
 	// Obj (root param 0)
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
@@ -221,8 +225,9 @@ AkBool FParticle::CreateRootSignature()
 	ID3DBlob* pSignature = nullptr;
 	ID3DBlob* pError = nullptr;
 
-	CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[1] = {};
+	CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[2] = {};
 	tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0, b1: Constant Buffer View per Object.
+	tRangesPerObj[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);	// t1
 
 	CD3DX12_ROOT_PARAMETER tRootParameters[2] = {};
 	tRootParameters[0].InitAsDescriptorTable(_countof(tRangesPerObj), tRangesPerObj, D3D12_SHADER_VISIBILITY_ALL);

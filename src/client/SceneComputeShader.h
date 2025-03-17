@@ -18,5 +18,6 @@ private:
 	IParticle* _pParticle = nullptr;
 	void* _pDBHandle = nullptr;
 	Particle_t _pParticles[2048] = {};
+	void* _pSpriteTexHandle = nullptr;
 };
 
