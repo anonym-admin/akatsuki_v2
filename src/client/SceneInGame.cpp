@@ -56,7 +56,7 @@ AkBool SceneInGame::BeginScene()
 
 	// Weapon
 	{
-		UBRS_74* pBRS_74 = new UBRS_74;
+		BRS_74* pBRS_74 = new BRS_74;
 		pBRS_74->Name = L"BRS_74";
 		pBRS_74->tLink.pData = pBRS_74;
 		pBRS_74->GetTransform()->SetPosition(3.0f, 1.5f, 1025.0f);

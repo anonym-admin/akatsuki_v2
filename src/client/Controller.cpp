@@ -4,6 +4,7 @@
 #include "RigidBody.h"
 #include "Camera.h"
 #include "Swat.h"
+#include "BRS_74.h"
 
 Controller::Controller(Player* pOwner)
 {
@@ -63,6 +64,8 @@ void Controller::Mouse()
 		if (Swat::RIFLE_IDLE == AnimState)
 		{
 			pSwat->Fire = AK_TRUE;
+			((BRS_74*)pSwat->GetWeapon())->Fire();
+
 			pSwat->SetAnimation(Swat::RIFLE_FIRE);
 		}
 	}

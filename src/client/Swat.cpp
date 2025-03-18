@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "Weapon.h"
 #include "Sprite.h"
+#include "BRS_74.h"
 
 Swat::Swat()
 {
@@ -21,20 +22,11 @@ Swat::Swat()
 
 Swat::~Swat()
 {
-	if (_pSprite)
-	{
-		delete _pSprite;
-		_pSprite = nullptr;
-	}
-
 	CleanUp();
 }
 
 AkBool Swat::Initialize()
 {
-	Vector2 vMaxFrame = Vector2(4, 5);
-	_pSprite = new Sprite(L"../../assets/particle/MuzzleFlash_4x5.dds", &vMaxFrame);
-
 	// Create Model.
 	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::SWATGUY);
 	Vector3 vAlbedo = Vector3(1.0f);
@@ -85,14 +77,6 @@ AkBool Swat::Initialize()
 
 void Swat::Update()
 {
-	_pSprite->Update();
-
-	if(KEY_DOWN(KEY_INPUT_P))
-	{
-		Vector3 vPos = Vector3(3.0f, 1.5f, 1025.0f);
-		_pSprite->Play(&vPos);
-	}
-
 	UpdateMove();
 	UpdateWeapon();
 	UpdateFire();
@@ -121,8 +105,6 @@ void Swat::FinalUpdate()
 
 void Swat::Render()
 {
-	_pSprite->Render();
-
 	// Render model.
 	_pModel->Render();
 
@@ -189,6 +171,11 @@ void Swat::SetIdle()
 	Jumping = AK_FALSE;
 	Attack = AK_FALSE;
 	Fire = AK_FALSE;
+
+	if (_pWeapon)
+	{
+		((BRS_74*)_pWeapon)->Release();
+	}
 
 	BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
 }

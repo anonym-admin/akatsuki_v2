@@ -66,6 +66,7 @@ public:
 
 	AkF32 GetWalkSpeed() { return _fWalkSpeed; }
 	AkF32 GetRunSpeed() { return _fRunSpeed; }
+	Weapon* GetWeapon() { return _pWeapon; } // 무기 리스트에서 검색하는 방식으로 변경
 
 	void ActionReaction(Collider* pOther);
 
@@ -83,8 +84,6 @@ private:
 	Matrix _mHandAnimTransform = Matrix();
 	AkF32 _fWalkSpeed = 2.65f;
 	AkF32 _fRunSpeed = 3.5f;
-	
-	class Sprite* _pSprite = nullptr;
 
 public:
 	AkBool Attack = AK_FALSE;

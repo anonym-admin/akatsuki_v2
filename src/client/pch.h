@@ -61,6 +61,7 @@ using std::min;
 #include "EventManager.h"
 #include "UIManager.h"
 #include "AssetManager.h"
+#include "SoundManager.h"
 #include "BoxCollider.h"
 #include "CapsuleCollider.h"
 #include "SphereColiider.h"
@@ -72,6 +73,7 @@ using std::min;
 #include "Gravity.h"
 #include "SkinnedModel.h"
 #include "Actor.h"
+#include "Sound.h"
 
 // TODO
 #include "FileSystem.h"

@@ -229,6 +229,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="SkinnedModel.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Spark.h" />
     <ClInclude Include="Spawn.h" />
     <ClInclude Include="SphereColiider.h" />
@@ -316,6 +317,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="SkinnedModel.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Spark.cpp" />
     <ClCompile Include="Spawn.cpp" />
     <ClCompile Include="SphereColiider.cpp" />
