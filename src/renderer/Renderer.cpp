@@ -1171,9 +1171,9 @@ AkBool FRenderer::MousePickingToBox(DirectX::BoundingBox* pBox, AkF32 fNdcX, AkF
 	return AK_FALSE;
 }
 
-void FRenderer::GetFrustum(AkPlane_t* ppOutPlane)
+void FRenderer::GetFrustum(Vector4* ppOutPlane)
 {
-	AkPlane_t tPlane[6] = {};
+	Vector4 tPlane[6] = {};
 
 	Matrix mViewProjRow = _mViewMat * _mProjMat;
 
@@ -1181,37 +1181,37 @@ void FRenderer::GetFrustum(AkPlane_t* ppOutPlane)
 	AkF32 fY = (AkF32)(mViewProjRow._24 + mViewProjRow._23);
 	AkF32 fZ = (AkF32)(mViewProjRow._34 + mViewProjRow._33);
 	AkF32 fW = (AkF32)(mViewProjRow._44 + mViewProjRow._43);
-	tPlane[0].vPlane = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
+	tPlane[0] = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
 
 	fX = (AkF32)(mViewProjRow._14 - mViewProjRow._13);
 	fY = (AkF32)(mViewProjRow._24 - mViewProjRow._23);
 	fZ = (AkF32)(mViewProjRow._34 - mViewProjRow._33);
 	fW = (AkF32)(mViewProjRow._44 - mViewProjRow._43);
-	tPlane[1].vPlane = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
+	tPlane[1] = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
 
 	fX = (AkF32)(mViewProjRow._14 + mViewProjRow._11);
 	fY = (AkF32)(mViewProjRow._24 + mViewProjRow._21);
 	fZ = (AkF32)(mViewProjRow._34 + mViewProjRow._31);
 	fW = (AkF32)(mViewProjRow._44 + mViewProjRow._41);
-	tPlane[2].vPlane = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
+	tPlane[2] = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
 
 	fX = (AkF32)(mViewProjRow._14 - mViewProjRow._11);
 	fY = (AkF32)(mViewProjRow._24 - mViewProjRow._21);
 	fZ = (AkF32)(mViewProjRow._34 - mViewProjRow._31);
 	fW = (AkF32)(mViewProjRow._44 - mViewProjRow._41);
-	tPlane[3].vPlane = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
+	tPlane[3] = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
 
 	fX = (AkF32)(mViewProjRow._14 - mViewProjRow._12);
 	fY = (AkF32)(mViewProjRow._24 - mViewProjRow._22);
 	fZ = (AkF32)(mViewProjRow._34 - mViewProjRow._32);
 	fW = (AkF32)(mViewProjRow._44 - mViewProjRow._42);
-	tPlane[4].vPlane = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
+	tPlane[4] = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
 
 	fX = (AkF32)(mViewProjRow._14 + mViewProjRow._12);
 	fY = (AkF32)(mViewProjRow._24 + mViewProjRow._22);
 	fZ = (AkF32)(mViewProjRow._34 + mViewProjRow._32);
 	fW = (AkF32)(mViewProjRow._44 + mViewProjRow._42);
-	tPlane[5].vPlane = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
+	tPlane[5] = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
 
 	ppOutPlane[0] = tPlane[0];
 	ppOutPlane[1] = tPlane[1];

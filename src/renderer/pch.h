@@ -30,10 +30,10 @@
 using namespace DirectX;
 
 // My inc
-#include "common/AkType.h"
-#include "common/AkMeshData.h"
-#include "common/AkEnum.h"
-#include "common/AkMath.h"
+#include "common/CommonType.h"
+#include "common/MeshData.h"
+#include "common/CommonEnum.h"
+#include "common/Math.h"
 
 #include "interface/IRenderer.h"
 

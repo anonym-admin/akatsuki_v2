@@ -34,10 +34,10 @@ using std::max;
 using std::min;
 
 // My inc
-#include "common/AkType.h"
-#include "common/AkEnum.h"
-#include "common/AkMeshData.h"
-#include "common/AkMath.h"
+#include "common/CommonType.h"
+#include "common/CommonEnum.h"
+#include "common/MeshData.h"
+#include "common/Math.h"
 
 #include "utils/LinkedList.h"
 #include "utils/HashTable.h"
