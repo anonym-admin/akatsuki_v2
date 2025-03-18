@@ -108,16 +108,16 @@
     <ClInclude Include="Animation.h">
       <Filter>src\comp\anim</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\AkVertex.h">
+    <ClInclude Include="..\..\common\Vertex.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\AkMacro.h">
+    <ClInclude Include="..\..\common\CommonMacro.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\AkMeshData.h">
+    <ClInclude Include="..\..\common\MeshData.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\AkType.h">
+    <ClInclude Include="..\..\common\CommonType.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\UtilFunc.h">
@@ -162,7 +162,7 @@
     <ClInclude Include="BRS_74.h">
       <Filter>src\obj\weapon</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\AkEnum.h">
+    <ClInclude Include="..\..\common\CommonEnum.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="GeometryGenerator.h">
@@ -180,7 +180,7 @@
     <ClInclude Include="EventManager.h">
       <Filter>src\mgr</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\common\AkMath.h">
+    <ClInclude Include="..\..\common\Math.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\RedBlackTree.h">
@@ -421,7 +421,7 @@
     <ClCompile Include="EventManager.cpp">
       <Filter>src\mgr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\common\AkMath.cpp">
+    <ClCompile Include="..\..\common\Math.cpp">
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\RedBlackTree.cpp">
