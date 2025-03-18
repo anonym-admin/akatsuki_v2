@@ -183,7 +183,6 @@
     <ClInclude Include="BillboardModel.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="BRS_74.h" />
-    <ClInclude Include="BtnUI.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CapsuleCollider.h" />
@@ -200,7 +199,6 @@
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Gravity.h" />
-    <ClInclude Include="InputUI.h" />
     <ClInclude Include="KDTree.h" />
     <ClInclude Include="LandScape.h" />
     <ClInclude Include="Macro.h" />
@@ -213,7 +211,6 @@
     <ClInclude Include="EditorModel.h" />
     <ClInclude Include="ModelImporter.h" />
     <ClInclude Include="ModelType.h" />
-    <ClInclude Include="PanelUI.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
@@ -238,7 +235,6 @@
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Swat.h" />
     <ClInclude Include="Terrain.h" />
-    <ClInclude Include="TextUI.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TreeBillboards.h" />
@@ -250,7 +246,6 @@
     <ClInclude Include="UIText.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WorldMap.h" />
-    <ClInclude Include="UI.h" />
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
@@ -269,7 +264,6 @@
     <ClCompile Include="BillboardModel.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="BRS_74.cpp" />
-    <ClCompile Include="BtnUI.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CapsuleCollider.cpp" />
@@ -285,7 +279,6 @@
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Gravity.cpp" />
-    <ClCompile Include="InputUI.cpp" />
     <ClCompile Include="KDTree.cpp" />
     <ClCompile Include="LandScape.cpp" />
     <ClCompile Include="EditorMap.cpp" />
@@ -296,7 +289,6 @@
     <ClCompile Include="GeometryGenerator.cpp" />
     <ClCompile Include="EditorModel.cpp" />
     <ClCompile Include="ModelImporter.cpp" />
-    <ClCompile Include="PanelUI.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -326,7 +318,6 @@
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Swat.cpp" />
     <ClCompile Include="Terrain.cpp" />
-    <ClCompile Include="TextUI.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Dancer.cpp" />
     <ClCompile Include="Sound.cpp" />
@@ -337,7 +328,6 @@
     <ClCompile Include="UIText.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="WorldMap.cpp" />
-    <ClCompile Include="UI.cpp" />
     <ClCompile Include="UIManager.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>

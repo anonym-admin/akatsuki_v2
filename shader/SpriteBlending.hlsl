@@ -54,15 +54,5 @@ float4 PSMain(PSInput input) : SV_TARGET
 {
     float4 texColor = texDiffuse.Sample(samplerDiffuse, input.texCoord);
     
-    if (texColor.r == 0.0)
-    {
-        texColor.a = 0.0;
-    }
-    else
-    {
-        texColor.rgb *= color;
-        texColor.a = 1.0;
-    }
-    
     return texColor;
 }

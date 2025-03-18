@@ -1,23 +1,12 @@
 #pragma once
 
 /*
-* U : User defined class
-* A : Engine defined class
-* F : Module defined class
-* I : Interface class
-*/
-
-/*
 ===============
 Application
 ===============
 */
 
-
-class TextUI;
-class InputUI;
 class PostRenderControl;
-
 class ModelExporter;
 class UIImage;
 class UIButton;
@@ -25,6 +14,9 @@ class UIButton;
 class Application
 {
 public:
+	static const AkU32 SYSTEM_FONT_SIZE = 10;
+	const wchar_t* SYSTEM_FONT_FAMILY_NAME = L"Consolas";
+
 	Application();
 	~Application();
 
@@ -40,11 +32,13 @@ private:
 	AkBool InitScene();
 	AkBool InitEditor();
 	AkBool InitUI();
+	AkBool InitTextResource();
 
 	void Update();
 	void UpdateEnviroment();
 	void UpdateText();
 	void Render();
+	void RenderText();
 	void CalculateFrameRate();
 	void ExitGame();
 
@@ -55,21 +49,16 @@ private:
 	AkBool _bUseVSync = AK_FALSE;
 	AkBool _bChangeEditor = AK_FALSE;
 
-	TextUI * _pSysTextUI = nullptr;
-	InputUI* _pDynamicTextUI = nullptr;
-	Vector3 _vDynamicTextFontColor = Vector3(1.0f);
-
 	// Post process control.
 	PostRenderControl* _pPostProcess = nullptr;
 	AkBool _bUseDebugMode = AK_FALSE;
 	AkBool _bUsePostProcessController = AK_FALSE;
 
-	// Model Export
-	ModelExporter* _pModelExporter = nullptr;
-
-	// UI
-	UIImage* _pUIImage = nullptr;
-	UIButton* _pUIButton = nullptr;
+	AkU32 _uTextTextureWidth = 0;
+	AkU32 _uTextTextureHeight = 0;
+	AkU8* _pTextTextureImage = nullptr;
+	void* _pTextTextureHandle = nullptr;
+	wchar_t _wcText[256] = {};
 };
 
 

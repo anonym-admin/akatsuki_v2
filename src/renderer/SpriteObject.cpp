@@ -207,8 +207,8 @@ AkBool FSpriteObject::CreatePipelineState()
 	D3D12_RENDER_TARGET_BLEND_DESC tTransparencyBlendDesc = {};
 	tTransparencyBlendDesc.BlendEnable = AK_TRUE;
 	tTransparencyBlendDesc.LogicOpEnable = AK_FALSE;
-	tTransparencyBlendDesc.SrcBlend = D3D12_BLEND_ONE;
-	tTransparencyBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_COLOR;
+	tTransparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	tTransparencyBlendDesc.DestBlend = D3D12_BLEND_ONE;
 	tTransparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
 	tTransparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
 	tTransparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;

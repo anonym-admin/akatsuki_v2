@@ -88,9 +88,6 @@
     <Filter Include="src\obj\field">
       <UniqueIdentifier>{b3a00020-5464-49ba-a305-e90eba4a7c96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\ui\new">
-      <UniqueIdentifier>{472a0322-42f4-42b1-90ea-ba0a27f2921e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\particle">
       <UniqueIdentifier>{0b5ef280-680b-44e5-bd15-b5abdfdab03d}</UniqueIdentifier>
     </Filter>
@@ -171,9 +168,6 @@
     <ClInclude Include="Weapon.h">
       <Filter>src\obj\weapon</Filter>
     </ClInclude>
-    <ClInclude Include="UI.h">
-      <Filter>src\ui</Filter>
-    </ClInclude>
     <ClInclude Include="AssetManager.h">
       <Filter>src\mgr</Filter>
     </ClInclude>
@@ -185,15 +179,6 @@
     </ClInclude>
     <ClInclude Include="..\..\utils\RedBlackTree.h">
       <Filter>src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="TextUI.h">
-      <Filter>src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="PanelUI.h">
-      <Filter>src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="BtnUI.h">
-      <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="UIManager.h">
       <Filter>src\mgr</Filter>
@@ -212,9 +197,6 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>src\pch</Filter>
-    </ClInclude>
-    <ClInclude Include="InputUI.h">
-      <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="Sound.h">
       <Filter>src\sound</Filter>
@@ -323,15 +305,6 @@
     </ClInclude>
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="StringUtils.h" />
-    <ClInclude Include="UIButton.h">
-      <Filter>src\ui\new</Filter>
-    </ClInclude>
-    <ClInclude Include="UIImage.h">
-      <Filter>src\ui\new</Filter>
-    </ClInclude>
-    <ClInclude Include="UIText.h">
-      <Filter>src\ui\new</Filter>
-    </ClInclude>
     <ClInclude Include="Particle.h">
       <Filter>src\particle</Filter>
     </ClInclude>
@@ -346,6 +319,15 @@
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>src\mgr</Filter>
+    </ClInclude>
+    <ClInclude Include="UIButton.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="UIImage.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="UIText.h">
+      <Filter>src\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -412,9 +394,6 @@
     <ClCompile Include="Weapon.cpp">
       <Filter>src\obj\weapon</Filter>
     </ClCompile>
-    <ClCompile Include="UI.cpp">
-      <Filter>src\ui</Filter>
-    </ClCompile>
     <ClCompile Include="AssetManager.cpp">
       <Filter>src\mgr</Filter>
     </ClCompile>
@@ -426,15 +405,6 @@
     </ClCompile>
     <ClCompile Include="..\..\utils\RedBlackTree.cpp">
       <Filter>src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="TextUI.cpp">
-      <Filter>src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="PanelUI.cpp">
-      <Filter>src\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="BtnUI.cpp">
-      <Filter>src\ui</Filter>
     </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>src\mgr</Filter>
@@ -453,9 +423,6 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>src\pch</Filter>
-    </ClCompile>
-    <ClCompile Include="InputUI.cpp">
-      <Filter>src\ui</Filter>
     </ClCompile>
     <ClCompile Include="Sound.cpp">
       <Filter>src\sound</Filter>
@@ -549,15 +516,6 @@
     </ClCompile>
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="StringUtils.cpp" />
-    <ClCompile Include="UIButton.cpp">
-      <Filter>src\ui\new</Filter>
-    </ClCompile>
-    <ClCompile Include="UIImage.cpp">
-      <Filter>src\ui\new</Filter>
-    </ClCompile>
-    <ClCompile Include="UIText.cpp">
-      <Filter>src\ui\new</Filter>
-    </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>src\particle</Filter>
     </ClCompile>
@@ -572,6 +530,15 @@
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>src\mgr</Filter>
+    </ClCompile>
+    <ClCompile Include="UIButton.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="UIImage.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="UIText.cpp">
+      <Filter>src\ui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

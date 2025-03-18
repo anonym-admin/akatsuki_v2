@@ -1,10 +1,6 @@
 #include "pch.h"
 #include "Application.h"
 #include "Camera.h"
-#include "TextUI.h"
-#include "PanelUI.h"
-#include "BtnUI.h"
-#include "InputUI.h"
 #include "SceneInGame.h"
 #include "SceneLoading.h"
 #include "EditorModel.h"
@@ -67,6 +63,12 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 		return AK_FALSE;
 	}
 
+	if (!InitTextResource())
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+
 	// Create Post process
 	_pPostProcess = new PostRenderControl;
 
@@ -94,6 +96,9 @@ void Application::RunApplication()
 	// Update.
 	Update();
 
+	// Update Text.
+	UpdateText();
+
 	// Update Shadow Map Matrix
 	GRenderer->UpdateCascadeOrthoProjMatrix();
 
@@ -111,6 +116,9 @@ void Application::RunApplication()
 
 	// Render.
 	Render();
+
+	// Render Text.
+	RenderText();
 
 	// Post Process Control.
 	if (_bUsePostProcessController)
@@ -145,15 +153,15 @@ AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 
 void Application::CleanUp()
 {
-	if (_pUIButton)
+	if (_pTextTextureHandle)
 	{
-		delete _pUIButton;
-		_pUIButton = nullptr;
+		GRenderer->DestroyTexture(_pTextTextureHandle);
+		_pTextTextureHandle = nullptr;
 	}
-	if (_pUIImage)
+	if (_pTextTextureImage)
 	{
-		delete _pUIImage;
-		_pUIImage = nullptr;
+		delete[] _pTextTextureImage;
+		_pTextTextureImage = nullptr;
 	}
 	if (_pPostProcess)
 	{
@@ -194,19 +202,19 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 
 #if defined(_M_AMD64)
 
-#if defined(_DEBUG) || defined(DEBUG)
-	wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
-#else
-	wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
-#endif
+	#if defined(_DEBUG) || defined(DEBUG)
+		wcRendererDLLFilename = L"akatsuki_renderer_x64d.dll";
+	#else
+		wcRendererDLLFilename = L"akatsuki_renderer_x64.dll";
+	#endif
 
 #elif defined(_M_IX86)
 
-#if defined(_DEBUG) | defined(DEBUG)
-	wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
-#else
-	wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
-#endif
+	#if defined(_DEBUG) | defined(DEBUG)
+		wcRendererDLLFilename = L"akatsuki_renderer_x86d.dll";
+	#else
+		wcRendererDLLFilename = L"akatsuki_renderer_x86.dll";
+	#endif
 
 #endif
 
@@ -236,14 +244,17 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 
 	GRenderer = pRenderer;
 
+	// Bind ImGui.
 	if (bEnableImGui)
+	{
 		GRenderer->BindImGui((void**)&GImGui);
+	}
 
 	// Create Common Sprite Obj.
 	GSprite = GRenderer->CreateSpriteObject();
 
-	// Create Font Obj
-	GFont = GRenderer->CreateFontObject(L"Consolas", 16);
+	// Create Font Obj.
+	GFont = GRenderer->CreateFontObject(SYSTEM_FONT_FAMILY_NAME, SYSTEM_FONT_SIZE);
 
 	return AK_TRUE;
 }
@@ -274,47 +285,18 @@ AkBool Application::InitEditor()
 
 AkBool Application::InitUI()
 {
+	return AK_TRUE;
+}
 
-	_pSysTextUI = new TextUI(256, 32, L"Consolas", 10);
-	_pSysTextUI->SetPosition(10, 10);
-	_pSysTextUI->SetScale(1.0f, 1.0f);
+AkBool Application::InitTextResource()
+{
+	_uTextTextureWidth = 512;
+	_uTextTextureHeight = 512;
 
-	GUIManager->AddUI(_pSysTextUI, UI_TYPE::UI_OBJ_SYS_INFO_TEXT);
-	GUIManager->OnUI(UI_TYPE::UI_OBJ_SYS_INFO_TEXT);
+	_pTextTextureImage = new AkU8[_uTextTextureWidth * _uTextTextureHeight * 4];
+	memset(_pTextTextureImage, 0, _uTextTextureWidth * _uTextTextureHeight * 4);
 
-	//_pDynamicTextUI = new InputUI(256, 32, L"Consolas", 10);
-	//_pDynamicTextUI->SetPosition(10, 500);
-	//_pDynamicTextUI->SetScale(1.0f, 1.0f);
-	//_pDynamicTextUI->SetFontColor(&_vDynamicTextFontColor);
-	//_pDynamicTextUI->SetDrawBackGround(AK_TRUE);
-
-	//GUIManager->AddUI(_pDynamicTextUI, UI_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
-	//GUIManager->OnUI(UI_TYPE::UI_OBJ_CHAT_INPUT_TEXT);
-
-	//TextUI* pStaticTextUI = new TextUI(256, 32, L"Consolas", 10);
-	//pStaticTextUI->SetPosition(10, 32 + 10 + 10);
-	//pStaticTextUI->SetScale(1.0f, 1.0f);
-	//pStaticTextUI->SetFontColor(&_vSysFontColor);
-	//pStaticTextUI->WriteText(L"Test Static Text\n");
-
-	//GUIManager->AddUI(pStaticTextUI, UI_TYPE::UI_OBJ_TEST_STATIC_TEXT);
-
-	//UPanelUI* pTextureUI = new UPanelUI(L"../../assets/ui_01.dds", 0, 0, 2545, 1867);
-	//pTextureUI->SetPosition(500, 10);
-	//pTextureUI->SetScale(0.1f, 0.2f);
-	//pTextureUI->SetDrawBackGround(AK_TRUE);
-	//pTextureUI->SetResolution((AkU32)(0.1f * 2545), (AkU32)(0.2f * 1867));
-
-	//GUIManager->AddUI(pTextureUI, UI_TYPE::UI_OBJ_EXIT);
-
-	//UBtnUI* pBtnUI = new UBtnUI(L"../../assets/Exit_Btn.dds", 0, 0, 225, 49);
-	//pBtnUI->SetRelativePosition(10, 10);
-	//pBtnUI->SetScale(1.0f, 1.0f);
-	//pBtnUI->SetDrawBackGround(AK_TRUE);
-	//pBtnUI->SetResolution(225, 49);
-	//pBtnUI->SetClickFunc(&Application::ExitGame);
-
-	//pTextureUI->AddChildUI(pBtnUI);
+	_pTextTextureHandle = GRenderer->CreateDynamicTexture(_uTextTextureWidth, _uTextTextureHeight);
 
 	return AK_TRUE;
 }
@@ -392,7 +374,7 @@ void Application::UpdateEnviroment()
 	if (KEY_DOWN(KEY_INPUT_F6))
 	{
 		EventHandle_t tEvent = {};
-		if(!_bChangeEditor)
+		if (!_bChangeEditor)
 		{
 			tEvent.eEventType = EVENT_TYPE::SCENE_CHANGE;
 			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::COMPUTE;
@@ -426,13 +408,32 @@ void Application::UpdateEnviroment()
 void Application::UpdateText()
 {
 	SceneInGame* pSceneInGame = (SceneInGame*)GSceneManager->GetScene(SCENE_TYPE::INGANE);
+	Actor* pPlayer = nullptr;
+	Vector3 vPlayerPos = Vector3(0.0f);
+
+	if (pSceneInGame)
+	{
+		GameObjContainer_t* pPlayerGroup = pSceneInGame->GetGroupObject(GAME_OBJECT_GROUP_TYPE::PLAYER);
+		if(pPlayerGroup)
+		{
+			pPlayer = (Actor*)pPlayerGroup->pGameObjHead->pData;
+			vPlayerPos = pPlayer->GetTransform()->GetPosition();
+		}
+	}
 
 	AkI32 iTextWidth = 0;
 	AkI32 iTextHeight = 0;
 	wchar_t wcText[128] = {};
-	AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf \n", _fFps);
+	AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf \npos:%lf %lf %lf \n", _fFps, vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
 
-	_pSysTextUI->WriteText(wcText);
+	if (wcscmp(_wcText, wcText))
+	{
+		memset(_pTextTextureImage, 0, _uTextTextureWidth * _uTextTextureHeight * 4);
+		GRenderer->WriteTextToBitmap(_pTextTextureImage, _uTextTextureWidth, _uTextTextureHeight, _uTextTextureHeight * 4, &iTextWidth, &iTextHeight, GFont, wcText, uTxtLen);
+		GRenderer->UpdateTextureWidthImage(_pTextTextureHandle, _pTextTextureImage, _uTextTextureWidth, _uTextTextureHeight);
+
+		wcscpy_s(_wcText, wcText);
+	}
 }
 
 void Application::Render()
@@ -445,6 +446,11 @@ void Application::Render()
 
 	// Render UI
 	GUIManager->Render();
+}
+
+void Application::RenderText()
+{
+	GRenderer->RenderSpriteWithTex(GSprite, 10, 10, 1.0f, 1.0f, nullptr, 0.0f, _pTextTextureHandle);
 }
 
 void Application::CalculateFrameRate()
