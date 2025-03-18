@@ -24,13 +24,9 @@ cbuffer GlobalConsts : register(b0)
     matrix proj;
     float3 eyeWorld;
     float strengthIBL;
-    float3 dummy0;
-    float dummy1;
-    float3 dummy2;
-    float dummy3;
-    float3 dummy4;
-    float dummy5;
-
+    matrix invView;
+    matrix invProj;
+    
     LightConsts lights[MAX_LIGHTS_COUNT];
 };
 

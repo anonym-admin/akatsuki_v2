@@ -119,7 +119,7 @@ interface IRenderer : public IUnknown
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
-	virtual void RenderParticle(IParticle* pParticle, void* pDBHandle) = 0;
+	virtual void RenderParticle(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime) = 0;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) = 0;
 	virtual void RotateXCamera(AkF32 fRadian) = 0;
 	virtual void RotateYCamera(AkF32 fRadian) = 0;

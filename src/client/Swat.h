@@ -83,8 +83,8 @@ private:
 	Matrix _mHandAnimTransform = Matrix();
 	AkF32 _fWalkSpeed = 2.65f;
 	AkF32 _fRunSpeed = 3.5f;
-
-	class MuzzleFlash* _pMuzzleEffect = nullptr;
+	
+	class Spark* _pSpark = nullptr;
 
 public:
 	AkBool Attack = AK_FALSE;

@@ -65,7 +65,17 @@ struct RenderTerrainParam_t
 
 struct ParticleParam_t
 {
+	const Matrix* pWorldRow = nullptr;
 	DynamicDefaultBufferHandle_t* pDBHandle = nullptr;
+	AkU32 uParticleNum = 0;
+	AkF32 fTime = 0.0f;
+	AkF32 fDuration = 0.0f;
+	const Vector2* pStartSize = nullptr;
+	const Vector3* pStartDirection = nullptr;
+	AkF32 fSizeOverLifeTime = 0.0f;
+	const Vector3* pRotOverLifeTime = nullptr;
+	const Vector4* pTotalColor = nullptr;
+	const Vector4* pColorOverLifeTime = nullptr;
 };
 
 struct RenderItem_t

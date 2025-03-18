@@ -334,6 +334,9 @@ void FRenderer::EndRender()
 		_ppRenderQueue[i]->Process(i, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 	}
 #endif
+
+	// Render Particle.
+	_pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
 	
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hBackBufferRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize);
@@ -345,11 +348,6 @@ void FRenderer::EndRender()
 	};
 
 	pCmdList->ResourceBarrier(_countof(pBarriers0), pBarriers0);
-
-	// Render Particle.
-	_pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
-
-	pCmdList = pCmdListPool->GetCurrentCmdList();
 
 	// Copy To Resolved Buffer.
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
@@ -921,25 +919,27 @@ void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMa
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
-void FRenderer::RenderParticle(IParticle* pParticle, void* pDBHandle)
+void FRenderer::RenderParticle(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_PARTICLE;
 	tItem.pObjHandle = pParticle;
+	tItem.tParticleParam.pWorldRow = pWorldRow;
 	tItem.tParticleParam.pDBHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
+	tItem.tParticleParam.uParticleNum = uParticleNum;
+	tItem.tParticleParam.fTime = fTime;
+	tItem.tParticleParam.fDuration = fDuration;
+	tItem.tParticleParam.pStartSize = pStartSize;
+	tItem.tParticleParam.pStartDirection = pStartDirection;
+	tItem.tParticleParam.fSizeOverLifeTime = fSizeOverLifeTime;
+	tItem.tParticleParam.pRotOverLifeTime = pRotOverLifeTime;
+	tItem.tParticleParam.pTotalColor = pTotalColor;
+	tItem.tParticleParam.pColorOverLifeTime = pColorOverLifeTime;
 
 	if (!_pRenderParticle->Add(&tItem))
 	{
 		__debugbreak();
 	}
-
-	//if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
-	//{
-	//	__debugbreak();
-	//}
-
-	//_uCurThreadIndex++;
-	//_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)

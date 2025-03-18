@@ -26,11 +26,14 @@ cbuffer ColorConsts : register(b3)
 struct VertexParticle
 {
     float4 pos;
-    float2 size;
-    float3 direction;
+    float4 particleColor;
+    
     float startLifeTime;
     float speed;
-    float4 particleColor;
+    float2 size;
+    
+    float3 direction;
+    float padding;
 };
 
 struct GSInput
@@ -43,14 +46,15 @@ struct GSInput
 
 StructuredBuffer<VertexParticle> particles : register(t0);
 
-GSInput VSMain(uint verttexID : SV_VertexID)
+GSInput VSMain(uint vertexID : SV_VertexID)
 {
     GSInput output;
     
-    VertexParticle input = particles[verttexID];
+    VertexParticle input = particles[vertexID];
     
     output.time = time / input.startLifeTime;
     input.direction += startDirection * time;
+    input.pos.w = 1.0;
     input.pos = mul(input.pos, world);
     output.pos = input.pos.xyz + (input.direction * time) * input.speed;
     output.size = input.size;
@@ -78,11 +82,14 @@ static const float2 texCoord[4] =
 [maxvertexcount(4)]
 void GSMain(point GSInput input[1], inout TriangleStream<PSInput> output)
 {
+    float3 camPos = invView._41_42_43;
+    float3 up = invView._21_22_23;
+    
+    // float3 up = float3(0.0, 1.0, 0.0);
+    
     float3 forward = eyeWorld - input[0].pos;
     forward = normalize(forward);
-    
-    float3 up = float3(0.0, 1.0, 0.0);
-	
+   
     float3 right = normalize(cross(up, forward));
 
     float halfWidth = input[0].size.x * 0.5f;
@@ -116,6 +123,6 @@ float4 PSMain(PSInput input) : SV_Target
     float4 albedo = albedoTex.Sample(linearWrapSS, input.texCoord);
 	
     float4 color = lerp(input.particleColor, colorOverLifeTime, input.time);
-	
+    
     return albedo * color;
 }

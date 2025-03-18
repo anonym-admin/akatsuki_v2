@@ -139,12 +139,6 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				}
 			}
 			break;
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_PARTICLE:
-			{
-				FParticle* pParticle = (FParticle*)pItem->pObjHandle;
-				pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pDBHandle);
-			}
-			break;
 			default:
 			{
 				__debugbreak();

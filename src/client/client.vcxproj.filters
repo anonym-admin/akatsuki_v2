@@ -335,6 +335,15 @@
     <ClInclude Include="Particle.h">
       <Filter>src\particle</Filter>
     </ClInclude>
+    <ClInclude Include="EditorParticle.h">
+      <Filter>src\editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Spark.h">
+      <Filter>src\particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>src\particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -547,6 +556,15 @@
       <Filter>src\ui\new</Filter>
     </ClCompile>
     <ClCompile Include="Particle.cpp">
+      <Filter>src\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorParticle.cpp">
+      <Filter>src\editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Spark.cpp">
+      <Filter>src\particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
       <Filter>src\particle</Filter>
     </ClCompile>
   </ItemGroup>

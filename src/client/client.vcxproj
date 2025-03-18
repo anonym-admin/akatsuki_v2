@@ -193,6 +193,7 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="EditorManager.h" />
+    <ClInclude Include="EditorParticle.h" />
     <ClInclude Include="Enum.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="FilePath.h" />
@@ -228,8 +229,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="SkinnedModel.h" />
+    <ClInclude Include="Spark.h" />
     <ClInclude Include="Spawn.h" />
     <ClInclude Include="SphereColiider.h" />
+    <ClInclude Include="Sprite.h" />
     <ClInclude Include="SquareCollider.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Swat.h" />
@@ -276,6 +279,7 @@
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Editor.cpp" />
     <ClCompile Include="EditorManager.cpp" />
+    <ClCompile Include="EditorParticle.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Global.cpp" />
@@ -312,8 +316,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="SkinnedModel.cpp" />
+    <ClCompile Include="Spark.cpp" />
     <ClCompile Include="Spawn.cpp" />
     <ClCompile Include="SphereColiider.cpp" />
+    <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SquareCollider.cpp" />
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Swat.cpp" />

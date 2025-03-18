@@ -27,7 +27,7 @@ public:
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
 	virtual ULONG STDMETHODCALLTYPE Release(void) override;
 
-	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, DynamicDefaultBufferHandle_t* pDBHandle);
+	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldRow, DynamicDefaultBufferHandle_t* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime);
 
 private:
 	void CleanUp();

@@ -65,11 +65,13 @@ struct VertexNormalTexcoordTangentAlpha_t
 struct VertexParticle_t
 {
 	Vector4 vPosition = Vector4(0.0f);
-	Vector2 vSize = Vector2(1.0f);
-	Vector3 vDirection = Vector3(0.0f);
+	Vector4 vColor = Vector4(1.0f);
+
 	AkF32 fStartLifeTime = 1.0f;
 	AkF32 fSpeed = 1.0f;
-	Vector4 vColor = Vector4(1.0f);
-	AkF32 fPadding[2] = {};
+	Vector2 vSize = Vector2(1.0f);
+
+	Vector3 vDirection = Vector3(0.0f);
+	AkF32 fPadding = 0.0f;
 };
 

@@ -305,7 +305,7 @@
     <CustomBuild Include="..\..\shader\BloomDown.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\ParticleBasic.hlsl">
+    <CustomBuild Include="..\..\shader\Spark.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -48,12 +48,8 @@ struct GlobalConstantBuffer_t
 	Matrix mProj = Matrix();
 	Vector3 vEyeWorld = Vector3(0.0f);
 	AkF32 fStrengthIBL = 1.0f;
-	Vector3 dummy0;
-	AkF32 dummy1;
-	Vector3 dummy2;
-	AkF32 dummy3;
-	Vector3 dummy4;
-	AkF32 dummy5;
+	Matrix mInvView = Matrix();
+	Matrix mInvProj = Matrix();
 
 	Light_t tLights[MAX_LIGHTS_COUNT] = {};
 };
@@ -129,7 +125,7 @@ struct PostProcessConstantBuffer_t
 
 struct ParticleColorConstantBuffer_t
 {
-	Vector4 vStartColor = Vector4(1.0f);
+	Vector4 vTotalColor = Vector4(1.0f);
 	Vector4 vColorOverLifeTime = Vector4(1.0f, 1.0f, 1.0f, 0.0f);
 };
 

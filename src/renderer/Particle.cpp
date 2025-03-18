@@ -72,6 +72,8 @@ void FParticle::SetTexture(void* pTexHandle)
 
 void FParticle::DestroyBasicParticleBuffer(void* pDBHandle)
 {
+	_pRenderer->EnsureCompleted();
+
 	FDescriptorAllocator* pDescriptorAllocator = _pRenderer->GetDescriptorAllocator();
 
 	DynamicDefaultBufferHandle_t* pDynamicDefaultBufferHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
@@ -114,18 +116,20 @@ ULONG __stdcall FParticle::Release(void)
 	return uRefCount;
 }
 
-void FParticle::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, DynamicDefaultBufferHandle_t* pDBHandle)
+void FParticle::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldRow, DynamicDefaultBufferHandle_t* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
 	FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
 	FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
+	FConstantBufferPool* pParticleSparkCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_PARTICLE_SPARK);
+	FConstantBufferPool* pParticleColorCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_PARTICLE_COLOR);
 	AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
-	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + _uParticleNum;
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + uParticleNum;
 
 	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
 	{
@@ -140,16 +144,20 @@ void FParticle::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, Dy
 		return;
 	}
 
+	/*Global Consts*/
 	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
 	_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
+	pGlobalConstantBuffer->mInvView = pGlobalConstantBuffer->mView.Transpose().Invert().Transpose();
+	pGlobalConstantBuffer->mInvProj = pGlobalConstantBuffer->mProj.Transpose().Invert().Transpose();
+
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
 	pGlobalConstantBuffer->fStrengthIBL = _pRenderer->GetIBLStrength();
-
 	// Per Obj (b0).
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
 	pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
 
+	/*Mesh Consts*/
 	CBContainer_t* pMeshCBContainer = pMeshCBPool->Alloc();
 	if (!pMeshCBContainer)
 	{
@@ -157,19 +165,52 @@ void FParticle::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, Dy
 		return;
 	}
 
-	MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr);
-	Matrix mWorldRow = Matrix();
+	MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr); 
+	Matrix mWorldRow = (*pWorldRow);
 	pMeshConstantBuffer->mWorld = mWorldRow.Transpose();
 	mWorldRow.Translation(Vector3(0.0f));
 	mWorldRow.Invert().Transpose();
 	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
-
 	// Per Obj (b1).
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
 
+	/*Particle Spark Consts*/
+	CBContainer_t* pParticleSparkCBContainer = pParticleSparkCBPool->Alloc();
+	if (!pParticleSparkCBContainer)
+	{
+		__debugbreak();
+		return;
+	}
+
+	ParticleSparkConstantBuffer_t* pParticleSparkConstantBuffer = reinterpret_cast<ParticleSparkConstantBuffer_t*>(pParticleSparkCBContainer->pSystemMemAddr);
+	pParticleSparkConstantBuffer->fTime = fTime;
+	pParticleSparkConstantBuffer->fDuration = fDuration;
+	pParticleSparkConstantBuffer->vStartSize = *pStartSize;
+	pParticleSparkConstantBuffer->vStartDirection = *pStartDirection;
+	pParticleSparkConstantBuffer->fSizeOverLifeTime = fSizeOverLifeTime;
+	pParticleSparkConstantBuffer->vRotOverLifeTime = *pRotOverLifeTime;
+	// Per Obj (b2).
+	pDevice->CopyDescriptorsSimple(1, hDest, pParticleSparkCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	/*Particle Color Consts*/
+	CBContainer_t* pParticleColorCBContainer = pParticleColorCBPool->Alloc();
+	if (!pParticleColorCBContainer)
+	{
+		__debugbreak();
+		return;
+	}
+
+	ParticleColorConstantBuffer_t* pParticleColorConstantBuffer = reinterpret_cast<ParticleColorConstantBuffer_t*>(pParticleColorCBContainer->pSystemMemAddr);
+	pParticleColorConstantBuffer->vTotalColor = *pTotalColor;
+	pParticleColorConstantBuffer->vColorOverLifeTime = *pColorOverLifeTime;
+	// Per Obj (b3).
+	pDevice->CopyDescriptorsSimple(1, hDest, pParticleColorCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
 	// Per Obj (t1).
-	for(AkU32 i = 0; i < _uParticleNum; i++)
+	for (AkU32 i = 0; i < uParticleNum; i++)
 	{
 		pDevice->CopyDescriptorsSimple(1, hDest, _pTextureHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
@@ -190,7 +231,7 @@ void FParticle::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, Dy
 	const float blendColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	pCmdList->OMSetBlendFactor(blendColor);
 	pCmdList->SetGraphicsRootShaderResourceView(2, pDBHandle->pUploadBuffer->GetGPUVirtualAddress());
-	pCmdList->DrawInstanced(_uParticleNum, 1, 0, 0);
+	pCmdList->DrawInstanced(uParticleNum, 1, 0, 0);
 }
 
 void FParticle::CleanUp()
@@ -287,9 +328,9 @@ AkBool FParticle::CreatePipelineState()
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
-	ID3DBlob* pParticleVS = nullptr;
-	ID3DBlob* pParticleGS = nullptr;
-	ID3DBlob* pParticlePS = nullptr;
+	ID3DBlob* pSparkVS = nullptr;
+	ID3DBlob* pSparkGS = nullptr;
+	ID3DBlob* pSparkPS = nullptr;
 
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
@@ -299,7 +340,7 @@ AkBool FParticle::CreatePipelineState()
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/ParticleBasic.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pParticleVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Spark.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pSparkVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -308,7 +349,7 @@ AkBool FParticle::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/ParticleBasic.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pParticleGS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Spark.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pSparkGS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -317,7 +358,7 @@ AkBool FParticle::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/ParticleBasic.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pParticlePS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Spark.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pSparkPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -330,14 +371,15 @@ AkBool FParticle::CreatePipelineState()
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC tOpaquePsoDesc = {};
 	tOpaquePsoDesc.pRootSignature = sm_pRootSignature;
-	tOpaquePsoDesc.VS = CD3DX12_SHADER_BYTECODE(pParticleVS->GetBufferPointer(), pParticleVS->GetBufferSize());
-	tOpaquePsoDesc.GS = CD3DX12_SHADER_BYTECODE(pParticleGS->GetBufferPointer(), pParticleGS->GetBufferSize());
-	tOpaquePsoDesc.PS = CD3DX12_SHADER_BYTECODE(pParticlePS->GetBufferPointer(), pParticlePS->GetBufferSize());
+	tOpaquePsoDesc.VS = CD3DX12_SHADER_BYTECODE(pSparkVS->GetBufferPointer(), pSparkVS->GetBufferSize());
+	tOpaquePsoDesc.GS = CD3DX12_SHADER_BYTECODE(pSparkGS->GetBufferPointer(), pSparkGS->GetBufferSize());
+	tOpaquePsoDesc.PS = CD3DX12_SHADER_BYTECODE(pSparkPS->GetBufferPointer(), pSparkPS->GetBufferSize());
 	tOpaquePsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	tOpaquePsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	tOpaquePsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	tOpaquePsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	tOpaquePsoDesc.DepthStencilState.StencilEnable = FALSE;
+	tOpaquePsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	tOpaquePsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	tOpaquePsoDesc.SampleMask = UINT_MAX;
 	tOpaquePsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
@@ -372,17 +414,17 @@ AkBool FParticle::CreatePipelineState()
 		__debugbreak();
 	}
 
-	if (pParticlePS)
+	if (pSparkPS)
 	{
-		pParticlePS->Release();
+		pSparkPS->Release();
 	}
-	if (pParticleGS)
+	if (pSparkGS)
 	{
-		pParticleGS->Release();
+		pSparkGS->Release();
 	}
-	if (pParticleVS)
+	if (pSparkVS)
 	{
-		pParticleVS->Release();
+		pSparkVS->Release();
 	}
 
 	return AK_TRUE;

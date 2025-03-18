@@ -318,7 +318,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\ParticleBasic.hlsl">
+    <CustomBuild Include="..\..\shader\Spark.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>

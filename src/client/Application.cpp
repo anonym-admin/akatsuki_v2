@@ -7,9 +7,9 @@
 #include "InputUI.h"
 #include "SceneInGame.h"
 #include "SceneLoading.h"
-#include "SceneParticleTest.h"
 #include "EditorModel.h"
 #include "EditorMap.h"
+#include "EditorParticle.h"
 #include "Collider.h"
 #include "Terrain.h"
 #include "PostRenderControl.h"
@@ -252,7 +252,6 @@ AkBool Application::InitScene()
 {
 	GSceneManager->AddScene(SCENE_TYPE::LOADING, new SceneLoading());
 	GSceneManager->AddScene(SCENE_TYPE::INGANE, new SceneInGame());
-	GSceneManager->AddScene(SCENE_TYPE::COMPUTE, new SceneParticleTest());
 
 	GSceneManager->BindCurrentScene(SCENE_TYPE::LOADING)->BeginScene();
 
@@ -263,10 +262,12 @@ AkBool Application::InitEditor()
 {
 	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_MODEL, new EditorModel());
 	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_MAP, new EditorMap());
+	GEditorManager->AddEditor(EDITOR_TYPE::EDITOR_PARTICLE, new EditorParticle());
 
 	// Editor 들은 모두 Begin 진행.
 	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_MODEL)->BeginEditor();
 	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_MAP)->BeginEditor();
+	GEditorManager->GetEditor(EDITOR_TYPE::EDITOR_PARTICLE)->BeginEditor();
 
 	return AK_TRUE;
 }
@@ -379,7 +380,7 @@ void Application::UpdateEnviroment()
 		if (_bChangeEditor)
 		{
 			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
-			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_MAP;
+			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_PARTICLE;
 		}
 		else
 		{
