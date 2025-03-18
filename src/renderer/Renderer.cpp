@@ -919,7 +919,7 @@ void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMa
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
-void FRenderer::RenderParticle(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime)
+void FRenderer::RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_PARTICLE;
@@ -935,6 +935,21 @@ void FRenderer::RenderParticle(IParticle* pParticle, const Matrix* pWorldRow, vo
 	tItem.tParticleParam.pRotOverLifeTime = pRotOverLifeTime;
 	tItem.tParticleParam.pTotalColor = pTotalColor;
 	tItem.tParticleParam.pColorOverLifeTime = pColorOverLifeTime;
+
+	if (!_pRenderParticle->Add(&tItem))
+	{
+		__debugbreak();
+	}
+}
+
+void FRenderer::RenderParticleSprite(IParticle* pParticle, void* pDBHandle, const Vector2* pMaxFrame, const Vector2* pCurFrame)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_PARTICLE;
+	tItem.pObjHandle = pParticle;
+	tItem.tParticleParam.pDBHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
+	tItem.tParticleParam.pMaxFrame = pMaxFrame;
+	tItem.tParticleParam.pCurFrame = pCurFrame;
 
 	if (!_pRenderParticle->Add(&tItem))
 	{

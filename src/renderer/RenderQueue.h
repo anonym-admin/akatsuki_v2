@@ -76,6 +76,8 @@ struct ParticleParam_t
 	const Vector3* pRotOverLifeTime = nullptr;
 	const Vector4* pTotalColor = nullptr;
 	const Vector4* pColorOverLifeTime = nullptr;
+	const Vector2* pMaxFrame = nullptr;
+	const Vector2* pCurFrame = nullptr;
 };
 
 struct RenderItem_t

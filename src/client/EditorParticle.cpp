@@ -76,7 +76,7 @@ void EditorParticle::FinalUpdate()
     ImGui::Checkbox("FPV", &_bFPV);
     if (ImGui::Button("Create")) CreateParticle();
     if (ImGui::Button("Play")) Play();
-    if (ImGui::Button("Pause")) Pause();
+    if (ImGui::Button("Stop")) Stop();
     if (ImGui::Button("Clear")) DestroyParticle();
     if (ImGui::Button("Save")) Save(L"spark");
     if (ImGui::Button("Load")) Load(L"spark");
@@ -158,11 +158,11 @@ void EditorParticle::Play()
     }
 }
 
-void EditorParticle::Pause()
+void EditorParticle::Stop()
 {
     if (_pParticle)
     {
-        _pParticle->Pause();
+        _pParticle->Stop();
     }
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Editor.h"
-#include "Particle.h"
+#include "Spark.h"
 
 /*
 =====================
@@ -35,7 +35,7 @@ private:
 	void DestroyParticle();
 
 	void Play();
-	void Pause();
+	void Stop();
 
 private:
 	AkBool _bFPV = AK_FALSE;

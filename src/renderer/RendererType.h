@@ -18,6 +18,7 @@ enum class CONSTANT_BUFFER_TYPE
 	CONSTANT_BUFFER_TYPE_POSTPROCESS,
 	CONSTANT_BUFFER_TYPE_PARTICLE_COLOR,
 	CONSTANT_BUFFER_TYPE_PARTICLE_SPARK,
+	CONSTANT_BUFFER_TYPE_PARTICLE_SPRITE,
 	CONSTANT_BUFFER_TYPE_COUNT
 };
 
@@ -138,6 +139,12 @@ struct ParticleSparkConstantBuffer_t
 	AkF32 fSizeOverLifeTime = 0.0f;
 	Vector3 vRotOverLifeTime = Vector3(0.0f);
 	AkF32 fPadding = 0.0f;
+};
+
+struct ParticleSpriteConstantBuffer_t
+{
+	Vector2 vMaxFrame = Vector2(0.0f);
+	Vector2 vCurFrame = Vector2(0.0f);
 };
 
 struct TextureHandle_t

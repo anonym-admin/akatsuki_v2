@@ -84,7 +84,7 @@ private:
 	AkF32 _fWalkSpeed = 2.65f;
 	AkF32 _fRunSpeed = 3.5f;
 	
-	class Spark* _pSpark = nullptr;
+	class Sprite* _pSprite = nullptr;
 
 public:
 	AkBool Attack = AK_FALSE;

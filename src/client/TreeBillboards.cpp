@@ -25,15 +25,15 @@ TreeBillboard::~TreeBillboard()
 AkBool TreeBillboard::Initialize()
 {
 	VertexSize_t pVertices[5] = {};
-	pVertices[0].vPosition = Vector3(-5.0f, 0.0f, 0.0f);
+	pVertices[0].vPosition = Vector4(-5.0f, 0.0f, 0.0f, 1.0f);
 	pVertices[0].vSize = Vector2(1.0f);
-	pVertices[1].vPosition = Vector3(-3.0f, 0.0f, 0.0f);
+	pVertices[1].vPosition = Vector4(-3.0f, 0.0f, 0.0f, 1.0f);
 	pVertices[1].vSize = Vector2(1.0f);
-	pVertices[2].vPosition = Vector3(-1.0f, 0.0f, 0.0f);
+	pVertices[2].vPosition = Vector4(-1.0f, 0.0f, 0.0f, 1.0f);
 	pVertices[2].vSize = Vector2(1.0f);
-	pVertices[3].vPosition = Vector3(2.0f, 0.0f, 0.0f);
+	pVertices[3].vPosition = Vector4(2.0f, 0.0f, 0.0f, 1.0f);
 	pVertices[3].vSize = Vector2(1.0f);
-	pVertices[4].vPosition = Vector3(4.0f, 0.0f, 0.0f);
+	pVertices[4].vPosition = Vector4(4.0f, 0.0f, 0.0f, 1.0f);
 	pVertices[4].vSize = Vector2(1.0f);
 
 	BillboardData_t pBillboardData = {};

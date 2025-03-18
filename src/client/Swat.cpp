@@ -9,7 +9,7 @@
 #include "RigidBody.h"
 #include "Camera.h"
 #include "Weapon.h"
-#include "Particle.h"
+#include "Sprite.h"
 
 Swat::Swat()
 {
@@ -21,10 +21,10 @@ Swat::Swat()
 
 Swat::~Swat()
 {
-	if (_pSpark)
+	if (_pSprite)
 	{
-		delete _pSpark;
-		_pSpark = nullptr;
+		delete _pSprite;
+		_pSprite = nullptr;
 	}
 
 	CleanUp();
@@ -32,7 +32,8 @@ Swat::~Swat()
 
 AkBool Swat::Initialize()
 {
-	_pSpark = new Spark(L"../../assets/particle/spark.fx");
+	Vector2 vMaxFrame = Vector2(4, 5);
+	_pSprite = new Sprite(L"../../assets/particle/MuzzleFlash_4x5.dds", &vMaxFrame);
 
 	// Create Model.
 	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::SWATGUY);
@@ -84,12 +85,12 @@ AkBool Swat::Initialize()
 
 void Swat::Update()
 {
-	_pSpark->Update();
+	_pSprite->Update();
 
 	if(KEY_DOWN(KEY_INPUT_P))
 	{
 		Vector3 vPos = Vector3(3.0f, 1.5f, 1025.0f);
-		_pSpark->Play(&vPos);
+		_pSprite->Play(&vPos);
 	}
 
 	UpdateMove();
@@ -120,7 +121,7 @@ void Swat::FinalUpdate()
 
 void Swat::Render()
 {
-	_pSpark->Render();
+	_pSprite->Render();
 
 	// Render model.
 	_pModel->Render();

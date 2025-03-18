@@ -14,6 +14,7 @@ ConstantBufferProperty_t g_pConstantbufferProperties[] =
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_POSTPROCESS, sizeof(PostProcessConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_PARTICLE_COLOR, sizeof(ParticleColorConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_PARTICLE_SPARK, sizeof(ParticleSparkConstantBuffer_t),
+	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_PARTICLE_SPRITE, sizeof(ParticleSpriteConstantBuffer_t),
 };
 
 /*

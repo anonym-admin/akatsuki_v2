@@ -22,7 +22,6 @@ public:
 	virtual void UpdateEditor() = 0;
 	virtual void Play(const Vector3* pPos) = 0;
 	virtual void Stop();
-	virtual void Pause();
 	virtual void Resume();
 
 	Transform* GetTransform() { return _pTransform; }

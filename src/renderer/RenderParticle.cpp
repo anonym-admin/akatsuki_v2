@@ -72,7 +72,17 @@ DWORD FRenderParticle::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPoo
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_PARTICLE:
 			{
 				FParticle* pParticle = (FParticle*)pItem->pObjHandle;
-				pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pWorldRow, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.uParticleNum, pItem->tParticleParam.fTime, pItem->tParticleParam.fDuration, pItem->tParticleParam.pStartSize, pItem->tParticleParam.pStartDirection, pItem->tParticleParam.fSizeOverLifeTime, pItem->tParticleParam.pRotOverLifeTime, pItem->tParticleParam.pTotalColor, pItem->tParticleParam.pColorOverLifeTime);
+				
+				if(pItem->tParticleParam.pWorldRow)
+				{
+					// Draw Spark
+					pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pWorldRow, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.uParticleNum, pItem->tParticleParam.fTime, pItem->tParticleParam.fDuration, pItem->tParticleParam.pStartSize, pItem->tParticleParam.pStartDirection, pItem->tParticleParam.fSizeOverLifeTime, pItem->tParticleParam.pRotOverLifeTime, pItem->tParticleParam.pTotalColor, pItem->tParticleParam.pColorOverLifeTime);
+				}
+				else
+				{
+					// Draw Sprite
+					pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.pMaxFrame, pItem->tParticleParam.pCurFrame);
+				}
 			}
 			break;
 			default:

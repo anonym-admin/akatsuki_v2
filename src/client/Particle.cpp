@@ -41,10 +41,6 @@ void Particle::Play(const Vector3* pPos)
 
 void Particle::Stop()
 {
-}
-
-void Particle::Pause()
-{
 	_bIsPlay = AK_FALSE;
 }
 

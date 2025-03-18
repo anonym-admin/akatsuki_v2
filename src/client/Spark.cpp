@@ -45,14 +45,14 @@ void Spark::Render()
 {
 	printf("%lf\n", fTime);
 
-	GRenderer->RenderParticle(_pParticle, &_pTransform->GetWorldTransform(), _pDBHandle, _uParticleCount, fTime, fDuration, &vStartSize, &vStartDirection, fSizeOverLifeTime, &vRotOverLifeTime, &vTotalColor, &vColorOverLifeTime);
+	GRenderer->RenderParticleSpark(_pParticle, &_pTransform->GetWorldTransform(), _pDBHandle, _uParticleCount, fTime, fDuration, &vStartSize, &vStartDirection, fSizeOverLifeTime, &vRotOverLifeTime, &vTotalColor, &vColorOverLifeTime);
 }
 
 void Spark::CreateParticles()
 {
 	_pVertices = new VertexParticle_t[MAX_COUNT];
 	_pParticle = GRenderer->CreateParticle();
-	_pDBHandle = _pParticle->CreateBasicParticleBuffer(_pVertices, MAX_COUNT);
+	_pDBHandle = _pParticle->CreateParticleSpark(_pVertices, MAX_COUNT);
 	_pParticle->SetTexture(_pTexHandle);
 }
 
