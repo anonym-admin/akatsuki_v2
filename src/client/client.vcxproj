@@ -164,12 +164,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\common\AkEnum.h" />
-    <ClInclude Include="..\..\common\AkMacro.h" />
-    <ClInclude Include="..\..\common\AkMath.h" />
-    <ClInclude Include="..\..\common\AkMeshData.h" />
-    <ClInclude Include="..\..\common\AkType.h" />
-    <ClInclude Include="..\..\common\AkVertex.h" />
+    <ClInclude Include="..\..\common\CommonEnum.h" />
+    <ClInclude Include="..\..\common\CommonMacro.h" />
+    <ClInclude Include="..\..\common\Math.h" />
+    <ClInclude Include="..\..\common\MeshData.h" />
+    <ClInclude Include="..\..\common\CommonType.h" />
+    <ClInclude Include="..\..\common\Vertex.h" />
     <ClInclude Include="..\..\utils\HashTable.h" />
     <ClInclude Include="..\..\utils\LinkedList.h" />
     <ClInclude Include="..\..\utils\ProcessInfo.h" />
@@ -254,7 +254,7 @@
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\common\AkMath.cpp" />
+    <ClCompile Include="..\..\common\Math.cpp" />
     <ClCompile Include="..\..\utils\HashTable.cpp" />
     <ClCompile Include="..\..\utils\LinkedList.cpp" />
     <ClCompile Include="..\..\utils\ProcessInfo.cpp" />

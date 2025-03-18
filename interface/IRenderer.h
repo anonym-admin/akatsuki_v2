@@ -1,9 +1,9 @@
 #pragma once
 
 #include <combaseapi.h>
-#include "common/AKMeshData.h"
-#include "common/AkEnum.h"
-#include "common/AkMath.h"
+#include "common/MeshData.h"
+#include "common/CommonEnum.h"
+#include "common/Math.h"
 
 interface IMeshObject : public IUnknown
 {
@@ -143,7 +143,7 @@ interface IRenderer : public IUnknown
 	virtual AkBool MousePickingToSqaure(Vector3* pV0, Vector3* pV1, Vector3* pV2, Vector3* pV3, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
 	virtual AkBool MousePickingToSphere(DirectX::BoundingSphere* pSphere, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
 	virtual AkBool MousePickingToBox(DirectX::BoundingBox* pBox, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
-	virtual void GetFrustum(AkPlane_t* ppOutPlane) = 0;
+	virtual void GetFrustum(Vector4* ppOutPlane) = 0;
 	virtual void SetVSync(AkBool bUseVSync) = 0;
 
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
