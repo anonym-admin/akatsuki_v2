@@ -430,7 +430,7 @@ void Application::UpdateText()
 	AkI32 iTextWidth = 0;
 	AkI32 iTextHeight = 0;
 	wchar_t wcText[128] = {};
-	AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf tri:%u obj:%u/%u\n", _fFps, pSceneInGame->GetTriangleCount(), pSceneInGame->GetRenderMapObjectCount(), pSceneInGame->GetMapObjectCount());
+	AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf \n", _fFps);
 
 	_pSysTextUI->WriteText(wcText);
 }

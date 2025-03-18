@@ -2,59 +2,7 @@
 #include "UtilFunc.h"
 #include <stdio.h>
 #include <Windows.h>
-
-
 #include "src/client/StringUtils.h"
-
-
-
-int Clamp(const int iValue, const int iMin, const int iMax)
-{
-	if (iValue < iMin)
-	{
-		return iMin;
-	}
-	else if (iValue >= iMax)
-	{
-		return iMax;
-	}
-	else
-	{
-		return iValue;
-	}
-}
-
-float Clamp(const float fValue, const float fMin, const float fMax)
-{
-	if (fValue < fMin)
-	{
-		return fMin;
-	}
-	else if (fValue >= fMax)
-	{
-		return fMax;
-	}
-	else
-	{
-		return fValue;
-	}
-}
-
-double Clamp(const double dValue, const double dMin, const double dMax)
-{
-	if (dValue < dMin)
-	{
-		return dMin;
-	}
-	else if (dValue >= dMax)
-	{
-		return dMax;
-	}
-	else
-	{
-		return dValue;
-	}
-}
 
 bool ReadBitmapFile(const wchar_t* wcFilename, unsigned __int8** pDestImage, unsigned __int32 *pWidth, unsigned __int32* pHeight)
 {

@@ -10,7 +10,7 @@
 #include "AssetManager.h"
 #include "CollisionManager.h"
 #include "UIManager.h"
-#include "Sound.h"
+#include "SoundManager.h"
 
 HWND GhWnd;
 IRenderer* GRenderer;

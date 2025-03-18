@@ -1,7 +1,7 @@
 #pragma once
 
 #include <combaseapi.h>
-#include "common/MeshData.h"
+#include "common/CommonMeshData.h"
 #include "common/CommonEnum.h"
 #include "common/Math.h"
 

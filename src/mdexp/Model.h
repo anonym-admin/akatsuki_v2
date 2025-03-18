@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Type.h"
-#include "common/AkMeshData.h"
+#include "common/CommonMeshData.h"
 #include "interface/IRenderer.h"
 
 struct Material

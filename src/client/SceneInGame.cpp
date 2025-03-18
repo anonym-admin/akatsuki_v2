@@ -42,7 +42,7 @@ AkBool SceneInGame::BeginScene()
 		pSwat->Name = L"Swat";
 		pSwat->tLink.pData = pSwat;
 		pSwat->GetTransform()->SetRotation(DirectX::XM_PI, 0.0f, 0.0f);
-		pSwat->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
+		pSwat->GetTransform()->SetPosition(-18.0f, 1.5f, 5.0f);
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pSwat);
 	}
 
@@ -56,10 +56,10 @@ AkBool SceneInGame::BeginScene()
 
 	// Weapon
 	{
-		UBRS_74* pBRS_74 = new UBRS_74;
+		BRS_74* pBRS_74 = new BRS_74;
 		pBRS_74->Name = L"BRS_74";
 		pBRS_74->tLink.pData = pBRS_74;
-		pBRS_74->GetTransform()->SetPosition(3.0f, 1.5f, 1025.0f);
+		pBRS_74->GetTransform()->SetPosition(-20.0f, 0.5f, 5.0f);
 		pBRS_74->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::WEAPON, pBRS_74);
 	}
@@ -69,7 +69,7 @@ AkBool SceneInGame::BeginScene()
 		Container* pContainer = new Container;
 		pContainer->Name = L"Container";
 		pContainer->tLink.pData = pContainer;
-		pContainer->GetTransform()->SetPosition(0.0f, 1.5f, 1025.0f);
+		pContainer->GetTransform()->SetPosition(-25.0f, 0.5f, 5.0f);
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::CONTAINER, pContainer);
 	}
 
@@ -79,159 +79,6 @@ AkBool SceneInGame::BeginScene()
 		pTreeBillboards->Name = L"Tree";
 		pTreeBillboards->tLink.pData = pTreeBillboards;
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::TREE, pTreeBillboards);
-	}
-
-	// World Map Containter.
-	{
-		_pWorldMap = new MapObjects;
-		_pWorldMap->Name = L"Map Obj";
-		_pWorldMap->tLink.pData = _pWorldMap;
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::MAP, _pWorldMap);
-	}
-
-	// Buildings.
-	{
-		AkU32 uNum = 0;
-		MeshData_t* pBox = nullptr;
-		_pBoxList = new AkBox_t[BUILDING_BOX_COUNT];
-		_pDraw = new AkBool[BUILDING_BOX_COUNT + 1]; // 임시.
-		memset(_pBoxList, 0, sizeof(MeshData_t*) * BUILDING_BOX_COUNT);
-		memset(_pDraw, 1, BUILDING_BOX_COUNT);
-
-		_pWorldMap->_pDrawTable = _pDraw;
-
-		for (AkU32 i = 0; i < BUILDING_BOX_COUNT; i++)
-		{
-			AkF32 fScaleX = GenterateRandomFloat(1.0f, 30.0f);
-			AkF32 fScaleY = GenterateRandomFloat(1.0f, 30.0f);
-			AkF32 fScaleZ = GenterateRandomFloat(1.0f, 30.0f);
-
-			AkF32 fRandX = GenterateRandomFloat(-1000.0f, 1000.0f);
-			AkF32 fRandY = GenterateRandomFloat(-1000.0f, 1000.0f);
-			AkF32 fRandZ = GenterateRandomFloat(-1000.0f, 1000.0f);
-
-			// Start Box.
-			if (0 == i)
-			{
-				fScaleX = 25.0f;
-				fScaleY = 2.0f;
-				fScaleZ = 25.0f;
-
-				fRandX = 0.0f;
-				fRandY = 0.0f;
-				fRandZ = -1025.0f;
-			}
-
-			if (BUILDING_BOX_COUNT - 1 == i)
-			{
-				fScaleX = 25.0f;
-				fScaleY = 2.0f;
-				fScaleZ = 25.0f;
-
-				fRandX = 0.0f;
-				fRandY = 0.0f;
-				fRandZ = 1025.0f;
-			}
-
-			Vector3 vRandPosition = Vector3(fRandX, fRandY, fRandZ);
-
-			_pRandomTransform[i] = Matrix::CreateScale(fScaleX, fScaleY, fScaleZ) * Matrix::CreateTranslation(vRandPosition);
-
-			pBox = GeometryGenerator::MakeCube(&uNum, 0.5f);
-			for (AkU32 j = 0; j < uNum; j++)
-			{
-				for (AkU32 k = 0; k < pBox[j].uVerticeNum; k++)
-				{
-					pBox[j].pVertices[k].vPosition = Vector3::Transform(pBox[j].pVertices[k].vPosition, _pRandomTransform[i]);
-				}
-			}
-
-			// Bind Map Container.
-			_pWorldMap->BindMeshData(pBox, uNum);
-
-			// For Frustum Culling.
-			Vector3 vMin = Vector3(AK_MAX_F32);
-			Vector3 vMax = Vector3(-AK_MAX_F32);
-			for (AkU32 j = 0; j < uNum; j++)
-			{
-				for (AkU32 k = 0; k < pBox[j].uVerticeNum; k++)
-				{
-					vMin.x = min(vMin.x, pBox[j].pVertices[k].vPosition.x);
-					vMin.y = min(vMin.y, pBox[j].pVertices[k].vPosition.y);
-					vMin.z = min(vMin.z, pBox[j].pVertices[k].vPosition.z);
-					vMax.x = max(vMax.x, pBox[j].pVertices[k].vPosition.x);
-					vMax.y = max(vMax.y, pBox[j].pVertices[k].vPosition.y);
-					vMax.z = max(vMax.z, pBox[j].pVertices[k].vPosition.z);
-				}
-			}
-
-			AkBox_t tBox = {};
-			tBox.vMax = vMax;
-			tBox.vMin = vMin;
-			_pBoxList[i] = tBox;
-		}
-
-		pBox = GeometryGenerator::MakeCube(&uNum, 0.5f);
-		for (AkU32 j = 0; j < uNum; j++)
-		{
-			wcscpy_s(pBox[j].wcAlbedoTextureFilename, L"../../assets/asset_test_01.dds");
-		}
-
-		Vector3 vAlbedo = Vector3(1.0f);
-		AkF32 fMetallic = 0.0f;
-		AkF32 fRoughness = 1.0f;
-		Vector3 vEmissive = Vector3(0.0f);
-		_pBuildingMeshObj = GRenderer->CreateBasicMeshObject();
-		_pBuildingMeshObj->CreateMeshBuffers(pBox, uNum);
-		_pBuildingMeshObj->UpdateMaterialBuffers(&vAlbedo, fMetallic, fRoughness, &vEmissive);
-		GeometryGenerator::DestroyGeometry(pBox, uNum);
-
-		// Bind Map Container.
-		_pWorldMap->BindMeshObj(_pBuildingMeshObj, BUILDING_BOX_COUNT, _pRandomTransform);
-	}
-
-	// House
-	{
-		AssetMeshDataContainer_t tAssetMeshDataContainter = {};
-		tAssetMeshDataContainter.pMeshData = GAssetManager->ReadFromFile(&tAssetMeshDataContainter, &tAssetMeshDataContainter.uMeshDataNum, L"../../assets/model/", L"cottage_fbx.md3d", 7.5f, AK_FALSE);
-		wcscpy_s(tAssetMeshDataContainter.pMeshData->wcAlbedoTextureFilename, L"../../assets/model/cottage_diffuse.dds");
-		wcscpy_s(tAssetMeshDataContainter.pMeshData->wcNormalTextureFilename, L"../../assets/model/cottage_normal.dds");
-
-		// Material.
-		Vector3 vAlbedo = Vector3(1.0f);
-		AkF32 fMetallic = 0.0f;
-		AkF32 fRoughness = 1.0f;
-		Vector3 vEmissive = Vector3(0.0f);
-		Matrix mWorld = Matrix();
-		Vector3 vPos = Vector3(0.0f, 2.5f, -1030.0f);
-
-		for (AkU32 i = 0; i < tAssetMeshDataContainter.uMeshDataNum; i++)
-		{
-			for (AkU32 j = 0; j < tAssetMeshDataContainter.pMeshData[i].uVerticeNum; j++)
-			{
-				tAssetMeshDataContainter.pMeshData[i].pVertices[j].vPosition = Vector3::Transform(tAssetMeshDataContainter.pMeshData[i].pVertices[j].vPosition, Matrix::CreateTranslation(vPos));
-
-				// For Debugging.
-				// printf("House Normal: %lf %lf %lf \n", tAssetMeshDataContainter.pMeshData[i].pVertices[j].vNormalModel.x, tAssetMeshDataContainter.pMeshData[i].pVertices[j].vNormalModel.y, tAssetMeshDataContainter.pMeshData[i].pVertices[j].vNormalModel.z);
-			}
-		}
-
-		// Bind Map Container.
-		_pWorldMap->BindMeshData(tAssetMeshDataContainter.pMeshData, tAssetMeshDataContainter.uMeshDataNum);
-
-		// Create Render Object.
-		_pHouseMeshObj = GRenderer->CreateBasicMeshObject();
-		_pHouseMeshObj->CreateMeshBuffers(tAssetMeshDataContainter.pMeshData, tAssetMeshDataContainter.uMeshDataNum);
-		_pHouseMeshObj->UpdateMaterialBuffers(&vAlbedo, fMetallic, fRoughness, &vEmissive);
-
-		// Bind Map Container.
-		_pWorldMap->BindMeshObj(_pHouseMeshObj, 1, &_mHouseWorld);
-	}
-
-	// Attach Map.
-	{
-		_pWorldMap->Build(AK_TRUE);
-		GCollisionManager->AttachMap(_pWorldMap);
 	}
 
 	// Create mini map sprite.
@@ -292,10 +139,7 @@ AkBool SceneInGame::BeginScene()
 	// Collision check.
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::CONTAINER);
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::WEAPON);
-	// GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
-
-	// Create Frustum.
-	_pFrustum = CreateFrustum(GRenderer);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
 
 	return AK_TRUE;
 }
@@ -304,31 +148,6 @@ AkBool SceneInGame::EndScene()
 {
 	GCollisionManager->Reset();
 
-	if (_pHouseMeshObj)
-	{
-		_pHouseMeshObj->Release();
-		_pHouseMeshObj = nullptr;
-	}
-	if (_pDraw)
-	{
-		delete[] _pDraw;
-		_pDraw = nullptr;
-	}
-	if (_pBoxList)
-	{
-		delete[] _pBoxList;
-		_pBoxList = nullptr;
-	}
-	if (_pFrustum)
-	{
-		delete _pFrustum;
-		_pFrustum = nullptr;
-	}
-	if (_pBuildingMeshObj)
-	{
-		_pBuildingMeshObj->Release();
-		_pBuildingMeshObj = nullptr;
-	}
 	if (_pSkyboxObj)
 	{
 		_pSkyboxObj->Release();
@@ -372,45 +191,6 @@ void SceneInGame::Update()
 
 	_iPosX -= 1;
 	_iPosY -= 1;
-
-	// Update Frustum Culling.
-	// Frustum Culling 구현부와 KDTree Triangle 충돌사이에 연동 데이터를 적용하여, KDTree 충돌처리시에 충돌 Obj 를 미리 컬링하는 구조로 최적화 가능.
-	UpdateFrustum(GRenderer, _pFrustum);
-
-	AkU32 uIndex = 0;
-
-	// 충돌 첫프레임 싱크 맞추기.
-	if (_bFirst)
-	{
-		memset(_pDraw, 1, BUILDING_BOX_COUNT + 1);
-		_bFirst = AK_FALSE;
-	}
-	else
-	{
-		memset(_pDraw, 0, BUILDING_BOX_COUNT + 1);
-		for (AkU32 i = 0; i < BUILDING_BOX_COUNT; i++)
-		{
-			AkBool bIntersectFrustumToBox = IntersectFrustumToBox(_pFrustum, &_pBoxList[i]);
-			if (bIntersectFrustumToBox)
-			{
-				_pDraw[i] = AK_TRUE;
-				_pTempRandomTransform[uIndex] = _pRandomTransform[i];
-				uIndex++;
-			}
-		}
-
-		if (uIndex >= BUILDING_BOX_COUNT)
-		{
-			__debugbreak();
-		}
-
-		_pWorldMap->SetMeshObjNum(0, uIndex);
-		_pWorldMap->SetWorldRowList(0, _pTempRandomTransform);
-		_uRenderMapObjCount = uIndex;
-	}
-
-	// Occulusion Culling.
-	// TODO!!
 }
 
 void SceneInGame::FinalUpdate()
@@ -450,14 +230,4 @@ void SceneInGame::Render()
 
 	//for (AkU32 i = 0; i < BUILDING_BOX_COUNT; i++)
 		//_pRenderer->RenderBasicMeshObject(_pBuildingMeshObj, &_mRandomTransform[i]);
-}
-
-AkU32 SceneInGame::GetTriangleCount()
-{
-	if (nullptr == _pWorldMap)
-	{
-		return 0;
-	}
-
-	return _pWorldMap->GetColliderNum(); // Collider 가 삼각형.
 }

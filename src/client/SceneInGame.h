@@ -22,10 +22,6 @@ public:
 	virtual void RenderShadow() override;
 	virtual void Render() override;
 
-	AkU32 GetTriangleCount();
-	AkU32 GetMapObjectCount() { return BUILDING_BOX_COUNT; }
-	AkU32 GetRenderMapObjectCount() { return _uRenderMapObjCount; }
-
 private:
 	// Mini map
 	ISprite* _pMiniMapSprite = nullptr;
@@ -42,28 +38,6 @@ private:
 	// Skybox
 	ISkybox* _pSkyboxObj = nullptr;
 	Matrix _mSkyboxTransform = Matrix();
-
-	// World Map Container.
-	MapObjects* _pWorldMap = nullptr;
-
-	// Frustum.
-	AkFrustum_t* _pFrustum = nullptr;
-
-public:
-	// Map Obj.
-	static const AkU32 BUILDING_BOX_COUNT = 2048;
-	IMeshObject* _pBuildingMeshObj = nullptr;
-	Matrix _pRandomTransform[BUILDING_BOX_COUNT] = {};
-	Matrix _pTempRandomTransform[BUILDING_BOX_COUNT] = {};
-
-	AkBox_t* _pBoxList = nullptr;
-	AkBool* _pDraw = nullptr;
-	AkBool _bFirst = AK_TRUE;
-	AkU32 _uRenderMapObjCount = 0;
-
-	// House.
-	IMeshObject* _pHouseMeshObj = nullptr;
-	Matrix _mHouseWorld = Matrix();
 };
 
 

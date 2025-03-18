@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AkVertex.h"
+#include "CommonVertex.h"
 
 struct MeshData_t
 {

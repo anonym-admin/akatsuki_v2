@@ -167,9 +167,9 @@
     <ClInclude Include="..\..\common\CommonEnum.h" />
     <ClInclude Include="..\..\common\CommonMacro.h" />
     <ClInclude Include="..\..\common\Math.h" />
-    <ClInclude Include="..\..\common\MeshData.h" />
+    <ClInclude Include="..\..\common\CommonMeshData.h" />
     <ClInclude Include="..\..\common\CommonType.h" />
-    <ClInclude Include="..\..\common\Vertex.h" />
+    <ClInclude Include="..\..\common\CommonVertex.h" />
     <ClInclude Include="..\..\utils\HashTable.h" />
     <ClInclude Include="..\..\utils\LinkedList.h" />
     <ClInclude Include="..\..\utils\ProcessInfo.h" />
@@ -229,6 +229,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="SkinnedModel.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Spark.h" />
     <ClInclude Include="Spawn.h" />
     <ClInclude Include="SphereColiider.h" />
@@ -316,6 +317,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="SkinnedModel.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Spark.cpp" />
     <ClCompile Include="Spawn.cpp" />
     <ClCompile Include="SphereColiider.cpp" />

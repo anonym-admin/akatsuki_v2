@@ -31,7 +31,7 @@ using namespace DirectX;
 
 // My inc
 #include "common/CommonType.h"
-#include "common/MeshData.h"
+#include "common/CommonMeshData.h"
 #include "common/CommonEnum.h"
 #include "common/Math.h"
 

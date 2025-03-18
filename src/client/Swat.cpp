@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "Weapon.h"
 #include "Sprite.h"
+#include "BRS_74.h"
 
 Swat::Swat()
 {
@@ -85,6 +86,9 @@ AkBool Swat::Initialize()
 
 void Swat::Update()
 {
+	printf("%lf %lf %lf\n", _pTransform->GetPosition().x, _pTransform->GetPosition().y, _pTransform->GetPosition().z);
+
+
 	_pSprite->Update();
 
 	if(KEY_DOWN(KEY_INPUT_P))
@@ -190,7 +194,15 @@ void Swat::SetIdle()
 	Attack = AK_FALSE;
 	Fire = AK_FALSE;
 
-	BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
+	if (BindWeapon)
+	{
+		SetAnimation(RIFLE_IDLE);
+		((BRS_74*)_pWeapon)->Release();
+	}
+	else
+	{
+		SetAnimation(IDLE);
+	}
 }
 
 void Swat::SetNextPunching()

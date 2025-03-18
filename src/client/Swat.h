@@ -67,6 +67,8 @@ public:
 	AkF32 GetWalkSpeed() { return _fWalkSpeed; }
 	AkF32 GetRunSpeed() { return _fRunSpeed; }
 
+	Weapon* GetWeapon() { return _pWeapon; }
+
 	void ActionReaction(Collider* pOther);
 
 private:

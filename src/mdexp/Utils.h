@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/AkMeshData.h"
+#include "common/CommonMeshData.h"
 #include <string>
 
 using std::wstring;
