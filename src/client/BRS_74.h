@@ -8,14 +8,10 @@ BRS_74
 =============
 */
 
-class Sprite;
-class Sound;
-
-class BRS_74 : public Weapon
+class UBRS_74 : public Weapon
 {
 public:
-	BRS_74();
-	~BRS_74();
+	UBRS_74();
 
 	AkBool Initialize();
 	virtual void Update() override;
@@ -27,18 +23,9 @@ public:
 	virtual void OnCollisionEnter(Collider* pOther) override;
 	virtual void OnCollisionExit(Collider* pOther) override;
 
-	virtual BRS_74* Clone() override;
-
-	void Fire();
-	void Release();
+	virtual UBRS_74* Clone() override;
 
 private:
-	void CleanUp();
-
-private:
-	Sprite* _pMuzzleEffect = nullptr;
-	Sound* _pFireSound = nullptr;
-
-	AkBool _bFire = AK_FALSE;
+	AkU32 _uMaxFireBullet = 5;
 };
 

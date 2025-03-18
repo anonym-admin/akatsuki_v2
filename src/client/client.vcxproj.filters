@@ -344,9 +344,6 @@
     <ClInclude Include="Sprite.h">
       <Filter>src\particle</Filter>
     </ClInclude>
-    <ClInclude Include="SoundManager.h">
-      <Filter>src\mgr</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -569,9 +566,6 @@
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
       <Filter>src\particle</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundManager.cpp">
-      <Filter>src\mgr</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

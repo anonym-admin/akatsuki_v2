@@ -1,8 +1,12 @@
 #include "pch.h"
 #include "BRS_74.h"
 #include "Application.h"
+#include "EventManager.h"
+#include "AssetManager.h"
+#include "Collider.h"
+#include "Transform.h"
+#include "Model.h"
 #include "Bullet.h"
-#include "Sprite.h"
 
 /*
 =============
@@ -10,7 +14,7 @@ BRS_74
 =============
 */
 
-BRS_74::BRS_74()
+UBRS_74::UBRS_74()
 {
 	if (!Initialize())
 	{
@@ -18,12 +22,7 @@ BRS_74::BRS_74()
 	}
 }
 
-BRS_74::~BRS_74()
-{
-	CleanUp();
-}
-
-AkBool BRS_74::Initialize()
+AkBool UBRS_74::Initialize()
 {
 	// Create Model.
 	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::BRS_74);
@@ -39,32 +38,54 @@ AkBool BRS_74::Initialize()
 
 	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::BRS_74);
 
-	// Create Muzzle Effect.
-	Vector2 vMaxFrame = Vector2(4.0f, 5.0f);
-	_pMuzzleEffect = new Sprite(L"../../assets/particle/MuzzleFlash_4x5.dds", &vMaxFrame);
-
-	// Create Fire Sound.
-	_pFireSound = GSoundManager->LoadSound("../../assets/audio/AKS74U_Fire0.wav");
+	//// Create Bullet.
+	//for (AkU32 i = 0; i < 150; i++)
+	//{
+	//	Bullet* pBullet = CreateBullet();
+	//	pBullet->tFireLink.pData = pBullet;
+	//	LL_PushBack(&_pBulletHead, &_pBulletTail, &pBullet->tFireLink);
+	//}
 
 	return AK_TRUE;
 }
 
-void BRS_74::Update()
+void UBRS_74::Update()
 {
-	if (_bFire)
+	if (_pOwner && _pOwner->Fire)
 	{
-		_pMuzzleEffect->Update();
+		List_t* pCur = _pBulletHead;
+		while (pCur != nullptr && _uMaxFireBullet > 0)
+		{
+			Vector3 vDir = _pOwner->GetTransform()->Front();
+			Vector3 vVelocity = vDir;
+			vVelocity.Normalize();
+			vVelocity *= 100.0f;
+
+			Bullet* pBullet = (Bullet*)pCur->pData;
+
+			List_t* pNext = pCur->pNext;
+
+			pBullet->GetRigidBody()->SetVelocity(&vVelocity);
+
+			LL_Delete(&_pBulletHead, &_pBulletTail, pCur);
+
+			pCur = pNext;
+
+			_uMaxFireBullet--;
+		}
+	}
+	else
+	{
+		_uMaxFireBullet = 5;
 	}
 }
 
-void BRS_74::FinalUpdate()
+void UBRS_74::FinalUpdate()
 {
 	_pTransform->Update();
 
 	if (!_pOwner)
-	{
 		_pCollider->Update();
-	}
 
 	Matrix mFinalWorldTransform = _pOwner ? _pTransform->GetWorldTransform() * _pOwner->GetTransform()->GetWorldTransform() : _pTransform->GetWorldTransform();
 
@@ -73,27 +94,20 @@ void BRS_74::FinalUpdate()
 	_pModel->UpdateWorldRow(&_pTransform->GetWorldTransform());
 }
 
-void BRS_74::Render()
+void UBRS_74::Render()
 {
 	_pModel->Render();
 
 	if (!_pOwner)
-	{
 		_pCollider->Render();
-	}
-
-	if (_bFire)
-	{
-		_pMuzzleEffect->Render();
-	}
 }
 
-void BRS_74::RenderShadow()
+void UBRS_74::RenderShadow()
 {
 	_pModel->RenderShadow();
 }
 
-void BRS_74::OnCollisionEnter(Collider* pOther)
+void UBRS_74::OnCollisionEnter(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();
 	if (!wcscmp(pOtherOwner->Name, L"Swat"))
@@ -102,7 +116,7 @@ void BRS_74::OnCollisionEnter(Collider* pOther)
 	}
 }
 
-void BRS_74::OnCollision(Collider* pOther)
+void UBRS_74::OnCollision(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();
 	if (!wcscmp(pOtherOwner->Name, L"Swat"))
@@ -111,42 +125,14 @@ void BRS_74::OnCollision(Collider* pOther)
 	}
 }
 
-void BRS_74::OnCollisionExit(Collider* pOther)
+void UBRS_74::OnCollisionExit(Collider* pOther)
 {
 }
 
-BRS_74* BRS_74::Clone()
+UBRS_74* UBRS_74::Clone()
 {
 	Spawn::Clone();
-	return new BRS_74();
-}
-
-void BRS_74::Fire()
-{
-	_bFire = AK_TRUE;
-
-	Vector3 vPos = _pTransform->GetPosition();
-	Vector3 vOffset = -_pTransform->Front() * 0.5f;
-
-	vPos += vOffset;
-
-	_pMuzzleEffect->Play(&vPos);
-
-	_pFireSound->PlayOnce();
-}
-
-void BRS_74::Release()
-{
-	_bFire = AK_FALSE;
-}
-
-void BRS_74::CleanUp()
-{
-	if (_pMuzzleEffect)
-	{
-		delete _pMuzzleEffect;
-		_pMuzzleEffect = nullptr;
-	}
+	return new UBRS_74();
 }
 
 
