@@ -42,7 +42,7 @@ AkBool SceneInGame::BeginScene()
 		pSwat->Name = L"Swat";
 		pSwat->tLink.pData = pSwat;
 		pSwat->GetTransform()->SetRotation(DirectX::XM_PI, 0.0f, 0.0f);
-		pSwat->GetTransform()->SetPosition(-18.0f, 1.5f, 5.0f);
+		pSwat->GetTransform()->SetPosition(-18.0f, 0.5f, 5.0f);
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pSwat);
 	}
 

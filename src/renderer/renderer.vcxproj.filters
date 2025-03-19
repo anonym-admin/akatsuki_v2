@@ -290,13 +290,10 @@
     <CustomBuild Include="..\..\shader\DepthOnly.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\shader\BillboardGeometry.hlsl">
+    <CustomBuild Include="..\..\shader\Billboard.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\shader\Terrain.hlsl">
-      <Filter>shader</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\shader\BillboardBasic.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\shader\BloomUp.hlsl">

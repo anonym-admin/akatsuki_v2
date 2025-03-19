@@ -317,7 +317,7 @@ void EditorMap::UpdateFileDialog()
 				{
 					AkI32 iSelectedID = 0;
 					_pTerrainEdit->SaveSplatingTexture(_wcFileNameExcExt.c_str(), &iSelectedID);
-					_wcAlphaFilenames[iSelectedID] = _wcFileNameExcExt;
+					_wcAlphaFilenames[iSelectedID] = _wcFileNameExcExt + L"_" + std::to_wstring(iSelectedID);
 					break;
 				}
 				case 2:

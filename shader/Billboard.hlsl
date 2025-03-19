@@ -1,30 +1,95 @@
 #include "Common.hlsli"
-#include "DiskSample.hlsli"
 
-// Vertex Shader
-PSInput VSMain(VSInput input)
+Texture2DArray arrayTex : register(t20);
+SamplerState samp : register(s0);
+
+struct BillboardVSInput
 {
-    PSInput output;
+    float4 posModel : POSITION;
+    float2 size : SIZE0;
+    float2 padding : SIZE1;
+};
+
+struct BillboardGSInput
+{
+    float3 center : POSITION;
+    float2 size : SIZE;
+};
+
+struct BillboardPSInput
+{
+    float4 posProj : SV_POSITION;
+    float3 posWorld : POSITION0;
+    float3 posModel : POSITION1;
+    float3 normalWorld : NORMAL;
+    float3 tangentWorld : TANGENT;
+    float2 texCoord : TEXCOORD;
+    uint primID : SV_PrimitiveID;
+};
+
+BillboardGSInput VSMain(BillboardVSInput input)
+{
+    BillboardGSInput output;
     
-    matrix vpMat = mul(view, proj); // view x proj
-    matrix wvpMat = mul(world, vpMat); // world x view x proj
-    
-    output.posModel = input.posModel;
-    output.posWorld = mul(float4(input.posModel, 1.0), world);
-    output.posProj = mul(float4(output.posWorld, 1.0), vpMat);
-    output.normalWorld = mul(float4(input.normalModel, 0.0), worldIT);
-    output.texCoord = input.texCoord;
-    output.tangentWorld = mul(float4(input.tangentModel, 1.0), world);
+    output.center = input.posModel;
+    output.size = input.size;
     
     return output;
 }
 
-float4 PSMain(PSInput input) : SV_TARGET
+// Billboard 생성 시 Clear 색과 곂쳐서 랜더링되는 버그 발생
+[maxvertexcount(4)]
+void GSMain(point BillboardGSInput input[1], uint primID : SV_PrimitiveID, inout TriangleStream<BillboardPSInput> outputStream)
+{
+    BillboardPSInput output;
+    
+    float3 up = float3(0.0, 1.0, 0.0);
+    float3 look = eyeWorld - input[0].center; // eyeWorld 의 문제는 아님...
+    look.y = 0.0;
+    look = normalize(look);
+    
+    float3 right = normalize(cross(look, up));
+    
+    float halfWidth = input[0].size.x * 0.5f;
+    float halfHeight = input[0].size.y * 0.5f;
+    
+    float4 v[4];
+    v[0] = float4(input[0].center + halfWidth * right - halfHeight * up, 1.0f);
+    v[1] = float4(input[0].center + halfWidth * right + halfHeight * up, 1.0f);
+    v[2] = float4(input[0].center - halfWidth * right - halfHeight * up, 1.0f);
+    v[3] = float4(input[0].center - halfWidth * right + halfHeight * up, 1.0f);
+    
+    float2 texCoord[4] =
+    {
+        float2(0.0, 1.0),
+        float2(0.0, 0.0),
+        float2(1.0, 1.0),
+        float2(1.0, 0.0)
+    };
+    
+    [unroll]
+    for (int i = 0; i < 4; i++)
+    {
+        output.posWorld = mul(v[i], world).xyz;
+        output.posProj = mul(float4(output.posWorld, 1.0), view);
+        output.posProj = mul(output.posProj, proj);
+        output.posModel = v[i].xyz;
+        output.normalWorld = look;
+        output.tangentWorld = float3(1.0, 0.0, 0.0);
+        output.texCoord = texCoord[i];
+        output.primID = primID;
+
+        outputStream.Append(output);
+    }
+}
+
+float4 PSMain(BillboardPSInput input) : SV_TARGET
 {
     float3 pixelToEye = normalize(eyeWorld - input.posWorld);
     float3 normalWorld = GetNormal(input.normalWorld, input.texCoord, input.tangentWorld);
     
-    float4 albedo = useAlbedoMap ? albedoTex.Sample(linearWrapSS, input.texCoord) * float4(albedoFactor, 1.0) : float4(albedoFactor, 1.0);
+    float3 uvw = float3(input.texCoord, input.primID % 4);
+    float4 albedo = arrayTex.Sample(samp, uvw);
     
     clip(albedo.a - 0.1);
     

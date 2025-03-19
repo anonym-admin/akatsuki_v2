@@ -39,11 +39,6 @@ void BillboardModels::Render()
 
 void BillboardModels::CleanUp()
 {
-    if (_pTreeTextureArray)
-    {
-        GRenderer->DestroyTexture(_pTreeTextureArray);
-        _pTreeTextureArray = nullptr;
-    }
     if (_pBillboard)
     {
         _pBillboard->Release();

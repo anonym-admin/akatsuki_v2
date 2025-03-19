@@ -62,7 +62,6 @@ AkBool FBillboardObjects::CreateBillboardBuffer(BillboardData_t* pBillboardData)
 	else
 	{
 		_pArrayTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pBillboardData->wcArrayFilename, AK_FALSE, AK_TRUE));
-		_pMaterials->uUseAOMap = AK_TRUE;
 	}
 	// Albedo
 	if (!wcscmp(pBillboardData->wcAlbedoTextureFilename, L""))
@@ -236,8 +235,8 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 		pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
 
-		// AO
-		TextureHandle_t* pTexHandle = _pAoTextureHandle;
+		// Albedo
+		TextureHandle_t* pTexHandle = _pAlbedoTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -296,8 +295,8 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 		}
 		hDest.Offset(1, uDescriptorSize);
 
-		// Albedo
-		pTexHandle = _pAlbedoTextureHandle;
+		// AO
+		pTexHandle = _pAoTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -307,6 +306,7 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 			__debugbreak();
 		}
 		hDest.Offset(1, uDescriptorSize);
+
 
 		// Irradiance IBL.
 		if (pIrradianceTexHandle)
@@ -530,9 +530,9 @@ AkBool FBillboardObjects::CreatePipelineState()
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
-	ID3DBlob* pGeoBillboardVS = nullptr;
-	ID3DBlob* pGeoBillboardGS = nullptr;
-	ID3DBlob* pGeoBillboardPS = nullptr;
+	ID3DBlob* pBillboardVS = nullptr;
+	ID3DBlob* pBillboardGS = nullptr;
+	ID3DBlob* pBillboardPS = nullptr;
 
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
@@ -542,7 +542,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 #endif
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeometry.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pGeoBillboardVS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Billboard.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pBillboardVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -551,7 +551,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeometry.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pGeoBillboardGS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Billboard.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", uCompileFlags, 0, &pBillboardGS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -560,7 +560,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/BillboardGeometry.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pGeoBillboardPS, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Billboard.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pBillboardPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -573,17 +573,18 @@ AkBool FBillboardObjects::CreatePipelineState()
 	// Define the vertex input layout.
 	D3D12_INPUT_ELEMENT_DESC tGeoInputElementDescs[] =
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "SIZE", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 16, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{ "SIZE", 1, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 	};
 
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC tPsoDesc = {};
 	tPsoDesc.InputLayout = { tGeoInputElementDescs, _countof(tGeoInputElementDescs) };
 	tPsoDesc.pRootSignature = sm_pRootSignature;
-	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pGeoBillboardVS->GetBufferPointer(), pGeoBillboardVS->GetBufferSize());
-	tPsoDesc.GS = CD3DX12_SHADER_BYTECODE(pGeoBillboardGS->GetBufferPointer(), pGeoBillboardGS->GetBufferSize());
-	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pGeoBillboardPS->GetBufferPointer(), pGeoBillboardPS->GetBufferSize());
+	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pBillboardVS->GetBufferPointer(), pBillboardVS->GetBufferSize());
+	tPsoDesc.GS = CD3DX12_SHADER_BYTECODE(pBillboardGS->GetBufferPointer(), pBillboardGS->GetBufferSize());
+	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pBillboardPS->GetBufferPointer(), pBillboardPS->GetBufferSize());
 	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	tPsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
@@ -602,17 +603,17 @@ AkBool FBillboardObjects::CreatePipelineState()
 		__debugbreak();
 	}
 
-	if (pGeoBillboardPS)
+	if (pBillboardPS)
 	{
-		pGeoBillboardPS->Release();
+		pBillboardPS->Release();
 	}
-	if (pGeoBillboardGS)
+	if (pBillboardGS)
 	{
-		pGeoBillboardGS->Release();
+		pBillboardGS->Release();
 	}
-	if (pGeoBillboardVS)
+	if (pBillboardVS)
 	{
-		pGeoBillboardVS->Release();
+		pBillboardVS->Release();
 	}
 
 	return AK_TRUE;

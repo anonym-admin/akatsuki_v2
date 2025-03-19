@@ -43,7 +43,8 @@ AkBool Terrain::Initialize(const wchar_t* wcSetUpFile)
 	// Create Render obj.
 	_pTerrain = GRenderer->CreateTerrain();
 	_pTerrain->CreateStaticMeshBuffers(_pVertices, _uVerticeNum, _pIndices, _uIndiceNum);
-	_pTerrain->SetTextures(wcSplatingFilenames[0], wcSplatingFilenames[1], wcAlbedoFilename);
+	_pTerrain->SetTextures(wcSplatingFilenames[0], wcSplatingFilenames[1], wcAlbedoFilename, L"../../assets/map/texture/GroundSand005_NRM_4K.dds", 
+		nullptr, nullptr, nullptr, L"../../assets/map/texture/GroundSand005_AO_4K.dds");
 
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissvie = Vector3(0.0f);
@@ -858,7 +859,7 @@ void TerrainEdit::ComputeHeight()
 					{
 						_pVertices[i].vPosition.y = MIN_HEIGHT;
 					}
-					else if (MAX_HEIGHT > _pVertices[i].vPosition.y)
+					else if (MAX_HEIGHT < _pVertices[i].vPosition.y)
 					{
 						_pVertices[i].vPosition.y = MAX_HEIGHT;
 					}
@@ -889,6 +890,10 @@ void TerrainEdit::ComputeHeight()
 					if (MIN_HEIGHT > _pVertices[i].vPosition.y)
 					{
 						_pVertices[i].vPosition.y = MIN_HEIGHT;
+					}
+					else if (MAX_HEIGHT < _pVertices[i].vPosition.y)
+					{
+						_pVertices[i].vPosition.y = MAX_HEIGHT;
 					}
 				}
 			}

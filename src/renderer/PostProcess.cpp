@@ -171,7 +171,9 @@ AkBool FPostProcess::CreateRootSignature()
 		// default sampler
 		D3D12_STATIC_SAMPLER_DESC tSampler = {};
 		FD3DUtils::SetDefaultSamplerDesc(&tSampler, 0);
-		// tSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+		tSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		tSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		tSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
 
 		// Allow input layout and deny uneccessary access to certain pipeline stages.
 		D3D12_ROOT_SIGNATURE_FLAGS tRootSignatureFlags =
@@ -218,6 +220,9 @@ AkBool FPostProcess::CreateRootSignature()
 		// default sampler
 		D3D12_STATIC_SAMPLER_DESC tSampler = {};
 		FD3DUtils::SetDefaultSamplerDesc(&tSampler, 0);
+		tSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		tSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		tSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
 
 		// Allow input layout and deny uneccessary access to certain pipeline stages.
 		D3D12_ROOT_SIGNATURE_FLAGS tRootSignatureFlags =

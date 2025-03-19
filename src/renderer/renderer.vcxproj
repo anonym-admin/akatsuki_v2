@@ -295,17 +295,12 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\shader\BillboardGeometry.hlsl">
+    <CustomBuild Include="..\..\shader\Billboard.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\Terrain.hlsl">
-      <FileType>Document</FileType>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\..\shader\BillboardBasic.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>

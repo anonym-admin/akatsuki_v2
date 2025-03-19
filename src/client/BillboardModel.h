@@ -22,7 +22,5 @@ private:
 
 private:
 	IBillboard* _pBillboard = nullptr;
-
-	void* _pTreeTextureArray = nullptr;
 };
 
