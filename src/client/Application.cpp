@@ -72,11 +72,6 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 	// Create Post process
 	_pPostProcess = new PostRenderControl;
 
-	// Create Model Exporter
-	// _pModelExporter = new ModelExporter("../../assets/model_new/fbx/SwatGuy_BackLeft.fbx");
-	// _pModelExporter->ExportMaterial(L"SwatGuy_BackLeft");
-	// _pModelExporter->ExportMesh(L"SwatGuy_BackLeft");
-
 	// Reset timer.
 	GTimer->Reset();
 
@@ -146,10 +141,16 @@ void Application::RunApplication()
 		case 0:
 		{
 			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
-			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_MAP;
+			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_MODEL;
 		}
 		break;
 		case 1:
+		{
+			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
+			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_MAP;
+		}
+		break;
+		case 2:
 		{
 			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
 			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_PARTICLE;
@@ -415,13 +416,11 @@ void Application::UpdateEnviroment()
 		if (_bChangeEditor)
 		{
 			_pScreenTextFontObj = GRenderer->CreateFontObject(SYSTEM_FONT_FAMILY_NAME, 16);
-			
-			// tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
-			// tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_PARTICLE;
 		}
 		else
 		{
 			GRenderer->DestroyFontObject(_pScreenTextFontObj);
+			_pScreenTextFontObj = nullptr;
 
 			tEvent.eEventType = EVENT_TYPE::EDITOR_TO_SCENE_CHANGE;
 			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::INGANE;
@@ -503,7 +502,7 @@ void Application::UpdateText()
 			AkI32 iTextWidth = 0;
 			AkI32 iTextHeight = 0;
 			wchar_t wcText[256] = {};
-			AkU32 uTxtLen = swprintf_s(wcText, L"Select Editor Mode\n0. Map\n1. Particle\n");
+			AkU32 uTxtLen = swprintf_s(wcText, L"Select Editor Mode\n0. Model\n1. Map\n2. Particle\n");
 
 			if (wcscmp(_wcText, wcText))
 			{

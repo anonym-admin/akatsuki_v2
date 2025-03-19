@@ -459,11 +459,18 @@ MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Ve
 		pMeshData[i].pIndices = new AkU32[pMeshData[i].uIndicesNum];
 	}
 
+	Vector3 vExtent = Vector3(0.5f);
+
+	if (pExtent)
+	{
+		vExtent = *pExtent;
+	}
+
 	// À­¸é
-	pMeshData[0].pVertices[0].vPosition = Vector3(-1.0f, 1.0f, -1.0f) * (*pExtent);
-	pMeshData[0].pVertices[1].vPosition = Vector3(-1.0f, 1.0f, 1.0f) * (*pExtent);
-	pMeshData[0].pVertices[2].vPosition = Vector3(1.0f, 1.0f, 1.0f) * (*pExtent);
-	pMeshData[0].pVertices[3].vPosition = Vector3(1.0f, 1.0f, -1.0f) * (*pExtent);
+	pMeshData[0].pVertices[0].vPosition = Vector3(-1.0f, 1.0f, -1.0f) * vExtent;
+	pMeshData[0].pVertices[1].vPosition = Vector3(-1.0f, 1.0f, 1.0f) * vExtent;
+	pMeshData[0].pVertices[2].vPosition = Vector3(1.0f, 1.0f, 1.0f) * vExtent;
+	pMeshData[0].pVertices[3].vPosition = Vector3(1.0f, 1.0f, -1.0f) * vExtent;
 	pMeshData[0].pVertices[0].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
 	pMeshData[0].pVertices[1].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
 	pMeshData[0].pVertices[2].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
@@ -473,10 +480,10 @@ MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Ve
 	pMeshData[0].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
 	pMeshData[0].pVertices[3].vTexCoord = Vector2(1.0f, 1.0f);
 	// ¾Æ·§¸é
-	pMeshData[1].pVertices[0].vPosition = Vector3(-1.0f, -1.0f, -1.0f) * (*pExtent);
-	pMeshData[1].pVertices[1].vPosition = Vector3(1.0f, -1.0f, -1.0f) * (*pExtent);
-	pMeshData[1].pVertices[2].vPosition = Vector3(1.0f, -1.0f, 1.0f) * (*pExtent);
-	pMeshData[1].pVertices[3].vPosition = Vector3(-1.0f, -1.0f, 1.0f) * (*pExtent);
+	pMeshData[1].pVertices[0].vPosition = Vector3(-1.0f, -1.0f, -1.0f) * vExtent;
+	pMeshData[1].pVertices[1].vPosition = Vector3(1.0f, -1.0f, -1.0f) * vExtent;
+	pMeshData[1].pVertices[2].vPosition = Vector3(1.0f, -1.0f, 1.0f) * vExtent;
+	pMeshData[1].pVertices[3].vPosition = Vector3(-1.0f, -1.0f, 1.0f) * vExtent;
 	pMeshData[1].pVertices[0].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
 	pMeshData[1].pVertices[1].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
 	pMeshData[1].pVertices[2].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
@@ -486,10 +493,10 @@ MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Ve
 	pMeshData[1].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
 	pMeshData[1].pVertices[3].vTexCoord = Vector2(1.0f, 1.0f);
 	// ¾Õ¸é
-	pMeshData[2].pVertices[0].vPosition = Vector3(-1.0f, -1.0f, -1.0f) * (*pExtent);
-	pMeshData[2].pVertices[1].vPosition = Vector3(-1.0f, 1.0f, -1.0f) * (*pExtent);
-	pMeshData[2].pVertices[2].vPosition = Vector3(1.0f, 1.0f, -1.0f) * (*pExtent);
-	pMeshData[2].pVertices[3].vPosition = Vector3(1.0f, -1.0f, -1.0f) * (*pExtent);
+	pMeshData[2].pVertices[0].vPosition = Vector3(-1.0f, -1.0f, -1.0f) * vExtent;
+	pMeshData[2].pVertices[1].vPosition = Vector3(-1.0f, 1.0f, -1.0f) * vExtent;
+	pMeshData[2].pVertices[2].vPosition = Vector3(1.0f, 1.0f, -1.0f) * vExtent;
+	pMeshData[2].pVertices[3].vPosition = Vector3(1.0f, -1.0f, -1.0f) * vExtent;
 	pMeshData[2].pVertices[0].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
 	pMeshData[2].pVertices[1].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
 	pMeshData[2].pVertices[2].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
@@ -499,10 +506,10 @@ MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Ve
 	pMeshData[2].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
 	pMeshData[2].pVertices[3].vTexCoord = Vector2(1.0f, 1.0f);
 	// µÞ¸é
-	pMeshData[3].pVertices[0].vPosition = Vector3(-1.0f, -1.0f, 1.0f) * (*pExtent);
-	pMeshData[3].pVertices[1].vPosition = Vector3(1.0f, -1.0f, 1.0f) * (*pExtent);
-	pMeshData[3].pVertices[2].vPosition = Vector3(1.0f, 1.0f, 1.0f) * (*pExtent);
-	pMeshData[3].pVertices[3].vPosition = Vector3(-1.0f, 1.0f, 1.0f) * (*pExtent);
+	pMeshData[3].pVertices[0].vPosition = Vector3(-1.0f, -1.0f, 1.0f) * vExtent;
+	pMeshData[3].pVertices[1].vPosition = Vector3(1.0f, -1.0f, 1.0f) * vExtent;
+	pMeshData[3].pVertices[2].vPosition = Vector3(1.0f, 1.0f, 1.0f) * vExtent;
+	pMeshData[3].pVertices[3].vPosition = Vector3(-1.0f, 1.0f, 1.0f) * vExtent;
 	pMeshData[3].pVertices[0].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
 	pMeshData[3].pVertices[1].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
 	pMeshData[3].pVertices[2].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
@@ -512,10 +519,10 @@ MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Ve
 	pMeshData[3].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
 	pMeshData[3].pVertices[3].vTexCoord = Vector2(1.0f, 1.0f);
 	// ¿ÞÂÊ
-	pMeshData[4].pVertices[0].vPosition = Vector3(-1.0f, -1.0f, 1.0f) * (*pExtent);
-	pMeshData[4].pVertices[1].vPosition = Vector3(-1.0f, 1.0f, 1.0f) * (*pExtent);
-	pMeshData[4].pVertices[2].vPosition = Vector3(-1.0f, 1.0f, -1.0f) * (*pExtent);
-	pMeshData[4].pVertices[3].vPosition = Vector3(-1.0f, -1.0f, -1.0f) * (*pExtent);
+	pMeshData[4].pVertices[0].vPosition = Vector3(-1.0f, -1.0f, 1.0f) * vExtent;
+	pMeshData[4].pVertices[1].vPosition = Vector3(-1.0f, 1.0f, 1.0f) * vExtent;
+	pMeshData[4].pVertices[2].vPosition = Vector3(-1.0f, 1.0f, -1.0f) * vExtent;
+	pMeshData[4].pVertices[3].vPosition = Vector3(-1.0f, -1.0f, -1.0f) * vExtent;
 	pMeshData[4].pVertices[0].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
 	pMeshData[4].pVertices[1].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
 	pMeshData[4].pVertices[2].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
@@ -525,10 +532,10 @@ MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Ve
 	pMeshData[4].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
 	pMeshData[4].pVertices[3].vTexCoord = Vector2(1.0f, 1.0f);
 	// ¿À¸¥ÂÊ
-	pMeshData[5].pVertices[0].vPosition = Vector3(1.0f, -1.0f, 1.0f) * (*pExtent);
-	pMeshData[5].pVertices[1].vPosition = Vector3(1.0f, -1.0f, -1.0f) * (*pExtent);
-	pMeshData[5].pVertices[2].vPosition = Vector3(1.0f, 1.0f, -1.0f) * (*pExtent);
-	pMeshData[5].pVertices[3].vPosition = Vector3(1.0f, 1.0f, 1.0f) * (*pExtent);
+	pMeshData[5].pVertices[0].vPosition = Vector3(1.0f, -1.0f, 1.0f) * vExtent;
+	pMeshData[5].pVertices[1].vPosition = Vector3(1.0f, -1.0f, -1.0f) * vExtent;
+	pMeshData[5].pVertices[2].vPosition = Vector3(1.0f, 1.0f, -1.0f) * vExtent;
+	pMeshData[5].pVertices[3].vPosition = Vector3(1.0f, 1.0f, 1.0f) * vExtent;
 	pMeshData[5].pVertices[0].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
 	pMeshData[5].pVertices[1].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
 	pMeshData[5].pVertices[2].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
@@ -874,7 +881,7 @@ LineData_t* GeometryGenerator::MakeCapsule(const AkF32 fRadius, const AkF32 fHei
 // ºñµ¿±â Ã³¸® ÇÊ¿ä!!
 MeshData_t* GeometryGenerator::ReadFromFile(AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bIsAnim, Matrix* pDefaultMat, Matrix const** pBoneOffsetMat, AkI32 const** pBoneHierarchy, AkU32* pBoneNum)
 {
-	UModelImporter tModelImporter;
+	ModelImporter tModelImporter;
 	MeshData_t* pMeshData = nullptr;
 
 	tModelImporter.Load(wcBasePath, wcFilename, bIsAnim);

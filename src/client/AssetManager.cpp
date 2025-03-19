@@ -181,7 +181,7 @@ void AssetManager::DeleteAnimation(ASSET_ANIM_TYPE eType)
 
 MeshData_t* AssetManager::ReadFromFile(AssetMeshDataContainer_t* pAassetMeshDataContainer, AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
 {
-	UModelImporter tModelImporter = {};
+	ModelImporter tModelImporter = {};
 	MeshData_t* pMeshData = nullptr;
 
 	tModelImporter.Load(wcBasePath, wcModelFilename, bForAnim);

@@ -128,6 +128,7 @@ void SaveDDS(const wchar_t* pFilename, AkBool bGenerateMipMap)
 		hr = LoadFromWICFile(pFilename, WIC_FLAGS_FORCE_RGB, nullptr, image);
 	}
 
+	// TODO
 	if(bGenerateMipMap)
 	{
 		hr = GenerateMipMaps(*image.GetImages(), TEX_FILTER_DEFAULT, 0, mipChain);
@@ -141,7 +142,7 @@ void SaveDDS(const wchar_t* pFilename, AkBool bGenerateMipMap)
 	filePath += L".dds";
 
 	// DDS 파일로 저장
-	hr = SaveToDDSFile(*mipChain.GetImages(), DDS_FLAGS_NONE, filePath.c_str());
+	hr = SaveToDDSFile(*image.GetImages(), DDS_FLAGS_NONE, filePath.c_str());
 	if (FAILED(hr)) 
 	{
 		__debugbreak();

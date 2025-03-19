@@ -8,7 +8,7 @@
 #include "Swat.h"
 #include "Dancer.h"
 #include "BRS_74.h"
-#include "Container.h"
+#include "ModelObject.h"
 #include "TreeBillboards.h"
 #include "Terrain.h"
 
@@ -66,7 +66,7 @@ AkBool SceneInGame::BeginScene()
 
 	// Container
 	{
-		Container* pContainer = new Container;
+		ModelObject* pContainer = new ModelObject;
 		pContainer->Name = L"Container";
 		pContainer->tLink.pData = pContainer;
 		pContainer->GetTransform()->SetPosition(-25.0f, 0.5f, 5.0f);

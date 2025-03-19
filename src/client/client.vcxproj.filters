@@ -294,9 +294,6 @@
     <ClInclude Include="Swat.h">
       <Filter>src\obj\character</Filter>
     </ClInclude>
-    <ClInclude Include="Container.h">
-      <Filter>src\obj\field</Filter>
-    </ClInclude>
     <ClInclude Include="SquareCollider.h">
       <Filter>src\comp\collider</Filter>
     </ClInclude>
@@ -331,6 +328,12 @@
     </ClInclude>
     <ClInclude Include="InputThread.h">
       <Filter>src\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelExporter.h">
+      <Filter>src\model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -508,9 +511,6 @@
     <ClCompile Include="Swat.cpp">
       <Filter>src\obj\character</Filter>
     </ClCompile>
-    <ClCompile Include="Container.cpp">
-      <Filter>src\obj\field</Filter>
-    </ClCompile>
     <ClCompile Include="SquareCollider.cpp">
       <Filter>src\comp\collider</Filter>
     </ClCompile>
@@ -545,6 +545,12 @@
     </ClCompile>
     <ClCompile Include="InputThread.cpp">
       <Filter>src\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelExporter.cpp">
+      <Filter>src\model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

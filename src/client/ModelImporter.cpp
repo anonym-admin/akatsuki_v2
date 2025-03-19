@@ -86,7 +86,7 @@ static void GetFileNameFromFullPath(wchar_t* wcFullPath)
 	pCopyPath = nullptr;
 }
 
-AkBool UModelImporter::Load(const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bForAnim)
+AkBool ModelImporter::Load(const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bForAnim)
 {
 	FILE* pFp = nullptr;
 
@@ -133,7 +133,7 @@ AkBool UModelImporter::Load(const wchar_t* wcBasePath, const wchar_t* wcFilename
 	return AK_TRUE;
 }
 
-AkBool UModelImporter::LoadAnimation(const wchar_t* wcBasePath, const wchar_t* wcFilename, AkU32 uBoneNum)
+AkBool ModelImporter::LoadAnimation(const wchar_t* wcBasePath, const wchar_t* wcFilename, AkU32 uBoneNum)
 {
 	FILE* pFp = nullptr;
 
@@ -173,7 +173,7 @@ AkBool UModelImporter::LoadAnimation(const wchar_t* wcBasePath, const wchar_t* w
 	return AK_TRUE;
 }
 
-const Matrix* UModelImporter::GetBoneOffsetTransformList()
+const Matrix* ModelImporter::GetBoneOffsetTransformList()
 {
 	if (!_bIsAnim)
 	{
@@ -184,7 +184,7 @@ const Matrix* UModelImporter::GetBoneOffsetTransformList()
 	return _pBoneOffsetMatrixList;
 }
 
-const AkI32* UModelImporter::GetBoneHierarchyList()
+const AkI32* ModelImporter::GetBoneHierarchyList()
 {
 	if (!_bIsAnim)
 	{
@@ -195,7 +195,7 @@ const AkI32* UModelImporter::GetBoneHierarchyList()
 	return _uBoneHierarchyList;
 }
 
-AkU32 UModelImporter::GetBoneNum()
+AkU32 ModelImporter::GetBoneNum()
 {
 	if (!_bIsAnim)
 	{
@@ -206,7 +206,7 @@ AkU32 UModelImporter::GetBoneNum()
 	return _uBoneNum;
 }
 
-void UModelImporter::LoadMeshDataInfo(FILE* pFp, AkBool bForAnim)
+void ModelImporter::LoadMeshDataInfo(FILE* pFp, AkBool bForAnim)
 {
 	AkI32 iNumMeshes = 0;
 	AkI32 iNumVertices = 0;
@@ -236,7 +236,7 @@ void UModelImporter::LoadMeshDataInfo(FILE* pFp, AkBool bForAnim)
 	}
 }
 
-void UModelImporter::LoadMaterialFileName(FILE* pFp)
+void ModelImporter::LoadMaterialFileName(FILE* pFp)
 {
 	wchar_t wcBuf[_MAX_PATH] = {};
 	wchar_t wcAlbedoTextureFilename[_MAX_PATH] = {};
@@ -364,7 +364,7 @@ void UModelImporter::LoadMaterialFileName(FILE* pFp)
 	}
 }
 
-void UModelImporter::LoadVerticesAndIndices(FILE* pFp, AkBool bForAnim)
+void ModelImporter::LoadVerticesAndIndices(FILE* pFp, AkBool bForAnim)
 {
 	char cBuf[_MAX_PATH] = {};
 
@@ -413,7 +413,7 @@ void UModelImporter::LoadVerticesAndIndices(FILE* pFp, AkBool bForAnim)
 	UpdateTangents();
 }
 
-void UModelImporter::LoadBoneOffsets(FILE* pFp)
+void ModelImporter::LoadBoneOffsets(FILE* pFp)
 {
 	char cBuf[_MAX_PATH] = {};
 	AkU32 uNumBones;
@@ -439,7 +439,7 @@ void UModelImporter::LoadBoneOffsets(FILE* pFp)
 	}
 }
 
-void UModelImporter::LoadBoneHierarchy(FILE* pFp)
+void ModelImporter::LoadBoneHierarchy(FILE* pFp)
 {
 	if (!_uBoneNum)
 	{
@@ -457,7 +457,7 @@ void UModelImporter::LoadBoneHierarchy(FILE* pFp)
 	}
 }
 
-void UModelImporter::LoadAnimationClip(FILE* pFp)
+void ModelImporter::LoadAnimationClip(FILE* pFp)
 {
 	wchar_t cBuf[_MAX_PATH] = {};
 	wchar_t cTakeNmae[_MAX_PATH] = {};
@@ -516,7 +516,7 @@ void UModelImporter::LoadAnimationClip(FILE* pFp)
 	}
 }
 
-void UModelImporter::UpdateTangents()
+void ModelImporter::UpdateTangents()
 {
 	for (AkU32 i = 0; i < _uMeshDataNum; i++)
 	{

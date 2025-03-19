@@ -30,8 +30,13 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <filesystem>
+#include <ostream>
+#include <iostream>
 using std::max;
 using std::min;
+using std::fstream;
+using std::ofstream;
 
 // My inc
 #include "common/CommonType.h"
@@ -47,6 +52,7 @@ using std::min;
 
 #include "interface/IRenderer.h"
 
+#include "ModelType.h"
 #include "Enum.h"
 #include "Type.h"
 #include "Global.h"

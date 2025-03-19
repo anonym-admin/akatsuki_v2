@@ -397,7 +397,7 @@ void Animation::SetEndCallBack(const wchar_t* wcClipname, Actor* pActor, Animati
 
 AnimationClip_t* Animation::ReadClip(const wchar_t* wcBasePath, const wchar_t* wcFilename)
 {
-	UModelImporter tModelImporter = { };
+	ModelImporter tModelImporter = { };
 
 	tModelImporter.LoadAnimation(wcBasePath, wcFilename, _uBoneNum);
 

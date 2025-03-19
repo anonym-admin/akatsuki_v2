@@ -8,7 +8,7 @@ ModelImporter
 
 class Animation;
 
-class UModelImporter
+class ModelImporter
 {
 public:
 	AkBool Load( const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bForAnim = false);
