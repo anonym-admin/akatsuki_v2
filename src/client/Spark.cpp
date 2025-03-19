@@ -211,6 +211,8 @@ void Spark::Load(const wchar_t* wcFxFilename)
 	CreateParticles();
 
 	if (fp) fclose(fp);
+
+	_bLoad = AK_TRUE;
 }
 
 void Spark::CleanUp()
@@ -220,7 +222,7 @@ void Spark::CleanUp()
 		delete _pVertices;
 		_pVertices = nullptr;
 	}
-	if (_pInfo)
+	if (_pInfo && _bLoad)
 	{
 		delete _pInfo;
 		_pInfo = nullptr;

@@ -41,7 +41,6 @@ private:
 
 	ID2D1SolidColorBrush* _pWhiteBrush = nullptr;
 
-	// TODO
 	ID2D1SolidColorBrush* _pGreenBrush = nullptr;
 	ID2D1SolidColorBrush* _pDarkGrayBrush = nullptr;
 	ID2D1SolidColorBrush* _pGrayBrush = nullptr;

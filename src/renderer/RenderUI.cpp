@@ -101,7 +101,7 @@ DWORD FRenderUI::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3
 						}
 						pTexureHandle->bUpdated = FALSE;
 					}
-					pSpriteObj->DrawWithTex(uThreadIndex, pCmdList, &vPos, &vScale, pRect, fZ, pTexureHandle, pItem->tSpriteObjParam.pColor);
+					pSpriteObj->DrawWithTex(uThreadIndex, pCmdList, &vPos, &vScale, pRect, fZ, pTexureHandle, pItem->tSpriteObjParam.bUseBlend);
 				}
 				else
 				{
@@ -109,7 +109,7 @@ DWORD FRenderUI::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3
 					Vector2 vPos = { (AkF32)pItem->tSpriteObjParam.iPosX, (AkF32)pItem->tSpriteObjParam.iPosY };
 					Vector2 vScale = { pItem->tSpriteObjParam.fScaleX, pItem->tSpriteObjParam.fScaleY };
 
-					pSpriteObj->Draw(uThreadIndex, pCmdList, &vPos, &vScale, fZ, pItem->tSpriteObjParam.pColor);
+					pSpriteObj->Draw(uThreadIndex, pCmdList, &vPos, &vScale, fZ, pItem->tSpriteObjParam.bUseBlend);
 				}
 			}
 			break;

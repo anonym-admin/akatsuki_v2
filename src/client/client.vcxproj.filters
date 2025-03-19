@@ -329,6 +329,9 @@
     <ClInclude Include="UIText.h">
       <Filter>src\ui</Filter>
     </ClInclude>
+    <ClInclude Include="InputThread.h">
+      <Filter>src\framework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -539,6 +542,9 @@
     </ClCompile>
     <ClCompile Include="UIText.cpp">
       <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="InputThread.cpp">
+      <Filter>src\framework</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

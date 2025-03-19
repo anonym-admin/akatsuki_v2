@@ -70,5 +70,7 @@ private:
 
 	const char* _pTexNames[4] = { "image1", "image2", "image3", "image4" };
 	AkI32 _iSelectName = -1;
+
+	AkBool _bLoad = AK_FALSE;
 };
 

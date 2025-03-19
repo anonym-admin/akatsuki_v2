@@ -135,6 +135,32 @@ void Application::RunApplication()
 
 	CalculateFrameRate();
 
+	// Select Editor.
+	if (_bChangeEditor && !_bPlayingEditor)
+	{
+		wscanf_s(L"%d", &_iEditorType);
+
+		EventHandle_t tEvent = {};
+		switch (_iEditorType)
+		{
+		case 0:
+		{
+			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
+			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_MAP;
+		}
+		break;
+		case 1:
+		{
+			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
+			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_PARTICLE;
+		}
+		break;
+		}
+
+		GEventManager->AddEvent(&tEvent);
+		_bPlayingEditor = AK_TRUE;
+	}
+
 	// Excute Event Manager.
 	GEventManager->Excute();
 }
@@ -153,6 +179,21 @@ AkBool Application::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 
 void Application::CleanUp()
 {
+	if (_pScreenTextFontObj)
+	{
+		GRenderer->DestroyFontObject(_pScreenTextFontObj);
+		_pScreenTextFontObj = nullptr;
+	}
+	if (_pScreenTextureHandle)
+	{
+		GRenderer->DestroyTexture(_pScreenTextureHandle);
+		_pScreenTextureHandle = nullptr;
+	}
+	if (_pScreenTextureImage)
+	{
+		delete[] _pScreenTextureImage;
+		_pScreenTextureImage = nullptr;
+	}
 	if (_pTextTextureHandle)
 	{
 		GRenderer->DestroyTexture(_pTextTextureHandle);
@@ -290,13 +331,28 @@ AkBool Application::InitUI()
 
 AkBool Application::InitTextResource()
 {
-	_uTextTextureWidth = 512;
-	_uTextTextureHeight = 512;
+	{
+		_uTextTextureWidth = 512;
+		_uTextTextureHeight = 512;
 
-	_pTextTextureImage = new AkU8[_uTextTextureWidth * _uTextTextureHeight * 4];
-	memset(_pTextTextureImage, 0, _uTextTextureWidth * _uTextTextureHeight * 4);
+		_pTextTextureImage = new AkU8[_uTextTextureWidth * _uTextTextureHeight * 4];
+		memset(_pTextTextureImage, 0, _uTextTextureWidth * _uTextTextureHeight * 4);
 
-	_pTextTextureHandle = GRenderer->CreateDynamicTexture(_uTextTextureWidth, _uTextTextureHeight);
+		_pTextTextureHandle = GRenderer->CreateDynamicTexture(_uTextTextureWidth, _uTextTextureHeight);
+	}
+
+	{
+		RECT tRect = {};
+		GetClientRect(GhWnd, &tRect);
+		_uScreenTextureWidth = tRect.right - tRect.left;
+		_uScreenTextureHeight = tRect.bottom - tRect.top;
+
+		_pScreenTextureImage = new AkU8[_uScreenTextureWidth * _uScreenTextureHeight * 4];
+		memset(_pScreenTextureImage, 0, _uScreenTextureWidth * _uScreenTextureHeight * 4);
+
+		_pScreenTextureHandle = GRenderer->CreateDynamicTexture(_uScreenTextureWidth, _uScreenTextureHeight);
+	}
+
 
 	return AK_TRUE;
 }
@@ -333,9 +389,6 @@ void Application::Update()
 	// Update Collision manager.
 	GCollisionManager->Update();
 
-	// Update status text
-	// UpdateText();
-
 	// Update UI Manager.
 	GUIManager->Update();
 
@@ -361,13 +414,19 @@ void Application::UpdateEnviroment()
 		EventHandle_t tEvent = {};
 		if (_bChangeEditor)
 		{
-			tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
-			tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_PARTICLE;
+			_pScreenTextFontObj = GRenderer->CreateFontObject(SYSTEM_FONT_FAMILY_NAME, 16);
+			
+			// tEvent.eEventType = EVENT_TYPE::SCENE_TO_EDITOR_CHANGE;
+			// tEvent.tSceneAndEditorChangeParam.eAfterEditor = EDITOR_TYPE::EDITOR_PARTICLE;
 		}
 		else
 		{
+			GRenderer->DestroyFontObject(_pScreenTextFontObj);
+
 			tEvent.eEventType = EVENT_TYPE::EDITOR_TO_SCENE_CHANGE;
 			tEvent.tSceneAndEditorChangeParam.eAfterScene = SCENE_TYPE::INGANE;
+
+			_bPlayingEditor = AK_FALSE;
 		}
 		GEventManager->AddEvent(&tEvent);
 	}
@@ -407,32 +466,54 @@ void Application::UpdateEnviroment()
 
 void Application::UpdateText()
 {
-	SceneInGame* pSceneInGame = (SceneInGame*)GSceneManager->GetScene(SCENE_TYPE::INGANE);
-	Actor* pPlayer = nullptr;
-	Vector3 vPlayerPos = Vector3(0.0f);
-
-	if (pSceneInGame)
+	if(!_bChangeEditor)
 	{
-		GameObjContainer_t* pPlayerGroup = pSceneInGame->GetGroupObject(GAME_OBJECT_GROUP_TYPE::PLAYER);
-		if(pPlayerGroup)
+		SceneInGame* pSceneInGame = (SceneInGame*)GSceneManager->GetScene(SCENE_TYPE::INGANE);
+		Actor* pPlayer = nullptr;
+		Vector3 vPlayerPos = Vector3(0.0f);
+
+		if (pSceneInGame)
 		{
-			pPlayer = (Actor*)pPlayerGroup->pGameObjHead->pData;
-			vPlayerPos = pPlayer->GetTransform()->GetPosition();
+			GameObjContainer_t* pPlayerGroup = pSceneInGame->GetGroupObject(GAME_OBJECT_GROUP_TYPE::PLAYER);
+			if (pPlayerGroup)
+			{
+				pPlayer = (Actor*)pPlayerGroup->pGameObjHead->pData;
+				vPlayerPos = pPlayer->GetTransform()->GetPosition();
+			}
+		}
+
+		AkI32 iTextWidth = 0;
+		AkI32 iTextHeight = 0;
+		wchar_t wcText[256] = {};
+		AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf \npos:%lf %lf %lf \n", _fFps, vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
+
+		if (wcscmp(_wcText, wcText))
+		{
+			memset(_pTextTextureImage, 0, _uTextTextureWidth * _uTextTextureHeight * 4);
+			GRenderer->WriteTextToBitmap(_pTextTextureImage, _uTextTextureWidth, _uTextTextureHeight, _uTextTextureHeight * 4, &iTextWidth, &iTextHeight, GFont, wcText, uTxtLen);
+			GRenderer->UpdateTextureWidthImage(_pTextTextureHandle, _pTextTextureImage, _uTextTextureWidth, _uTextTextureHeight);
+
+			wcscpy_s(_wcText, wcText);
 		}
 	}
-
-	AkI32 iTextWidth = 0;
-	AkI32 iTextHeight = 0;
-	wchar_t wcText[128] = {};
-	AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf \npos:%lf %lf %lf \n", _fFps, vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
-
-	if (wcscmp(_wcText, wcText))
+	else
 	{
-		memset(_pTextTextureImage, 0, _uTextTextureWidth * _uTextTextureHeight * 4);
-		GRenderer->WriteTextToBitmap(_pTextTextureImage, _uTextTextureWidth, _uTextTextureHeight, _uTextTextureHeight * 4, &iTextWidth, &iTextHeight, GFont, wcText, uTxtLen);
-		GRenderer->UpdateTextureWidthImage(_pTextTextureHandle, _pTextTextureImage, _uTextTextureWidth, _uTextTextureHeight);
+		if(!_bPlayingEditor)
+		{
+			AkI32 iTextWidth = 0;
+			AkI32 iTextHeight = 0;
+			wchar_t wcText[256] = {};
+			AkU32 uTxtLen = swprintf_s(wcText, L"Select Editor Mode\n0. Map\n1. Particle\n");
 
-		wcscpy_s(_wcText, wcText);
+			if (wcscmp(_wcText, wcText))
+			{
+				memset(_pScreenTextureImage, 0, _uScreenTextureWidth * _uScreenTextureHeight * 4);
+				GRenderer->WriteTextToBitmap(_pScreenTextureImage, _uScreenTextureWidth, _uScreenTextureHeight, _uScreenTextureWidth * 4, &iTextWidth, &iTextHeight, _pScreenTextFontObj, wcText, uTxtLen, FONT_COLOR_TYPE::FONT_COLOR_TYPE_GREEN);
+				GRenderer->UpdateTextureWidthImage(_pScreenTextureHandle, _pScreenTextureImage, _uScreenTextureWidth, _uScreenTextureHeight);
+
+				wcscpy_s(_wcText, wcText);
+			}
+		}
 	}
 }
 
@@ -450,7 +531,17 @@ void Application::Render()
 
 void Application::RenderText()
 {
-	GRenderer->RenderSpriteWithTex(GSprite, 10, 10, 1.0f, 1.0f, nullptr, 0.0f, _pTextTextureHandle);
+	if (!_bChangeEditor)
+	{
+		GRenderer->RenderSpriteWithTex(GSprite, 10, 10, 1.0f, 1.0f, nullptr, 0.0f, _pTextTextureHandle, AK_TRUE);
+	}
+	else
+	{
+		if(!_bPlayingEditor)
+		{
+			GRenderer->RenderSpriteWithTex(GSprite, 0, 0, 1.0f, 1.0f, nullptr, 0.0f, _pScreenTextureHandle, AK_FALSE);
+		}
+	}
 }
 
 void Application::CalculateFrameRate()
@@ -476,4 +567,13 @@ void Application::ExitGame()
 	::PostQuitMessage(996);
 }
 
+/*
+==========================
+Input Thread
+==========================
+*/
 
+void Application::ProcessInputControl()
+{
+	// TODO
+}

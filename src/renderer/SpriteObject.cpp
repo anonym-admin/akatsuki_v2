@@ -355,13 +355,13 @@ AkBool FSpriteObject::Initialize(FRenderer* pRenderer, const wchar_t* wcTexFileN
 	return bResult;
 }
 
-void FSpriteObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, float Z, const Vector3* pColor)
+void FSpriteObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, AkF32 Z, AkBool bUseBlend)
 {
 	Vector2 Scale = { _vScale.x * pScale->x, _vScale.y * pScale->y };
-	DrawWithTex(uThreadIndex, pCommandList, pPos, &Scale, &_vRect, Z, _pTexHandle, pColor);
+	DrawWithTex(uThreadIndex, pCommandList, pPos, &Scale, &_vRect, Z, _pTexHandle, bUseBlend);
 }
 
-void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, const RECT* pRect, float Z, TextureHandle_t* pTexHandle, const Vector3* pColor)
+void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCommandList, const Vector2* pPos, const Vector2* pScale, const RECT* pRect, AkF32 Z, TextureHandle_t* pTexHandle, AkBool bUseBlend)
 {
 	// 각각의 draw()작업의 무결성을 보장하려면 draw() 작업마다 다른 영역의 descriptor table(shader visible)과 다른 영역의 CBV를 사용해야 한다.
 	// 따라서 draw()할 때마다 CBV는 ConstantBuffer Pool로부터 할당받고, 렌더리용 descriptor table(shader visible)은 descriptor pool로부터 할당 받는다.
@@ -424,14 +424,6 @@ void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* p
 	pConstantBufferSprite->fZ = Z;
 	pConstantBufferSprite->fAlpha = 1.0f;
 	pConstantBufferSprite->uDrawBackground = _bDrawBackground;
-	if (pColor)
-	{
-		pConstantBufferSprite->vFontColor = *pColor;
-	}
-	else
-	{
-		pConstantBufferSprite->vFontColor = Vector3(1.0f);
-	}
 
 	// set RootSignature
 	pCommandList->SetGraphicsRootSignature(sm_pRootSignature);
@@ -450,7 +442,7 @@ void FSpriteObject::DrawWithTex(AkU32 uThreadIndex, ID3D12GraphicsCommandList* p
 
 	pCommandList->SetGraphicsRootDescriptorTable(0, hGPU);
 
-	pCommandList->SetPipelineState(sm_pAccumulatePSO);
+	pCommandList->SetPipelineState(bUseBlend ? sm_pAccumulatePSO : sm_pDefaultPSO);
 	pCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pCommandList->IASetVertexBuffers(0, 1, &sm_tVertexBufferView);
 	pCommandList->IASetIndexBuffer(&sm_tIndexBufferView);

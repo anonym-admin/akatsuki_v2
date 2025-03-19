@@ -199,6 +199,7 @@
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Gravity.h" />
+    <ClInclude Include="InputThread.h" />
     <ClInclude Include="KDTree.h" />
     <ClInclude Include="LandScape.h" />
     <ClInclude Include="Macro.h" />
@@ -279,6 +280,7 @@
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Global.cpp" />
     <ClCompile Include="Gravity.cpp" />
+    <ClCompile Include="InputThread.cpp" />
     <ClCompile Include="KDTree.cpp" />
     <ClCompile Include="LandScape.cpp" />
     <ClCompile Include="EditorMap.cpp" />

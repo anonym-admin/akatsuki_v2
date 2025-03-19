@@ -781,7 +781,7 @@ void FRenderer::RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Mat
 	pSkinnedMeshObj->DrawShadow(pCmdList, pWorldMat, pBonesTransform);
 }
 
-void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, const Vector3* pColor)
+void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, AkBool bUseBlend)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SPRITE_OBJ;
@@ -790,7 +790,7 @@ void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 i
 	tItem.tSpriteObjParam.iPosY = iPosY;
 	tItem.tSpriteObjParam.fScaleX = fScaleX;
 	tItem.tSpriteObjParam.fScaleY = fScaleY;
-	tItem.tSpriteObjParam.pColor = pColor;
+	tItem.tSpriteObjParam.bUseBlend = bUseBlend;
 
 	if (pRect)
 	{
@@ -812,7 +812,7 @@ void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 i
 	}
 }
 
-void FRenderer::RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ, const Vector3* pColor)
+void FRenderer::RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ, AkBool bUseBlend)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SPRITE_OBJ;
@@ -825,7 +825,7 @@ void FRenderer::RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, A
 	tItem.tSpriteObjParam.tRect = {};
 	tItem.tSpriteObjParam.pTexHandle = nullptr;
 	tItem.tSpriteObjParam.fZ = fZ;
-	tItem.tSpriteObjParam.pColor = pColor;
+	tItem.tSpriteObjParam.bUseBlend = bUseBlend;
 
 	if (!_pRenderUI->Add(&tItem))
 	{

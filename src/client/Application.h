@@ -22,8 +22,9 @@ public:
 
 	AkBool InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV);
 	void RunApplication();
-
+	
 	AkBool UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight);
+	void ProcessInputControl();
 
 private:
 	void CleanUp();
@@ -48,6 +49,7 @@ private:
 	AkF32 _fFps = 0.0f;
 	AkBool _bUseVSync = AK_FALSE;
 	AkBool _bChangeEditor = AK_FALSE;
+	AkBool _bPlayingEditor = AK_FALSE;
 
 	// Post process control.
 	PostRenderControl* _pPostProcess = nullptr;
@@ -59,6 +61,14 @@ private:
 	AkU8* _pTextTextureImage = nullptr;
 	void* _pTextTextureHandle = nullptr;
 	wchar_t _wcText[256] = {};
+
+	AkU32 _uScreenTextureWidth = 0;
+	AkU32 _uScreenTextureHeight = 0;
+	AkU8* _pScreenTextureImage = nullptr;
+	void* _pScreenTextureHandle = nullptr;
+	void* _pScreenTextFontObj = nullptr;
+
+	AkI32 _iEditorType = -1;
 };
 
 
