@@ -15,40 +15,33 @@ public:
 	static AkBool UPDATE_CAMERA;
 
 	Camera(const Vector3* pPos, const Vector3* pYawPirchRoll);
+	Camera(AkF32 fDistance, AkF32 fHeight);
 	~Camera();
 
 	AkBool Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll);
+	AkBool Initialize(AkF32 fDistance, AkF32 fHegith);
 	void Update();
 	void UpdateEditor();
 	void Render();
 	void SetOwner(Actor* pOwner);
-	void ToggleViewMode();
 	Transform* GetTransform() { return _pTransform; }
 
 private:
 	void CleanUp();
 
-	void MoveFree();
-	void MoveEditor();
-	void MoveFollow();
-	void RotateFree();
-	void RotateEditor();
-	void RotateFollow();
-
-	void SetPosition(const Vector3* pPos);
-	void SetRotation(const Vector3* pYawPitchRoll);
+	void MoveFreeMode();
+	void MoveEditorMode();
+	void MoveFollowMode();
 	
 private:
 	Actor* _pOwner = nullptr;
-	Vector3 _vOwnerInitRot = Vector3(0.0f);
-
-	Vector3 _vRelativePos = Vector3(0.0f);
-	Vector3 _vFollowPos = Vector3(0.0f);
 	Transform* _pTransform = nullptr;
-	AkF32 _fSpeed = 1.0f;
 
-	// Release for follow camera.
-	AkBool _bIsView = AK_FALSE;
+	AkF32 _fSpeed = 1.0f;
+	AkF32 _fRotDamping = 30.0f;
+	AkF32 _fMoveDamping = 20.0f;
+	AkF32 _fDistance = 0.0f;
+	AkF32 _fHeight = 0.0f;
 
 public:
 	CAMERA_MODE Mode = {};

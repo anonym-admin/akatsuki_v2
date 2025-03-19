@@ -61,16 +61,14 @@ AkBool Swat::Initialize()
 
 	// Create Trnasform.
 	_pTransform = CreateTransform();
-	_pTransform->SetFront(0.0f, 0.0f, -1.0f); // 모델이 생성될때 나를 바라보는 방향으로 만들어지기 때문에 Front 의 방향을 재설정 필요!!
-	_pTransform->SetRight(-1.0f, 0.0f, 0.0f); // 위 이유와 같음
+	_pTransform->SetFront(0.0f, 0.0f, -1.0f);
+	_pTransform->SetRight(-1.0f, 0.0f, 0.0f);
 
 	// Create Collider.
 	_pCollider = CreateCapsuleCollider(0.25f, 0.5f);
 
 	// Create Camera.
-	Vector3 vCamPos = Vector3(0.0f, 0.5f, -2.0f);
-	_pCamera = CreateCamera(&vCamPos);
-	_pCamera->Mode = CAMERA_MODE::FOLLOW;
+	_pCamera = CreateCamera(2.0f, 0.5f);
 	_pCamera->SetOwner(this);
 
 	// Create Gravity
@@ -86,9 +84,6 @@ AkBool Swat::Initialize()
 
 void Swat::Update()
 {
-	printf("%lf %lf %lf\n", _pTransform->GetPosition().x, _pTransform->GetPosition().y, _pTransform->GetPosition().z);
-
-
 	_pSprite->Update();
 
 	if(KEY_DOWN(KEY_INPUT_P))
@@ -371,6 +366,8 @@ void Swat::FinalUpdateWeapon()
 		Matrix mLeftHandAnimTransform = pFinalTransform[10].Transpose();
 		_mHandAnimTransform = mLeftHandAnimTransform;
 	}
+
+	_mHandAnimTransform *= _pTransform->GetWorldTransform();
 
 	_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
 }

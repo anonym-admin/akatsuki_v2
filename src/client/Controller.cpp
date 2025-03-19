@@ -88,6 +88,8 @@ void Controller::KeyBoard()
 	if (KEY_HOLD(KEY_INPUT_W))
 	{
 		vVelocity += pSwat->GetTransform()->Front();
+
+		Vector3 vFront = pSwat->GetTransform()->Front();
 		if (KEY_HOLD(KEY_INPUT_LSHIFT))
 		{
 			vVelocity *= pSwat->GetRunSpeed();
@@ -108,7 +110,7 @@ void Controller::KeyBoard()
 	}
 	if (KEY_DOWN(KEY_INPUT_V))
 	{
-		pSwat->GetCamera()->ToggleViewMode();
+		// TODO...
 	}
 	if (KEY_DOWN(KEY_INPUT_SPACE))
 	{

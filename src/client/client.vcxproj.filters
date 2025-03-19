@@ -82,14 +82,14 @@
     <Filter Include="src\utils">
       <UniqueIdentifier>{fe4502e9-1056-43d7-bd17-924de2973b1c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\obj\human">
-      <UniqueIdentifier>{d79c5a75-fb05-44cc-b647-bd0aba73e768}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\obj\field">
       <UniqueIdentifier>{b3a00020-5464-49ba-a305-e90eba4a7c96}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\particle">
       <UniqueIdentifier>{0b5ef280-680b-44e5-bd15-b5abdfdab03d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\obj\character">
+      <UniqueIdentifier>{d79c5a75-fb05-44cc-b647-bd0aba73e768}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -289,10 +289,10 @@
       <Filter>src\obj\landscape</Filter>
     </ClInclude>
     <ClInclude Include="Dancer.h">
-      <Filter>src\obj\human</Filter>
+      <Filter>src\obj\character</Filter>
     </ClInclude>
     <ClInclude Include="Swat.h">
-      <Filter>src\obj\human</Filter>
+      <Filter>src\obj\character</Filter>
     </ClInclude>
     <ClInclude Include="Container.h">
       <Filter>src\obj\field</Filter>
@@ -503,10 +503,10 @@
       <Filter>src\obj\landscape</Filter>
     </ClCompile>
     <ClCompile Include="Dancer.cpp">
-      <Filter>src\obj\human</Filter>
+      <Filter>src\obj\character</Filter>
     </ClCompile>
     <ClCompile Include="Swat.cpp">
-      <Filter>src\obj\human</Filter>
+      <Filter>src\obj\character</Filter>
     </ClCompile>
     <ClCompile Include="Container.cpp">
       <Filter>src\obj\field</Filter>

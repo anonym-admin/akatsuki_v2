@@ -37,6 +37,7 @@ public:
 	RigidBody* CreateRigidBody();
 	Gravity* CreateGravity();
 	Camera* CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll = nullptr);
+	Camera* CreateCamera(AkF32 fDistance, AkF32 fHeight);
 	Animation* CreateAnimation(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum);
 
 	void DestroyCollider();

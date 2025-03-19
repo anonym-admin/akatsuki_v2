@@ -17,7 +17,18 @@ AkBool Camera::UPDATE_CAMERA = AK_TRUE;
 
 Camera::Camera(const Vector3* pPos, const Vector3* pYawPirchRoll)
 {
-	Initialize(pPos, pYawPirchRoll);
+	if (!Initialize(pPos, pYawPirchRoll))
+	{
+		__debugbreak();
+	}
+}
+
+Camera::Camera(AkF32 fDistance, AkF32 fHeight)
+{
+	if (!Initialize(fDistance, fHeight))
+	{
+		__debugbreak();
+	}
 }
 
 Camera::~Camera()
@@ -29,10 +40,21 @@ AkBool Camera::Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll)
 {
 	_pTransform = new Transform;
 
-	_vRelativePos = *pPos;
+	_pTransform->SetPosition(pPos);
+	_pTransform->SetRotation(pYawPirchRoll);
 
-	SetPosition(pPos);
-	SetRotation(pYawPirchRoll);
+	GRenderer->SetCameraPosition(pPos->x, pPos->y, pPos->z);
+	GRenderer->RotateYawPitchRollCamera(pYawPirchRoll->x, pYawPirchRoll->y, pYawPirchRoll->z);
+
+	return AK_TRUE;
+}
+
+AkBool Camera::Initialize(AkF32 fDistance, AkF32 fHegith)
+{
+	_fDistance = fDistance;
+	_fHeight = fHegith;
+
+	_pTransform = new Transform;
 
 	return AK_TRUE;
 }
@@ -47,17 +69,14 @@ void Camera::Update()
 	switch (Mode)
 	{
 	case CAMERA_MODE::FREE:
-		MoveFree();
-
+		MoveFreeMode();
 		break;
 	case CAMERA_MODE::EDITOR:
-		RotateEditor();
-		MoveEditor();
+		MoveEditorMode();
 		break;
 
 	case CAMERA_MODE::FOLLOW:
-		RotateFollow();
-		MoveFollow();
+		MoveFollowMode();
 		break;
 	}
 }
@@ -76,26 +95,9 @@ void Camera::Render()
 
 }
 
-void Camera::SetPosition(const Vector3* pPos)
-{
-	_pTransform->SetPosition(pPos);
-	GRenderer->SetCameraPosition(pPos->x, pPos->y, pPos->z);
-}
-
-void Camera::SetRotation(const Vector3* pYawPitchRoll)
-{
-	_pTransform->SetRotation(pYawPitchRoll);
-	GRenderer->RotateYawPitchRollCamera(pYawPitchRoll->x, pYawPitchRoll->y, pYawPitchRoll->z);
-}
-
 void Camera::SetOwner(Actor* pOwner)
 {
 	_pOwner = pOwner;
-}
-
-void Camera::ToggleViewMode()
-{
-	_bIsView = !_bIsView;
 }
 
 void Camera::CleanUp()
@@ -107,11 +109,11 @@ void Camera::CleanUp()
 	}
 }
 
-void Camera::MoveFree()
+void Camera::MoveFreeMode()
 {
 }
 
-void Camera::MoveEditor()
+void Camera::MoveEditorMode()
 {
 	Vector3 vPos = _pTransform->GetPosition();
 	Vector3 vDir = _pTransform->Front();
@@ -146,60 +148,45 @@ void Camera::MoveEditor()
 	}
 
 	vPos += vDeltaPos;
-	SetPosition(&vPos);
+	_pTransform->SetPosition(&vPos);
 	GRenderer->MoveCamera(vDeltaPos.x, vDeltaPos.y, vDeltaPos.z);
-}
 
-void Camera::MoveFollow()
-{
-	Vector3 vTargetPos = _pOwner->GetTransform()->GetPosition();
-	Vector3 vFinalPos = vTargetPos + _vFollowPos;
-
-	SetPosition(&vFinalPos);
-}
-
-void Camera::RotateEditor()
-{
 	Vector3 vYawPitchRoll = Vector3(0.0f);
 
 	vYawPitchRoll.x = NDC_X * DirectX::XM_PI; // Yaw
 	vYawPitchRoll.y = -NDC_Y * DirectX::XM_PIDIV2; // Pitch
 
-	SetRotation(&vYawPitchRoll);
+	GRenderer->RotateYawPitchRollCamera(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z);
 }
 
-void Camera::RotateFollow()
+void Camera::MoveFollowMode()
 {
-	static AkBool bFirst = AK_TRUE;
-	if (bFirst)
-	{
-		_vOwnerInitRot = Vector3(_pOwner->GetTransform()->GetRotation().x, _pOwner->GetTransform()->GetRotation().y, _pOwner->GetTransform()->GetRotation().z);
-		bFirst = AK_FALSE;
-	}
-
+	Vector3 vTargetRot = _pOwner->GetTransform()->GetRotation();
 	Vector3 vYawPitchRoll = Vector3(0.0f);
 
 	vYawPitchRoll.x = NDC_ACC_X * DirectX::XM_PIDIV2; // Yaw
 	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 도달 시 Up Vector에 의한 회전 방지.
 
-	// 카메라 회전 후 위치 계산.
-	_vFollowPos = Vector3::Transform(_vRelativePos, Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
-	SetRotation(&vYawPitchRoll);
+	Vector3 vCurOwnerRot = DirectX::XMVectorLerp(vTargetRot, vYawPitchRoll + Vector3(DirectX::XM_PI, 0.0f, 0.0f), _fRotDamping * DT);
+	vCurOwnerRot.y = 0.0f;
+	vCurOwnerRot.z = 0.0f;
+	_pTransform->SetRotation(&vYawPitchRoll);
+	_pOwner->GetTransform()->SetRotation(&vCurOwnerRot);
 
-	// 현재 플레이어의 이동방향과 카메라 방향 사이의 각도를 계산.
-	//Vector3 vOwnerFront = _pOwner->GetTransform()->Front();
-	//vOwnerFront.Normalize();
-	//Vector3 vDir = _pTransform->Front();
-	//vDir.Normalize();
-	//AkF32 fCosValue = vDir.Dot(vOwnerFront);
+	GRenderer->RotateYawPitchRollCamera(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z);
 
-	Vector3 vOwenrYawPitchRoll = _vOwnerInitRot + vYawPitchRoll;
-	vOwenrYawPitchRoll.y = 0.0f; // pitch zero.
+	Vector3 vFront = Vector3::Transform(Vector3(0.0f, 0.0f, 1.0f), Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
 
-	Swat* pSwat = (Swat*)_pOwner;
-	if (!_bIsView && Swat::IDLE <= pSwat->AnimState && pSwat->AnimState <= Swat::B_WALK)
-		_pOwner->GetTransform()->SetRotation(&vOwenrYawPitchRoll);
+	Vector3 vTargetPos = _pOwner->GetTransform()->GetGlobalPosition();
+	Vector3 vDestPos = -vFront * _fDistance;
+	vDestPos += vTargetPos;
+	vDestPos.y += _fHeight;
 
-	// TODO!!
+	Vector3 vCurPos = DirectX::XMVectorLerp(_pTransform->GetPosition(), vDestPos, _fMoveDamping * DT);
+	_pTransform->SetPosition(&vCurPos);
+	
+	GRenderer->SetCameraPosition(vCurPos.x, vCurPos.y, vCurPos.z);
 }
+
+
 

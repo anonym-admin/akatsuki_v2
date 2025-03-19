@@ -66,6 +66,13 @@ Camera* Actor::CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll)
 	return pCam;
 }
 
+Camera* Actor::CreateCamera(AkF32 fDistance, AkF32 fHeight)
+{
+	Camera* pCam = new Camera(fDistance, fHeight);
+	pCam->Mode = CAMERA_MODE::FOLLOW;
+	return pCam;
+}
+
 Animation* Actor::CreateAnimation(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum)
 {
 	Animation* pAnim = new Animation(pMeshDataContainer, wcIdleClipName, uMaxClipNum);

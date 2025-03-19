@@ -66,27 +66,4 @@ void Weapon::CleanUp()
 	}
 }
 
-//void UWeapon::UpdateModelTransform()
-//{
-//	using namespace DirectX;
-//
-//	MODEL_CONTEXT_INDEX eModelCtxIndex = GetModelContextIndex();
-//	UModel* pModel = (UModel*)GetModel(eModelCtxIndex);
-//
-//	Matrix mWorld = Matrix::CreateScale(_vScale) *
-//					Matrix::CreateRotationX(XMConvertToRadians(_vRelativeRot.x)) *
-//					Matrix::CreateRotationY(XMConvertToRadians(_vRelativeRot.y)) *
-//					Matrix::CreateRotationZ(XMConvertToRadians(_vRelativeRot.z)) *
-//					Matrix::CreateTranslation(_vRelativePos);
-//
-//	mWorld = mWorld *_mAnimTransform;
-//	if (_pOwner)
-//	{
-//		mWorld = mWorld * Matrix::CreateRotationX(_pOwner->GetRotationX()) * 
-//						  Matrix::CreateRotationY(_fOwnerRotY) * 
-//						  Matrix::CreateRotationZ(_pOwner->GetRotationZ()) *
-//						  Matrix::CreateTranslation(_pOwner->GetPosition());
-//	}
-//
-//	pModel->SetWorldMatrix((AkU32)eModelCtxIndex, &mWorld);
-//}
+

@@ -65,8 +65,8 @@ AkBool BoxCollider::CapsuleIntersect(CapsuleCollider* pCollider)
 
 AkBool BoxCollider::SphereIntersect(const Vector3* pCenter, AkF32 fRadius)
 {
-	Vector3 vPos = _pTransform->GetPosition();
-	Vector4 vQuat = _pTransform->GetRotation();
+	Vector3 vPos = _pTransform->GetGlobalPosition();
+	Quaternion vQuat = _pTransform->GetGlobalRotation();
 
 	Matrix mTranslation = Matrix::CreateTranslation(vPos);
 	Matrix mRotation = Matrix::CreateFromQuaternion(vQuat);

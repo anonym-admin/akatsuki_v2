@@ -66,10 +66,6 @@ void BRS_74::FinalUpdate()
 		_pCollider->Update();
 	}
 
-	Matrix mFinalWorldTransform = _pOwner ? _pTransform->GetWorldTransform() * _pOwner->GetTransform()->GetWorldTransform() : _pTransform->GetWorldTransform();
-
-	_pTransform->SetWorldTransform(mFinalWorldTransform);
-
 	_pModel->UpdateWorldRow(&_pTransform->GetWorldTransform());
 }
 
@@ -119,7 +115,7 @@ void BRS_74::Fire()
 {
 	_bFire = AK_TRUE;
 
-	Vector3 vPos = _pTransform->GetPosition();
+	Vector3 vPos = _pTransform->GetGlobalPosition();
 	Vector3 vOffset = -_pTransform->Front() * 0.275f + Vector3(0.0f, 0.075f, 0.0f);
 
 	vPos += vOffset;

@@ -49,9 +49,9 @@ AkBool CapsuleCollider::RayIntersect(DirectX::SimpleMath::Ray tRay, Vector3* pOu
 AkBool CapsuleCollider::BoxIntersect(BoxCollider* pCollider)
 {
 	Vector3 vUp = _pTransform->Up();
-	Vector3 vO = _pTransform->GetPosition() - vUp * Height() * 0.5f;
+	Vector3 vO = _pTransform->GetGlobalPosition() - vUp * Height() * 0.5f;
 
-	Vector3 vA = pCollider->GetTransform()->GetPosition() - vO;
+	Vector3 vA = pCollider->GetTransform()->GetGlobalPosition() - vO;
 
 	AkF32 t = vA.Dot(vUp);
 	t = max(0.0f, t);
@@ -59,8 +59,7 @@ AkBool CapsuleCollider::BoxIntersect(BoxCollider* pCollider)
 
 	Vector3 vP = vO + vUp * t;
 
-	Vector3 vPos = _pTransform->GetPosition();
-	return pCollider->SphereIntersect(&vPos, Radius());
+	return pCollider->SphereIntersect(&vP, Radius());
 }
 
 AkBool CapsuleCollider::SphereIntersect(SphereCollider* pCollider)
