@@ -237,7 +237,7 @@ void EditorMap::UpdateFileDialog()
 				case 0:
 				{
 					_pTerrainEdit->LoadHeightMap(_wcFileNameExcExt.c_str());
-					_wcHeightFilename =  _wcFileNameExcExt;
+					_wcHeightFilename = _wcFileNameExcExt;
 					break;
 				}
 				case 1:

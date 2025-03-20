@@ -53,6 +53,7 @@ void ModelExporter::Load(const std::string& strFilaname)
 	}
 
 	_wcFilename = ToWString(GetFileName(GetFileNmaeExcludeExt(strFilaname)));
+	_wcFolder = ToWString(GetCurrentFolder(strFilaname));
 
 	// 1. 모든 메쉬에 대해서 버텍스에 영향을 주는 뼈들의 목록을 만든다.
 	FindDeformingBones(_pScene);
@@ -426,7 +427,7 @@ void ModelExporter::ExportClip()
 #ifdef _DEBUG
 	wprintf_s(L"\n[Load Clips]\n");
 #endif
-	std::wstring wcPath = L"../../assets/model_new/animation/" + _wcFilename + L".anim";
+	std::wstring wcPath = L"../../assets/model_new/animation/" + _wcFolder + L"/" + _wcFilename + L".anim";
 	SaveClip(wcPath);
 }
 

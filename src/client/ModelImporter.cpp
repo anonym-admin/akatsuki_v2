@@ -109,11 +109,11 @@ AkBool ModelImporter::Load(const wchar_t* wcBasePath, const wchar_t* wcFilename,
 		GetFileNameExtension(wcFullPath, _wcFileExtension);
 	}
 
-	if (wcscmp(_wcFileExtension, L".md3d"))
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
+	//if (wcscmp(_wcFileExtension, L".md3d"))
+	//{
+	//	__debugbreak();
+	//	return AK_FALSE;
+	//}
 
 	LoadMeshDataInfo(pFp, bForAnim);
 
@@ -260,107 +260,72 @@ void ModelImporter::LoadMaterialFileName(FILE* pFp)
 		fwscanf_s(pFp, L"%s %s\n", wcBuf, _MAX_PATH, wcAoTextureFilename, _MAX_PATH);
 		fwscanf_s(pFp, L"%s %s\n", wcBuf, _MAX_PATH, wcOpacityTextureFilename, _MAX_PATH);
 
-		GetFileNameFromFullPath(wcAlbedoTextureFilename);
-		GetFileNameFromFullPath(wcEmissiveTextureFilename);
-		GetFileNameFromFullPath(wcHeightTextureFilename);
-		GetFileNameFromFullPath(wcNormalTextureFilename);
-		GetFileNameFromFullPath(wcMetallicTextureFilename);
-		GetFileNameFromFullPath(wcRoughnessTextureFilename);
-		GetFileNameFromFullPath(wcAoTextureFilename);
-		GetFileNameFromFullPath(wcOpacityTextureFilename);
+		//GetFileNameFromFullPath(wcAlbedoTextureFilename);
+		//GetFileNameFromFullPath(wcEmissiveTextureFilename);
+		//GetFileNameFromFullPath(wcHeightTextureFilename);
+		//GetFileNameFromFullPath(wcNormalTextureFilename);
+		//GetFileNameFromFullPath(wcMetallicTextureFilename);
+		//GetFileNameFromFullPath(wcRoughnessTextureFilename);
+		//GetFileNameFromFullPath(wcAoTextureFilename);
+		//GetFileNameFromFullPath(wcOpacityTextureFilename);
 
-		ConvertFileExtensionToDDS(wcAlbedoTextureFilename);
-		ConvertFileExtensionToDDS(wcEmissiveTextureFilename);
-		ConvertFileExtensionToDDS(wcHeightTextureFilename);
-		ConvertFileExtensionToDDS(wcNormalTextureFilename);
-		ConvertFileExtensionToDDS(wcMetallicTextureFilename);
-		ConvertFileExtensionToDDS(wcRoughnessTextureFilename);
-		ConvertFileExtensionToDDS(wcAoTextureFilename);
-		ConvertFileExtensionToDDS(wcOpacityTextureFilename);
-
-		//// allocate.
-		//AkU32 uBasePathLength = (AkU32)wcslen(_wcBasePath);
-
-		//AkU32 uAlbedoFilenameLength = (AkU32)wcslen(wcAlbedoTextureFilename);
-		//_pMeshData[i].wcAlbedoTextureFilename = (wchar_t*)malloc(sizeof(wchar_t) * (uBasePathLength + uAlbedoFilenameLength + 1));
-		//memset(_pMeshData[i].wcAlbedoTextureFilename, 0, sizeof(wchar_t) * (uBasePathLength + uAlbedoFilenameLength + 1));
-
-		//AkU32 uEmissiveFilenameLength = (AkU32)wcslen(wcEmissiveTextureFilename);
-		//_pMeshData[i].wcEmissiveTextureFilename = (wchar_t*)malloc(sizeof(wchar_t) * (uBasePathLength + uEmissiveFilenameLength + 1));
-		//memset(_pMeshData[i].wcEmissiveTextureFilename, 0, sizeof(wchar_t) * (uBasePathLength + uEmissiveFilenameLength + 1));
-
-		//AkU32 uHeightFilenameLength = (AkU32)wcslen(wcHeightTextureFilename);
-		//_pMeshData[i].wcHeightTextureFilename = (wchar_t*)malloc(sizeof(wchar_t) * (uBasePathLength + uHeightFilenameLength + 1));
-		//memset(_pMeshData[i].wcHeightTextureFilename, 0, sizeof(wchar_t) * (uBasePathLength + uHeightFilenameLength + 1));
-
-		//AkU32 uNormalFilenameLength = (AkU32)wcslen(wcNormalTextureFilename);
-		//_pMeshData[i].wcNormalTextureFilename = (wchar_t*)malloc(sizeof(wchar_t) * (uBasePathLength + uNormalFilenameLength + 1));
-		//memset(_pMeshData[i].wcNormalTextureFilename, 0, sizeof(wchar_t) * (uBasePathLength + uNormalFilenameLength + 1));
-
-		//AkU32 uMetallicFilenameLength = (AkU32)wcslen(wcMetallicTextureFilename);
-		//_pMeshData[i].wcMetallicTextureFilename = (wchar_t*)malloc(sizeof(wchar_t) * (uBasePathLength + uMetallicFilenameLength + 1));
-		//memset(_pMeshData[i].wcMetallicTextureFilename, 0, sizeof(wchar_t) * (uBasePathLength + uMetallicFilenameLength + 1));
-
-		//AkU32 uRoughnessFilenameLength = (AkU32)wcslen(wcRoughnessTextureFilename);
-		//_pMeshData[i].wcRoughnessTextureFilename = (wchar_t*)malloc(sizeof(wchar_t) * (uBasePathLength + uRoughnessFilenameLength + 1));
-		//memset(_pMeshData[i].wcRoughnessTextureFilename, 0, sizeof(wchar_t) * (uBasePathLength + uRoughnessFilenameLength + 1));
-
-		//AkU32 uAoFilenameLength = (AkU32)wcslen(wcAoTextureFilename);
-		//_pMeshData[i].wcAoTextureFilename = (wchar_t*)malloc(sizeof(wchar_t) * (uBasePathLength + uAoFilenameLength + 1));
-		//memset(_pMeshData[i].wcAoTextureFilename, 0, sizeof(wchar_t) * (uBasePathLength + uAoFilenameLength + 1));
-
-		//AkU32 uOpacityFilenameLength = (AkU32)wcslen(wcOpacityTextureFilename);
-		//_pMeshData[i].wcOpacityTextureFilename = (wchar_t*)malloc(sizeof(wchar_t) * (uBasePathLength + uOpacityFilenameLength + 1));
-		//memset(_pMeshData[i].wcOpacityTextureFilename, 0, sizeof(wchar_t) * (uBasePathLength + uOpacityFilenameLength + 1));
+		//ConvertFileExtensionToDDS(wcAlbedoTextureFilename);
+		//ConvertFileExtensionToDDS(wcEmissiveTextureFilename);
+		//ConvertFileExtensionToDDS(wcHeightTextureFilename);
+		//ConvertFileExtensionToDDS(wcNormalTextureFilename);
+		//ConvertFileExtensionToDDS(wcMetallicTextureFilename);
+		//ConvertFileExtensionToDDS(wcRoughnessTextureFilename);
+		//ConvertFileExtensionToDDS(wcAoTextureFilename);
+		//ConvertFileExtensionToDDS(wcOpacityTextureFilename);
 
 		// copy and cat.
-		wcscpy_s(_pMeshData[i].wcAlbedoTextureFilename, _wcBasePath);
+		// wcscpy_s(_pMeshData[i].wcAlbedoTextureFilename, _wcBasePath);
 		if (!wcscmp(wcAlbedoTextureFilename, L"Empty"))
 			wcscpy_s(_pMeshData[i].wcAlbedoTextureFilename, L"");
 		else
-			wcscat_s(_pMeshData[i].wcAlbedoTextureFilename, wcAlbedoTextureFilename);
+			wcscpy_s(_pMeshData[i].wcAlbedoTextureFilename, wcAlbedoTextureFilename);
 
-		wcscpy_s(_pMeshData[i].wcEmissiveTextureFilename, _wcBasePath);
+		//wcscpy_s(_pMeshData[i].wcEmissiveTextureFilename, _wcBasePath);
 		if(!wcscmp(wcEmissiveTextureFilename, L"Empty"))
 			wcscpy_s(_pMeshData[i].wcEmissiveTextureFilename, L"");
 		else
-			wcscat_s(_pMeshData[i].wcEmissiveTextureFilename, wcEmissiveTextureFilename);
+			wcscpy_s(_pMeshData[i].wcEmissiveTextureFilename, wcEmissiveTextureFilename);
 
-		wcscpy_s(_pMeshData[i].wcHeightTextureFilename, _wcBasePath);
+		//wcscpy_s(_pMeshData[i].wcHeightTextureFilename, _wcBasePath);
 		if (!wcscmp(wcHeightTextureFilename, L"Empty"))
 			wcscpy_s(_pMeshData[i].wcHeightTextureFilename, L"");
 		else
-			wcscat_s(_pMeshData[i].wcHeightTextureFilename, wcHeightTextureFilename);
+			wcscpy_s(_pMeshData[i].wcHeightTextureFilename, wcHeightTextureFilename);
 
-		wcscpy_s(_pMeshData[i].wcNormalTextureFilename, _wcBasePath);
+		//wcscpy_s(_pMeshData[i].wcNormalTextureFilename, _wcBasePath);
 		if (!wcscmp(wcNormalTextureFilename, L"Empty"))
 			wcscpy_s(_pMeshData[i].wcNormalTextureFilename, L"");
 		else
-			wcscat_s(_pMeshData[i].wcNormalTextureFilename, wcNormalTextureFilename);
+			wcscpy_s(_pMeshData[i].wcNormalTextureFilename, wcNormalTextureFilename);
 
-		wcscpy_s(_pMeshData[i].wcMetallicTextureFilename, _wcBasePath);
+		//wcscpy_s(_pMeshData[i].wcMetallicTextureFilename, _wcBasePath);
 		if (!wcscmp(wcMetallicTextureFilename, L"Empty"))
 			wcscpy_s(_pMeshData[i].wcMetallicTextureFilename, L"");
 		else
-			wcscat_s(_pMeshData[i].wcMetallicTextureFilename, wcMetallicTextureFilename);
+			wcscpy_s(_pMeshData[i].wcMetallicTextureFilename, wcMetallicTextureFilename);
 
-		wcscpy_s(_pMeshData[i].wcRoughnessTextureFilename, _wcBasePath);
+		//wcscpy_s(_pMeshData[i].wcRoughnessTextureFilename, _wcBasePath);
 		if (!wcscmp(wcRoughnessTextureFilename, L"Empty"))
 			wcscpy_s(_pMeshData[i].wcRoughnessTextureFilename, L"");
 		else
-			wcscat_s(_pMeshData[i].wcRoughnessTextureFilename, wcRoughnessTextureFilename);
+			wcscpy_s(_pMeshData[i].wcRoughnessTextureFilename, wcRoughnessTextureFilename);
 
-		wcscpy_s(_pMeshData[i].wcAoTextureFilename, _wcBasePath);
+		//wcscpy_s(_pMeshData[i].wcAoTextureFilename, _wcBasePath);
 		if (!wcscmp(wcAoTextureFilename, L"Empty"))
 			wcscpy_s(_pMeshData[i].wcAoTextureFilename, L"");
 		else
-			wcscat_s(_pMeshData[i].wcAoTextureFilename, wcAoTextureFilename);
+			wcscpy_s(_pMeshData[i].wcAoTextureFilename, wcAoTextureFilename);
 
-		wcscpy_s(_pMeshData[i].wcOpacityTextureFilename, _wcBasePath);
+		//wcscpy_s(_pMeshData[i].wcOpacityTextureFilename, _wcBasePath);
 		if(!wcscmp(wcOpacityTextureFilename, L"Empty"))
 			wcscpy_s(_pMeshData[i].wcOpacityTextureFilename, L"");
 		else
-			wcscat_s(_pMeshData[i].wcOpacityTextureFilename, wcOpacityTextureFilename);
+			wcscpy_s(_pMeshData[i].wcOpacityTextureFilename, wcOpacityTextureFilename);
 	}
 }
 

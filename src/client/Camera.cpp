@@ -74,7 +74,6 @@ void Camera::Update()
 	case CAMERA_MODE::EDITOR:
 		MoveEditorMode();
 		break;
-
 	case CAMERA_MODE::FOLLOW:
 		MoveFollowMode();
 		break;
@@ -149,13 +148,14 @@ void Camera::MoveEditorMode()
 
 	vPos += vDeltaPos;
 	_pTransform->SetPosition(&vPos);
-	GRenderer->MoveCamera(vDeltaPos.x, vDeltaPos.y, vDeltaPos.z);
+	GRenderer->SetCameraPosition(vPos.x, vPos.y, vPos.z);
 
 	Vector3 vYawPitchRoll = Vector3(0.0f);
 
 	vYawPitchRoll.x = NDC_X * DirectX::XM_PI; // Yaw
 	vYawPitchRoll.y = -NDC_Y * DirectX::XM_PIDIV2; // Pitch
 
+	_pTransform->SetRotation(&vYawPitchRoll);
 	GRenderer->RotateYawPitchRollCamera(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z);
 }
 

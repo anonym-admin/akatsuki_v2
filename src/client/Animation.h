@@ -67,7 +67,7 @@ class Animation
 		AkF32 fFrameWeight = 0.0f;
 		AkU32 uCurFrame = 0;
 		AkU32 uNextFrame = 1;
-		const wchar_t* wcName = nullptr;
+		wchar_t wcName[_MAX_PATH] = {};
 		ANIM_CLIP_STATE eAnimState = ANIM_CLIP_STATE::STOP;
 	};
 

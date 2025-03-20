@@ -48,6 +48,17 @@ std::string GetFileName(const std::string& filePath)
 	return filePath.substr(pos + 1);
 }
 
+std::string GetCurrentFolder(const std::string& filePath)
+{
+	std::string path = GetFilePath(filePath);
+	path.erase(path.size() - 1);
+	size_t pos = path.find_last_of("/\\");
+	if (pos == std::string::npos) {
+		return "";
+	}
+	return path.substr(pos + 1);
+}
+
 std::string GetFileNmaeExcludeExt(const std::string& fileName)
 {
 	size_t pos = fileName.find_last_of(".");
@@ -86,6 +97,17 @@ std::wstring GetFileName(const std::wstring& filePath)
 		return L"";
 	}
 	return filePath.substr(pos + 1);
+}
+
+std::wstring GetCurrentFolder(const std::wstring& filePath)
+{
+	std::wstring path = GetFilePath(filePath);
+	path.erase(path.size() - 1);
+	size_t pos = path.find_last_of(L"/\\");
+	if (pos == std::wstring::npos) {
+		return L"";
+	}
+	return path.substr(pos + 1);
 }
 
 std::wstring GetFileNmaeExcludeExt(const std::wstring& fileName)

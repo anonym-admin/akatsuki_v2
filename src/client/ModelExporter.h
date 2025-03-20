@@ -43,5 +43,6 @@ private:
 	AkBool _bRevertNormal = AK_FALSE;
 
 	std::wstring _wcFilename = L"";
+	std::wstring _wcFolder = L"";
 };
 

@@ -29,18 +29,7 @@ protected:
 	virtual void Load(const std::wstring& wcFilePath) = 0;
 	virtual void Save(const std::wstring& wcFilePath) = 0;
 
-	Model* CreateModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned);
-	Camera* CreateCamera();
-	Transform* CreateTransform();
-	Animation* CreateAnimation(AssetMeshDataContainer_t* pMeshDataContainer, const wchar_t* wcIdleClipName, AkU32 uMaxClipNum);
-
-protected:
-	Model* _pTarget = nullptr;
-	Camera* _pCamera = nullptr;
-	Transform* _pTransform = nullptr;
-	Animation* _pAnimation = nullptr;
-
 public:
-	const wchar_t* Name;
+	const wchar_t* Name = nullptr;
 };
 

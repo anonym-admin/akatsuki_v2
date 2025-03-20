@@ -187,7 +187,7 @@ AkBool Animation::Initialize(AssetMeshDataContainer_t* pMeshDataContainer, const
 	pMeshDataContainer->pBoneOffsetMatrixList = nullptr;
 
 	// Set Init Clip.
-	_tCurAnimator.wcName = wcIdleClipName;
+	wcscpy_s(_tCurAnimator.wcName, wcIdleClipName);
 
 	return AK_TRUE;
 }
@@ -227,8 +227,8 @@ Matrix* Animation::GetBoneTransforms()
 		__debugbreak();
 	}
 
-	if (!_tNextAnimator.wcName)
-		_tNextAnimator.wcName = _tCurAnimator.wcName;
+	if (!wcslen(_tNextAnimator.wcName))
+		wcscpy_s(_tNextAnimator.wcName, _tCurAnimator.wcName);
 
 	AnimationClip_t* pNextClip = nullptr;
 	uKeySize = (AkU32)wcslen(_tNextAnimator.wcName) * sizeof(wchar_t);
@@ -430,7 +430,8 @@ void Animation::PlayClip(const wchar_t* wcClipname, ANIM_CLIP_STATE eState, AkF3
 	_tNextAnimator.eAnimState = eState;
 	_tNextAnimator.uCurFrame = 0;
 	_tNextAnimator.uNextFrame = 1;
-	_tNextAnimator.wcName = wcClipname;
+
+	wcscpy_s(_tNextAnimator.wcName, wcClipname);
 
 	_fAnimScale = fSpeed;
 	_fBlendTime = fBlendTime;
@@ -474,7 +475,7 @@ void Animation::UpdateAnimator(Animator_t* pAnimator)
 				pAnimator->uCurFrame = 0;
 				pAnimator->uNextFrame = 1;
 
-				if(pClip->pCallBack)
+				if (pClip->pCallBack)
 					pClip->pCallBack(pClip->pActor);
 			}
 		}
