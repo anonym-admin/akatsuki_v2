@@ -70,9 +70,18 @@ void EditorMap::Update()
 	_pTerrainEdit->Update();
 }
 
-void EditorMap::FinalUpdate()
+void EditorMap::Render()
 {
-	_pCamera->UpdateEditor();
+	_pTerrainEdit->Render();
+}
+
+void EditorMap::RenderShadow()
+{
+}
+
+void EditorMap::RenderGUI()
+{
+	_pCamera->RenderGUI();
 	_pTerrainEdit->UpdateEditor();
 
 	IGFD::FileDialogConfig tConfig = {};
@@ -128,15 +137,6 @@ void EditorMap::FinalUpdate()
 	UpdateFileDialog();
 
 	ImGui::End();
-}
-
-void EditorMap::Render()
-{
-	_pTerrainEdit->Render();
-}
-
-void EditorMap::RenderShadow()
-{
 }
 
 void EditorMap::Load(const std::wstring& wcFilePath)

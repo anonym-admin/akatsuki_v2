@@ -21,19 +21,19 @@ void EditorManager::Update()
     }
 }
 
-void EditorManager::FinalUpdate()
-{
-    if (_pCurEditor)
-    {
-        _pCurEditor->FinalUpdate();
-    }
-}
-
 void EditorManager::RenderShadow()
 {
     if (_pCurEditor)
     {
         _pCurEditor->RenderShadow();
+    }
+}
+
+void EditorManager::RenderGUI()
+{
+    if (_pCurEditor)
+    {
+        _pCurEditor->RenderGUI();
     }
 }
 

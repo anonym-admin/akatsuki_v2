@@ -361,13 +361,22 @@ AkBool Application::InitTextResource()
 void Application::Update()
 {
 	static AkF32 fTimeElapsed = 0.0f;
-	fTimeElapsed += DT;
+	fTimeElapsed += GTimer->GetDeltaTime();
 
 	// Not Vsync => 60fps 고정을 위한 처리
-	//if (fTimeElapsed < 0.016f)
-	//{
-	//	return;
-	//}
+	if (AK_FALSE == _bUseVSync && fTimeElapsed < 0.016f)
+	{
+		return;
+	}
+
+	if(!_bUseVSync)
+	{
+		GDeltaTime = fTimeElapsed;
+	}
+	else
+	{
+		GDeltaTime = GTimer->GetDeltaTime();
+	}
 
 	// Update game input.
 	GGameInput->Update();
@@ -377,9 +386,6 @@ void Application::Update()
 
 	// Update Editor list.
 	GEditorManager->Update();
-
-	// Final Update Editor list.
-	GEditorManager->FinalUpdate();
 
 	// Update Scene list.
 	GSceneManager->Update();
@@ -398,6 +404,8 @@ void Application::Update()
 	{
 		ExitGame();
 	}
+
+	fTimeElapsed = 0.0f;
 }
 
 void Application::UpdateEnviroment()
@@ -518,6 +526,9 @@ void Application::UpdateText()
 
 void Application::Render()
 {
+	// Render Gui
+	GEditorManager->RenderGUI();
+
 	// Render Editor list.
 	GEditorManager->Render();
 

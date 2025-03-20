@@ -1,7 +1,6 @@
 #pragma once
 
-#define DT GTimer->GetDeltaTime()
-#define DT_F64 GTimer->GetF64DeltaTime()
+#define DT GDeltaTime
 
 #define LBTN_DOWN GGameInput->LeftBtnDown()
 #define RBTN_DOWN GGameInput->RightBtnDown()

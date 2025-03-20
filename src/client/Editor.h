@@ -19,9 +19,9 @@ public:
 	virtual AkBool BeginEditor() = 0;
 	virtual AkBool EndEditor() = 0;
 	virtual void Update() = 0;
-	virtual void FinalUpdate() = 0;
 	virtual void Render() = 0;
 	virtual void RenderShadow() = 0;
+	virtual void RenderGUI() = 0;
 
 	void SetName(const wchar_t* wcName) { Name = wcName; }
 

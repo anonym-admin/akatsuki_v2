@@ -19,6 +19,7 @@ public:
 	virtual void Render();
 	virtual void RenderNormal();
 	virtual void RenderShadow();
+	virtual void RenderGUI();
 	void UpdateWorldRow(Matrix* pWorldRow);
 	void SetWireFrame(AkBool bDrawWire);
 
@@ -32,30 +33,6 @@ protected:
 protected:
 	IMeshObject* _pMeshObj = nullptr;
 	Matrix _mWorldRow = Matrix();
+	AkBool _bUseGizmo = AK_FALSE;
 };
 
-/*
-===========
-Model Edit
-===========
-*/
-
-class ModelEdit
-{
-public:
-	ModelEdit();
-	virtual ~ModelEdit();
-
-	AkBool Initialize();
-	virtual void Render();
-
-	virtual void Load();
-	virtual void Save();
-
-private:
-	void CleanUp();
-
-protected:
-	IMeshObject* _pMeshObj = nullptr;
-	Matrix _mWorldRow = Matrix();
-};

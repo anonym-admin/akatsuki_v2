@@ -14,9 +14,9 @@ public:
 	~EditorManager();
 
 	void Update();
-	void FinalUpdate();
 	void Render();
 	void RenderShadow();
+	void RenderGUI();
 
 	void ChangeEditor(EDITOR_TYPE eEditorType);
 	Editor* GetCurrentEditor() { return _pCurEditor; }

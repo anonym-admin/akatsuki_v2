@@ -31,7 +31,7 @@ AkBool EditorModel::Initialize()
 	AssetTextureContainer_t* pBrdf = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::BRDF);
 
 	GRenderer->BindIBLTexture(pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle, pBrdf->pTexHandle);
-	GRenderer->SetIBLStrength(0.25f);
+	GRenderer->SetIBLStrength(0.1f);
 
 	return AK_TRUE;
 }
@@ -70,17 +70,17 @@ void EditorModel::Update()
 	{
 		_mapAnim[_CurModel]->Update();
 	}
+
+	BindAnimation();
 }
 
-void EditorModel::FinalUpdate()
+void EditorModel::RenderGUI()
 {
-	_pCamera->UpdateEditor();
+	_pCamera->RenderGUI();
 
 	ImGui::Begin("[Model Editor]");
 	ImGui::Checkbox("FBV", &_bFPV);
 	ImGui::Checkbox("Bind Anim", &_bBindAnim);
-
-	BindAnimation();
 
 	IGFD::FileDialogConfig tConfig = {};
 	tConfig.filePathName = "../../assets/model_new/origin/";
@@ -98,20 +98,34 @@ void EditorModel::FinalUpdate()
 	}
 
 	UpdateFileDialog();
-
 	ImGui::End();
 
+	// Clip list.
 	ImGui::Begin("[Clips]");
-	ImGui::Text(ToString(_CurModel).c_str());
+	std::string ModelType = "Model: " + ToString(_CurModel);
+	ImGui::Text(ModelType.c_str());
 
-	if (ImGui::Button("Push"))
-		SetAnimation(_CurClip);
+	for (auto& e : _mapClipName[_CurModel])
+	{
+		if (ImGui::Button(ToString(e).c_str()))
+		{
+			SetAnimation(e, _fAnimSpeed, _fBlendTime);
+		}
+	}
+	ImGui::End();
+
+	// Animation Info.
+	ImGui::Begin("[Amimation Info]");
+	ImGui::InputFloat("Anim Speed", &_fAnimSpeed);
+	ImGui::InputFloat("Blend Time:", &_fBlendTime);
 
 	ImGui::End();
 }
 
 void EditorModel::Render()
 {
+	UpdateGizmo();
+
 	for (auto& e : _vecModel)
 	{
 		e->Render();
@@ -128,7 +142,7 @@ void EditorModel::CleanUp()
 	_mapClipName.clear();
 	_mapSkinnedModel.clear();
 
-	if (!_mapAnim.size())
+	if (!_bUseAnim)
 	{
 		delete[] _pBoneOffsetMatrixList;
 		_pBoneOffsetMatrixList = nullptr;
@@ -156,14 +170,6 @@ void EditorModel::CleanUp()
 		delete _pCamera;
 		_pCamera = nullptr;
 	}
-}
-
-void EditorModel::Load(const std::wstring& wcFilePath)
-{
-}
-
-void EditorModel::Save(const std::wstring& wcFilePath)
-{
 }
 
 void EditorModel::ExportMesh(const std::wstring& wcName, const std::wstring& wcExt)
@@ -248,21 +254,23 @@ void EditorModel::CreateClip(const std::wstring& wcPath, const std::wstring& wcC
 		Animation* pAnim = new Animation(&tMeshDataContainer, wcClip.c_str(), 32); // 초기화를 위한 IDLE Clip Name Parameter로 전달
 		_mapAnim[ModelName] = pAnim;
 	}
-
-	if(!_mapClipName.count(ModelName))
+	
+	if(!_mapClipName[ModelName].empty())
 	{
-		_mapAnim[ModelName]->ReadClip(wcPath.c_str(), wcClip.c_str());
 		for (auto& e : _mapClipName[ModelName])
 		{
-			if (e != wcClip)
+			if (e == wcClip)
 			{
-				_mapClipName[ModelName].push_back(wcClip);
+				return;
 			}
 		}
 	}
 
+	_mapAnim[ModelName]->ReadClip(wcPath.c_str(), wcClip.c_str());
+	_mapClipName[ModelName].push_back(wcClip);
+
+	_bUseAnim = AK_TRUE;
 	_CurModel = ModelName;
-	_CurClip = wcClip;
 }
 
 void EditorModel::BindAnimation()
@@ -328,6 +336,14 @@ void EditorModel::UpdateFileDialog()
 	}
 }
 
+void EditorModel::UpdateGizmo()
+{
+	for (auto& e : _vecModel)
+	{
+		e->RenderGUI();
+	}
+}
+
 void EditorModel::UpdateControl()
 {
 	if (KEY_DOWN(KEY_INPUT_F))
@@ -336,12 +352,14 @@ void EditorModel::UpdateControl()
 	}
 }
 
-void EditorModel::SetAnimation(const std::wstring& wcClip, AkF32 fSpeed)
+void EditorModel::SetAnimation(const std::wstring& wcClip, AkF32 fSpeed, AkF32 fBlendTime)
 {
-	if (_CurClip != wcClip)
+	if (_CurClip != wcClip || _fPrevAnimSpeed != fSpeed || _fPrevBlendTime != fBlendTime)
 	{
-		_mapAnim[_CurModel]->PlayClip(wcClip.c_str(), ANIM_CLIP_STATE::LOOP, fSpeed);
+		_mapAnim[_CurModel]->PlayClip(wcClip.c_str(), ANIM_CLIP_STATE::LOOP, fSpeed, fBlendTime);
 		_CurClip = wcClip;
+		_fPrevAnimSpeed = fSpeed;
+		_fPrevBlendTime = fBlendTime;
 	}
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+extern AkF32 GDeltaTime;
 extern HWND GhWnd;
 extern IRenderer* GRenderer;
 extern struct ImGuiContext* GImGui;

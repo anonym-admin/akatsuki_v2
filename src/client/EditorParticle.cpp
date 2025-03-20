@@ -54,14 +54,14 @@ void EditorParticle::Update()
     }
 }
 
-void EditorParticle::FinalUpdate()
+void EditorParticle::RenderGUI()
 {
     if (KEY_DOWN(KEY_INPUT_F))
     {
         _bFPV = !_bFPV;
     }
 
-    _pCamera->UpdateEditor();
+    _pCamera->RenderGUI();
 
     if(_pParticle)
     {

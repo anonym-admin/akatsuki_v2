@@ -70,9 +70,6 @@
     <Filter Include="src\comp\transform">
       <UniqueIdentifier>{03e635d1-2fa5-41b7-bb8a-4aa7b5456460}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\comp\anim">
-      <UniqueIdentifier>{faf9db47-cc97-42e2-b9ea-5e290c83bce4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\framework\app">
       <UniqueIdentifier>{3b47a064-7380-42a4-900f-252e1b07cf19}</UniqueIdentifier>
     </Filter>
@@ -91,6 +88,9 @@
     <Filter Include="src\obj\character">
       <UniqueIdentifier>{d79c5a75-fb05-44cc-b647-bd0aba73e768}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\comp\animation">
+      <UniqueIdentifier>{faf9db47-cc97-42e2-b9ea-5e290c83bce4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\HashTable.h">
@@ -103,7 +103,7 @@
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
-      <Filter>src\comp\anim</Filter>
+      <Filter>src\comp\animation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\CommonVertex.h">
       <Filter>common</Filter>
@@ -350,7 +350,7 @@
       <Filter>src\entry</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
-      <Filter>src\comp\anim</Filter>
+      <Filter>src\comp\animation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\UtilFunc.cpp">
       <Filter>src\utils</Filter>

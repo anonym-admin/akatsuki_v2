@@ -3,12 +3,15 @@
 // fmod
 #include "fmod.hpp"
 #include "fmod_errors.h"
+
 // imgui
 #include <imgui.h>
 #include <imgui_impl_dx12.h>
 #include <imgui_impl_win32.h>
 #include <ImGuiFileDialog.h>
 #include <ImGuiFileDialogConfig.h>
+#include <ImGuizmo.h>
+
 // assimp
 #include <assimp\Importer.hpp>
 #include <assimp\postprocess.h>

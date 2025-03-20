@@ -80,7 +80,7 @@ void Camera::Update()
 	}
 }
 
-void Camera::UpdateEditor()
+void Camera::RenderGUI()
 {
 	ImGui::Begin("Camera");
 	ImGui::Text("Position: %lf %lf %lf", _pTransform->GetPosition().x, _pTransform->GetPosition().y, _pTransform->GetPosition().z);

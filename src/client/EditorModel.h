@@ -15,15 +15,15 @@ public:
 	virtual AkBool BeginEditor() override;
 	virtual AkBool EndEditor() override;
 	virtual void Update() override;
-	virtual void FinalUpdate() override;
 	virtual void Render() override;
 	virtual void RenderShadow() override;
+	virtual void RenderGUI() override;
 
 private:
 	void CleanUp();
 
-	virtual void Load(const std::wstring& wcFilePath) override;
-	virtual void Save(const std::wstring& wcFilePath) override;
+	virtual void Load(const std::wstring& wcFilePath) override {};
+	virtual void Save(const std::wstring& wcFilePath) override {};
 
 	void ExportMesh(const std::wstring& wcName, const std::wstring& wcExt);
 	void ExportAnimation(const std::wstring& wcName, const std::wstring& wcClip);
@@ -34,9 +34,10 @@ private:
 	void BindAnimation();
 
 	void UpdateFileDialog();
+	void UpdateGizmo();
 	void UpdateControl();
 
-	void SetAnimation(const std::wstring& wcClip, AkF32 fSpeed = 1.5f);
+	void SetAnimation(const std::wstring& wcClip, AkF32 fSpeed, AkF32 fBlendTime);
 
 private:
 	Camera* _pCamera = nullptr;
@@ -47,6 +48,7 @@ private:
 	AkI32 _iExportType = -1;
 	AkI32 _iImportType = -1;
 	AkBool _bBindAnim = AK_FALSE;
+	AkBool _bUseAnim = AK_FALSE;
 
 	ModelExporter* _pExporter = nullptr;
 	ModelImporter* _pImporter = nullptr;
@@ -64,6 +66,10 @@ private:
 
 	std::wstring _CurModel = L"";
 	std::wstring _CurClip = L"";
-	AkI32 _iSelectedClipID = -1;
+
+	AkF32 _fAnimSpeed = 1.0f;
+	AkF32 _fBlendTime = 1.0f;
+	AkF32 _fPrevAnimSpeed = 1.0f;
+	AkF32 _fPrevBlendTime = 1.0f;
 };
 

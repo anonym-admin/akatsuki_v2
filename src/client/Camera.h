@@ -21,7 +21,7 @@ public:
 	AkBool Initialize(const Vector3* pPos, const Vector3* pYawPirchRoll);
 	AkBool Initialize(AkF32 fDistance, AkF32 fHegith);
 	void Update();
-	void UpdateEditor();
+	void RenderGUI();
 	void Render();
 	void SetOwner(Actor* pOwner);
 	Transform* GetTransform() { return _pTransform; }
