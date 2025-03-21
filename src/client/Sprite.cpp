@@ -44,8 +44,8 @@ void Sprite::Update()
 	{
 		_uCurFrameCount++;
 
-		_vCurFrame.x = _uCurFrameCount % (AkU32)_vMaxFrame.x;
-		_vCurFrame.y = _uCurFrameCount / (AkU32)_vMaxFrame.x;
+		_vCurFrame.x = (AkF32)(_uCurFrameCount % (AkU32)_vMaxFrame.x);
+		_vCurFrame.y = (AkF32)(_uCurFrameCount / (AkU32)_vMaxFrame.x);
 
 		_fTime = 0.0f;
 	}

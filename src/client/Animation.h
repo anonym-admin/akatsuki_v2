@@ -20,8 +20,30 @@ struct BoneAnimation_t
 	AkF32 GetEndTime();
 	void CleanUp();
 
+	// For Editor
+	void Update();
+	void Render();
+	void RenderGUI();
+
 	KeyFrame_t* pKeyFrameList = nullptr;
 	AkU32 uNumKeyFrame = 0;
+
+	// For Editor
+	Vector3 vStart = Vector3(0.0f);
+	Vector3 vEnd = Vector3(0.0f);
+	char pName[_MAX_PATH] = {};
+	AkI32 iID = -1;
+
+	// For Rendering
+	ILineObject* pLineObj = nullptr;
+	Vector3 vColor = Vector3(0.0f, 1.0f, 0.0f);
+
+	Matrix mWorldRow = Matrix();
+
+	AkBool bPick = AK_FALSE;
+	AkBool bUseGizmo = AK_FALSE;
+
+	Matrix mBoneTransform = Matrix();
 };
 
 struct AnimationClip_t
@@ -95,6 +117,7 @@ private:
 	void SetDefaultMatrix(const Matrix* pDefaultMat) { _mDefaultMatrix = *pDefaultMat; }
 	void SetBoneOffsetMat(const Matrix* pBoneOffsetMatList) { _pBoneOffsetMatrixList = pBoneOffsetMatList; }
 	void SetBoneHierarchy(const AkI32* pBoneHierarchyList) { _pBoneHierarchyList = pBoneHierarchyList; }
+	void SetBoneName(char** ppBoneName) { _ppBoneName = ppBoneName; }
 
 private:
 	HashTable_t* _pAnimationClipTable = nullptr;
@@ -104,6 +127,7 @@ private:
 	Animator_t _tNextAnimator = {};
 	const AkI32* _pBoneHierarchyList = nullptr;
 	const Matrix* _pBoneOffsetMatrixList = nullptr;
+	char** _ppBoneName = nullptr;
 	Matrix _mDefaultMatrix = Matrix();
 	Matrix* _pFinalTransforms = nullptr;
 	AkU32 _uBoneNum = 0;

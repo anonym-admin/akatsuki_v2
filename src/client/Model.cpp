@@ -72,8 +72,12 @@ void Model::RenderShadow()
 
 void Model::RenderGUI()
 {
+	std::wstring ModelName = Name;
+	char Title[_MAX_PATH] = {};
+	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
+	
 	ImGuizmo::BeginFrame();
-	ImGui::Begin("Gizmo");
+	ImGui::Begin(Title);
 	ImGui::Checkbox("Use Gizmo", &_bUseGizmo);
 
 	if (!_bUseGizmo)
@@ -97,11 +101,11 @@ void Model::RenderGUI()
 		ImGui::Text(ImGuizmo::IsOver(ImGuizmo::SCALE) ? "Over scale gizmo" : "");
 	}
 
-	if (ImGui::IsKeyPressed(ImGuiKey_T))
+	if (ImGui::IsKeyPressed(ImGuiKey_Z))
 		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	if (ImGui::IsKeyPressed(ImGuiKey_E))
+	if (ImGui::IsKeyPressed(ImGuiKey_X))
 		mCurrentGizmoOperation = ImGuizmo::ROTATE;
-	if (ImGui::IsKeyPressed(ImGuiKey_R)) // r Key
+	if (ImGui::IsKeyPressed(ImGuiKey_C)) // r Key
 		mCurrentGizmoOperation = ImGuizmo::SCALE;
 
 	if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
@@ -129,7 +133,7 @@ void Model::RenderGUI()
 			mCurrentGizmoMode = ImGuizmo::WORLD;
 	}
 
-	if (ImGui::IsKeyPressed(ImGuiKey_Y))
+	if (ImGui::IsKeyPressed(ImGuiKey_V))
 		useSnap = !useSnap;
 	ImGui::Checkbox(" ", &useSnap);
 	ImGui::SameLine();

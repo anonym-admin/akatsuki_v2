@@ -7,6 +7,7 @@ ModelImporter
 */
 
 class Animation;
+struct AnimationClip_t;
 
 class ModelImporter
 {
@@ -17,8 +18,9 @@ public:
 	AkU32 GetMeshDataNum() { return _uMeshDataNum; }
 	const Matrix* GetBoneOffsetTransformList();
 	const AkI32* GetBoneHierarchyList();
+	char** GetBoneName() { return _ppBoneName; }
 	AkU32 GetBoneNum();
-	struct AnimationClip_t* GetAnimationClip() { return _pAnimClip; }
+	AnimationClip_t* GetAnimationClip() { return _pAnimClip; }
 
 private:
 	void LoadMeshDataInfo(FILE* pFp, AkBool bForAnim);
@@ -26,6 +28,7 @@ private:
 	void LoadVerticesAndIndices(FILE* pFp, AkBool bForAnim);
 	void LoadBoneOffsets(FILE* pFp);
 	void LoadBoneHierarchy(FILE* pFp);
+	void LoadBoneName(FILE* pFp);
 	void LoadAnimationClip(FILE* pFp);
 
 	void UpdateTangents();
@@ -37,9 +40,10 @@ private:
 	const wchar_t* _wcBasePath = nullptr;
 
 	Matrix* _pBoneOffsetMatrixList = nullptr;
-	AkU32 _uBoneNum = 0;
 	AkI32* _uBoneHierarchyList = nullptr;
+	char** _ppBoneName = nullptr;
+	AkU32 _uBoneNum = 0;
 	AkBool _bIsAnim = AK_FALSE;
 
-	struct AnimationClip_t* _pAnimClip = nullptr;
+	AnimationClip_t* _pAnimClip = nullptr;
 };

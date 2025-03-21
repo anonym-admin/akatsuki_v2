@@ -9,6 +9,7 @@ Model Exporter
 class ModelExporter
 {
 public:
+	ModelExporter() = default;
 	ModelExporter(const std::string& strFilaname);
 	~ModelExporter();
 
@@ -27,11 +28,11 @@ public:
 	void ExportMesh();
 	void ExportClip();
 
-private:
-	void CleanUp();
-
 	void SaveMesh(const std::wstring& wcPath);
 	void SaveClip(const std::wstring& wcPath);
+
+private:
+	void CleanUp();
 
 private:
 	Assimp::Importer* _pImporter = nullptr;

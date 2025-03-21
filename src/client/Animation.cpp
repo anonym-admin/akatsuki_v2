@@ -6,6 +6,11 @@
 #include "SceneLoading.h"
 #include "Timer.h"
 
+static bool useSnap(false);
+static float snap[3] = { 1.f, 1.f, 1.f };
+static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+
 BoneAnimation_t::BoneAnimation_t()
 {
 }
@@ -99,6 +104,138 @@ void BoneAnimation_t::CleanUp()
 	}
 }
 
+void BoneAnimation_t::Update()
+{
+
+}
+
+void BoneAnimation_t::Render()
+{
+	GRenderer->RenderLineObject(pLineObj, &mWorldRow);
+}
+
+void BoneAnimation_t::RenderGUI()
+{
+	if (!bPick)
+	{
+		return;
+	}
+
+	Vector3 vStartAfterTransform = Vector3(0.0f);
+	vStartAfterTransform = Vector3::Transform(vStart, mBoneTransform);
+
+	Matrix mGizmoTransform = Matrix::CreateTranslation(vStartAfterTransform);
+
+	// 첫번째 프레임을 기준으로 수정을 완료하면 나머지 키 프레임에 대해서도 동일한 변환이 적용된다.
+	std::string BoneName = pName;
+	char Title[_MAX_PATH] = {};
+	strcpy_s(Title, std::string(std::string(pName) + " gizmo").c_str());
+
+	ImGuizmo::BeginFrame();
+	ImGui::Begin(Title);
+	ImGui::Checkbox("Use Gizmo", &bUseGizmo);
+
+	if (!bUseGizmo)
+	{
+		ImGui::End();
+		return;
+	}
+
+	if (ImGuizmo::IsUsing())
+	{
+		ImGui::Text("Using gizmo");
+	}
+	else
+	{
+		ImGui::Text(ImGuizmo::IsOver() ? "Over gizmo" : "");
+		ImGui::SameLine();
+		ImGui::Text(ImGuizmo::IsOver(ImGuizmo::TRANSLATE) ? "Over translate gizmo" : "");
+		ImGui::SameLine();
+		ImGui::Text(ImGuizmo::IsOver(ImGuizmo::ROTATE) ? "Over rotate gizmo" : "");
+		ImGui::SameLine();
+		ImGui::Text(ImGuizmo::IsOver(ImGuizmo::SCALE) ? "Over scale gizmo" : "");
+	}
+
+	if (ImGui::IsKeyPressed(ImGuiKey_T))
+		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	if (ImGui::IsKeyPressed(ImGuiKey_E))
+		mCurrentGizmoOperation = ImGuizmo::ROTATE;
+	if (ImGui::IsKeyPressed(ImGuiKey_R)) // r Key
+		mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+	if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+		mCurrentGizmoOperation = ImGuizmo::ROTATE;
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+		mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+	float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+	ImGuizmo::DecomposeMatrixToComponents((float*)&mGizmoTransform._11, matrixTranslation, matrixRotation, matrixScale);
+	ImGui::InputFloat3("Tr", matrixTranslation);
+	ImGui::InputFloat3("Rt", matrixRotation);
+	ImGui::InputFloat3("Sc", matrixScale);
+	ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, (float*)&mGizmoTransform._11);
+
+	if (mCurrentGizmoOperation != ImGuizmo::SCALE)
+	{
+		if (ImGui::RadioButton("Local", mCurrentGizmoMode == ImGuizmo::LOCAL))
+			mCurrentGizmoMode = ImGuizmo::LOCAL;
+		ImGui::SameLine();
+		if (ImGui::RadioButton("World", mCurrentGizmoMode == ImGuizmo::WORLD))
+			mCurrentGizmoMode = ImGuizmo::WORLD;
+	}
+
+	if (ImGui::IsKeyPressed(ImGuiKey_Y))
+		useSnap = !useSnap;
+	ImGui::Checkbox(" ", &useSnap);
+	ImGui::SameLine();
+	switch (mCurrentGizmoOperation)
+	{
+	case ImGuizmo::TRANSLATE:
+		ImGui::InputFloat3("Snap", &snap[0]);
+		break;
+	case ImGuizmo::ROTATE:
+		ImGui::InputFloat("Angle Snap", &snap[0]);
+		break;
+	case ImGuizmo::SCALE:
+		ImGui::InputFloat("Scale Snap", &snap[0]);
+		break;
+	}
+
+	float windowWidth = (float)ImGui::GetWindowWidth();
+	float windowHeight = (float)ImGui::GetWindowHeight();
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
+	Matrix mView = Matrix();
+	Matrix mProj = Matrix();
+	GRenderer->GetViewPorjMatrix(&mView, &mProj);
+	mView = mView.Transpose();
+	mProj = mProj.Transpose();
+
+	ImGuizmo::Manipulate((float*)&mView, (float*)&mProj, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&mGizmoTransform._11, NULL, useSnap ? &snap[0] : NULL);
+
+	Vector3 vScale = Vector3(1.0f);
+	Quaternion qRotation = Quaternion();
+	Vector3 vPosition = Vector3(0.0f);
+	mGizmoTransform.Decompose(vScale, qRotation, vPosition);
+
+	vPosition -= vStartAfterTransform;
+	 
+	for (AkU32 i = 0; i < uNumKeyFrame; i++)
+	{
+		pKeyFrameList[i].vScale = vScale;
+		pKeyFrameList[i].qRot = pKeyFrameList[i].qRot * qRotation;
+		pKeyFrameList[i].vPos = pKeyFrameList[i].vPos + vPosition;
+	}
+
+	ImGui::End();
+}
+
 AnimationClip_t::AnimationClip_t()
 {
 }
@@ -181,6 +318,7 @@ AkBool Animation::Initialize(AssetMeshDataContainer_t* pMeshDataContainer, const
 	SetBoneOffsetMat(pMeshDataContainer->pBoneOffsetMatrixList);
 	SetDefaultMatrix(&pMeshDataContainer->mDefaultMat);
 	SetBoneNum(pMeshDataContainer->uBoneNum);
+	SetBoneName(pMeshDataContainer->ppBoneName);
 
 	// Change owner.
 	pMeshDataContainer->pBoneHierarchyList = nullptr;
@@ -213,7 +351,8 @@ void Animation::Update()
 
 Matrix Animation::GetBoneTrnasformAtID(AkU32 uBoneID)
 {
-	return Matrix();
+	Matrix* pBoneTransforms = GetBoneTransforms();
+	return pBoneTransforms[uBoneID];
 }
 
 Matrix* Animation::GetBoneTransforms()
@@ -484,6 +623,16 @@ void Animation::UpdateAnimator(Animator_t* pAnimator)
 
 void Animation::CleanUp()
 {
+	if (_ppBoneName)
+	{
+		for (AkU32 i = 0; i < _uBoneNum; i++)
+		{
+			free(_ppBoneName[i]);
+			_ppBoneName[i] = nullptr;
+		}
+		free(_ppBoneName);
+		_ppBoneName = nullptr;
+	}
 	if (_pFinalTransforms)
 	{
 		delete[] _pFinalTransforms;

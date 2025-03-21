@@ -27,14 +27,17 @@ private:
 
 	void ExportMesh(const std::wstring& wcName, const std::wstring& wcExt);
 	void ExportAnimation(const std::wstring& wcName, const std::wstring& wcClip);
+	void ModifyAnimation(const std::wstring& wcName, const std::wstring& wcClip);
 
 	void CreateModel(const std::wstring& wcBasePath, const std::wstring& wcFilename);
 	void CreateClip(const std::wstring& wcPath, const std::wstring& wcClip);
 	
 	void BindAnimation();
+	void AttachBone();
 
 	void UpdateFileDialog();
 	void UpdateGizmo();
+	void UpdateWeapon();
 	void UpdateControl();
 
 	void SetAnimation(const std::wstring& wcClip, AkF32 fSpeed, AkF32 fBlendTime);
@@ -46,9 +49,15 @@ private:
 	AkBool _bFPV = AK_TRUE;
 
 	AkI32 _iExportType = -1;
+	AkI32 _iModifyType = -1;
 	AkI32 _iImportType = -1;
+	AkI32 _iCurSelectedBoneID = -1;
+	AkI32 _iPrevSelectedBoneID = 0;
 	AkBool _bBindAnim = AK_FALSE;
+	AkBool _bPlayAnim = AK_FALSE;
 	AkBool _bUseAnim = AK_FALSE;
+	AkBool _bAttachBone = AK_FALSE;
+	AkBool _bModifyWeaponTransform = AK_FALSE;
 
 	ModelExporter* _pExporter = nullptr;
 	ModelImporter* _pImporter = nullptr;
@@ -56,11 +65,13 @@ private:
 	std::vector<Model*> _vecModel = {}; // 자료구조 다시 생각
 	std::unordered_map<std::wstring, SkinnedModel*> _mapSkinnedModel = {};
 	std::unordered_map<std::wstring, Animation*> _mapAnim = {};
+	std::unordered_map<std::wstring, AnimationClip_t*> _mapClip = {};
 	std::unordered_map<std::wstring, std::vector<std::wstring>> _mapClipName = {};
 
 	// Bone Info.
 	const Matrix* _pBoneOffsetMatrixList = nullptr;
 	const AkI32* _pBoneHierarchyList = nullptr;
+	char** _ppBoneName = nullptr;
 	AkU32 _uBoneNum = 0;
 	Matrix _mDefaultMatrix = Matrix();
 
@@ -71,5 +82,9 @@ private:
 	AkF32 _fBlendTime = 1.0f;
 	AkF32 _fPrevAnimSpeed = 1.0f;
 	AkF32 _fPrevBlendTime = 1.0f;
+
+	BoneAnimation_t* _pCurBoneAnimation = nullptr;
+
+	Matrix _mAttachMatrix = Matrix();
 };
 

@@ -11,6 +11,7 @@ struct AssetMeshDataContainer_t
 	Matrix mDefaultMat = Matrix();
 	const Matrix* pBoneOffsetMatrixList = nullptr;
 	const AkI32* pBoneHierarchyList = nullptr;
+	char** ppBoneName = nullptr;
 	AkU32 uBoneNum = 0;
 };
 

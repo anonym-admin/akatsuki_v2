@@ -125,6 +125,8 @@ AkBool ModelImporter::Load(const wchar_t* wcBasePath, const wchar_t* wcFilename,
 
 	LoadBoneHierarchy(pFp);
 
+	LoadBoneName(pFp);
+
 	if (pFp)
 	{
 		fclose(pFp);
@@ -419,6 +421,28 @@ void ModelImporter::LoadBoneHierarchy(FILE* pFp)
 	for (AkU32 i = 0; i < _uBoneNum; i++)
 	{
 		fscanf_s(pFp, "%s %d\n", cBuf, _MAX_PATH, &_uBoneHierarchyList[i]);
+	}
+}
+
+void ModelImporter::LoadBoneName(FILE* pFp)
+{
+	if (!_uBoneNum)
+	{
+		return;
+	}
+
+	_ppBoneName = reinterpret_cast<char**>(malloc(sizeof(char*) * _uBoneNum));
+	for (AkU32 i = 0; i < _uBoneNum; i++)
+	{
+		_ppBoneName[i] = reinterpret_cast<char*>(malloc(sizeof(char) * _MAX_PATH));
+	}
+
+	char cBuf[_MAX_PATH] = {};
+
+	fscanf_s(pFp, "%s\n", cBuf, _MAX_PATH);
+	for (AkU32 i = 0; i < _uBoneNum; i++)
+	{
+		fscanf_s(pFp, "%s\n", _ppBoneName[i], _MAX_PATH);
 	}
 }
 

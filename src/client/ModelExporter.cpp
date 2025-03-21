@@ -418,8 +418,13 @@ void ModelExporter::ExportMesh()
 #ifdef _DEBUG
 	wprintf_s(L"\n[Load Meshes]\n");
 #endif
+
 	std::wstring wcPath = L"../../assets/model_new/mesh/" + _wcFilename + L".mesh";
 	SaveMesh(wcPath);
+
+#ifdef _DEBUG
+	wprintf_s(L"\n[Load Meshes End]\n");
+#endif
 }
 
 void ModelExporter::ExportClip()
@@ -427,8 +432,13 @@ void ModelExporter::ExportClip()
 #ifdef _DEBUG
 	wprintf_s(L"\n[Load Clips]\n");
 #endif
+
 	std::wstring wcPath = L"../../assets/model_new/animation/" + _wcFolder + L"/" + _wcFilename + L".anim";
 	SaveClip(wcPath);
+
+#ifdef _DEBUG
+	wprintf_s(L"\n[Load Clips End]\n");
+#endif
 }
 
 void ModelExporter::CleanUp()
@@ -573,6 +583,10 @@ void ModelExporter::SaveClip(const std::wstring& wcPath)
 {
 	using namespace std;
 
+#ifdef _DEBUG
+	wprintf_s(L"\n[Save Clips Start]\n");
+#endif
+
 	CreateFolders(ToString(wcPath));
 
 	ofstream fout;
@@ -609,4 +623,8 @@ void ModelExporter::SaveClip(const std::wstring& wcPath)
 	{
 		fout.close();
 	}
+
+#ifdef _DEBUG
+	wprintf_s(L"\n[Save Clips End]\n");
+#endif
 }
