@@ -2014,8 +2014,6 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 	_pCascadeBoundary[4] = _fFar / 2.0f;
 	_pCascadeBoundary[5] = _fFar;
 
-	AkF32 fNumer = _fFar - _fNear;
-
 	const AkF32 fAspectRatio = static_cast<AkF32>(_uScreenWidth) / static_cast<AkF32>(_uScreenHeight);
 
 	for (AkU32 i = 0; i < CASCADE_SHADOW_MAP_LEVEL; i++)

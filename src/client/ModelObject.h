@@ -11,11 +11,12 @@ Model Object
 class ModelObject : public Spawn
 {
 public:
-	ModelObject();
+	ModelObject() = default;
+	ModelObject(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	ModelObject(const wchar_t* wcFilename);
 	virtual ~ModelObject();
 
-	AkBool Initialize();
+	AkBool Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	AkBool Initialize(const wchar_t* wcFilename);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;

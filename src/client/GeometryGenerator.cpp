@@ -180,6 +180,10 @@ MeshData_t* GeometryGenerator::MakeSquare(AkU32* pMeshDataNum, const AkF32 fScal
 	pMeshData->pVertices[1].vTexCoord = Vector2(1.0f, 0.0f) * vTexScale;
 	pMeshData->pVertices[2].vTexCoord = Vector2(1.0f, 1.0f) * vTexScale;
 	pMeshData->pVertices[3].vTexCoord = Vector2(0.0f, 1.0f) * vTexScale;
+	pMeshData->pVertices[0].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[1].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[2].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[3].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
 
 	pMeshData->pIndices[0] = 0;
 	pMeshData->pIndices[1] = 1;

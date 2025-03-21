@@ -101,8 +101,10 @@ void Application::RunApplication()
 	for (AkU32 i = 0; i < 5; i++)
 	{
 		GRenderer->BeginCasterRenderPreparation();
+
 		GEditorManager->RenderShadow();
 		GSceneManager->RenderShadow();
+
 		GRenderer->EndCasterRenderPreparation();
 	}
 

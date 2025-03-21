@@ -74,6 +74,10 @@ void SphereCollider::OnCollisionExit(Collider* pCollider)
 	_pOwner->OnCollisionExit(pCollider);
 }
 
+void SphereCollider::RenderGUI()
+{
+}
+
 AkF32 SphereCollider::Radius()
 {
 	Vector3 vScale = _pTransform->GetScale();

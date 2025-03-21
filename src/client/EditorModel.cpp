@@ -4,6 +4,7 @@
 #include "ModelImporter.h"
 #include "Camera.h"
 #include "GeometryGenerator.h"
+#include "ModelObject.h"
 
 EditorModel::EditorModel()
 {
@@ -24,14 +25,32 @@ AkBool EditorModel::Initialize()
 	_pCamera->Mode = CAMERA_MODE::EDITOR;
 
 	// Bind IBL Texture For PBR.
-	GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"SampleEnvHDR.dds", L"SampleDiffuseMDR.dds", L"SampleSpecularHDR.dds", L"SampleBrdf.dds");
+	GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseMDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
 
 	AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::IRRADIANCE);
 	AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::SPECULAR);
 	AssetTextureContainer_t* pBrdf = GAssetManager->GetTextureContainer(ASSET_TEXTURE_TYPE::BRDF);
 
 	GRenderer->BindIBLTexture(pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle, pBrdf->pTexHandle);
-	GRenderer->SetIBLStrength(0.5f);
+	GRenderer->SetIBLStrength(0.25f);
+
+	// Create Ground.
+	AkU32 uMeshDataNum = 0;
+	Vector2 vTexScale = Vector2(12.0f);
+	MeshData_t* pSquare = GeometryGenerator::MakeSquare(&uMeshDataNum, 25.0f, &vTexScale);
+	wcscpy_s(pSquare->wcAlbedoTextureFilename, L"../../assets/map/texture/Poliigon_TilesCeramicWhite_6956_BaseColor.dds");
+	wcscpy_s(pSquare->wcAoTextureFilename, L"../../assets/map/texture/Poliigon_TilesCeramicWhite_6956_AmbientOcclusion.dds");
+	wcscpy_s(pSquare->wcNormalTextureFilename, L"../../assets/map/texture/Poliigon_TilesCeramicWhite_6956_Normal.dds");
+	wcscpy_s(pSquare->wcRoughnessTextureFilename, L"../../assets/map/texture/Poliigon_TilesCeramicWhite_6956_Roughness.dds");
+
+	Vector3 vAlbedo = Vector3(1.0f);
+	Vector3 vEmissvie = Vector3(0.0f);
+	_pGround = new Model(pSquare, uMeshDataNum, &vAlbedo, 0.0f, 1.0f, &vEmissvie);
+	
+	Matrix mWorldRow = Matrix::CreateRotationX(DirectX::XM_PIDIV2);
+	_pGround->UpdateWorldRow(&mWorldRow);
+
+	GeometryGenerator::DestroyGeometry(pSquare, uMeshDataNum);
 
 	return AK_TRUE;
 }
@@ -40,13 +59,18 @@ AkBool EditorModel::BeginEditor()
 {
 	_pCamera->GetTransform()->SetPosition(&_vCamPos);
 	_pCamera->GetTransform()->SetRotation(&_vCamYawPitchRoll);
-	_bFPV = AK_FALSE;
+	_bFPV = AK_TRUE;
+
+	// For Draw Collider
+	Collider::DRAW_COLLIDER = AK_TRUE;
 
 	return AK_TRUE;
 }
 
 AkBool EditorModel::EndEditor()
 {
+	Collider::DRAW_COLLIDER = AK_FALSE;
+
 	for (auto& e : _vecModel)
 	{
 		delete e;
@@ -59,17 +83,34 @@ AkBool EditorModel::EndEditor()
 
 void EditorModel::Update()
 {
+	// Update
 	UpdateControl();
 
-	if (_bFPV)
+	if(_bFPV)
 	{
 		_pCamera->Update();
 	}
 
-	if (_mapAnim[_CurModel] && _bPlayAnim)
+	if (_mapAnim[_CurCharacter] && _bPlayAnim)
 	{
-		_mapAnim[_CurModel]->Update();
+		_mapAnim[_CurCharacter]->Update();
 	}
+
+	// Final Update
+	if(_pCollider)
+	{
+		if(_mapSkinnedModel.count(_CurCharacter))
+		{
+			Matrix mTargetWorld = _mapSkinnedModel[_CurCharacter]->GetWorldRow();
+
+			_pCollider->GetTransform()->SetParent(&mTargetWorld);
+		}
+
+		_pCollider->Update();
+	}
+
+	// Gloabl Light.
+	GRenderer->AddGlobalLight(&_vRadiance, &_vLightDir, AK_TRUE);
 }
 
 void EditorModel::RenderGUI()
@@ -110,10 +151,10 @@ void EditorModel::RenderGUI()
 
 	// Clip list.
 	ImGui::Begin("[Clips]");
-	std::string ModelType = "Model: " + ToString(_CurModel);
+	std::string ModelType = "Model: " + ToString(_CurCharacter);
 	ImGui::Text(ModelType.c_str());
 
-	for (auto& e : _mapClipName[_CurModel])
+	for (auto& e : _mapClipName[_CurCharacter])
 	{
 		if (ImGui::Button(ToString(e).c_str()))
 		{
@@ -161,7 +202,30 @@ void EditorModel::RenderGUI()
 	}
 	ImGui::Checkbox("Modify Weapon Matrix", &_bModifyWeaponTransform);
 
+	ImGui::End();
 
+	// Animation Blending
+	ImGui::Begin("Animation Blending");
+
+	// TODO
+
+	ImGui::End();
+
+	// Collider
+	ImGui::Begin("Collider");
+	ImGui::Checkbox("Attach Character", &_bAttachColliderToCharacter);
+	const char* pColliderItems[] = { "Box", "Sphere", "Capsule" };
+	if (ImGui::ListBox("Bone List", &_iSelectColliderTpye, pColliderItems, IM_ARRAYSIZE(pColliderItems)))
+	{
+		CreateCollider((COLLIDER_TYPE)_iSelectColliderTpye);
+	}
+
+	ImGui::End();
+
+	// Lighting
+	ImGui::Begin("Shadow");
+	ImGui::SliderFloat3("irradiance", &_vRadiance.x, 0.0f, 5.0f);
+	ImGui::SliderFloat3("light direction", &_vLightDir.x, -100.0f, 100.0f);
 	ImGui::End();
 }
 
@@ -170,16 +234,24 @@ void EditorModel::Render()
 	UpdateGizmo();
 	UpdateWeapon();
 
+	// Render
 	for (auto& e : _vecModel)
 	{
 		e->Render();
+	}
+
+	_pGround->Render();
+
+	if(_pCollider)
+	{
+		_pCollider->Render();
 	}
 
 	if (_pCurBoneAnimation && _bBindAnim)
 	{
 		for (AkU32 i = 0; i < _uBoneNum; i++)
 		{
-			Matrix mTransform = _mapAnim[_CurModel]->GetBoneTrnasformAtID(_pCurBoneAnimation[i].iID).Transpose();
+			Matrix mTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(_pCurBoneAnimation[i].iID).Transpose();
 
 			_pCurBoneAnimation[i].mWorldRow = mTransform;
 
@@ -190,11 +262,22 @@ void EditorModel::Render()
 
 void EditorModel::RenderShadow()
 {
+	for (auto& e : _vecModel)
+	{
+		e->RenderShadow();
+	}
 
+	_pGround->RenderShadow();
 }
 
 void EditorModel::CleanUp()
 {
+	if (_pCollider)
+	{
+		delete _pCollider;
+		_pCollider = nullptr;
+	}
+
 	_mapClipName.clear();
 	_mapSkinnedModel.clear();
 
@@ -245,6 +328,12 @@ void EditorModel::CleanUp()
 		e = nullptr;
 	}
 	_vecModel.clear();
+
+	if (_pGround)
+	{
+		delete _pGround;
+		_pGround = nullptr;
+	}
 
 	if (_pCamera)
 	{
@@ -361,6 +450,8 @@ void EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstring
 	}
 
 	wcscpy_s(pModel->Name, GetFileNmaeExcludeExt(wcFilename).c_str());
+	Matrix mWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
+	pModel->UpdateWorldRow(&mWorldRow);
 
 	_vecModel.push_back(pModel);
 
@@ -406,7 +497,7 @@ void EditorModel::CreateClip(const std::wstring& wcPath, const std::wstring& wcC
 	_mapClipName[ModelName].push_back(wcClip);
 
 	_bUseAnim = AK_TRUE;
-	_CurModel = ModelName;
+	_CurCharacter = ModelName;
 
 	{
 		_pCurBoneAnimation = _mapClip[wcClip]->pBoneAnimationList;
@@ -431,20 +522,43 @@ void EditorModel::CreateClip(const std::wstring& wcPath, const std::wstring& wcC
 	}
 }
 
+void EditorModel::CreateCollider(COLLIDER_TYPE eType)
+{
+	if (!_bAttachColliderToCharacter)
+	{
+
+	}
+	else
+	{ 
+		switch (eType)
+		{
+		case COLLIDER_TYPE::BOX:
+
+			break;
+		case COLLIDER_TYPE::SPHERE:
+
+			break;
+		case COLLIDER_TYPE::CAPSULE:
+			_pCollider = new CapsuleCollider(nullptr);
+			break;
+		}
+	}
+}
+
 void EditorModel::BindAnimation()
 {
-	if (!_mapSkinnedModel.count(_CurModel) || !_mapAnim.count(_CurModel))
+	if (!_mapSkinnedModel.count(_CurCharacter) || !_mapAnim.count(_CurCharacter))
 	{
 		return;
 	}
 
 	if (_bBindAnim)
 	{
-		_mapSkinnedModel[_CurModel]->BindAnimation(_mapAnim[_CurModel]);
+		_mapSkinnedModel[_CurCharacter]->BindAnimation(_mapAnim[_CurCharacter]);
 	}
 	else
 	{
-		_mapSkinnedModel[_CurModel]->BindAnimation(nullptr);
+		_mapSkinnedModel[_CurCharacter]->BindAnimation(nullptr);
 	}
 }
 
@@ -455,7 +569,7 @@ void EditorModel::AttachBone()
 		return;
 	}
 
-	SkinnedModel* pOwner = _mapSkinnedModel[_CurModel];
+	SkinnedModel* pOwner = _mapSkinnedModel[_CurCharacter];
 	Model* pTargetModel = nullptr;
 	for (auto& e : _vecModel)
 	{
@@ -579,9 +693,28 @@ void EditorModel::UpdateGizmo()
 	{
 		for (AkU32 i = 0; i < _uBoneNum; i++)
 		{
-			_pCurBoneAnimation[i].mBoneTransform = _mapAnim[_CurModel]->GetBoneTrnasformAtID(i).Transpose();
+			_pCurBoneAnimation[i].mBoneTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(i).Transpose();
 			_pCurBoneAnimation[i].RenderGUI();
 		}
+	}
+
+	switch (_iSelectColliderTpye)
+	{
+	case 0:
+	{
+
+	}
+	break;
+	case 1:
+	{
+
+	}
+	break;
+	case 2:
+	{
+		_pCollider->RenderGUI();
+	}
+	break;
 	}
 }
 
@@ -597,7 +730,7 @@ void EditorModel::SetAnimation(const std::wstring& wcClip, AkF32 fSpeed, AkF32 f
 {
 	if (_CurClip != wcClip || _fPrevAnimSpeed != fSpeed || _fPrevBlendTime != fBlendTime)
 	{
-		_mapAnim[_CurModel]->PlayClip(wcClip.c_str(), ANIM_CLIP_STATE::LOOP, fSpeed, fBlendTime);
+		_mapAnim[_CurCharacter]->PlayClip(wcClip.c_str(), ANIM_CLIP_STATE::LOOP, fSpeed, fBlendTime);
 		_CurClip = wcClip;
 		_fPrevAnimSpeed = fSpeed;
 		_fPrevBlendTime = fBlendTime;
@@ -611,7 +744,7 @@ void EditorModel::UpdateWeapon()
 		return;
 	}
 
-	SkinnedModel* pOwner = _mapSkinnedModel[_CurModel];
+	SkinnedModel* pOwner = _mapSkinnedModel[_CurCharacter];
 	Model* pTargetModel = nullptr;
 	for (auto& e : _vecModel)
 	{
@@ -629,12 +762,13 @@ void EditorModel::UpdateWeapon()
 
 	if (!pTargetModel)
 	{
+		wprintf_s(L"[Error] Please Select Model.\n");
 		return;
 	}
 
 	if (!_pCurBoneAnimation)
 	{
-		wprintf_s(L"[Error] Do not Select Animation clip.\n");
+		wprintf_s(L"[Error] Please Select Animation clip.\n");
 		return;
 	}
 
@@ -650,6 +784,7 @@ void EditorModel::UpdateWeapon()
 
 	if (!pTargetBone)
 	{
+		wprintf_s(L"[Error] Please Select Bone.\n");
 		return;
 	}
 
@@ -657,7 +792,7 @@ void EditorModel::UpdateWeapon()
 
 	if (_bBindAnim)
 	{
-		mTransform = _mAttachMatrix * _mapAnim[_CurModel]->GetBoneTrnasformAtID(pTargetBone->iID).Transpose();
+		mTransform = _mAttachMatrix * _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(pTargetBone->iID).Transpose();
 
 		pTargetModel->UpdateWorldRow(&mTransform);
 	}

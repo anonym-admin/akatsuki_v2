@@ -112,6 +112,10 @@ void BoxCollider::OnCollisionExit(Collider* pCollider)
 	_pOwner->OnCollisionExit(pCollider);
 }
 
+void BoxCollider::RenderGUI()
+{
+}
+
 Vector3 BoxCollider::GetMinWorld()
 {
 	Vector3 vMinWorld = Vector3(0.0f);

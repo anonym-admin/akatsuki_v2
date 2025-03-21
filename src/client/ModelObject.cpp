@@ -8,9 +8,9 @@ Model Object
 =================
 */
 
-ModelObject::ModelObject()
+ModelObject::ModelObject(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 {
-    if (!Initialize())
+    if (!Initialize(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive))
     {
         __debugbreak();
     }
@@ -29,16 +29,19 @@ ModelObject::~ModelObject()
     CleanUp();
 }
 
-AkBool ModelObject::Initialize()
+AkBool ModelObject::Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 {
     // Create Model
-    Vector3 vExtent = Vector3(1.0f);
-    Vector3 vAlbedo = Vector3(1.0f);
-    Vector3 vEmissive = Vector3(0.0f);
-    CreateCube(&vExtent, &vAlbedo, 1.0f, 0.0f, &vEmissive, nullptr);
+    _pModel = CreateModel(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive, AK_FALSE);
 
     // Create Transform
     _pTransform = CreateTransform();
+
+    // Create Collider.
+    Vector3 vMin = Vector3(-0.5f);
+    Vector3 vMax = Vector3(0.5f);
+    CalcColliderMinMax(pMeshData, uMeshDataNum, &vMin, &vMax);
+    _pCollider = CreateBoxCollider(&vMin, &vMax);
 
     return AK_TRUE;
 }
@@ -114,36 +117,6 @@ ModelObject* ModelObject::Clone()
 {
     Spawn::Clone();
     return new ModelObject();
-}
-
-void ModelObject::CreateCube(const Vector3* pExtent, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, const wchar_t** ppTexFimenames)
-{
-    // Create Model.
-    AkU32 uMeshDataNum = 0;
-    MeshData_t* pCube = GeometryGenerator::MakeCubeWidthExtent(&uMeshDataNum, pExtent);
-    Vector3 vAlbedo = Vector3(1.0f);
-    Vector3 vEmissive = Vector3(0.0f);
-    
-    if (ppTexFimenames)
-    {
-        for (AkU32 i = 0; i < uMeshDataNum; i++)
-        {
-            if (ppTexFimenames[i])
-            {
-                wcscpy_s(pCube[i].wcAlbedoTextureFilename, ppTexFimenames[i]);
-            }
-        }
-    }
-
-    _pModel = CreateModel(pCube, uMeshDataNum, &vAlbedo, 1.0f, 0.0f, &vEmissive, AK_FALSE);
-
-    // Create Collider.
-    Vector3 vMin = Vector3(0.0f);
-    Vector3 vMax = Vector3(0.0f);
-    CalcColliderMinMax(pCube, uMeshDataNum, &vMin, &vMax);
-    _pCollider = CreateBoxCollider(&vMin, &vMax);
-
-    GeometryGenerator::DestroyGeometry(pCube, uMeshDataNum);
 }
 
 void ModelObject::CleanUp()

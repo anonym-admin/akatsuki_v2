@@ -66,11 +66,11 @@ AkBool SceneInGame::BeginScene()
 
 	// Container
 	{
-		ModelObject* pContainer = new ModelObject;
-		pContainer->Name = L"Container";
-		pContainer->tLink.pData = pContainer;
-		pContainer->GetTransform()->SetPosition(-25.0f, 0.5f, 5.0f);
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::CONTAINER, pContainer);
+		//ModelObject* pContainer = new ModelObject;
+		//pContainer->Name = L"Container";
+		//pContainer->tLink.pData = pContainer;
+		//pContainer->GetTransform()->SetPosition(-25.0f, 0.5f, 5.0f);
+		//AddGameObject(GAME_OBJECT_GROUP_TYPE::CONTAINER, pContainer);
 	}
 
 	// Tree Billboard.

@@ -27,6 +27,8 @@ public:
 	virtual void OnCollision(Collider* pCollider) override;
 	virtual void OnCollisionExit(Collider* pCollider) override;
 
+	virtual void RenderGUI() override {};
+
 	virtual AkF32 Radius() override;
 
 private:

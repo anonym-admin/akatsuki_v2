@@ -52,7 +52,10 @@ AkBool Collider::Intersect(Collider* pCollider)
 
 void Collider::Update()
 {
-	_pTransform->SetParent(&_pOwner->GetTransform()->GetWorldTransform());
+	if(_pOwner)
+	{
+		_pTransform->SetParent(&_pOwner->GetTransform()->GetWorldTransform());
+	}
 
 	_pTransform->Update();
 }

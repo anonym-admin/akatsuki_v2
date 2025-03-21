@@ -38,6 +38,7 @@ public:
 
 	void Update();
 	void Render();
+	virtual void RenderGUI() = 0;
 
 	Transform* GetTransform() { return _pTransform; }
 	Actor* GetOwner() { return _pOwner; }
@@ -52,6 +53,7 @@ protected:
 	COLLIDER_TYPE _eType = COLLIDER_TYPE::NONE;
 	ILineObject* _pLineObj = nullptr;
 	Transform* _pTransform = nullptr;
+	AkBool _bUseGizmo = AK_FALSE;
 
 private:
 	AkI32 _iID = -1;
