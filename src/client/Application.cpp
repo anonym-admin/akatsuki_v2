@@ -300,6 +300,9 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 	// Create Font Obj.
 	GFont = GRenderer->CreateFontObject(SYSTEM_FONT_FAMILY_NAME, SYSTEM_FONT_SIZE);
 
+	// Set VSync
+	GRenderer->SetVSync(_bUseVSync);
+
 	return AK_TRUE;
 }
 

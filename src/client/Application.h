@@ -46,7 +46,7 @@ private:
 private:
 	HMODULE _hRendererDLL = nullptr;
 
-	AkBool _bUseVSync = AK_TRUE;
+	AkBool _bUseVSync = AK_FALSE;
 	AkBool _bChangeEditor = AK_FALSE;
 	AkBool _bPlayingEditor = AK_FALSE;
 

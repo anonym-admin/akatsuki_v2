@@ -93,6 +93,12 @@ private:
 	AkF32 _fPrevBlendTime = 1.0f;
 
 	BoneAnimation_t* _pCurBoneAnimation = nullptr;
+	BoneAnimation_t* _pAttachBoneAnimation = nullptr;
+	BoneAnimation_t* _pCombineBoneAnimation = nullptr;
+	AnimationClip_t* _pCombineAnimationClip = nullptr;
+
+	Vector2 _vCurClipBoneID = Vector2(-1.0f);
+	Vector2 _vAttachClipBoneID = Vector2(-1.0f);
 
 	Matrix _mAttachMatrix = Matrix();
 

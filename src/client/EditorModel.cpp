@@ -127,6 +127,7 @@ void EditorModel::RenderGUI()
 	ImGui::Checkbox("Render Bone", &_bRenderBone);
 	ImGui::Checkbox("Render Character", &_bRenderCharacter);
 
+	// File Import & Export
 	IGFD::FileDialogConfig tConfig = {};
 	tConfig.filePathName = "../../assets/model_new/origin/";
 	const char* pItems0[] = { "Model", "Animation" };
@@ -207,11 +208,100 @@ void EditorModel::RenderGUI()
 
 	ImGui::End();
 
-	// Animation Blending
-	ImGui::Begin("Animation Blending");
+	// Animation Combine
+	static std::wstring wcAttachClipName = L"";
+	ImGui::Begin("Animation Combine");
+	{
+		for (auto& e : _mapClipName[_CurCharacter])
+		{
+			if (ImGui::Button(ToString(e).c_str()))
+			{
+				_pAttachBoneAnimation = _mapClip[e]->pBoneAnimationList;
+				wcAttachClipName = e;
+			}
+		}
+	}
+	
+	_CurClip.empty() ? ImGui::Text("Cur Clip: Not Select") : ImGui::Text(ToString(_CurClip).c_str());
+	ImGui::InputFloat2("Cur Clip Start/End Bone ID", &_vCurClipBoneID.x);
+	wcAttachClipName.empty() ? ImGui::Text("Attach Clip: Not Select") : ImGui::Text(ToString(wcAttachClipName).c_str());
+	ImGui::InputFloat2("Attach Clip Start/End Bone ID", &_vAttachClipBoneID.x);
+	AkBool bComplete = AK_FALSE;
+	if (ImGui::Button("Bake Animation"))
+	{
+		if (_pCombineAnimationClip)
+		{
+			delete _pCombineAnimationClip;
+			_pCombineAnimationClip = nullptr;
+		}
 
-	// TODO
+		if (_pCombineBoneAnimation)
+		{
+			for (AkU32 i = 0; i < _uBoneNum; i++)
+			{
+				if (_pCombineBoneAnimation[i].pKeyFrameList)
+				{
+					delete[] _pCombineBoneAnimation[i].pKeyFrameList;
+					_pCombineBoneAnimation[i].pKeyFrameList = nullptr;
+				}
+			}
 
+			delete[] _pCombineBoneAnimation;
+			_pCombineBoneAnimation = nullptr;
+		}
+
+		_pCombineBoneAnimation = new BoneAnimation_t[_uBoneNum];
+
+		// Hip
+		AkU32 uKeyFrameNum = _pAttachBoneAnimation[0].uNumKeyFrame;
+		_pCombineBoneAnimation[0].uNumKeyFrame = uKeyFrameNum;
+		_pCombineBoneAnimation[0].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
+		memcpy(_pCombineBoneAnimation[0].pKeyFrameList, _pAttachBoneAnimation[0].pKeyFrameList, sizeof(KeyFrame_t) * uKeyFrameNum);
+
+		// Cur Clip.
+		for (AkU32 i = (AkU32)_vCurClipBoneID.x; i <= (AkU32)_vCurClipBoneID.y; i++)
+		{
+			AkU32 uKeyFrameNum = _pCurBoneAnimation[i].uNumKeyFrame;
+			_pCombineBoneAnimation[i].uNumKeyFrame = uKeyFrameNum;
+			_pCombineBoneAnimation[i].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
+			memcpy(_pCombineBoneAnimation[i].pKeyFrameList, _pCurBoneAnimation[i].pKeyFrameList, sizeof(KeyFrame_t)* uKeyFrameNum);
+		}
+
+		// Attach Clip.
+		for (AkU32 i = (AkU32)_vAttachClipBoneID.x; i <= (AkU32)_vAttachClipBoneID.y; i++)
+		{
+			AkU32 uKeyFrameNum = _pAttachBoneAnimation[i].uNumKeyFrame;
+			_pCombineBoneAnimation[i].uNumKeyFrame = uKeyFrameNum;
+			_pCombineBoneAnimation[i].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
+			memcpy(_pCombineBoneAnimation[i].pKeyFrameList, _pAttachBoneAnimation[i].pKeyFrameList, sizeof(KeyFrame_t) * uKeyFrameNum);
+		}
+
+		// Save File.
+		_pCombineAnimationClip = new AnimationClip_t;
+		_pCombineAnimationClip->pBoneAnimationList = _pCombineBoneAnimation;
+		_pCombineAnimationClip->uNumBoneAnimation = _uBoneNum;
+		_pCombineAnimationClip->uDuration = max(_mapClip[_CurClip]->uDuration, _mapClip[wcAttachClipName]->uDuration);
+		_pCombineAnimationClip->uTickPerSecond = max(_mapClip[_CurClip]->uTickPerSecond, _mapClip[wcAttachClipName]->uTickPerSecond);
+		// Set Max Frame.
+		AkU32 uMaxKeyFrame = 0;
+		for (AkU32 i = 0; i < _pCombineAnimationClip->uNumBoneAnimation; i++)
+		{
+			uMaxKeyFrame = max(uMaxKeyFrame, _pCombineAnimationClip->pBoneAnimationList[i].uNumKeyFrame);
+		}
+		_pCombineAnimationClip->uMaxKeyFrame = uMaxKeyFrame;
+
+		_mapClip[L"Test.anim"] = _pCombineAnimationClip;
+
+		ModifyAnimation(_CurCharacter, L"Test");
+
+		_mapClip.erase(L"Test.anim");
+
+		bComplete = AK_TRUE;
+	}
+	if (bComplete)
+	{
+		ImGui::Text("Complete");
+	}
 	ImGui::End();
 
 	// Collider
@@ -285,6 +375,27 @@ void EditorModel::RenderShadow()
 
 void EditorModel::CleanUp()
 {
+	if (_pCombineAnimationClip)
+	{
+		delete _pCombineAnimationClip;
+		_pCombineAnimationClip = nullptr;
+	}
+
+	if (_pCombineBoneAnimation)
+	{
+		for (AkU32 i = 0; i < _uBoneNum; i++)
+		{
+			if (_pCombineBoneAnimation[i].pKeyFrameList)
+			{
+				delete[] _pCombineBoneAnimation[i].pKeyFrameList;
+				_pCombineBoneAnimation[i].pKeyFrameList = nullptr;
+			}
+		}
+
+		delete[] _pCombineBoneAnimation;
+		_pCombineBoneAnimation = nullptr;
+	}
+
 	if (_pCollider)
 	{
 		delete _pCollider;

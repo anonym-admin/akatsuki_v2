@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/AkType.h"
-#include "common/AkMeshData.h"
+#include "common/CommonType.h"
+#include "common/CommonMeshData.h"
 
 #include <Windows.h>
