@@ -46,7 +46,6 @@ private:
 private:
 	HMODULE _hRendererDLL = nullptr;
 
-	AkF32 _fFps = 0.0f;
 	AkBool _bUseVSync = AK_TRUE;
 	AkBool _bChangeEditor = AK_FALSE;
 	AkBool _bPlayingEditor = AK_FALSE;

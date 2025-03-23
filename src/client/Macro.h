@@ -1,7 +1,8 @@
 #pragma once
 
+#define FPS GFps
+// #define DT GTimer->GetDeltaTime()
 #define DT GDeltaTime
-
 #define LBTN_DOWN GGameInput->LeftBtnDown()
 #define RBTN_DOWN GGameInput->RightBtnDown()
 #define LBTN_UP GGameInput->LeftBtnUp()

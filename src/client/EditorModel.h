@@ -64,6 +64,8 @@ private:
 	AkBool _bAttachBone = AK_FALSE;
 	AkBool _bModifyWeaponTransform = AK_FALSE;
 	AkBool _bAttachColliderToCharacter = AK_FALSE;
+	AkBool _bRenderBone = AK_FALSE;
+	AkBool _bRenderCharacter = AK_TRUE;
 
 	ModelExporter* _pExporter = nullptr;
 	ModelImporter* _pImporter = nullptr;

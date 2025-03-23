@@ -494,7 +494,7 @@ void Application::UpdateText()
 		AkI32 iTextWidth = 0;
 		AkI32 iTextHeight = 0;
 		wchar_t wcText[256] = {};
-		AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf \npos:%lf %lf %lf \n", _fFps, vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
+		AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf vsync:%s\npos:%lf %lf %lf \n", GFps, _bUseVSync ? L"on" : L"off", vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
 
 		if (wcscmp(_wcText, wcText))
 		{
@@ -567,7 +567,7 @@ void Application::CalculateFrameRate()
 	{
 		AkF32 fFps = static_cast<AkF32>(uFrameCount);
 
-		_fFps = fFps;
+		GFps = fFps;
 
 		uFrameCount = 0;
 		fTimeElapsed += 1.0f;

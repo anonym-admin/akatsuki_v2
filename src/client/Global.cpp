@@ -12,6 +12,7 @@
 #include "UIManager.h"
 #include "SoundManager.h"
 
+AkF32 GFps;
 AkF32 GDeltaTime;
 HWND GhWnd;
 IRenderer* GRenderer;

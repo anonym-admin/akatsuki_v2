@@ -398,8 +398,10 @@ void FRenderer::Present()
 	Fence();
 
 	AkU32 uPresentFlags = 0;
+	BOOL bFullSrcreen = AK_FALSE;
+	_pSwapChain->GetFullscreenState((BOOL*)&bFullSrcreen, nullptr);
 
-	if (!_uVSyncInterval)
+	if (!_uVSyncInterval && !bFullSrcreen)
 	{
 		uPresentFlags = DXGI_PRESENT_ALLOW_TEARING;
 	}

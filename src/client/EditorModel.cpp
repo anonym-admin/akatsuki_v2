@@ -118,11 +118,14 @@ void EditorModel::RenderGUI()
 	_pCamera->RenderGUI();
 
 	ImGui::Begin("[Model Editor]");
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", DT, FPS);
 	ImGui::Checkbox("FBV", &_bFPV);
 	if (ImGui::Checkbox("Bind Anim", &_bBindAnim))
 	{
 		BindAnimation();
 	}
+	ImGui::Checkbox("Render Bone", &_bRenderBone);
+	ImGui::Checkbox("Render Character", &_bRenderCharacter);
 
 	IGFD::FileDialogConfig tConfig = {};
 	tConfig.filePathName = "../../assets/model_new/origin/";
@@ -237,6 +240,11 @@ void EditorModel::Render()
 	// Render
 	for (auto& e : _vecModel)
 	{
+		if (!_bRenderCharacter && !wcscmp(e->Name, _CurCharacter.c_str()))
+		{
+			continue;
+		}
+		
 		e->Render();
 	}
 
@@ -247,11 +255,11 @@ void EditorModel::Render()
 		_pCollider->Render();
 	}
 
-	if (_pCurBoneAnimation && _bBindAnim)
+	if (_pCurBoneAnimation && _bBindAnim && _bRenderBone)
 	{
 		for (AkU32 i = 0; i < _uBoneNum; i++)
 		{
-			Matrix mTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(_pCurBoneAnimation[i].iID).Transpose();
+			Matrix mTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(_pCurBoneAnimation[i].iID).Transpose() * _mapSkinnedModel[_CurCharacter]->GetWorldRow();
 
 			_pCurBoneAnimation[i].mWorldRow = mTransform;
 
@@ -264,6 +272,11 @@ void EditorModel::RenderShadow()
 {
 	for (auto& e : _vecModel)
 	{
+		if (!_bRenderCharacter && !wcscmp(e->Name, _CurCharacter.c_str()))
+		{
+			continue;
+		}
+
 		e->RenderShadow();
 	}
 
@@ -693,8 +706,11 @@ void EditorModel::UpdateGizmo()
 	{
 		for (AkU32 i = 0; i < _uBoneNum; i++)
 		{
-			_pCurBoneAnimation[i].mBoneTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(i).Transpose();
-			_pCurBoneAnimation[i].RenderGUI();
+			if(_pCurBoneAnimation[i].bPick)
+			{
+				_pCurBoneAnimation[i].mBoneTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(i).Transpose() * _mapSkinnedModel[_CurCharacter]->GetWorldRow();
+				_pCurBoneAnimation[i].RenderGUI();
+			}
 		}
 	}
 
