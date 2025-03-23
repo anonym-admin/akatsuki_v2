@@ -307,7 +307,6 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 		}
 		hDest.Offset(1, uDescriptorSize);
 
-
 		// Irradiance IBL.
 		if (pIrradianceTexHandle)
 		{

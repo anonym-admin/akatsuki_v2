@@ -12,7 +12,7 @@ class FBasicMeshObject : public IMeshObject
 {
 public:
     static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 2;
-    static const AkU32 DESCRIPTOR_COUNT_PER_MESH = 6 + 3 + 1 + 5; // albedo, normal ... (t0~t5) / IBL (t11, t12, t13) / material cb (b2) / Shadow Map (t15, t16, 17)
+    static const AkU32 DESCRIPTOR_COUNT_PER_MESH = 7 + 3 + 1 + 5; // albedo, normal ... height (t0~t6) / IBL (t11, t12, t13) / material cb (b2) / Shadow Map (t15, t16, 17)
     static const AkU32 MAX_MESH_COUNT_PER_OBJ = 8;
     static const AkU32 MAX_DESCRIPTOR_COUNT_FOR_DRAW = DESCRIPTOR_COUNT_PER_OBJ + (DESCRIPTOR_COUNT_PER_MESH * MAX_MESH_COUNT_PER_OBJ);
 

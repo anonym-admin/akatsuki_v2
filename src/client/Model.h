@@ -25,6 +25,7 @@ public:
 	void SetWireFrame(AkBool bDrawWire);
 
 	AkBool IsPick() { return _bUseGizmo; }
+	void ReleasePick() { _bUseGizmo = AK_FALSE; }
 
 private:
 	void CleanUp();

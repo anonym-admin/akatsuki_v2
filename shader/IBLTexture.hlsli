@@ -19,7 +19,7 @@ cbuffer MaterialConsts : register(b2)
     uint invertNormalMapY;
     uint useMetallicMap;
     uint useRoughnessMap;
-    float reserve0;
+    uint useHeightMap;
 };
 
 #endif

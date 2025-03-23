@@ -24,8 +24,8 @@ class FRenderUI;
 class FRenderer : public IRenderer
 {
 public:
-	static const AkU32 MAX_DRAW_COUNT_PER_FRAME = 4096 * 2;
-	static const AkU32 MAX_DESCRIPTOR_COUNT = 4096 * 2;
+	static const AkU32 MAX_DRAW_COUNT_PER_FRAME = 4096;
+	static const AkU32 MAX_DESCRIPTOR_COUNT = 4096;
 	static const AkU32 MAX_RENDER_THREAD_COUNT = 8;
 	static const AkU32 CASCADE_SHADOW_MAP_LEVEL = 5;
 

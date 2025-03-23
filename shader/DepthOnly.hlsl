@@ -49,10 +49,16 @@ DepthOnlyPSInput VSMain(VSInput input)
     
     DepthOnlyPSInput output;
     
-    matrix vpMat = mul(view, proj); // view x proj
-    matrix wvpMat = mul(world, vpMat); // world x view x proj
+    float3 posWorld = mul(float4(input.posModel, 1.0), world).xyz;
+    if (useHeightMap)
+    {
+        float height = heightTex.SampleLevel(linearClampSS, input.texCoord, 0).r;
+        height = height * 2.0 - 1.0;
+        posWorld += posWorld * height * heightScale;
+    }
     
-    output.posProj = mul(float4(input.posModel, 1.0), wvpMat); // pojtected vertex = vertex x world x view x proj
+    output.posProj = mul(float4(posWorld, 1.0), view);
+    output.posProj = mul(output.posProj, proj);; // pojtected vertex = vertex x world x view x proj
     
     return output;
 }

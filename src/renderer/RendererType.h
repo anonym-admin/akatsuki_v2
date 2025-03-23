@@ -59,6 +59,8 @@ struct MeshConstantBuffer_t
 {
 	Matrix mWorld = Matrix();
 	Matrix mWorldIT = Matrix();
+
+	AkF32 fHeightScale = 1.0f;
 };
 
 struct LineConstantBuffer_t
@@ -77,10 +79,11 @@ struct MaterialConstantBuffer_t
 	AkU32 uUseNormalMap = AK_FALSE;
 	AkU32 uUseEimissiveMap = AK_FALSE;
 	AkU32 uUseAOMap = AK_FALSE;
+
 	AkU32 uInvertNormalMapY = AK_FALSE;
 	AkU32 uUseMetallicMap = AK_FALSE;
 	AkU32 uUseRoughnessMap = AK_FALSE;
-	AkF32 fReserve0 = 0.0f;
+	AkU32 uUseHeightMap = AK_FALSE;
 };
 
 struct SkinnedMeshConstantBuffer_t
@@ -173,6 +176,7 @@ struct Mesh_t
 	TextureHandle_t* pMetallicTextureHandle = nullptr;
 	TextureHandle_t* pRoughnessTextureHandle = nullptr;
 	TextureHandle_t* pAoTextureHandle = nullptr;
+	TextureHandle_t* pHeightTextureHandle = nullptr;
 };
 
 struct FontHandle_t

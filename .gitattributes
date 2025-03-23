@@ -58,3 +58,7 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 assets/model/Ch15*.dds filter=lfs diff=lfs merge=lfs -text
+grey_porous_rock_40_56_diffuse.dds filter=lfs diff=lfs merge=lfs -text
+grey_porous_rock_40_56_metallic.dds filter=lfs diff=lfs merge=lfs -text
+grey_porous_rock_40_56_normal.dds filter=lfs diff=lfs merge=lfs -text
+grey_porous_rock_40_56_reflection.dds filter=lfs diff=lfs merge=lfs -text

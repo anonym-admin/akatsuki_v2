@@ -111,6 +111,7 @@ void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdL
 	mWorldRow.Translation(Vector3(0.0f));
 	mWorldRow.Invert().Transpose();
 	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
+	pMeshConstantBuffer->fHeightScale = 0.5f;
 
 	// Per Obj (b1).
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -200,6 +201,18 @@ void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdL
 
 		// AO
 		pTexHandle = _pMeshes[i].pAoTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Height
+		pTexHandle = _pMeshes[i].pHeightTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -358,11 +371,12 @@ void FBasicMeshObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Mat
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
 	FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(0, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
 	FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(0, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
+	FConstantBufferPool* pMaterialCBPool = _pRenderer->GetConstantBufferPool(0, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MATERIAL);
 	AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
-	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ;
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + (_uMeshNum * DESCRIPTOR_COUNT_PER_MESH);
 
 	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
 	{
@@ -403,10 +417,166 @@ void FBasicMeshObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Mat
 	mWorldRow.Translation(Vector3(0.0f));
 	mWorldRow.Invert().Transpose();
 	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
+	pMeshConstantBuffer->fHeightScale = 0.5f;
 
 	// Per Obj (b1).
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
+
+	// Per Mesh
+	TextureHandle_t* pIrradianceTexHandle = nullptr;
+	TextureHandle_t* pSpecularTexHandle = nullptr;
+	TextureHandle_t* pBrdfTexHandle = nullptr;
+	_pRenderer->GetIBLTexture(&pIrradianceTexHandle, &pSpecularTexHandle, &pBrdfTexHandle);
+	for (AkU32 i = 0; i < _uMeshNum; i++)
+	{
+		CBContainer_t* pMaterialCBContainer = pMaterialCBPool->Alloc();
+		if (!pMaterialCBContainer)
+		{
+			__debugbreak();
+			return;
+		}
+
+		MaterialConstantBuffer_t* pMaterialConstantBuffer = reinterpret_cast<MaterialConstantBuffer_t*>(pMaterialCBContainer->pSystemMemAddr);
+		memcpy(pMaterialConstantBuffer, &_pMaterials[i], sizeof(MaterialConstantBuffer_t));
+
+		// Material CB(b2)
+		pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		hDest.Offset(1, uDescriptorSize);
+
+		// Albedo
+		TextureHandle_t* pTexHandle = _pMeshes[i].pAldedoTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Normal
+		pTexHandle = _pMeshes[i].pNormalTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Emissive
+		pTexHandle = _pMeshes[i].pEmissiveTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Metallic
+		pTexHandle = _pMeshes[i].pMetallicTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Roughness
+		pTexHandle = _pMeshes[i].pRoughnessTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// AO
+		pTexHandle = _pMeshes[i].pAoTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Height
+		pTexHandle = _pMeshes[i].pHeightTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Irradiance IBL.
+		if (pIrradianceTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pIrradianceTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Specular IBL
+		if (pSpecularTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pSpecularTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Brdf Tex
+		if (pBrdfTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pBrdfTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Shadow Map
+		for (AkU32 uCascadeIndex = 0; uCascadeIndex < FRenderer::CASCADE_SHADOW_MAP_LEVEL; uCascadeIndex++)
+		{
+			D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
+			_pRenderer->GetShadowMapSrv(&hSRV, uCascadeIndex);
+			if (hSRV.ptr)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				AkI32 a = 3;
+			}
+			hDest.Offset(1, uDescriptorSize);
+		}
+	}
 
 	// Set RootSignature.
 	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
@@ -417,8 +587,13 @@ void FBasicMeshObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Mat
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
 	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
 	for (AkU32 i = 0; i < _uMeshNum; i++)
 	{
+		// Draw Mesh(root param 1)
+		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
+		hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
+
 		pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
 		pCmdList->IASetIndexBuffer(&_pMeshes[i].tIBView);
 		pCmdList->DrawIndexedInstanced(_pMeshes[i].uIndexCountPerInstance, 1, 0, 0, 0);
@@ -477,16 +652,16 @@ AkBool FBasicMeshObject::CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDat
 			_pMeshes[i].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcEmissiveTextureFilename, AK_TRUE));
 			_pMaterials[i].uUseEimissiveMap = AK_TRUE;
 		}
-		//// Height
-		//if (!wcscmp(pMeshData[i].wcHeightTextureFilename, L""))
-		//{
-		//	_pMeshes[i].pEmissiveTextureHandle = pTextureManager->CreateNullTexture();
-		//}
-		//else
-		//{
-		//	_pMeshes[i].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcHeightTextureFilename, AK_FALSE));
-		//}
-		
+		// Height
+		if (!wcscmp(pMeshData[i].wcHeightTextureFilename, L""))
+		{
+			_pMeshes[i].pHeightTextureHandle = pTextureManager->CreateNullTexture();
+		}
+		else
+		{
+			_pMeshes[i].pHeightTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcHeightTextureFilename, AK_FALSE));
+			_pMaterials[i].uUseHeightMap = AK_TRUE;
+		}
 		// Metallic.
 		if (!wcscmp(pMeshData[i].wcMetallicTextureFilename, L""))
 		{
@@ -625,6 +800,11 @@ void FBasicMeshObject::CleanUp()
 				_pRenderer->DestroyTexture(_pMeshes[i].pAoTextureHandle);
 				_pMeshes[i].pAoTextureHandle = nullptr;
 			}
+			if (_pMeshes[i].pHeightTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pHeightTextureHandle);
+				_pMeshes[i].pHeightTextureHandle = nullptr;
+			}
 		}
 
 		free(_pMeshes);
@@ -707,7 +887,7 @@ AkBool FBasicMeshObject::CreateRootSignature()
 
 	CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[4] = {};
 	tRangesPerTriGroup[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2: Constant Buffer View per Mesh
-	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 6, 0);	// t0~t5 : Shader Resource View(Tex) per Mesh.
+	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0);	// t0~t6 : Shader Resource View(Tex) per Mesh.
 	tRangesPerTriGroup[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 11);	// t10, t11, t12, t13 : Shader Resource View(Tex) per Mesh. (IBL Texture)
 	tRangesPerTriGroup[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 15);	// t15, t16, t17, t18, t19 : Shadow Map
 

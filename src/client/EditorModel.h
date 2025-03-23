@@ -33,6 +33,7 @@ private:
 	void CreateModel(const std::wstring& wcBasePath, const std::wstring& wcFilename);
 	void CreateClip(const std::wstring& wcPath, const std::wstring& wcClip);
 	void CreateCollider(COLLIDER_TYPE eTyep);
+	void LoadTextureName(const std::wstring& wcBasePath, const std::wstring& wcFilename);
 	
 	void BindAnimation();
 	void AttachBone();
@@ -55,6 +56,7 @@ private:
 	AkI32 _iExportType = -1;
 	AkI32 _iModifyType = -1;
 	AkI32 _iImportType = -1;
+	AkI32 _iTextureType = -1;
 	AkI32 _iCurSelectedBoneID = -1;
 	AkI32 _iSelectColliderTpye = -1;
 	AkI32 _iPrevSelectedBoneID = 0;
@@ -97,14 +99,15 @@ private:
 	BoneAnimation_t* _pCombineBoneAnimation = nullptr;
 	AnimationClip_t* _pCombineAnimationClip = nullptr;
 
-	Vector2 _vCurClipBoneID = Vector2(-1.0f);
-	Vector2 _vAttachClipBoneID = Vector2(-1.0f);
-
 	Matrix _mAttachMatrix = Matrix();
+
+	// Texture Names
+	std::vector<std::wstring> _vecTextureNames = {};
 
 	// Collider.
 	// 삭제 기능 미구현.
-	Collider* _pCollider = nullptr;
+	std::vector<Collider*> _vecColliders = {};
+	std::unordered_map<std::wstring, std::vector<Collider*>> _mapColliders = {};
 
 	// For Shadow.
 	Vector3 _vRadiance = Vector3(0.5f);

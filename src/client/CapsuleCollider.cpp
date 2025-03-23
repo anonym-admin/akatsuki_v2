@@ -204,6 +204,7 @@ void CapsuleCollider::RenderGUI()
 	mWorldRow.Decompose(vScale, qRotation, vPosition);
 
 	_pTransform->SetScale(&vScale);
+	_pTransform->SetPosition(&vPosition);
 
 	ImGui::End();
 }

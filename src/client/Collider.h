@@ -44,6 +44,7 @@ public:
 	Actor* GetOwner() { return _pOwner; }
 	AkI32 GetID() { return _iID; }
 	void SetColor(const Vector3* pColor);
+	AkBool IsPick() { return _bUseGizmo; }
 
 private:
 	void CleanUp();

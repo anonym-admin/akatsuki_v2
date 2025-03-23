@@ -43,16 +43,21 @@ PSInput VSMain(VSInput input)
 #endif
     
     PSInput output;
-    
-    matrix vpMat = mul(view, proj); // view x proj
-    matrix wvpMat = mul(world, vpMat); // world x view x proj
-    
+   
     output.posModel = input.posModel;
     
     output.posWorld = mul(float4(input.posModel, 1.0), world);
-    
-    output.posProj = mul(float4(input.posModel, 1.0), wvpMat); // pojtected vertex = vertex x world x view x proj
     output.normalWorld = mul(float4(input.normalModel, 0.0), worldIT).xyz;
+    
+    if (useHeightMap)
+    {
+        float height = heightTex.SampleLevel(linearClampSS, input.texCoord, 0).r;
+        height = height * 2.0 - 1.0;
+        output.posWorld += output.normalWorld * height * heightScale;
+    }
+    
+    output.posProj = mul(float4(output.posWorld, 1.0), view); 
+    output.posProj = mul(output.posProj, proj);
     output.texCoord = input.texCoord;
     output.tangentWorld = mul(float4(input.tangentModel, 0.0), world).xyz;
     

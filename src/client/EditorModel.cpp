@@ -46,7 +46,7 @@ AkBool EditorModel::Initialize()
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissvie = Vector3(0.0f);
 	_pGround = new Model(pSquare, uMeshDataNum, &vAlbedo, 0.0f, 1.0f, &vEmissvie);
-	
+
 	Matrix mWorldRow = Matrix::CreateRotationX(DirectX::XM_PIDIV2);
 	_pGround->UpdateWorldRow(&mWorldRow);
 
@@ -71,12 +71,15 @@ AkBool EditorModel::EndEditor()
 {
 	Collider::DRAW_COLLIDER = AK_FALSE;
 
+	// 모든 모델 삭제.
 	for (auto& e : _vecModel)
 	{
 		delete e;
 		e = nullptr;
 	}
 	_vecModel.clear();
+
+	// 나머지 오블젝트 삭제??
 
 	return AK_TRUE;
 }
@@ -86,7 +89,7 @@ void EditorModel::Update()
 	// Update
 	UpdateControl();
 
-	if(_bFPV)
+	if (_bFPV)
 	{
 		_pCamera->Update();
 	}
@@ -97,20 +100,34 @@ void EditorModel::Update()
 	}
 
 	// Final Update
-	if(_pCollider)
+	for (auto& v : _vecColliders)
 	{
-		if(_mapSkinnedModel.count(_CurCharacter))
-		{
-			Matrix mTargetWorld = _mapSkinnedModel[_CurCharacter]->GetWorldRow();
-
-			_pCollider->GetTransform()->SetParent(&mTargetWorld);
-		}
-
-		_pCollider->Update();
+		v->Update();
 	}
 
 	// Gloabl Light.
 	GRenderer->AddGlobalLight(&_vRadiance, &_vLightDir, AK_TRUE);
+
+	// Delete.
+	AkU32 uIndex = 0;
+	for (auto& e : _vecModel)
+	{
+		if (e->IsPick())
+		{
+			if (KEY_DOWN(KEY_INPUT_DELETE))
+			{
+				if (e)
+				{
+					delete e;
+					e = nullptr;
+				}
+
+				_vecModel.erase(_vecModel.begin() + uIndex);
+			}
+
+			uIndex++;
+		}
+	}
 }
 
 void EditorModel::RenderGUI()
@@ -148,6 +165,43 @@ void EditorModel::RenderGUI()
 	if (ImGui::Combo("Import Data Type", &_iImportType, pItems2, IM_ARRAYSIZE(pItems2)))
 	{
 		ImGuiFileDialog::Instance()->OpenDialog("ImportKey", "Choose File", ".mesh,.anim", tConfig);
+	}
+
+	tConfig.filePathName = "../../assets/model_new/textures/";
+	const char* pItems3[] = { "Texture" };
+	if (ImGui::Combo("Import Texture Type", &_iTextureType, pItems3, IM_ARRAYSIZE(pItems3)))
+	{
+		ImGuiFileDialog::Instance()->OpenDialog("TextureKey", "Choose File", ".jpg,.png,.dds", tConfig);
+	}
+
+	if (ImGui::Button("Create Sphere Model"))
+	{
+		AkU32 uMeshDataNum = 0;
+		MeshData_t* pMeshData = GeometryGenerator::MakeSphere(&uMeshDataNum, 1.0f, 32, 32);
+		Vector3 vAlbedo = Vector3(0.5f);
+		Vector3 vEmissive = Vector3(0.0f);
+		wcscpy_s(pMeshData->wcAlbedoTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_diffuse.dds");
+		wcscpy_s(pMeshData->wcAoTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_ao.dds");
+		wcscpy_s(pMeshData->wcHeightTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_height.dds");
+		wcscpy_s(pMeshData->wcRoughnessTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_roughness.dds");
+		wcscpy_s(pMeshData->wcNormalTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_normal.dds");
+		Model* pSphere = new Model(pMeshData, uMeshDataNum, &vAlbedo, 0.0f, 1.0f, &vEmissive);
+
+		_vecModel.push_back(pSphere);
+
+		GeometryGenerator::DestroyGeometry(pMeshData, uMeshDataNum);
+	}
+	if (ImGui::Button("Create Cube Model"))
+	{
+		AkU32 uMeshDataNum = 0;
+		MeshData_t* pMeshData = GeometryGenerator::MakeCube(&uMeshDataNum);
+		Vector3 vAlbedo = Vector3(0.5f);
+		Vector3 vEmissive = Vector3(0.0f);
+		Model* pCube = new Model(pMeshData, uMeshDataNum, &vAlbedo, 0.0f, 1.0f, &vEmissive);
+
+		_vecModel.push_back(pCube);
+
+		GeometryGenerator::DestroyGeometry(pMeshData, uMeshDataNum);
 	}
 
 	UpdateFileDialog();
@@ -221,11 +275,9 @@ void EditorModel::RenderGUI()
 			}
 		}
 	}
-	
-	_CurClip.empty() ? ImGui::Text("Cur Clip: Not Select") : ImGui::Text(ToString(_CurClip).c_str());
-	ImGui::InputFloat2("Cur Clip Start/End Bone ID", &_vCurClipBoneID.x);
-	wcAttachClipName.empty() ? ImGui::Text("Attach Clip: Not Select") : ImGui::Text(ToString(wcAttachClipName).c_str());
-	ImGui::InputFloat2("Attach Clip Start/End Bone ID", &_vAttachClipBoneID.x);
+
+	_CurClip.empty() ? ImGui::Text("Body Cur Clip: Not Select") : ImGui::Text(ToString(_CurClip).c_str());
+	wcAttachClipName.empty() ? ImGui::Text("Leg Attach Clip: Not Select") : ImGui::Text(ToString(wcAttachClipName).c_str());
 	AkBool bComplete = AK_FALSE;
 	if (ImGui::Button("Bake Animation"))
 	{
@@ -235,72 +287,67 @@ void EditorModel::RenderGUI()
 			_pCombineAnimationClip = nullptr;
 		}
 
-		if (_pCombineBoneAnimation)
-		{
-			for (AkU32 i = 0; i < _uBoneNum; i++)
-			{
-				if (_pCombineBoneAnimation[i].pKeyFrameList)
-				{
-					delete[] _pCombineBoneAnimation[i].pKeyFrameList;
-					_pCombineBoneAnimation[i].pKeyFrameList = nullptr;
-				}
-			}
-
-			delete[] _pCombineBoneAnimation;
-			_pCombineBoneAnimation = nullptr;
-		}
-
 		_pCombineBoneAnimation = new BoneAnimation_t[_uBoneNum];
 
-		// Hip
-		AkU32 uKeyFrameNum = _pAttachBoneAnimation[0].uNumKeyFrame;
-		_pCombineBoneAnimation[0].uNumKeyFrame = uKeyFrameNum;
-		_pCombineBoneAnimation[0].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
-		memcpy(_pCombineBoneAnimation[0].pKeyFrameList, _pAttachBoneAnimation[0].pKeyFrameList, sizeof(KeyFrame_t) * uKeyFrameNum);
-
-		// Cur Clip.
-		for (AkU32 i = (AkU32)_vCurClipBoneID.x; i <= (AkU32)_vCurClipBoneID.y; i++)
+		if (_pAttachBoneAnimation && _pCurBoneAnimation)
 		{
-			AkU32 uKeyFrameNum = _pCurBoneAnimation[i].uNumKeyFrame;
-			_pCombineBoneAnimation[i].uNumKeyFrame = uKeyFrameNum;
-			_pCombineBoneAnimation[i].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
-			memcpy(_pCombineBoneAnimation[i].pKeyFrameList, _pCurBoneAnimation[i].pKeyFrameList, sizeof(KeyFrame_t)* uKeyFrameNum);
+			// Hip
+			AkU32 uKeyFrameNum = _pAttachBoneAnimation[0].uNumKeyFrame;
+			_pCombineBoneAnimation[0].uNumKeyFrame = uKeyFrameNum;
+			_pCombineBoneAnimation[0].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
+			memcpy(_pCombineBoneAnimation[0].pKeyFrameList, _pAttachBoneAnimation[0].pKeyFrameList, sizeof(KeyFrame_t) * uKeyFrameNum);
+
+			// Body
+			for (AkU32 i = 1; i <= 58; i++) // 일반화 필요 => 모델 마다 본의 인덱스가 다름.
+			{
+				AkU32 uKeyFrameNum = _pCurBoneAnimation[i].uNumKeyFrame;
+				_pCombineBoneAnimation[i].uNumKeyFrame = uKeyFrameNum;
+				_pCombineBoneAnimation[i].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
+				memcpy(_pCombineBoneAnimation[i].pKeyFrameList, _pCurBoneAnimation[i].pKeyFrameList, sizeof(KeyFrame_t) * uKeyFrameNum);
+			}
+
+			// Leg
+			for (AkU32 i = 59; i <= _uBoneNum - 1; i++)
+			{
+				AkU32 uKeyFrameNum = _pAttachBoneAnimation[i].uNumKeyFrame;
+				_pCombineBoneAnimation[i].uNumKeyFrame = uKeyFrameNum;
+				_pCombineBoneAnimation[i].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
+				memcpy(_pCombineBoneAnimation[i].pKeyFrameList, _pAttachBoneAnimation[i].pKeyFrameList, sizeof(KeyFrame_t) * uKeyFrameNum);
+			}
+
+			// Save File.
+			_pCombineAnimationClip = new AnimationClip_t;
+			_pCombineAnimationClip->pBoneAnimationList = _pCombineBoneAnimation;
+			_pCombineAnimationClip->uNumBoneAnimation = _uBoneNum;
+			_pCombineAnimationClip->uDuration = max(_mapClip[_CurClip]->uDuration, _mapClip[wcAttachClipName]->uDuration);
+			_pCombineAnimationClip->uTickPerSecond = max(_mapClip[_CurClip]->uTickPerSecond, _mapClip[wcAttachClipName]->uTickPerSecond);
+			// Set Max Frame.
+			AkU32 uMaxKeyFrame = 0;
+			for (AkU32 i = 0; i < _pCombineAnimationClip->uNumBoneAnimation; i++)
+			{
+				uMaxKeyFrame = max(uMaxKeyFrame, _pCombineAnimationClip->pBoneAnimationList[i].uNumKeyFrame);
+			}
+			_pCombineAnimationClip->uMaxKeyFrame = uMaxKeyFrame;
+
+			{
+				auto GetNameElement = [](const std::wstring& wcClipNAme) {
+					size_t pos = wcClipNAme.find_last_of(L"_");
+					std::wstring wcName = wcClipNAme.substr(pos + 1);
+					return wcName;
+					};
+
+				std::wstring wcElementA = GetFileNmaeExcludeExt(GetNameElement(_CurClip));
+				std::wstring wcElementB = GetFileNmaeExcludeExt(GetNameElement(wcAttachClipName));
+
+				std::wstring wcSaveClipName = _CurCharacter + L"_" + wcElementA + L"_" + wcElementB + L".anim";
+
+				_mapClip[wcSaveClipName] = _pCombineAnimationClip;
+
+				ModifyAnimation(_CurCharacter, GetFileNmaeExcludeExt(wcSaveClipName));
+
+				_mapClip.erase(wcSaveClipName);
+			}
 		}
-
-		// Attach Clip.
-		for (AkU32 i = (AkU32)_vAttachClipBoneID.x; i <= (AkU32)_vAttachClipBoneID.y; i++)
-		{
-			AkU32 uKeyFrameNum = _pAttachBoneAnimation[i].uNumKeyFrame;
-			_pCombineBoneAnimation[i].uNumKeyFrame = uKeyFrameNum;
-			_pCombineBoneAnimation[i].pKeyFrameList = new KeyFrame_t[uKeyFrameNum];
-			memcpy(_pCombineBoneAnimation[i].pKeyFrameList, _pAttachBoneAnimation[i].pKeyFrameList, sizeof(KeyFrame_t) * uKeyFrameNum);
-		}
-
-		// Save File.
-		_pCombineAnimationClip = new AnimationClip_t;
-		_pCombineAnimationClip->pBoneAnimationList = _pCombineBoneAnimation;
-		_pCombineAnimationClip->uNumBoneAnimation = _uBoneNum;
-		_pCombineAnimationClip->uDuration = max(_mapClip[_CurClip]->uDuration, _mapClip[wcAttachClipName]->uDuration);
-		_pCombineAnimationClip->uTickPerSecond = max(_mapClip[_CurClip]->uTickPerSecond, _mapClip[wcAttachClipName]->uTickPerSecond);
-		// Set Max Frame.
-		AkU32 uMaxKeyFrame = 0;
-		for (AkU32 i = 0; i < _pCombineAnimationClip->uNumBoneAnimation; i++)
-		{
-			uMaxKeyFrame = max(uMaxKeyFrame, _pCombineAnimationClip->pBoneAnimationList[i].uNumKeyFrame);
-		}
-		_pCombineAnimationClip->uMaxKeyFrame = uMaxKeyFrame;
-
-		_mapClip[L"Test.anim"] = _pCombineAnimationClip;
-
-		ModifyAnimation(_CurCharacter, L"Test");
-
-		_mapClip.erase(L"Test.anim");
-
-		bComplete = AK_TRUE;
-	}
-	if (bComplete)
-	{
-		ImGui::Text("Complete");
 	}
 	ImGui::End();
 
@@ -334,15 +381,15 @@ void EditorModel::Render()
 		{
 			continue;
 		}
-		
+
 		e->Render();
 	}
 
 	_pGround->Render();
 
-	if(_pCollider)
+	for (auto& v : _vecColliders)
 	{
-		_pCollider->Render();
+		v->Render();
 	}
 
 	if (_pCurBoneAnimation && _bBindAnim && _bRenderBone)
@@ -381,25 +428,10 @@ void EditorModel::CleanUp()
 		_pCombineAnimationClip = nullptr;
 	}
 
-	if (_pCombineBoneAnimation)
+	for(auto& v : _vecColliders)
 	{
-		for (AkU32 i = 0; i < _uBoneNum; i++)
-		{
-			if (_pCombineBoneAnimation[i].pKeyFrameList)
-			{
-				delete[] _pCombineBoneAnimation[i].pKeyFrameList;
-				_pCombineBoneAnimation[i].pKeyFrameList = nullptr;
-			}
-		}
-
-		delete[] _pCombineBoneAnimation;
-		_pCombineBoneAnimation = nullptr;
-	}
-
-	if (_pCollider)
-	{
-		delete _pCollider;
-		_pCollider = nullptr;
+		delete v;
+		v = nullptr;
 	}
 
 	_mapClipName.clear();
@@ -648,25 +680,66 @@ void EditorModel::CreateClip(const std::wstring& wcPath, const std::wstring& wcC
 
 void EditorModel::CreateCollider(COLLIDER_TYPE eType)
 {
-	if (!_bAttachColliderToCharacter)
+	Collider* pCollider = nullptr;
+
+	switch (eType)
 	{
+	case COLLIDER_TYPE::BOX:
+	{
+		Vector3 vMin = Vector3(-1.0f);
+		Vector3 vMax = Vector3(1.0f);
+		pCollider = new BoxCollider(nullptr, &vMin, &vMax);
 
-	}
-	else
-	{ 
-		switch (eType)
+		for (auto& e : _vecModel)
 		{
-		case COLLIDER_TYPE::BOX:
-
-			break;
-		case COLLIDER_TYPE::SPHERE:
-
-			break;
-		case COLLIDER_TYPE::CAPSULE:
-			_pCollider = new CapsuleCollider(nullptr);
-			break;
+			if (e->IsPick())
+			{
+				_mapColliders[e->Name].push_back(pCollider);
+				_vecColliders.push_back(pCollider);
+			}
 		}
 	}
+	break;
+	case COLLIDER_TYPE::SPHERE:
+	{
+		pCollider = new SphereCollider(nullptr);
+
+		for (auto& e : _vecModel)
+		{
+			if (e->IsPick())
+			{
+				_mapColliders[e->Name].push_back(pCollider);
+				_vecColliders.push_back(pCollider);
+			}
+		}
+	}
+	break;
+	case COLLIDER_TYPE::CAPSULE:
+	{
+		pCollider = new CapsuleCollider(nullptr);
+		
+		for (auto& e : _vecModel)
+		{
+			if (e->IsPick())
+			{
+				_mapColliders[e->Name].push_back(pCollider);
+				_vecColliders.push_back(pCollider);
+			}
+		}
+	}
+	break;
+	}
+}
+
+void EditorModel::LoadTextureName(const std::wstring& wcBasePath, const std::wstring& wcFilename)
+{
+	std::wstring wcFilePath = wcBasePath + wcFilename;
+	SaveDDS(wcFilePath.c_str(), AK_FALSE);
+
+	wcFilePath = GetFileNmaeExcludeExt(wcFilePath);
+	wcFilePath += L".dds";
+
+	_vecTextureNames.push_back(wcFilePath);
 }
 
 void EditorModel::BindAnimation()
@@ -804,6 +877,19 @@ void EditorModel::UpdateFileDialog()
 
 		ImGuiFileDialog::Instance()->Close();
 	}
+
+	if (ImGuiFileDialog::Instance()->Display("TextureKey"))
+	{
+		if (ImGuiFileDialog::Instance()->IsOk() == true)
+		{
+			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+			LoadTextureName(ToWString(FilePath), ToWString(GetFileName(FileName)));
+		}
+
+		ImGuiFileDialog::Instance()->Close();
+	}
 }
 
 void EditorModel::UpdateGizmo()
@@ -817,7 +903,7 @@ void EditorModel::UpdateGizmo()
 	{
 		for (AkU32 i = 0; i < _uBoneNum; i++)
 		{
-			if(_pCurBoneAnimation[i].bPick)
+			if (_pCurBoneAnimation[i].bPick)
 			{
 				_pCurBoneAnimation[i].mBoneTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(i).Transpose() * _mapSkinnedModel[_CurCharacter]->GetWorldRow();
 				_pCurBoneAnimation[i].RenderGUI();
@@ -825,24 +911,14 @@ void EditorModel::UpdateGizmo()
 		}
 	}
 
-	switch (_iSelectColliderTpye)
+	for (auto& e : _mapColliders)
 	{
-	case 0:
-	{
+		for (auto& v : e.second)
+		{
+			v->RenderGUI();
+		}
+	}
 
-	}
-	break;
-	case 1:
-	{
-
-	}
-	break;
-	case 2:
-	{
-		_pCollider->RenderGUI();
-	}
-	break;
-	}
 }
 
 void EditorModel::UpdateControl()

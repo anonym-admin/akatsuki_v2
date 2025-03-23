@@ -214,6 +214,18 @@ void FSkinnedMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 		}
 		hDest.Offset(1, uDescriptorSize);
 
+		// Height
+		pTexHandle = _pMeshes[i].pHeightTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
 		// Irradiance IBL.
 		if (pIrradianceTexHandle)
 		{
@@ -567,7 +579,7 @@ AkBool FSkinnedMeshObject::CreateRootSignature()
 
 	CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[4] = {};
 	tRangesPerTriGroup[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2 : Constant Buffer View per Mesh.
-	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 6, 0);	// t0 ~ t5 : Shader Resource View(Tex) per Mesh.
+	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0);	// t0 ~ t6 : Shader Resource View(Tex) per Mesh.
 	tRangesPerTriGroup[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 11);	// t11, t12, t13 : Shader Resource View(Tex) per Mesh. (IBL Texture)
 	tRangesPerTriGroup[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 15);	// t15, t16, t17, t18, t19 : Shadow Map
 

@@ -17,12 +17,15 @@ Texture2D emissiveTex : register(t2);
 Texture2D metallicTex : register(t3);
 Texture2D roughnessTex : register(t4);
 Texture2D aoTex : register(t5);
+Texture2D heightTex : register(t6);
 Texture2D shadowMap[5] : register(t15);
 
 cbuffer MeshConsts : register(b1)
 {
     matrix world;
     matrix worldIT;
+    
+    float heightScale;
 };
 
 #ifdef SKINNED
@@ -36,7 +39,7 @@ struct VSInput
 {
     float3 posModel : POSITION;
     float3 normalModel : NORMAL;
-    float3 texCoord : TEXCOORD;
+    float2 texCoord : TEXCOORD;
     float3 tangentModel : TANGENT;
     
 #ifdef SKINNED

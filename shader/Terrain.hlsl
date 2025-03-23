@@ -1,5 +1,6 @@
 #include "Common.hlsli"
 
+// t6 ม฿บน => TODO!!
 Texture2D secondTex : register(t6);
 Texture2D thirdTex : register(t7);
 
