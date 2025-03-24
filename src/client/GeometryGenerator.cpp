@@ -883,7 +883,7 @@ LineData_t* GeometryGenerator::MakeCapsule(const AkF32 fRadius, const AkF32 fHei
 }
 
 // 비동기 처리 필요!!
-MeshData_t* GeometryGenerator::ReadFromFile(AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bIsAnim, Matrix* pDefaultMat, Matrix const** pBoneOffsetMat, AkI32 const** pBoneHierarchy, AkU32* pBoneNum)
+MeshData_t* GeometryGenerator::ReadFromFile(AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bIsAnim, Matrix* pDefaultMat, Matrix const** pBoneOffsetMat, AkI32 const** pBoneHierarchy, AkU32* pBoneNum, char*** pppBoneName)
 {
 	ModelImporter tModelImporter;
 	MeshData_t* pMeshData = nullptr;
@@ -901,6 +901,7 @@ MeshData_t* GeometryGenerator::ReadFromFile(AkU32* pMeshDataNum, const wchar_t* 
 		*pBoneOffsetMat = tModelImporter.GetBoneOffsetTransformList();
 		*pBoneHierarchy = tModelImporter.GetBoneHierarchyList();
 		*pBoneNum = tModelImporter.GetBoneNum();
+		*pppBoneName = tModelImporter.GetBoneName();
 	}
 
 	return pMeshData;

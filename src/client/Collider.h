@@ -43,6 +43,7 @@ public:
 	Transform* GetTransform() { return _pTransform; }
 	Actor* GetOwner() { return _pOwner; }
 	AkI32 GetID() { return _iID; }
+	COLLIDER_TYPE GetType() { return _eType; }
 	void SetColor(const Vector3* pColor);
 	AkBool IsPick() { return _bUseGizmo; }
 

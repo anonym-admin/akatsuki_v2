@@ -2,6 +2,7 @@
 #include "EditorMap.h"
 #include "Camera.h"
 #include "Terrain.h"
+#include "ModelObject.h"
 
 /*
 =============
@@ -53,14 +54,7 @@ AkBool EditorMap::EndEditor()
 
 void EditorMap::Update()
 {
-	static AkBool bFirst = AK_TRUE;
-
 	UpdateControl();
-
-	if (bFirst)
-	{
-
-	}
 
 	if (_bFPV)
 	{
@@ -68,15 +62,38 @@ void EditorMap::Update()
 	}
 
 	_pTerrainEdit->Update();
+
+	// Update
+	for (auto& e : _vecGameObj)
+	{
+		e->Update();
+	}
+
+	// Final Update
+	for (auto& e : _vecGameObj)
+	{
+		e->FinalUpdate();
+	}
 }
 
 void EditorMap::Render()
 {
+	UpdateGizmo();
+
 	_pTerrainEdit->Render();
+
+	for (auto& e : _vecGameObj)
+	{
+		e->Render();
+	}
 }
 
 void EditorMap::RenderShadow()
 {
+	for (auto& e : _vecGameObj)
+	{
+		e->RenderShadow();
+	}
 }
 
 void EditorMap::RenderGUI()
@@ -134,9 +151,18 @@ void EditorMap::RenderGUI()
 		ImGuiFileDialog::Instance()->OpenDialog("ChooseFileDlgKey", "Choose File", ".map", tConfig);
 	}
 
-	UpdateFileDialog();
-
 	ImGui::End();
+
+	ImGui::Begin("Actor Info");
+	if (ImGui::Button("Import Actor"))
+	{
+		_bSave = AK_TRUE;
+		_iSelectMode = 3;
+		ImGuiFileDialog::Instance()->OpenDialog("ImportActorData", "Choose File", ".act", tConfig);
+	}
+	ImGui::End();
+
+	UpdateFileDialog();
 }
 
 void EditorMap::Load(const std::wstring& wcFilePath)
@@ -162,6 +188,31 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 
 void EditorMap::Save(const std::wstring& wcFilePath)
 {
+}
+
+void EditorMap::CleanUp()
+{
+	for (auto& e : _vecGameObj)
+	{
+		delete e;
+		e = nullptr;
+	}
+	_vecGameObj.clear();
+
+	if (_pTerrainEdit)
+	{
+		delete _pTerrainEdit;
+		_pTerrainEdit = nullptr;
+	}
+	if (_pCamera)
+	{
+		delete _pCamera;
+		_pCamera = nullptr;
+	}
+}
+
+void EditorMap::ExportMap(const std::wstring& wcFilePath)
+{
 	FILE* fp = nullptr;
 	_wfopen_s(&fp, wcFilePath.c_str(), L"wt");
 	if (!fp)
@@ -186,18 +237,15 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 	}
 }
 
-void EditorMap::CleanUp()
+void EditorMap::ImportMap(const std::wstring& wcFilePath)
 {
-	if (_pTerrainEdit)
-	{
-		delete _pTerrainEdit;
-		_pTerrainEdit = nullptr;
-	}
-	if (_pCamera)
-	{
-		delete _pCamera;
-		_pCamera = nullptr;
-	}
+}
+
+void EditorMap::ImportActor(const std::wstring& wcFilePath)
+{
+	ModelObject* pObj = new ModelObject(wcFilePath.c_str());
+	pObj->SetEditMode(AK_TRUE);
+	_vecGameObj.push_back(pObj);
 }
 
 void EditorMap::UpdateControl()
@@ -268,7 +316,7 @@ void EditorMap::UpdateFileDialog()
 				}
 				case 3:
 				{
-					Load((_wcFilePath + _wcFileName).c_str());
+					ImportMap((_wcFilePath + _wcFileName).c_str());
 					break;
 				}
 				default:
@@ -325,7 +373,7 @@ void EditorMap::UpdateFileDialog()
 					break;
 				case 3:
 				{
-					Save((_wcFilePath + _wcFileName).c_str());
+					ExportMap((_wcFilePath + _wcFileName).c_str());
 					break;
 				}
 				default:
@@ -340,6 +388,27 @@ void EditorMap::UpdateFileDialog()
 			ImGuiFileDialog::Instance()->Close();
 			_bSave = AK_FALSE;
 		}
+	}
+	// Import Actor File Dialog.
+	if (ImGuiFileDialog::Instance()->Display("ImportActorData"))
+	{
+		if (ImGuiFileDialog::Instance()->IsOk() == true)
+		{
+			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+			ImportActor(ToWString(FileName));
+		}
+
+		ImGuiFileDialog::Instance()->Close();
+	}
+}
+
+void EditorMap::UpdateGizmo()
+{
+	for (auto& e : _vecGameObj)
+	{
+		((ModelObject*)e)->RenderGUI();
 	}
 }
 

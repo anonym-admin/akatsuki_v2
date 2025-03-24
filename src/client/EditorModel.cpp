@@ -204,6 +204,14 @@ void EditorModel::RenderGUI()
 		GeometryGenerator::DestroyGeometry(pMeshData, uMeshDataNum);
 	}
 
+	// Save Actor Data
+	tConfig.filePathName = "../../assets/";
+	const char* pItems4[] = { "Actor Data" };
+	if (ImGui::Combo("Save Actor Data Type", &_iSaveActorDataType, pItems4, IM_ARRAYSIZE(pItems4)))
+	{
+		ImGuiFileDialog::Instance()->OpenDialog("SaveActorDataKey", "Choose File", ".mesh,.anim", tConfig);
+	}
+
 	UpdateFileDialog();
 	ImGui::End();
 
@@ -499,6 +507,67 @@ void EditorModel::CleanUp()
 }
 
 
+void EditorModel::Save(const std::wstring& wcFilePath)
+{
+	std::wstring wcPath = GetFilePath(wcFilePath);
+	std::wstring wcPicked = L"";
+	
+	CreateFolders(ToString(wcPath));
+
+	FILE* fp = nullptr;
+	_wfopen_s(&fp, wcFilePath.c_str(), L"wt");
+	if (!fp) { __debugbreak(); }
+	
+	if (_mapSkinnedModel[_CurCharacter]->IsPick())
+	{
+		wcPicked = _CurCharacter;
+
+		fwprintf_s(fp, L"%d\n", 0);
+	}
+	else
+	{
+		for (auto& e : _mapBasicModel)
+		{
+			if (e.second->IsPick())
+			{
+				wcPicked = e.first;
+			}
+		}
+
+		fwprintf_s(fp, L"%d\n", 1);
+	}
+
+	fwprintf_s(fp, L"%s\n", wcPicked.c_str());
+
+	// Coliiders
+	fwprintf_s(fp, L"%d\n", (AkI32)_mapColliders[wcPicked].size());
+	for (auto& e : _mapColliders[wcPicked])
+	{
+		switch (e->GetType())
+		{
+		case COLLIDER_TYPE::BOX:
+			fwprintf_s(fp, L"%d\n", 0);
+			break;
+		case COLLIDER_TYPE::SPHERE:
+			fwprintf_s(fp, L"%d\n", 1);
+			break;
+		case COLLIDER_TYPE::CAPSULE:
+			fwprintf_s(fp, L"%d\n", 2);
+			break;
+		}
+
+		Vector3 vScale = e->GetTransform()->GetScale();
+		Vector3 vRotation = e->GetTransform()->GetRotation();
+		Vector3 vPosition = e->GetTransform()->GetPosition();
+
+		fwprintf_s(fp, L"%lf %lf %lf\n", vScale.x, vScale.y, vScale.z);
+		fwprintf_s(fp, L"%lf %lf %lf\n", vRotation.x, vRotation.y, vRotation.z);
+		fwprintf_s(fp, L"%lf %lf %lf\n", vPosition.x, vPosition.y, vPosition.z);
+	}
+
+	if (fp) { fclose(fp); }
+}
+
 void EditorModel::ExportMesh(const std::wstring& wcName, const std::wstring& wcExt)
 {
 	_pExporter = new ModelExporter(ToString(L"../../assets/model_new/origin/models/" + wcName + L"." + wcExt));
@@ -584,6 +653,8 @@ void EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstring
 		Vector3 vEmissive = Vector3(0.0f);
 
 		pModel = new Model(pMeshData, uMeshDataNum, &vAlbedo, 0.0f, 1.0f, &vEmissive);
+
+		_mapBasicModel[GetFileNmaeExcludeExt(wcFilename)] = pModel;
 	}
 	else if (1 == _iImportType)
 	{
@@ -886,6 +957,23 @@ void EditorModel::UpdateFileDialog()
 			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
 
 			LoadTextureName(ToWString(FilePath), ToWString(GetFileName(FileName)));
+		}
+
+		ImGuiFileDialog::Instance()->Close();
+	}
+
+	if (ImGuiFileDialog::Instance()->Display("SaveActorDataKey"))
+	{
+		if (ImGuiFileDialog::Instance()->IsOk() == true)
+		{
+			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+			
+
+
+
+			Save(ToWString(FileName));
 		}
 
 		ImGuiFileDialog::Instance()->Close();

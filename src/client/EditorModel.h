@@ -24,7 +24,7 @@ private:
 	void CleanUp();
 
 	virtual void Load(const std::wstring& wcFilePath) override {};
-	virtual void Save(const std::wstring& wcFilePath) override {};
+	virtual void Save(const std::wstring& wcFilePath) override;
 
 	void ExportMesh(const std::wstring& wcName, const std::wstring& wcExt);
 	void ExportAnimation(const std::wstring& wcName, const std::wstring& wcClip);
@@ -57,6 +57,7 @@ private:
 	AkI32 _iModifyType = -1;
 	AkI32 _iImportType = -1;
 	AkI32 _iTextureType = -1;
+	AkI32 _iSaveActorDataType = -1;
 	AkI32 _iCurSelectedBoneID = -1;
 	AkI32 _iSelectColliderTpye = -1;
 	AkI32 _iPrevSelectedBoneID = 0;
@@ -73,6 +74,7 @@ private:
 	ModelImporter* _pImporter = nullptr;
 
 	std::vector<Model*> _vecModel = {}; // 자료구조 다시 생각
+	std::unordered_map<std::wstring, Model*> _mapBasicModel = {};
 	std::unordered_map<std::wstring, SkinnedModel*> _mapSkinnedModel = {};
 	std::unordered_map<std::wstring, Animation*> _mapAnim = {};
 	std::unordered_map<std::wstring, AnimationClip_t*> _mapClip = {};

@@ -26,13 +26,18 @@ public:
 
 protected:
 	virtual void Load(const std::wstring& wcFilePath) override;
-	virtual void Save(const std::wstring& wcFilePath) override;
+	virtual void Save(const std::wstring& wcFilePath) override; // Save Scene.
 
 private:
 	void CleanUp();
 
+	void ImportMap(const std::wstring& wcFilePath);
+	void ImportActor(const std::wstring& wcFilePath);
+	void ExportMap(const std::wstring& wcFilePath);
+
 	void UpdateControl();
 	void UpdateFileDialog();
+	void UpdateGizmo();
 
 private:
 	Camera* _pCamera = nullptr;
@@ -63,5 +68,8 @@ private:
 
 	// 03. Splatting Alpha Map
 	std::array<std::wstring, 2> _wcAlphaFilenames = {};
+
+	// 04. Game Objs
+	std::vector<Actor*> _vecGameObj = {};
 };
 
