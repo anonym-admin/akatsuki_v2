@@ -456,6 +456,14 @@ TerrainEdit::TerrainEdit()
 	}
 }
 
+TerrainEdit::TerrainEdit(const wchar_t* wcSetUpFile)
+{
+	if (!Initialize(wcSetUpFile))
+	{
+		__debugbreak();
+	}
+}
+
 TerrainEdit::~TerrainEdit()
 {
 	CleanUp();
@@ -465,6 +473,31 @@ AkBool TerrainEdit::Initialize()
 {
 	CreateMeshData();
 	CreateRenderObject();
+
+	return AK_TRUE;
+}
+
+AkBool TerrainEdit::Initialize(const wchar_t* wcSetUpFile)
+{
+	LoadSetUpFile(wcSetUpFile);
+
+	LoadHeightMap(_wcHeightMapFileName.c_str());
+	
+	for(AkU32 i = 0; i < 2; i++)
+	{
+		AkI32 iSplatingID = 0;
+		LoadSplatingTexture(_wcAlphaFilenames[i].c_str(), &iSplatingID);
+	}
+
+	CreateRenderObject();
+	SetTextures(_wcAlbedoFilePath.empty() ? nullptr : _wcAlbedoFilePath.c_str(),
+			    _wcNormalFilePath.empty() ? nullptr : _wcNormalFilePath.c_str(),
+			    _wcEmissiveilePath.empty() ? nullptr : _wcEmissiveilePath.c_str(),
+			    _wcMetallicFilePath.empty() ? nullptr : _wcMetallicFilePath.c_str(),
+			    _wcRoughnessFilePath.empty() ? nullptr : _wcRoughnessFilePath.c_str(),
+			    _wcAOFilePath.empty() ? nullptr : _wcAOFilePath.c_str(),
+			    _wcSecondTexFilePath.empty() ? nullptr : _wcSecondTexFilePath.c_str(),
+				_wcThirdTexFilePath.empty() ? nullptr : _wcThirdTexFilePath.c_str());
 
 	return AK_TRUE;
 }
@@ -532,6 +565,65 @@ void TerrainEdit::UpdateEditor()
 void TerrainEdit::Render()
 {
 	GRenderer->RenderTerrain(_pTerrain, &_mWorldRow, &_tBrush);
+}
+
+void TerrainEdit::LoadSetUpFile(const wchar_t* wcSetUpFile)
+{
+	using namespace std;
+
+	wchar_t wcFilePath[_MAX_PATH] = {};
+	wcscat_s(wcFilePath, MAP_FILE_PATH);
+	wcscat_s(wcFilePath, wcSetUpFile);
+
+	std::ifstream fin;
+
+	std::string albedo = "";
+	std::string normal = "";
+	std::string emissive = "";
+	std::string metallic = "";
+	std::string roughness = "";
+	std::string ao = "";
+	std::string second = "";
+	std::string third = "";
+	std::string	height = "";
+	std::string alpha[2] = {};
+
+	fin.open(wcFilePath);
+	if (!fin.is_open())
+	{
+		__debugbreak();
+	}
+
+	fin >> albedo;
+	fin >> normal;
+	fin >> emissive;
+	fin >> metallic;
+	fin >> roughness;
+	fin >> ao;
+
+	fin >> second;
+	fin >> third;
+	fin >> height;
+	fin >> alpha[0];
+	fin >> alpha[1];
+
+	_wcAlbedoFilePath = albedo != "None" ? ToWString(albedo) : L"";
+	_wcNormalFilePath = normal != "None" ? ToWString(normal) : L"";
+	_wcEmissiveilePath = emissive != "None" ? ToWString(emissive) : L"";
+	_wcMetallicFilePath = metallic != "None" ? ToWString(metallic) : L"";
+	_wcRoughnessFilePath = roughness != "None" ? ToWString(roughness) : L"";
+	_wcAOFilePath = ao != "None" ? ToWString(ao) : L"";
+	_wcSecondTexFilePath = second != "None" ? ToWString(second) : L"";
+	_wcThirdTexFilePath = third != "None" ? ToWString(third) : L"";
+
+	_wcHeightMapFileName = ToWString(height);
+	_wcAlphaFilenames[0] = ToWString(alpha[0]);
+	_wcAlphaFilenames[1] = ToWString(alpha[1]);
+
+	if (fin.is_open())
+	{
+		fin.close();
+	}
 }
 
 void TerrainEdit::LoadHeightMap(const wchar_t* wcHeightFile)
@@ -710,13 +802,23 @@ void TerrainEdit::SaveSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSel
 	pPixels = nullptr;
 }
 
-void TerrainEdit::SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wcSecondTexFilePath, const wchar_t* wcThirdTexFilePath)
+void TerrainEdit::SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wcNormalFilePath, const wchar_t* wcEmissiveFilePath, const wchar_t* wcMetallicFilePath, const wchar_t* wcRoughnewssFilePath, const wchar_t* wcAOFilePath, const wchar_t* wcSecondTexFilePath, const wchar_t* wcThirdTexFilePath)
 {
 	if (!_pTerrain)
 		return;
 
 	if (wcAlbedoFilePath)
 		_wcAlbedoFilePath = wcAlbedoFilePath;
+	if (wcNormalFilePath)
+		_wcNormalFilePath = wcNormalFilePath;
+	if (wcEmissiveFilePath)
+		_wcEmissiveilePath = wcEmissiveFilePath;
+	if (wcMetallicFilePath)
+		_wcMetallicFilePath = wcMetallicFilePath;
+	if (wcRoughnewssFilePath)
+		_wcRoughnessFilePath = wcRoughnewssFilePath;
+	if (wcAOFilePath)
+		_wcAOFilePath = wcAOFilePath;
 	if (wcSecondTexFilePath)
 		_wcSecondTexFilePath = wcSecondTexFilePath;
 	if (wcThirdTexFilePath)
@@ -724,7 +826,12 @@ void TerrainEdit::SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wc
 
 	_pTerrain->SetTextures(!_wcSecondTexFilePath.empty() ? _wcSecondTexFilePath.c_str() : wcSecondTexFilePath,
 						   !_wcThirdTexFilePath.empty() ? _wcThirdTexFilePath.c_str() : wcThirdTexFilePath, 
-						   !_wcAlbedoFilePath.empty() ? _wcAlbedoFilePath.c_str() : wcAlbedoFilePath);
+						   !_wcAlbedoFilePath.empty() ? _wcAlbedoFilePath.c_str() : wcAlbedoFilePath,
+						   !_wcNormalFilePath.empty() ? _wcNormalFilePath.c_str() : wcNormalFilePath,
+						   !_wcEmissiveilePath.empty() ? _wcEmissiveilePath.c_str() : wcEmissiveFilePath,
+						   !_wcMetallicFilePath.empty() ? _wcMetallicFilePath.c_str() : wcMetallicFilePath,
+						   !_wcRoughnessFilePath.empty() ? _wcRoughnessFilePath.c_str() : wcRoughnewssFilePath,
+						   !_wcAOFilePath.empty() ? _wcAOFilePath.c_str() : wcAOFilePath);
 }
 
 void TerrainEdit::CleanUp()

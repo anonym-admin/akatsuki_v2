@@ -80,19 +80,22 @@ class TerrainEdit
 
 public:
 	TerrainEdit();
+	TerrainEdit(const wchar_t* wcSetUpFile);
 	~TerrainEdit();
 
 	AkBool Initialize();
+	AkBool Initialize(const wchar_t* wcSetUpFile);
 	void Update();
 	void UpdateEditor();
 	void Render();
 
+	void LoadSetUpFile(const wchar_t* wcSetUpFile);
 	void LoadHeightMap(const wchar_t* wcHeightFile);
 	void SaveHeightMap(const wchar_t* wcHeightFile);
 	void LoadSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSelectedID);
 	void SaveSplatingTexture(const wchar_t* wcAlphaFile, AkI32* pOutSelectedID);
 
-	void SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wcSecondTexFilePath, const wchar_t* wcThirdTexFilePath);
+	void SetTextures(const wchar_t* wcAlbedoFilePath, const wchar_t* wcNormalFilePath, const wchar_t* wcEmissiveFilePath, const wchar_t* wcMetallicFilePath, const wchar_t* wcRoughnewssFilePath, const wchar_t* wcAOFilePath, const wchar_t* wcSecondTexFilePath, const wchar_t* wcThirdTexFilePath);
 
 private:
 	void CleanUp();
@@ -147,7 +150,15 @@ private:
 	Vector2 _vTexScale = Vector2(1.0f);
 
 	std::wstring _wcAlbedoFilePath = L"";
+	std::wstring _wcNormalFilePath = L"";
+	std::wstring _wcEmissiveilePath = L"";
+	std::wstring _wcMetallicFilePath = L"";
+	std::wstring _wcRoughnessFilePath = L"";
+	std::wstring _wcAOFilePath = L"";
 	std::wstring _wcSecondTexFilePath = L"";
 	std::wstring _wcThirdTexFilePath = L"";
+	
+	std::wstring _wcHeightMapFileName = L"";
+	std::wstring _wcAlphaFilenames[2] = {};
 };
 

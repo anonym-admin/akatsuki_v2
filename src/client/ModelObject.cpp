@@ -226,7 +226,7 @@ void ModelObject::RenderGUI()
 	ImGui::Begin(Title);
 	ImGui::Checkbox("Use Gizmo", &_bUseGizmo);
 
-	Matrix& mWorldRow = _pTransform->GetWorldTransform();
+	Matrix mWorldRow = _pTransform->GetWorldTransform();
 
 	if (!_bUseGizmo)
 	{
@@ -311,6 +311,14 @@ void ModelObject::RenderGUI()
 	mProj = mProj.Transpose();
 
 	ImGuizmo::Manipulate((float*)&mView, (float*)&mProj, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&mWorldRow._11, NULL, useSnap ? &snap[0] : NULL);
+
+	ImGuizmo::DecomposeMatrixToComponents((float*)&mWorldRow._11, matrixTranslation, matrixRotation, matrixScale);
+
+	_pTransform->SetScale((Vector3*)matrixScale);
+	_pTransform->SetRotation(DirectX::XMConvertToRadians(matrixRotation[1]), 0.0f, 0.0f);
+	_pTransform->SetPosition((Vector3*)matrixTranslation);
+
+	_pTransform->Update();
 
 	ImGui::End();
 }

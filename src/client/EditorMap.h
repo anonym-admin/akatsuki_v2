@@ -49,7 +49,7 @@ private:
 	AkBool _bSave = AK_FALSE;
 
 	AkI32 _iSelectMode = 0; // 0: Height 1: Splating 2: Texture 3: Map
-	AkI32 _iTextureType = 0; // 0: Albedo 1: Second 2: Third
+	AkI32 _iTextureType = 0; // 0: Albedo ~ 5 : AO 6: Second 7: Third
 
 	// 해당 클래스에서 임시로 쓸 수 있는 문자열
 	std::wstring _wcFileName = L"";
@@ -57,9 +57,15 @@ private:
 	std::wstring _wcFilePath = L"";
 
 	// Save For Map Data.
+	std::wstring _wcMapFileName = L"";
 
-	// 01. Texture name
+	// 01. Terrain Texture name
 	std::wstring _wcAlbedoFilename = L"";
+	std::wstring _wcNormalFilename = L"";
+	std::wstring _wcEmissiveFilename = L"";
+	std::wstring _wcMetallicFilename = L"";
+	std::wstring _wcRoughnessFilename = L"";
+	std::wstring _wcAOFilename = L"";
 	std::wstring _wcSecondFilename = L"";
 	std::wstring _wcThirdFilename = L"";
 
@@ -71,5 +77,6 @@ private:
 
 	// 04. Game Objs
 	std::vector<Actor*> _vecGameObj = {};
+	std::vector<std::wstring> _vecActFileNameList = {};
 };
 
