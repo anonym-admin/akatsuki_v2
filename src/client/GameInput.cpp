@@ -319,6 +319,19 @@ bool GameInput::RightBtnHold()
 	return (_btMouseState[1] == KEY_HOLD);
 }
 
+bool GameInput::WheelUp()
+{
+	// 처음에 휠을 클릭해야 반응을 시작.
+	// TODO
+
+	return _tDiMouseState.lZ > 0;
+}
+
+bool GameInput::WheelDown()
+{
+	return _tDiMouseState.lZ < 0;
+}
+
 bool GameInput::LeftBtnUp()
 {
 	return (_btMouseState[0] == KEY_UP);

@@ -180,6 +180,8 @@ public:
 	bool RightBtnUp();
 	bool LeftBtnHold();
 	bool RightBtnHold();
+	bool WheelUp();
+	bool WheelDown();
 	bool KeyFirstDown(KEY_INPUT input);
 	bool KeyHoldDown(KEY_INPUT input);
 	bool KeyUp(KEY_INPUT input);

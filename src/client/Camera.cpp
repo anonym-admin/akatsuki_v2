@@ -187,6 +187,19 @@ void Camera::MoveFollowMode()
 	_pTransform->SetPosition(&vCurPos);
 	
 	GRenderer->SetCameraPosition(vCurPos.x, vCurPos.y, vCurPos.z);
+
+	if (WHEEL_UP)
+	{
+		Vector3 vFront = _pTransform->Front();
+
+		Vector3 vVelocity = -vFront * _fSpeed;
+
+		Vector3 vPos = _pTransform->GetPosition();
+
+		vPos += vVelocity * DT;
+
+		_pTransform->SetPosition(&vPos);
+	}
 }
 
 

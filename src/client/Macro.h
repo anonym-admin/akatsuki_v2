@@ -20,3 +20,5 @@
 #define KEY_DOWN(type) GGameInput->KeyFirstDown(type)
 #define KEY_HOLD(type) GGameInput->KeyHoldDown(type)
 #define KEY_UP(type) GGameInput->KeyUp(type)
+#define WHEEL_UP GGameInput->WheelUp()
+#define WHEEL_DOWN GGameInput->WheelDown()
