@@ -29,7 +29,7 @@ public:
 private:
 	void CleanUp();
 
-	AkBool InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, AkBool bEnableImGui = AK_TRUE);
+	AkBool InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV);
 	AkBool InitScene();
 	AkBool InitEditor();
 	AkBool InitUI();

@@ -75,6 +75,9 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 	// Reset timer.
 	GTimer->Reset();
 
+	// Bind ImGui.
+	GRenderer->BindImGui((void**)&GImGui);
+
 	return AK_TRUE;
 }
 
@@ -240,7 +243,7 @@ void Application::CleanUp()
 	}
 }
 
-AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, AkBool bEnableImGui)
+AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 {
 	const wchar_t* wcRendererDLLFilename = nullptr;
 
@@ -287,12 +290,6 @@ AkBool Application::InitRenderer(AkBool bEnableDebugLayer, AkBool bEnableGBV, Ak
 	}
 
 	GRenderer = pRenderer;
-
-	// Bind ImGui.
-	if (bEnableImGui)
-	{
-		GRenderer->BindImGui((void**)&GImGui);
-	}
 
 	// Create Common Sprite Obj.
 	GSprite = GRenderer->CreateSpriteObject();

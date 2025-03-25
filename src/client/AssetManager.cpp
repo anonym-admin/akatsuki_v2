@@ -28,6 +28,10 @@ void AssetManager::AddMeshData(const wchar_t* wcBasePath, const wchar_t* wcModel
 	wcscat_s(wcFullPath, wcModelFilename);
 
 	_mapMeshDataList[wcModelFilename] = pAssetMeshDataContainer;
+
+	wcscat_s(wcFullPath, L"\n");
+
+	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 }
 
 void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* wcEnvFilename, const wchar_t* wcIrradianceFilename, const wchar_t* wcSpecularFilename, const wchar_t* wcBrdfFilaename)

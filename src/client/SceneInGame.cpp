@@ -30,59 +30,7 @@ AkBool SceneInGame::BeginScene()
 	// Set IBL Strength
 	GRenderer->SetIBLStrength(0.25f);
 
-	//// Terrain
-	//{
-	//	Terrain* pTerrain = new Terrain(L"main.map");
-	//	pTerrain->Name = L"Terrain";
-	//	pTerrain->tLink.pData = pTerrain;
-	//	AddGameObject(GAME_OBJECT_GROUP_TYPE::TERRAIN, pTerrain);
-	//}
-
-	//// Player.A
-	//{
-	//	Swat* pSwat = new Swat;
-	//	pSwat->Name = L"Swat";
-	//	pSwat->tLink.pData = pSwat;
-	//	pSwat->GetTransform()->SetRotation(DirectX::XM_PI, 0.0f, 0.0f);
-	//	pSwat->GetTransform()->SetPosition(-18.0f, 0.5f, 5.0f);
-	//	AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pSwat);
-	//}
-
-	//// Dancer.
-	//{
-	//	Dancer* pDancer = new Dancer;
-	//	pDancer->Name = L"Dancer_01";
-	//	pDancer->tLink.pData = pDancer;
-	//	AddGameObject(GAME_OBJECT_GROUP_TYPE::DANCER, pDancer);
-	//}
-
-	//// Weapon
-	//{
-	//	BRS_74* pBRS_74 = new BRS_74;
-	//	pBRS_74->Name = L"BRS_74";
-	//	pBRS_74->tLink.pData = pBRS_74;
-	//	pBRS_74->GetTransform()->SetPosition(-20.0f, 0.5f, 5.0f);
-	//	pBRS_74->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
-	//	AddGameObject(GAME_OBJECT_GROUP_TYPE::WEAPON, pBRS_74);
-	//}
-
-	//// Container
-	//{
-	//	//ModelObject* pContainer = new ModelObject;
-	//	//pContainer->Name = L"Container";
-	//	//pContainer->tLink.pData = pContainer;
-	//	//pContainer->GetTransform()->SetPosition(-25.0f, 0.5f, 5.0f);
-	//	//AddGameObject(GAME_OBJECT_GROUP_TYPE::CONTAINER, pContainer);
-	//}
-
-	//// Tree Billboard.
-	//{
-	//	TreeBillboard* pTreeBillboards = new TreeBillboard;
-	//	pTreeBillboards->Name = L"Tree";
-	//	pTreeBillboards->tLink.pData = pTreeBillboards;
-	//	AddGameObject(GAME_OBJECT_GROUP_TYPE::TREE, pTreeBillboards);
-	//}
-
+	// Load Scene file.
 	Load(L"../../assets/data/scene/main.scene");
 
 	// Create mini map sprite.

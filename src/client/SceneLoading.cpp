@@ -76,23 +76,23 @@ AkBool SceneLoading::EndScene()
 
 void SceneLoading::RenderLoadingScreenCallBack(const wchar_t* wcText)
 {
-	//static std::wstring wcTextChunk = L"";
+	static std::wstring wcTextChunk = L"";
 
-	//// Update status text
-	//AkI32 iTextWidth = 0;
-	//AkI32 iTextHeight = 0;
+	// Update status text
+	AkI32 iTextWidth = 0;
+	AkI32 iTextHeight = 0;
 
-	//wcTextChunk += std::wstring(wcText);
-	//AkU32 uTxtLen = (AkU32)wcslen(wcTextChunk.c_str());
+	wcTextChunk += std::wstring(wcText);
+	AkU32 uTxtLen = (AkU32)wcslen(wcTextChunk.c_str());
 
-	//// 텍스트가 변경된 경우
-	//GRenderer->WriteTextToBitmap(_pScreenImage, _uScreenWidth, _uScreenHeight, _uScreenWidth * 4, &iTextWidth, &iTextHeight, GetCommonFontObject(), wcTextChunk.c_str(), uTxtLen);
-	//GRenderer->UpdateTextureWidthImage(_pScreenTextureHandle, _pScreenImage, _uScreenWidth, _uScreenHeight);
+	// 텍스트가 변경된 경우
+	GRenderer->WriteTextToBitmap(_pScreenImage, _uScreenWidth, _uScreenHeight, _uScreenWidth * 4, &iTextWidth, &iTextHeight, GFont, wcTextChunk.c_str(), uTxtLen);
+	GRenderer->UpdateTextureWidthImage(_pScreenTextureHandle, _pScreenImage, _uScreenWidth, _uScreenHeight);
 
-	//GRenderer->BeginRender();
+	GRenderer->BeginRender();
 
-	//GRenderer->RenderSpriteWithTex(GetCommonSpriteObject(), 0, 0, 1.0f, 1.0f, nullptr, 0.0f, _pScreenTextureHandle);
+	GRenderer->RenderSpriteWithTex(GSprite, 0, 0, 1.0f, 1.0f, nullptr, 0.0f, _pScreenTextureHandle, AK_FALSE);
 
-	//GRenderer->EndRender();
-	//GRenderer->Present();
+	GRenderer->EndRender();
+	GRenderer->Present();
 }
