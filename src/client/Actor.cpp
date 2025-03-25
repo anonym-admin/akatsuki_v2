@@ -22,38 +22,38 @@ Collider* Actor::CreateBoxCollider(const Vector3* pMin, const Vector3* pMax, con
 		vMin = *pMin;
 	if (pMax)
 		vMax = *pMax;
-	_pCollider = new BoxCollider(this, &vMin, &vMax);
-	return _pCollider;
+	Collider* pCollider = new BoxCollider(this, &vMin, &vMax);
+	return pCollider;
 }
 
 Collider* Actor::CreateSphereCollider(AkF32 fRadius, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
 {
-	_pCollider = new SphereCollider(this, fRadius, uStack, uSlice, pColor);
-	return _pCollider;
+	Collider* pCollider = new SphereCollider(this, fRadius, uStack, uSlice, pColor);
+	return pCollider;
 }
 
 Collider* Actor::CreateCapsuleCollider(AkF32 fRadius, AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor)
 {
-	_pCollider = new CapsuleCollider(this, fRadius, fHeight, uStack, uSlice, pColor);
-	return _pCollider;
+	Collider* pCollider = new CapsuleCollider(this, fRadius, fHeight, uStack, uSlice, pColor);
+	return pCollider;
 }
 
 Collider* Actor::CreateSquareCollider()
 {
-	_pCollider = new SquareCollider(this);
-	return _pCollider;
+	Collider* pCollider = new SquareCollider(this);
+	return pCollider;
 }
 
 RigidBody* Actor::CreateRigidBody()
 {
-	_pRigidBody = new RigidBody(this);
-	return _pRigidBody;
+	RigidBody* pRigidBody = new RigidBody(this);
+	return pRigidBody;
 }
 
 Gravity* Actor::CreateGravity()
 {
-	_pGravity = new Gravity(this);
-	return _pGravity;
+	Gravity* pGravity = new Gravity(this);
+	return pGravity;
 }
 
 Camera* Actor::CreateCamera(const Vector3* pPos, const Vector3* pYawPitchRoll)

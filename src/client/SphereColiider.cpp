@@ -81,7 +81,7 @@ void SphereCollider::OnCollisionExit(Collider* pCollider)
 
 void SphereCollider::RenderGUI()
 {
-	std::wstring ModelName = L"Sphere Collider";
+	std::wstring ModelName = L"Sphere Collider_" + std::to_wstring(GetID());
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
 
@@ -182,7 +182,6 @@ void SphereCollider::RenderGUI()
 	mWorldRow.Decompose(vScale, qRotation, vPosition);
 
 	_pTransform->SetScale(&vScale);
-	_pTransform->SetPosition(&vPosition);
 
 	ImGui::End();
 }

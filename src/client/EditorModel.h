@@ -54,6 +54,8 @@ private:
 
 	void SaveMesh(const std::wstring& wcName, MeshData_t* pMeshData, AkU32 uMeshDataNum, void* pPickID);
 
+	void DeleteProcess();
+
 private:
 	Camera* _pCamera = nullptr;
 	Vector3 _vCamPos = Vector3(0.0f, 1.5f, -2.0f);
@@ -76,9 +78,9 @@ private:
 	AkBool _bUseAnim = AK_FALSE;
 	AkBool _bAttachBone = AK_FALSE;
 	AkBool _bModifyWeaponTransform = AK_FALSE;
-	AkBool _bAttachColliderToCharacter = AK_FALSE;
 	AkBool _bRenderBone = AK_FALSE;
 	AkBool _bRenderCharacter = AK_TRUE;
+	AkBool _bMatchingAABB = AK_FALSE;
 
 	ModelExporter* _pExporter = nullptr;
 	ModelImporter* _pImporter = nullptr;
@@ -120,9 +122,9 @@ private:
 	AkU32 _uGeoSphereStack = 32;
 
 	// Collider.
-	// 삭제 기능 미구현.
 	std::vector<Collider*> _vecColliders = {};
 	std::unordered_map<std::wstring, std::vector<Collider*>> _mapColliders = {};
+	std::unordered_map<std::wstring, std::pair<Vector3, Vector3>> _mapAABB = {};
 
 	// For Shadow.
 	Vector3 _vRadiance = Vector3(0.5f);

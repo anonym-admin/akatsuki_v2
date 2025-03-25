@@ -44,11 +44,15 @@ AkBool EditorMap::BeginEditor()
 	_pCamera->GetTransform()->SetRotation(-0.6f, 0.5f, 0.0f);
 	_bFPV = AK_FALSE;
 
+	Collider::DRAW_COLLIDER = AK_TRUE;
+
 	return AK_TRUE;
 }
 
 AkBool EditorMap::EndEditor()
 {
+	Collider::DRAW_COLLIDER = AK_FALSE;
+
 	return AK_TRUE;
 }
 

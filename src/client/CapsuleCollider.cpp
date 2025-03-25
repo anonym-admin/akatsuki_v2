@@ -103,7 +103,7 @@ void CapsuleCollider::OnCollisionExit(Collider* pCollider)
 
 void CapsuleCollider::RenderGUI()
 {
-	std::wstring ModelName = L"Capsule Collider";
+	std::wstring ModelName = L"Capsule Collider_" + std::to_wstring(GetID());
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
 

@@ -132,25 +132,7 @@ void EditorModel::Update()
 	GRenderer->AddGlobalLight(&_vRadiance, &_vLightDir, AK_TRUE);
 
 	// Delete.
-	AkU32 uIndex = 0;
-	for (auto& e : _vecModel)
-	{
-		if (e->IsPick())
-		{
-			if (KEY_DOWN(KEY_INPUT_DELETE))
-			{
-				if (e)
-				{
-					delete e;
-					e = nullptr;
-				}
-
-				_vecModel.erase(_vecModel.begin() + uIndex);
-			}
-
-			uIndex++;
-		}
-	}
+	DeleteProcess();
 }
 
 void EditorModel::RenderGUI()
@@ -386,7 +368,7 @@ void EditorModel::RenderGUI()
 
 	// Collider
 	ImGui::Begin("Collider");
-	ImGui::Checkbox("Attach Character", &_bAttachColliderToCharacter);
+	ImGui::Checkbox("Box Collider Matching Min Max", &_bMatchingAABB);
 	const char* pColliderItems[] = { "Box", "Sphere", "Capsule" };
 	if (ImGui::ListBox("Bone List", &_iSelectColliderTpye, pColliderItems, IM_ARRAYSIZE(pColliderItems)))
 	{
@@ -695,6 +677,8 @@ void EditorModel::ModifyAnimation(const std::wstring& wcName, const std::wstring
 
 void EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstring& wcFilename)
 {
+	using namespace std;
+
 	Model* pModel = nullptr;
 	MeshData_t* pMeshData = nullptr;
 	AkU32 uMeshDataNum = 0;
@@ -744,6 +728,12 @@ void EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstring
 	pModel->UpdateWorldRow(&mWorldRow);
 
 	_vecModel.push_back(pModel);
+
+	Vector3 vMin = Vector3(-AK_MAX_F32);
+	Vector3 vMax = Vector3(AK_MAX_F32);
+	CalcColliderMinMax(pMeshData, uMeshDataNum, &vMin, &vMax);
+
+	_mapAABB[GetFileNmaeExcludeExt(wcFilename)] = make_pair(vMin, vMax);
 
 	GeometryGenerator::DestroyGeometry(pMeshData, uMeshDataNum);
 
@@ -819,18 +809,27 @@ void EditorModel::CreateCollider(COLLIDER_TYPE eType)
 	{
 	case COLLIDER_TYPE::BOX:
 	{
-		Vector3 vMin = Vector3(-1.0f);
-		Vector3 vMax = Vector3(1.0f);
-		pCollider = new BoxCollider(nullptr, &vMin, &vMax);
-
+		Model* pPickedModel = nullptr;
 		for (auto& e : _vecModel)
 		{
 			if (e->IsPick())
 			{
-				_mapColliders[e->Name].push_back(pCollider);
-				_vecColliders.push_back(pCollider);
+				pPickedModel = e;
 			}
 		}
+
+		Vector3 vMin = Vector3(-0.5f);
+		Vector3 vMax = Vector3(0.5f);
+		if (_bMatchingAABB)
+		{
+			vMin = _mapAABB[pPickedModel->Name].first;
+			vMax = _mapAABB[pPickedModel->Name].second;
+		}
+		
+		pCollider = new BoxCollider(nullptr, &vMin, &vMax);
+
+		_mapColliders[pPickedModel->Name].push_back(pCollider);
+		_vecColliders.push_back(pCollider);
 	}
 	break;
 	case COLLIDER_TYPE::SPHERE:
@@ -1209,6 +1208,71 @@ void EditorModel::SaveMesh(const std::wstring& wcName, MeshData_t* pMeshData, Ak
 	if (fout.is_open())
 	{
 		fout.close();
+	}
+}
+
+void EditorModel::DeleteProcess()
+{
+	AkU32 uIndex = 0;
+	for (auto& e : _vecModel)
+	{
+		if (e->IsPick())
+		{
+			if (KEY_DOWN(KEY_INPUT_DELETE))
+			{
+				if (_mapBasicModel[e->Name])
+				{
+					_mapBasicModel.erase(e->Name);
+				}
+				if (_mapSkinnedModel[e->Name])
+				{
+					_mapSkinnedModel.erase(e->Name);
+				}
+
+				_vecModel.erase(_vecModel.begin() + uIndex);
+
+				if (e)
+				{
+					delete e;
+					e = nullptr;
+				}
+			}
+
+			uIndex++;
+		}
+	}
+
+	uIndex = 0;
+	for (auto& e : _vecColliders)
+	{
+		if (e->IsPick())
+		{
+			if (KEY_DOWN(KEY_INPUT_DELETE))
+			{
+				AkU32 uIndex2 = 0;
+				for (auto& v0 : _mapColliders)
+				{
+					for (auto& v1 : v0.second)
+					{
+						if (v1 == e)
+						{
+							v0.second.erase(v0.second.begin() + uIndex2);
+						}
+						uIndex2++;
+					}
+				}
+
+				_vecColliders.erase(_vecColliders.begin() + uIndex);
+
+				if (e)
+				{
+					delete e;
+					e = nullptr;
+				}
+			}
+		}
+
+		uIndex++;
 	}
 }
 

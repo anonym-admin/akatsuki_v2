@@ -187,6 +187,10 @@ void ModelObject::FinalUpdate()
 	}
 	
 	_pCollider->Update();
+	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	{
+		_pEventCollider[i]->Update();
+	}
 
 	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());
 }
@@ -196,6 +200,10 @@ void ModelObject::Render()
 	_pModel->Render();
 
 	_pCollider->Render();
+	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	{
+		_pEventCollider[i]->Render();
+	}
 }
 
 void ModelObject::RenderShadow()

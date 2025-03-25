@@ -122,11 +122,15 @@ void BoxCollider::RenderGUI()
 	// 스케일과 회전만 조정 가능
 	// 회전은 현재 미구현
 	// 이동의 경우 Parent 에서 처리됨.
-	std::wstring ModelName = L"Box Collider";
+	std::wstring ModelName = L"Box Collider_" + std::to_wstring(GetID());
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
 
-	Matrix& mWorldRow = _pTransform->GetWorldTransform();
+	Vector3 vScale = _pTransform->GetScale();
+	Quaternion qRotation = Quaternion();
+	Vector3 vPosition = _pTransform->GetPosition();
+
+	Matrix mWorldRow = Matrix::CreateScale(vScale) * Matrix::CreateTranslation(vPosition);
 
 	ImGuizmo::BeginFrame();
 	ImGui::Begin(Title);
@@ -216,13 +220,10 @@ void BoxCollider::RenderGUI()
 
 	ImGuizmo::Manipulate((float*)&mView, (float*)&mProj, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&mWorldRow._11, NULL, useSnap ? &snap[0] : NULL);
 
-	Vector3 vScale = Vector3(1.0f);
-	Quaternion qRotation = Quaternion();
-	Vector3 vPosition = Vector3(0.0f);
-
 	mWorldRow.Decompose(vScale, qRotation, vPosition);
 
 	_pTransform->SetScale(&vScale);
+	_pTransform->SetPosition(&vPosition);
 
 	ImGui::End();
 }
