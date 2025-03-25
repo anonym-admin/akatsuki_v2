@@ -1009,6 +1009,11 @@ void FRenderer::MoveCamera(AkF32 fX, AkF32 fY, AkF32 fZ)
 	SetCamera(&_vCamPos, &_vCamDir, &vCamUp);
 }
 
+void FRenderer::SetFullScreen(AkBool bIsFullScreen)
+{
+	_pSwapChain->SetFullscreenState(bIsFullScreen, nullptr);
+}
+
 void FRenderer::GetCameraPosition(AkF32* pX, AkF32* pY, AkF32* pZ)
 {
 	*pX = _vCamPos.x;

@@ -6,6 +6,12 @@
 #include "GeometryGenerator.h"
 #include "ModelObject.h"
 
+/*
+=============
+Model Editor
+=============
+*/
+
 EditorModel::EditorModel()
 {
 	if (!Initialize())
@@ -100,9 +106,26 @@ void EditorModel::Update()
 	}
 
 	// Final Update
-	for (auto& v : _vecColliders)
+	for (auto& v : _mapColliders)
 	{
-		v->Update();
+		for (auto& e : v.second)
+		{
+			if (_mapBasicModel[v.first])
+			{
+				Matrix mWorldRow = _mapBasicModel[v.first]->GetWorldRow();
+
+				e->GetTransform()->SetParent(&mWorldRow);
+			}
+
+			if (_mapSkinnedModel[v.first])
+			{
+				Matrix mWorldRow = _mapSkinnedModel[v.first]->GetWorldRow();
+
+				e->GetTransform()->SetParent(&mWorldRow);
+			}
+
+			e->Update();
+		}
 	}
 
 	// Gloabl Light.
@@ -168,7 +191,7 @@ void EditorModel::RenderGUI()
 	}
 
 	tConfig.filePathName = "../../assets/model_new/textures/";
-	const char* pItems3[] = { "Texture" };
+	const char* pItems3[] = { "Albedo", "Emissive", "Height", "Normal", "Metallic", "Roughness", "AO" };
 	if (ImGui::Combo("Import Texture Type", &_iTextureType, pItems3, IM_ARRAYSIZE(pItems3)))
 	{
 		ImGuiFileDialog::Instance()->OpenDialog("TextureKey", "Choose File", ".jpg,.png,.dds", tConfig);
@@ -177,14 +200,9 @@ void EditorModel::RenderGUI()
 	if (ImGui::Button("Create Sphere Model"))
 	{
 		AkU32 uMeshDataNum = 0;
-		MeshData_t* pMeshData = GeometryGenerator::MakeSphere(&uMeshDataNum, 1.0f, 32, 32);
+		MeshData_t* pMeshData = GeometryGenerator::MakeSphere(&uMeshDataNum, _fGeoSphereRadius, _uGeoSphereSlice, _uGeoSphereStack);
 		Vector3 vAlbedo = Vector3(0.5f);
 		Vector3 vEmissive = Vector3(0.0f);
-		wcscpy_s(pMeshData->wcAlbedoTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_diffuse.dds");
-		wcscpy_s(pMeshData->wcAoTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_ao.dds");
-		wcscpy_s(pMeshData->wcHeightTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_height.dds");
-		wcscpy_s(pMeshData->wcRoughnessTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_roughness.dds");
-		wcscpy_s(pMeshData->wcNormalTextureFilename, L"../../assets/model_new/textures/grey_porous_rock_40_56_normal.dds");
 		Model* pSphere = new Model(pMeshData, uMeshDataNum, &vAlbedo, 0.0f, 1.0f, &vEmissive);
 
 		_vecModel.push_back(pSphere);
@@ -204,10 +222,17 @@ void EditorModel::RenderGUI()
 		GeometryGenerator::DestroyGeometry(pMeshData, uMeshDataNum);
 	}
 
+	tConfig.filePathName = "../../assets/model_new/mesh/";
+	const char* pItems4[] = { "Sphere", "Cube" };
+	if (ImGui::Combo("Save Geometry Model Type", &_iGeometryType, pItems4, IM_ARRAYSIZE(pItems4)))
+	{
+		ImGuiFileDialog::Instance()->OpenDialog("GeometryModelKey", "Choose File", ".mesh", tConfig);
+	}
+
 	// Save Actor Data
 	tConfig.filePathName = "../../assets/";
-	const char* pItems4[] = { "Actor Data" };
-	if (ImGui::Combo("Save Actor Data Type", &_iSaveActorDataType, pItems4, IM_ARRAYSIZE(pItems4)))
+	const char* pItems5[] = { "Actor Data" };
+	if (ImGui::Combo("Save Actor Data Type", &_iSaveActorDataType, pItems5, IM_ARRAYSIZE(pItems5)))
 	{
 		ImGuiFileDialog::Instance()->OpenDialog("SaveActorDataKey", "Choose File", ".mesh,.anim", tConfig);
 	}
@@ -436,7 +461,7 @@ void EditorModel::CleanUp()
 		_pCombineAnimationClip = nullptr;
 	}
 
-	for(auto& v : _vecColliders)
+	for (auto& v : _vecColliders)
 	{
 		delete v;
 		v = nullptr;
@@ -511,14 +536,14 @@ void EditorModel::Save(const std::wstring& wcFilePath)
 {
 	std::wstring wcPath = GetFilePath(wcFilePath);
 	std::wstring wcPicked = L"";
-	
+
 	CreateFolders(ToString(wcPath));
 
 	FILE* fp = nullptr;
 	_wfopen_s(&fp, wcFilePath.c_str(), L"wt");
 	if (!fp) { __debugbreak(); }
-	
-	if (_mapSkinnedModel[_CurCharacter]->IsPick())
+
+	if (!_CurCharacter.empty() && _mapSkinnedModel[_CurCharacter]->IsPick())
 	{
 		wcPicked = _CurCharacter;
 
@@ -580,6 +605,42 @@ void EditorModel::ExportAnimation(const std::wstring& wcName, const std::wstring
 	_pExporter = new ModelExporter(ToString(L"../../assets/model_new/origin/animations/" + wcName + L"/" + wcClip + L".fbx"));
 	_pExporter->ExportClip();
 	delete _pExporter;
+}
+
+void EditorModel::CreateMeshFile(const std::wstring& wcName)
+{
+	Model* pPickID = nullptr;
+	for (auto& e : _vecModel)
+	{
+		if (e->IsPick())
+		{
+			pPickID = e;
+			break;
+		}
+	}
+
+	AkU32 uMeshDataNum = 0;
+	MeshData_t* pGeo = nullptr;
+
+	switch (_iGeometryType)
+	{
+	case 0: // Sphere
+	{
+		pGeo = GeometryGenerator::MakeSphere(&uMeshDataNum, _fGeoSphereRadius, _uGeoSphereSlice, _uGeoSphereStack);
+
+		SaveMesh(wcName, pGeo, uMeshDataNum, pPickID);
+	}
+	break;
+	case 1: // Cube
+	{
+		pGeo = GeometryGenerator::MakeCube(&uMeshDataNum);
+
+		SaveMesh(wcName, pGeo, uMeshDataNum, pPickID);
+	}
+	break;
+	}
+
+	GeometryGenerator::DestroyGeometry(pGeo, uMeshDataNum);
 }
 
 void EditorModel::ModifyAnimation(const std::wstring& wcName, const std::wstring& wcClip)
@@ -674,6 +735,8 @@ void EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstring
 		pModel = new SkinnedModel(pMeshData, uMeshDataNum, &vAlbedo, 0.0f, 1.0f, &vEmissive);
 
 		_mapSkinnedModel[GetFileNmaeExcludeExt(wcFilename)] = (SkinnedModel*)pModel;
+
+		_CurCharacter = GetFileNmaeExcludeExt(wcFilename);
 	}
 
 	wcscpy_s(pModel->Name, GetFileNmaeExcludeExt(wcFilename).c_str());
@@ -724,7 +787,6 @@ void EditorModel::CreateClip(const std::wstring& wcPath, const std::wstring& wcC
 	_mapClipName[ModelName].push_back(wcClip);
 
 	_bUseAnim = AK_TRUE;
-	_CurCharacter = ModelName;
 
 	{
 		_pCurBoneAnimation = _mapClip[wcClip]->pBoneAnimationList;
@@ -788,7 +850,7 @@ void EditorModel::CreateCollider(COLLIDER_TYPE eType)
 	case COLLIDER_TYPE::CAPSULE:
 	{
 		pCollider = new CapsuleCollider(nullptr);
-		
+
 		for (auto& e : _vecModel)
 		{
 			if (e->IsPick())
@@ -802,7 +864,7 @@ void EditorModel::CreateCollider(COLLIDER_TYPE eType)
 	}
 }
 
-void EditorModel::LoadTextureName(const std::wstring& wcBasePath, const std::wstring& wcFilename)
+void EditorModel::LoadTextures(const std::wstring& wcBasePath, const std::wstring& wcFilename)
 {
 	std::wstring wcFilePath = wcBasePath + wcFilename;
 	SaveDDS(wcFilePath.c_str(), AK_FALSE);
@@ -810,7 +872,48 @@ void EditorModel::LoadTextureName(const std::wstring& wcBasePath, const std::wst
 	wcFilePath = GetFileNmaeExcludeExt(wcFilePath);
 	wcFilePath += L".dds";
 
-	_vecTextureNames.push_back(wcFilePath);
+	Model* pPickedModel = nullptr;
+	for (auto& e : _vecModel)
+	{
+		if (e->IsPick())
+		{
+			pPickedModel = e;
+		}
+	}
+
+	_mapTextures[pPickedModel].resize(8); // Texture Count ¸¸Å­
+
+	switch (_iTextureType)
+	{
+	case 0: // Albedo
+		pPickedModel->SetTextures(GRenderer->CreateTextureFromFile(wcFilePath.c_str(), AK_TRUE), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+		_mapTextures[pPickedModel][_iTextureType] = wcFilePath;
+		break;
+	case 1: // Emissvie
+		pPickedModel->SetTextures(nullptr, GRenderer->CreateTextureFromFile(wcFilePath.c_str(), AK_TRUE), nullptr, nullptr, nullptr, nullptr, nullptr);
+		_mapTextures[pPickedModel][_iTextureType] = wcFilePath;
+		break;
+	case 2: // Heighht
+		pPickedModel->SetTextures(nullptr, nullptr, GRenderer->CreateTextureFromFile(wcFilePath.c_str(), AK_FALSE), nullptr, nullptr, nullptr, nullptr);
+		_mapTextures[pPickedModel][_iTextureType] = wcFilePath;
+		break;
+	case 3: // Normal
+		pPickedModel->SetTextures(nullptr, nullptr, nullptr, GRenderer->CreateTextureFromFile(wcFilePath.c_str(), AK_FALSE), nullptr, nullptr, nullptr);
+		_mapTextures[pPickedModel][_iTextureType] = wcFilePath;
+		break;
+	case 4: // Metallic
+		pPickedModel->SetTextures(nullptr, nullptr, nullptr, nullptr, GRenderer->CreateTextureFromFile(wcFilePath.c_str(), AK_FALSE), nullptr, nullptr);
+		_mapTextures[pPickedModel][_iTextureType] = wcFilePath;
+		break;
+	case 5: // Roughneww
+		pPickedModel->SetTextures(nullptr, nullptr, nullptr, nullptr, nullptr, GRenderer->CreateTextureFromFile(wcFilePath.c_str(), AK_FALSE), nullptr);
+		_mapTextures[pPickedModel][_iTextureType] = wcFilePath;
+		break;
+	case 6: // AO
+		pPickedModel->SetTextures(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, GRenderer->CreateTextureFromFile(wcFilePath.c_str(), AK_FALSE));
+		_mapTextures[pPickedModel][_iTextureType] = wcFilePath;
+		break;
+	}
 }
 
 void EditorModel::BindAnimation()
@@ -956,7 +1059,20 @@ void EditorModel::UpdateFileDialog()
 			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
 			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
 
-			LoadTextureName(ToWString(FilePath), ToWString(GetFileName(FileName)));
+			LoadTextures(ToWString(FilePath), ToWString(GetFileName(FileName)));
+		}
+
+		ImGuiFileDialog::Instance()->Close();
+	}
+
+	if (ImGuiFileDialog::Instance()->Display("GeometryModelKey"))
+	{
+		if (ImGuiFileDialog::Instance()->IsOk() == true)
+		{
+			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+			CreateMeshFile(ToWString(FileName));
 		}
 
 		ImGuiFileDialog::Instance()->Close();
@@ -968,10 +1084,6 @@ void EditorModel::UpdateFileDialog()
 		{
 			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
 			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
-
-			
-
-
 
 			Save(ToWString(FileName));
 		}
@@ -1025,6 +1137,78 @@ void EditorModel::SetAnimation(const std::wstring& wcClip, AkF32 fSpeed, AkF32 f
 		_CurClip = wcClip;
 		_fPrevAnimSpeed = fSpeed;
 		_fPrevBlendTime = fBlendTime;
+	}
+}
+
+void EditorModel::SaveMesh(const std::wstring& wcName, MeshData_t* pMeshData, AkU32 uMeshDataNum, void* pPickID)
+{
+	using namespace std;
+
+	ofstream fout;
+	fout.open(ToString(wcName).c_str());
+
+	// write mesh data.
+	fout << "========MeshData========" << endl;
+	fout << "MeshCount: " << uMeshDataNum << endl;
+	for (AkU32 i = 0; i < uMeshDataNum; i++)
+	{
+		fout << "VertexCount: " << pMeshData[i].uVerticeNum << "\t" << "IndexCount: " << pMeshData[i].uIndicesNum << endl;
+	}
+	fout << endl;
+
+	// write material file name.
+	fout << "========Material========" << endl;
+	for (AkU32 i = 0; i < uMeshDataNum; i++)
+	{
+		fout << "Albedo: " << (ToString(_mapTextures[pPickID][0]).empty() ? "Empty" : GetFileNmaeExcludeExt(ToString(_mapTextures[pPickID][0])) + ".dds") << endl;
+		fout << "Emissive: " << (ToString(_mapTextures[pPickID][1]).empty() ? "Empty" : GetFileNmaeExcludeExt(ToString(_mapTextures[pPickID][1])) + ".dds") << endl;
+		fout << "Height: " << (ToString(_mapTextures[pPickID][2]).empty() ? "Empty" : GetFileNmaeExcludeExt(ToString(_mapTextures[pPickID][2])) + ".dds") << endl;
+		fout << "Normal: " << (ToString(_mapTextures[pPickID][3]).empty() ? "Empty" : GetFileNmaeExcludeExt(ToString(_mapTextures[pPickID][3])) + ".dds") << endl;
+		fout << "Metallic: " << (ToString(_mapTextures[pPickID][4]).empty() ? "Empty" : GetFileNmaeExcludeExt(ToString(_mapTextures[pPickID][4])) + ".dds") << endl;
+		fout << "Roughness: " << (ToString(_mapTextures[pPickID][5]).empty() ? "Empty" : GetFileNmaeExcludeExt(ToString(_mapTextures[pPickID][5])) + ".dds") << endl;
+		fout << "Ao: " << (ToString(_mapTextures[pPickID][6]).empty() ? "Empty" : GetFileNmaeExcludeExt(ToString(_mapTextures[pPickID][6])) + ".dds") << endl;
+		fout << "Opacity: " << (ToString(_mapTextures[pPickID][7]).empty() ? "Empty" : GetFileNmaeExcludeExt(ToString(_mapTextures[pPickID][7])) + ".dds") << endl;
+		fout << endl;
+	}
+
+	// write vertices and indices.
+	fout << "========Vertices========" << endl;
+	for (AkU32 i = 0; i < uMeshDataNum; i++)
+	{
+		for (AkU32 j = 0; j < pMeshData[i].uVerticeNum; j++)
+		{
+			fout << "Position: " << pMeshData[i].pVertices[j].vPosition.x << " " << pMeshData[i].pVertices[j].vPosition.y << " " << pMeshData[i].pVertices[j].vPosition.z << endl;
+			fout << "Normal: " << pMeshData[i].pVertices[j].vNormalModel.x << " " << pMeshData[i].pVertices[j].vNormalModel.y << " " << pMeshData[i].pVertices[j].vNormalModel.z << endl;
+			fout << "Texcoord: " << pMeshData[i].pVertices[j].vTexCoord.x << " " << pMeshData[i].pVertices[j].vTexCoord.y << endl;
+			fout << "Tangent: " << pMeshData[i].pVertices[j].vTangentModel.x << " " << pMeshData[i].pVertices[j].vTangentModel.y << " " << pMeshData[i].pVertices[j].vTangentModel.z << endl;
+			fout << endl;
+		}
+	}
+	fout << "========Indices========" << endl;
+	for (AkU32 i = 0; i < uMeshDataNum; i++)
+	{
+		for (AkU32 j = 0; j < pMeshData[i].uIndicesNum; j += 3)
+		{
+			fout << pMeshData[i].pIndices[j] << " " << pMeshData[i].pIndices[j + 1] << " " << pMeshData[i].pIndices[j + 2] << endl;
+		}
+	}
+	fout << endl;
+
+	// write bone offset matrix
+	fout << "========BoneOffsets========" << endl;
+	fout << "BoneCount: " << 0 << endl;
+
+	// write bone hierarchy
+	fout << "========BoneHierarchy========" << endl;
+	fout << endl;
+
+	// write bone name
+	fout << "========BoneName========" << endl;
+	fout << endl;
+
+	if (fout.is_open())
+	{
+		fout.close();
 	}
 }
 

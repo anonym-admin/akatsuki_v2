@@ -650,7 +650,7 @@ AkBool FBasicMeshObject::CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDat
 		else
 		{
 			_pMeshes[i].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcEmissiveTextureFilename, AK_TRUE));
-			_pMaterials[i].uUseEimissiveMap = AK_TRUE;
+			_pMaterials[i].uUseEmissiveMap = AK_TRUE;
 		}
 		// Height
 		if (!wcscmp(pMeshData[i].wcHeightTextureFilename, L""))
@@ -705,17 +705,99 @@ AkBool FBasicMeshObject::CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDat
 		//	_pMeshes[i].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcRoughnessTextureFilename, AK_FALSE));
 		//	_pMaterials[i].uUseEimissiveMap = AK_TRUE;
 		//}
-
-		//// For Debuging.
-		//printf("MeshObj Albedo [%p]\n", _pMeshes[i].pAldedoTextureHandle);
-		//printf("MeshObj Normal [%p]\n", _pMeshes[i].pNormalTextureHandle);
-		//printf("MeshObj Emissive [%p]\n", _pMeshes[i].pEmissiveTextureHandle);
-		//printf("MeshObj Metallic [%p]\n", _pMeshes[i].pMetallicTextureHandle);
-		//printf("MeshObj Roughness [%p]\n", _pMeshes[i].pRoughnessTextureHandle);
-		//printf("MeshObj AO [%p]\n", _pMeshes[i].pAoTextureHandle);
 	}
 
 	return AK_TRUE;
+}
+
+void FBasicMeshObject::SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO)
+{
+	for (AkU32 i = 0; i < _uMeshNum; i++)
+	{
+		if (pAlbedo)
+		{
+			if (_pMeshes[i].pAldedoTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pAldedoTextureHandle);
+				_pMeshes[i].pAldedoTextureHandle = nullptr;
+			}
+
+			_pMeshes[i].pAldedoTextureHandle = (TextureHandle_t*)pAlbedo;
+			_pMaterials[i].uUseAlbedoMap = AK_TRUE;
+		}
+
+		if (pEmissve)
+		{
+			if (_pMeshes[i].pEmissiveTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pEmissiveTextureHandle);
+				_pMeshes[i].pEmissiveTextureHandle = nullptr;
+			}
+
+			_pMeshes[i].pEmissiveTextureHandle = (TextureHandle_t*)pEmissve;
+			_pMaterials[i].uUseEmissiveMap = AK_TRUE;
+		}
+
+		if (pHeight)
+		{
+			if (_pMeshes[i].pHeightTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pHeightTextureHandle);
+				_pMeshes[i].pHeightTextureHandle = nullptr;
+			}
+
+			_pMeshes[i].pHeightTextureHandle = (TextureHandle_t*)pHeight;
+			_pMaterials[i].uUseHeightMap = AK_TRUE;
+		}
+
+		if (pNormal)
+		{
+			if (_pMeshes[i].pNormalTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pNormalTextureHandle);
+				_pMeshes[i].pNormalTextureHandle = nullptr;
+			}
+
+			_pMeshes[i].pNormalTextureHandle = (TextureHandle_t*)pNormal;
+			_pMaterials[i].uUseNormalMap = AK_TRUE;
+		}
+
+		if (pMetallic)
+		{
+			if (_pMeshes[i].pMetallicTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pMetallicTextureHandle);
+				_pMeshes[i].pMetallicTextureHandle = nullptr;
+			}
+
+			_pMeshes[i].pMetallicTextureHandle = (TextureHandle_t*)pMetallic;
+			_pMaterials[i].uUseMetallicMap = AK_TRUE;
+		}
+
+		if (pRoughness)
+		{
+			if (_pMeshes[i].pRoughnessTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pRoughnessTextureHandle);
+				_pMeshes[i].pRoughnessTextureHandle = nullptr;
+			}
+
+			_pMeshes[i].pRoughnessTextureHandle = (TextureHandle_t*)pRoughness;
+			_pMaterials[i].uUseRoughnessMap = AK_TRUE;
+		}
+
+		if (pAO)
+		{
+			if (_pMeshes[i].pAoTextureHandle)
+			{
+				_pRenderer->DestroyTexture(_pMeshes[i].pAoTextureHandle);
+				_pMeshes[i].pAoTextureHandle = nullptr;
+			}
+
+			_pMeshes[i].pAoTextureHandle = (TextureHandle_t*)pAO;
+			_pMaterials[i].uUseAOMap = AK_TRUE;
+		}
+	}
 }
 
 AkBool FBasicMeshObject::UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor)

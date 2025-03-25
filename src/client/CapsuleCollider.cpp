@@ -205,9 +205,6 @@ void CapsuleCollider::RenderGUI()
 
 	_pTransform->SetScale(&vScale);
 
-	// ??
-	// _pTransform->SetPosition(&vPosition);
-
 	ImGui::End();
 }
 

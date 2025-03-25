@@ -20,9 +20,10 @@ public:
 	virtual void RenderNormal();
 	virtual void RenderShadow();
 	virtual void RenderGUI();
-	void UpdateWorldRow(Matrix* pWorldRow);
 	Matrix GetWorldRow() { return _mWorldRow; }
+	void UpdateWorldRow(Matrix* pWorldRow);
 	void SetWireFrame(AkBool bDrawWire);
+	void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO);
 
 	AkBool IsPick() { return _bUseGizmo; }
 	void ReleasePick() { _bUseGizmo = AK_FALSE; }

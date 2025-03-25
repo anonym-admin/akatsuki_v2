@@ -92,6 +92,7 @@ public:
 	virtual void SetToneMappingType(AkI32 iType) override { _iToneMappingType = iType; }
 	virtual void SetBloomLevels(AkU32 uLevel) override { _uBloomLevels = uLevel; }
 	virtual void SetBloomStrength(AkF32 uStrength) override { _fBloomStrength = uStrength; }
+	virtual void SetFullScreen(AkBool bIsFullScreen) override;
 	virtual void GetCameraPosition(AkF32* pX, AkF32* pY, AkF32* pZ) override;
 	virtual Vector3 GetWorldNearPosition(AkF32 fNdcX, AkF32 fNdcY) override;
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) override;

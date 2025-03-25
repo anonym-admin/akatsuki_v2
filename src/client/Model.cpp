@@ -180,6 +180,11 @@ void Model::SetWireFrame(AkBool bDrawWire)
 		_pMeshObj->DisableWireFrame();
 }
 
+void Model::SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO)
+{
+	_pMeshObj->SetTextures(pAlbedo, pEmissve, pHeight, pNormal, pMetallic, pRoughness, pAO);
+}
+
 void Model::CleanUp()
 {
 	if (_pMeshObj)

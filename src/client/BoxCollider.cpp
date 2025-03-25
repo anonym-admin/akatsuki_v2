@@ -119,6 +119,9 @@ void BoxCollider::OnCollisionExit(Collider* pCollider)
 
 void BoxCollider::RenderGUI()
 {
+	// 스케일과 회전만 조정 가능
+	// 회전은 현재 미구현
+	// 이동의 경우 Parent 에서 처리됨.
 	std::wstring ModelName = L"Box Collider";
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
@@ -220,7 +223,6 @@ void BoxCollider::RenderGUI()
 	mWorldRow.Decompose(vScale, qRotation, vPosition);
 
 	_pTransform->SetScale(&vScale);
-	_pTransform->SetPosition(&vPosition);
 
 	ImGui::End();
 }

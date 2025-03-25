@@ -77,7 +77,7 @@ struct MaterialConstantBuffer_t
 
 	AkU32 uUseAlbedoMap = AK_FALSE;
 	AkU32 uUseNormalMap = AK_FALSE;
-	AkU32 uUseEimissiveMap = AK_FALSE;
+	AkU32 uUseEmissiveMap = AK_FALSE;
 	AkU32 uUseAOMap = AK_FALSE;
 
 	AkU32 uInvertNormalMapY = AK_FALSE;

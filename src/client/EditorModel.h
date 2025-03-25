@@ -2,6 +2,12 @@
 
 #include "Editor.h"
 
+/*
+=============
+Model Editor
+=============
+*/
+
 class ModelExporter;
 class ModelImporter;
 class Collider;
@@ -24,7 +30,7 @@ private:
 	void CleanUp();
 
 	virtual void Load(const std::wstring& wcFilePath) override {};
-	virtual void Save(const std::wstring& wcFilePath) override;
+	virtual void Save(const std::wstring& wcFilePath) override; // Save .act file.
 
 	void ExportMesh(const std::wstring& wcName, const std::wstring& wcExt);
 	void ExportAnimation(const std::wstring& wcName, const std::wstring& wcClip);
@@ -33,7 +39,8 @@ private:
 	void CreateModel(const std::wstring& wcBasePath, const std::wstring& wcFilename);
 	void CreateClip(const std::wstring& wcPath, const std::wstring& wcClip);
 	void CreateCollider(COLLIDER_TYPE eTyep);
-	void LoadTextureName(const std::wstring& wcBasePath, const std::wstring& wcFilename);
+	void CreateMeshFile(const std::wstring& wcName);
+	void LoadTextures(const std::wstring& wcBasePath, const std::wstring& wcFilename);
 	
 	void BindAnimation();
 	void AttachBone();
@@ -44,6 +51,8 @@ private:
 	void UpdateControl();
 
 	void SetAnimation(const std::wstring& wcClip, AkF32 fSpeed, AkF32 fBlendTime);
+
+	void SaveMesh(const std::wstring& wcName, MeshData_t* pMeshData, AkU32 uMeshDataNum, void* pPickID);
 
 private:
 	Camera* _pCamera = nullptr;
@@ -57,6 +66,7 @@ private:
 	AkI32 _iModifyType = -1;
 	AkI32 _iImportType = -1;
 	AkI32 _iTextureType = -1;
+	AkI32 _iGeometryType = -1;
 	AkI32 _iSaveActorDataType = -1;
 	AkI32 _iCurSelectedBoneID = -1;
 	AkI32 _iSelectColliderTpye = -1;
@@ -73,7 +83,7 @@ private:
 	ModelExporter* _pExporter = nullptr;
 	ModelImporter* _pImporter = nullptr;
 
-	std::vector<Model*> _vecModel = {}; // 자료구조 다시 생각
+	std::vector<Model*> _vecModel = {};
 	std::unordered_map<std::wstring, Model*> _mapBasicModel = {};
 	std::unordered_map<std::wstring, SkinnedModel*> _mapSkinnedModel = {};
 	std::unordered_map<std::wstring, Animation*> _mapAnim = {};
@@ -103,8 +113,11 @@ private:
 
 	Matrix _mAttachMatrix = Matrix();
 
-	// Texture Names
-	std::vector<std::wstring> _vecTextureNames = {};
+	// Textures.
+	std::unordered_map<void*, std::vector<std::wstring>> _mapTextures = {};
+	AkF32 _fGeoSphereRadius = 1.0f;
+	AkU32 _uGeoSphereSlice = 32;
+	AkU32 _uGeoSphereStack = 32;
 
 	// Collider.
 	// 삭제 기능 미구현.
@@ -114,8 +127,5 @@ private:
 	// For Shadow.
 	Vector3 _vRadiance = Vector3(0.5f);
 	Vector3 _vLightDir = Vector3(-20.0f, 50.0f, 20.0f);
-
-	// Debug Shadow.
-	ISprite* _pDebugShadowMap = nullptr;
 };
 

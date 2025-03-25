@@ -568,7 +568,7 @@ void FTerrainObject::SetTextures(const wchar_t* wcSecondFilename, const wchar_t*
 	else
 	{
 		_pMeshes[0].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcEmissvieFilename, AK_TRUE));
-		_pMaterials[0].uUseEimissiveMap = AK_TRUE;
+		_pMaterials[0].uUseEmissiveMap = AK_TRUE;
 	}
 	// Metallic.
 	if (!wcMetallicFilename)

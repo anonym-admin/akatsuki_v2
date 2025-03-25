@@ -9,6 +9,7 @@ interface IMeshObject : public IUnknown
 {
 	virtual AkBool CreateMeshBuffers(MeshData_t * pMeshData, AkU32 uMeshDataNum) = 0;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;
+	virtual void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO) = 0;
 	virtual void EnableWireFrame() = 0;
 	virtual void DisableWireFrame() = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
@@ -135,6 +136,7 @@ interface IRenderer : public IUnknown
 	virtual void SetToneMappingType(AkI32 iType) = 0;
 	virtual void SetBloomLevels(AkU32 uLevel) = 0;
 	virtual void SetBloomStrength(AkF32 uStrength) = 0;
+	virtual void SetFullScreen(AkBool bIsFullScreen) = 0;
 	virtual Vector3 GetWorldNearPosition(AkF32 fNdcX, AkF32 fNdcY) = 0;
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) = 0;
 	virtual void GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat) = 0;

@@ -91,7 +91,7 @@ AkBool FBillboardObjects::CreateBillboardBuffer(BillboardData_t* pBillboardData)
 	else
 	{
 		_pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pBillboardData->wcEmissiveTextureFilename, AK_TRUE));
-		_pMaterials->uUseEimissiveMap = AK_TRUE;
+		_pMaterials->uUseEmissiveMap = AK_TRUE;
 	}
 	// Metallic.
 	if (!wcscmp(pBillboardData->wcMetallicTextureFilename, L""))

@@ -92,6 +92,7 @@ AkBool ModelObject::Initialize(const wchar_t* wcScript)
 		wchar_t wcFilePath[_MAX_PATH] = {};
 
 		fwscanf_s(fp, L"%s\n", wcFilePath, _MAX_PATH);
+		wcscpy_s(_wcModelName, wcFilePath);
 		wcscat_s(wcFilePath, L".mesh");
 
 		AkU32 uMeshDataNum = 0;
@@ -107,6 +108,7 @@ AkBool ModelObject::Initialize(const wchar_t* wcScript)
 		wchar_t wcFilePath[_MAX_PATH] = {};
 
 		fwscanf_s(fp, L"%s\n", wcFilePath, _MAX_PATH);
+		wcscpy_s(_wcModelName, wcFilePath);
 		wcscat_s(wcFilePath, L".mesh");
 
 		AkU32 uMeshDataNum = 0;
@@ -122,7 +124,7 @@ AkBool ModelObject::Initialize(const wchar_t* wcScript)
 	// Collider °¹¼ö ÆÄ½Ì ÇÊ¿ä!!
 	AkI32 iColliderNum = 0;
 	fwscanf_s(fp, L"%d\n", &iColliderNum);
-	_uEventColliderNum = (AkU32)iColliderNum;
+	_uEventColliderNum = (AkU32)iColliderNum - 1;
 
 	for (AkI32 i = 0; i < iColliderNum; i++)
 	{
@@ -208,7 +210,7 @@ void ModelObject::RenderGUI()
 		return;
 	}
 
-	std::wstring ModelName = L"";
+	std::wstring ModelName = _wcModelName;
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
 

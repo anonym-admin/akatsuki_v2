@@ -228,6 +228,12 @@ MeshData_t* GeometryGenerator::MakeSphere(AkU32* pMeshDataNum, const AkF32 uRadi
 			v.vNormalModel = v.vPosition;
 			v.vTexCoord = Vector2(float(i) / uNumSlices, 1.0f - float(j) / uNumStacks) * *pTexScale;
 
+			Vector3 vBiTangent = Vector3(0.0f, 1.0f, 0.0f);
+			Vector3 vNormalOrth = v.vNormalModel - vBiTangent.Dot(v.vNormalModel) * v.vNormalModel;
+
+			v.vTangentModel = vBiTangent.Cross(vNormalOrth);
+			v.vTangentModel.Normalize();
+
 			pMeshData->pVertices[j + (uNumSlices + 1) * i] = v;
 		}
 	}
@@ -928,46 +934,6 @@ void GeometryGenerator::DestroyGeometry(MeshData_t* pMeshData, AkU32 uMeshDataNu
 			{
 				delete[] pIndices;
 			}
-			/*if (pMeshData[i].wcAlbedoTextureFilename)
-			{
-				free(pMeshData[i].wcAlbedoTextureFilename);
-				pMeshData[i].wcAlbedoTextureFilename = nullptr;
-			}
-			if (pMeshData[i].wcEmissiveTextureFilename)
-			{
-				free(pMeshData[i].wcEmissiveTextureFilename);
-				pMeshData[i].wcEmissiveTextureFilename = nullptr;
-			}
-			if (pMeshData[i].wcHeightTextureFilename)
-			{
-				free(pMeshData[i].wcHeightTextureFilename);
-				pMeshData[i].wcHeightTextureFilename = nullptr;
-			}
-			if (pMeshData[i].wcNormalTextureFilename)
-			{
-				free(pMeshData[i].wcNormalTextureFilename);
-				pMeshData[i].wcNormalTextureFilename = nullptr;
-			}
-			if (pMeshData[i].wcMetallicTextureFilename)
-			{
-				free(pMeshData[i].wcMetallicTextureFilename);
-				pMeshData[i].wcMetallicTextureFilename = nullptr;
-			}
-			if (pMeshData[i].wcRoughnessTextureFilename)
-			{
-				free(pMeshData[i].wcRoughnessTextureFilename);
-				pMeshData[i].wcRoughnessTextureFilename = nullptr;
-			}
-			if (pMeshData[i].wcAoTextureFilename)
-			{
-				free(pMeshData[i].wcAoTextureFilename);
-				pMeshData[i].wcAoTextureFilename = nullptr;
-			}
-			if (pMeshData[i].wcOpacityTextureFilename)
-			{
-				free(pMeshData[i].wcOpacityTextureFilename);
-				pMeshData[i].wcOpacityTextureFilename = nullptr;
-			}*/
 		}
 		delete[] pMeshData;
 	}

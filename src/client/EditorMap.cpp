@@ -104,8 +104,9 @@ void EditorMap::RenderGUI()
 	IGFD::FileDialogConfig tConfig = {};
 	tConfig.filePathName = "../../assets/";
 
-	ImGui::Begin("Map Editor");
+	ImGui::Begin("[Map Editor]");
 	ImGui::Checkbox("FPV", &_bFPV);
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", DT, FPS);
 
 	const char* pTex[] = { "Albedo", "Second", "Third" };
 	if (ImGui::Combo("Texture Type", &_iTextureType, pTex, IM_ARRAYSIZE(pTex)))

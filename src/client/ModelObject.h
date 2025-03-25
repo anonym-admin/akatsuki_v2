@@ -51,5 +51,7 @@ private:
 	AkU32 _uBoneNum = 0;
 	Matrix _mDefaultMatrix = Matrix();
 	AkBool _bEditMode = AK_FALSE;
+
+	wchar_t _wcModelName[_MAX_PATH] = {};
 };
 
