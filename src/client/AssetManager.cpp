@@ -14,7 +14,7 @@ AssetManager::~AssetManager()
 	CleanUp();
 }
 
-void AssetManager::AddMeshData(ASSET_MESH_DATA_TYPE eType, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
+void AssetManager::AddMeshData(const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
 {
 	SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
 	AssetMeshDataContainer_t* pAssetMeshDataContainer = nullptr;
@@ -23,14 +23,11 @@ void AssetManager::AddMeshData(ASSET_MESH_DATA_TYPE eType, const wchar_t* wcBase
 
 	pAssetMeshDataContainer->pMeshData = ReadFromFile(pAssetMeshDataContainer, &pAssetMeshDataContainer->uMeshDataNum, wcBasePath, wcModelFilename, fScaleLength, bForAnim);
 
-	_ppMeshDataContainerList[(AkU32)eType] = pAssetMeshDataContainer;
-
 	wchar_t wcFullPath[MAX_PATH] = {};
 	wcscpy_s(wcFullPath, wcBasePath);
 	wcscat_s(wcFullPath, wcModelFilename);
-	wcscat_s(wcFullPath, L"\n");
 
-	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	_mapMeshDataList[wcModelFilename] = pAssetMeshDataContainer;
 }
 
 void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* wcEnvFilename, const wchar_t* wcIrradianceFilename, const wchar_t* wcSpecularFilename, const wchar_t* wcBrdfFilaename)
@@ -44,11 +41,14 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, wcEnvFilename);
 
 	// Env
-	pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
-	pAssetTexContainer = AllocTextureContainer();
-	pAssetTexContainer->pTexHandle = pTexHandle;
+	if(!_mapTextures.count(wcEnvFilename))
+	{
+		pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
+		pAssetTexContainer = AllocTextureContainer();
+		pAssetTexContainer->pTexHandle = pTexHandle;
 
-	_ppTextureContainerList[(AkU32)ASSET_TEXTURE_TYPE::ENV] = pAssetTexContainer;
+		_mapTextures[wcEnvFilename] = pAssetTexContainer;
+	}
 
 	wcscat_s(wcFullPath, L"\n");
 	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
@@ -58,11 +58,14 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, wcIrradianceFilename);
 
 	// Irradiance
-	pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
-	pAssetTexContainer = AllocTextureContainer();
-	pAssetTexContainer->pTexHandle = pTexHandle;
+	if (!_mapTextures.count(wcIrradianceFilename))
+	{
+		pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
+		pAssetTexContainer = AllocTextureContainer();
+		pAssetTexContainer->pTexHandle = pTexHandle;
 
-	_ppTextureContainerList[(AkU32)ASSET_TEXTURE_TYPE::IRRADIANCE] = pAssetTexContainer;
+		_mapTextures[wcIrradianceFilename] = pAssetTexContainer;
+	}
 
 	wcscat_s(wcFullPath, L"\n");
 	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
@@ -72,25 +75,28 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, wcSpecularFilename);
 
 	// Specular
-	pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
-	pAssetTexContainer = AllocTextureContainer();
-	pAssetTexContainer->pTexHandle = pTexHandle;
+	if (!_mapTextures.count(wcSpecularFilename))
+	{
+		pTexHandle = GRenderer->CreateCubeMapTexture(wcFullPath);
+		pAssetTexContainer = AllocTextureContainer();
+		pAssetTexContainer->pTexHandle = pTexHandle;
 
-	_ppTextureContainerList[(AkU32)ASSET_TEXTURE_TYPE::SPECULAR] = pAssetTexContainer;
-
-	wcscat_s(wcFullPath, L"\n");
-	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+		_mapTextures[wcSpecularFilename] = pAssetTexContainer;
+	}
 
 	memset(wcFullPath, 0, sizeof(wchar_t) * MAX_PATH);
 	wcscpy_s(wcFullPath, wcBasePath);
 	wcscat_s(wcFullPath, wcBrdfFilaename);
 
 	// Brdf
-	pTexHandle = GRenderer->CreateTextureFromFile(wcFullPath, AK_FALSE);
-	pAssetTexContainer = AllocTextureContainer();
-	pAssetTexContainer->pTexHandle = pTexHandle;
+	if (!_mapTextures.count(wcBrdfFilaename))
+	{
+		pTexHandle = GRenderer->CreateTextureFromFile(wcFullPath, AK_FALSE);
+		pAssetTexContainer = AllocTextureContainer();
+		pAssetTexContainer->pTexHandle = pTexHandle;
 
-	_ppTextureContainerList[(AkU32)ASSET_TEXTURE_TYPE::BRDF] = pAssetTexContainer;
+		_mapTextures[wcBrdfFilaename] = pAssetTexContainer;
+	}
 
 	wcscat_s(wcFullPath, L"\n");
 	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
@@ -100,86 +106,212 @@ void AssetManager::AddDynamicTexture()
 {
 }
 
-void AssetManager::DeleteMeshData(ASSET_MESH_DATA_TYPE eType)
+void AssetManager::DeleteMeshData(const wchar_t* wcKey)
 {
-	AkU32 uType = (AkU32)eType;
+	AssetMeshDataContainer_t* pMeshDataContainer = _mapMeshDataList[wcKey];
 
-	if (_ppMeshDataContainerList[uType])
+	if (pMeshDataContainer)
 	{
-		if (_ppMeshDataContainerList[uType]->pMeshData)
+		if (pMeshDataContainer->pMeshData)
 		{
-			for (AkU32 i = 0; i < _ppMeshDataContainerList[uType]->uMeshDataNum; i++)
+			for (AkU32 i = 0; i < pMeshDataContainer->uMeshDataNum; i++)
 			{
-				if (_ppMeshDataContainerList[uType]->pMeshData[i].pVertices)
+				if (pMeshDataContainer->pMeshData[i].pVertices)
 				{
-					free(_ppMeshDataContainerList[uType]->pMeshData[i].pVertices);
-					_ppMeshDataContainerList[uType]->pMeshData[i].pVertices = nullptr;
+					free(pMeshDataContainer->pMeshData[i].pVertices);
+					pMeshDataContainer->pMeshData[i].pVertices = nullptr;
 				}
-				if (_ppMeshDataContainerList[uType]->pMeshData[i].pSkinnedVertices)
+				if (pMeshDataContainer->pMeshData[i].pSkinnedVertices)
 				{
-					free(_ppMeshDataContainerList[uType]->pMeshData[i].pSkinnedVertices);
-					_ppMeshDataContainerList[uType]->pMeshData[i].pSkinnedVertices = nullptr;
+					free(pMeshDataContainer->pMeshData[i].pSkinnedVertices);
+					pMeshDataContainer->pMeshData[i].pSkinnedVertices = nullptr;
 				}
-				if (_ppMeshDataContainerList[uType]->pMeshData[i].pIndices)
+				if (pMeshDataContainer->pMeshData[i].pIndices)
 				{
-					free(_ppMeshDataContainerList[uType]->pMeshData[i].pIndices);
-					_ppMeshDataContainerList[uType]->pMeshData[i].pIndices = nullptr;
+					free(pMeshDataContainer->pMeshData[i].pIndices);
+					pMeshDataContainer->pMeshData[i].pIndices = nullptr;
 				}
 			}
 
-			free(_ppMeshDataContainerList[uType]->pMeshData);
-			_ppMeshDataContainerList[uType]->pMeshData = nullptr;
+			free(pMeshDataContainer->pMeshData);
+			pMeshDataContainer->pMeshData = nullptr;
 		}
 
-		if (_ppMeshDataContainerList[uType]->pBoneHierarchyList)
+		if (pMeshDataContainer->pBoneHierarchyList)
 		{
-			delete[] _ppMeshDataContainerList[uType]->pBoneHierarchyList;
-			_ppMeshDataContainerList[uType]->pBoneHierarchyList = nullptr;
+			delete[] pMeshDataContainer->pBoneHierarchyList;
+			pMeshDataContainer->pBoneHierarchyList = nullptr;
 		}
 
-		if (_ppMeshDataContainerList[uType]->pBoneOffsetMatrixList)
+		if (pMeshDataContainer->pBoneOffsetMatrixList)
 		{
-			delete[] _ppMeshDataContainerList[uType]->pBoneOffsetMatrixList;
-			_ppMeshDataContainerList[uType]->pBoneOffsetMatrixList = nullptr;
+			delete[] pMeshDataContainer->pBoneOffsetMatrixList;
+			pMeshDataContainer->pBoneOffsetMatrixList = nullptr;
 		}
 
-		FreeMeshDataContainer(_ppMeshDataContainerList[uType]);
-		_ppMeshDataContainerList[uType] = nullptr;
+		FreeMeshDataContainer(pMeshDataContainer);
+		pMeshDataContainer = nullptr;
 	}
+
+	_mapMeshDataList.erase(wcKey);
 }
 
-void AssetManager::DeleteTexture(ASSET_TEXTURE_TYPE eType)
+void AssetManager::DeleteAllMeshData()
 {
-	AkU32 uType = (AkU32)eType;
-
-	if (_ppTextureContainerList[uType])
+	for (auto& e : _mapMeshDataList)
 	{
-		GRenderer->DestroyTexture(_ppTextureContainerList[uType]->pTexHandle);
-		_ppTextureContainerList[uType]->pTexHandle = nullptr;
+		if (e.second)
+		{
+			if (e.second->pMeshData)
+			{
+				for (AkU32 i = 0; i < e.second->uMeshDataNum; i++)
+				{
+					if (e.second->pMeshData[i].pVertices)
+					{
+						free(e.second->pMeshData[i].pVertices);
+						e.second->pMeshData[i].pVertices = nullptr;
+					}
+					if (e.second->pMeshData[i].pSkinnedVertices)
+					{
+						free(e.second->pMeshData[i].pSkinnedVertices);
+						e.second->pMeshData[i].pSkinnedVertices = nullptr;
+					}
+					if (e.second->pMeshData[i].pIndices)
+					{
+						free(e.second->pMeshData[i].pIndices);
+						e.second->pMeshData[i].pIndices = nullptr;
+					}
+				}
 
-		FreeTextureContainer(_ppTextureContainerList[uType]);
-		_ppTextureContainerList[uType] = nullptr;
+				free(e.second->pMeshData);
+				e.second->pMeshData = nullptr;
+			}
+
+			//if (e.second->pBoneHierarchyList)
+			//{
+			//	delete[] e.second->pBoneHierarchyList;
+			//	e.second->pBoneHierarchyList = nullptr;
+			//}
+
+			//if (e.second->pBoneOffsetMatrixList)
+			//{
+			//	delete[] e.second->pBoneOffsetMatrixList;
+			//	e.second->pBoneOffsetMatrixList = nullptr;
+			//}
+
+			//if (e.second->ppBoneName)
+			//{
+			//	for(AkU32 i = 0; i < e.second->uBoneNum; i++)
+			//	{
+			//		delete[] e.second->ppBoneName[i];
+			//		e.second->ppBoneName[i] = nullptr;
+			//	}
+
+			//	delete[] e.second->ppBoneName;
+			//	e.second->ppBoneName;
+			//}
+
+			FreeMeshDataContainer(e.second);
+			e.second = nullptr;
+		}
 	}
+
+	_mapMeshDataList.clear();
 }
 
-void AssetManager::DeleteAnimation(ASSET_ANIM_TYPE eType)
+void AssetManager::DeleteTexture(const wchar_t* wcKey)
 {
-	AkU32 uType = (AkU32)eType;
-
-	if (_ppAnimContainerList[uType])
+	AssetTextureContainer_t* pTextureContainer = _mapTextures[wcKey];
+	if (pTextureContainer)
 	{
-		if (_ppAnimContainerList[uType]->pAnim)
+		if (pTextureContainer->pTexHandle)
 		{
-			delete _ppAnimContainerList[uType]->pAnim;
-			_ppAnimContainerList[uType]->pAnim = nullptr;
+			GRenderer->DestroyTexture(pTextureContainer->pTexHandle);
+			pTextureContainer->pTexHandle = nullptr;
 		}
 
-		FreeAnimationContainer(_ppAnimContainerList[uType]);
-		_ppAnimContainerList[uType] = nullptr;
+		FreeTextureContainer(pTextureContainer);
 	}
+
+	_mapTextures.erase(wcKey);
 }
 
-MeshData_t* AssetManager::ReadFromFile(AssetMeshDataContainer_t* pAassetMeshDataContainer, AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
+void AssetManager::DeleteAllTexture()
+{
+	for (auto& e : _mapTextures)
+	{
+		if (e.second)
+		{
+			if(e.second->pTexHandle)
+			{
+				GRenderer->DestroyTexture(e.second->pTexHandle);
+				e.second->pTexHandle = nullptr;
+			}
+
+			FreeTextureContainer(e.second);
+			e.second = nullptr;
+		}
+	}
+
+	_mapTextures.clear();
+}
+
+void AssetManager::DeleteAnimation(const wchar_t* wcKey)
+{
+	AssetAnimationContainer_t* pAnimationContainer = _mapAnimation[wcKey];
+	if (pAnimationContainer)
+	{
+		if (pAnimationContainer->pAnim)
+		{
+			delete pAnimationContainer->pAnim;
+			pAnimationContainer->pAnim = nullptr;
+		}
+
+		FreeAnimationContainer(pAnimationContainer);
+	}
+
+	_mapAnimation.erase(wcKey);
+}
+
+void AssetManager::DeleteAllAnimation()
+{
+	for (auto& e : _mapAnimation)
+	{
+		if (e.second)
+		{
+			if (e.second->pAnim)
+			{
+				delete e.second->pAnim;
+				e.second->pAnim = nullptr;
+			}
+
+			FreeAnimationContainer(e.second);
+			e.second = nullptr;
+		}
+	}
+
+	_mapAnimation.clear();
+}
+
+AssetMeshDataContainer_t* AssetManager::GetMeshData(const wchar_t* wcKey)
+{
+	AssetMeshDataContainer_t* pResult = _mapMeshDataList[wcKey];
+	return pResult;
+}
+
+AssetTextureContainer_t* AssetManager::GetTexture(const wchar_t* wcKey)
+{
+	AssetTextureContainer_t* pResult = _mapTextures[wcKey];
+	return pResult;
+}
+
+AssetAnimationContainer_t* AssetManager::GetAnimation(const wchar_t* wcKey)
+{
+	AssetAnimationContainer_t* pResult = _mapAnimation[wcKey];
+	return pResult;
+}
+
+MeshData_t* AssetManager::ReadFromFile(AssetMeshDataContainer_t* pAssetMeshDataContainer, AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
 {
 	ModelImporter tModelImporter = {};
 	MeshData_t* pMeshData = nullptr;
@@ -189,45 +321,53 @@ MeshData_t* AssetManager::ReadFromFile(AssetMeshDataContainer_t* pAassetMeshData
 	pMeshData = tModelImporter.GetMeshData();
 	*pMeshDataNum = tModelImporter.GetMeshDataNum();
 
-	GeometryGenerator::NormalizeMeshData(pMeshData, *pMeshDataNum, fScaleLength, bForAnim, &pAassetMeshDataContainer->mDefaultMat);
+	GeometryGenerator::NormalizeMeshData(pMeshData, *pMeshDataNum, fScaleLength, bForAnim, &pAssetMeshDataContainer->mDefaultMat);
 
 	if (bForAnim)
 	{
-		pAassetMeshDataContainer->pBoneOffsetMatrixList = tModelImporter.GetBoneOffsetTransformList();
-		pAassetMeshDataContainer->pBoneHierarchyList = tModelImporter.GetBoneHierarchyList();
-		pAassetMeshDataContainer->uBoneNum = tModelImporter.GetBoneNum();
+		pAssetMeshDataContainer->pBoneOffsetMatrixList = tModelImporter.GetBoneOffsetTransformList();
+		pAssetMeshDataContainer->pBoneHierarchyList = tModelImporter.GetBoneHierarchyList();
+		pAssetMeshDataContainer->uBoneNum = tModelImporter.GetBoneNum();
+		pAssetMeshDataContainer->ppBoneName = tModelImporter.GetBoneName();
 	}
 
 	return pMeshData;
 }
 
-void AssetManager::ReadClip(ASSET_ANIM_TYPE eType, const wchar_t* wcFilePath, const wchar_t* wcFileName)
+void AssetManager::ReadClip(const wchar_t* wcModel, const wchar_t* wcAnim)
 {
 	SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
 
 	wchar_t wcFullPath[MAX_PATH] = {};
-	wcscpy_s(wcFullPath, wcFilePath);
-	wcscat_s(wcFullPath, wcFileName);
+	wcscpy_s(wcFullPath, CLIP_FILE_PATH);
+	wcscat_s(wcFullPath, wcModel);
+	wcscat_s(wcFullPath, L"/");
 
-	if (!_ppAnimContainerList[(AkU32)eType])
+	wchar_t wcModelName[MAX_PATH] = {};
+	wcscpy_s(wcModelName, wcModel);
+	wcscat_s(wcModelName, L".mesh");
+
+	if (!_mapAnimation[wcModel])
 	{
-		_ppAnimContainerList[(AkU32)eType] = AllocAnimationContainer();
-		_ppAnimContainerList[(AkU32)eType]->pAnim = new Animation(GetMeshDataContainer((ASSET_MESH_DATA_TYPE)eType), wcFileName, _ppAnimContainerList[(AkU32)eType]->MAX_CLIP_NAME_COUNT);
-		_ppAnimContainerList[(AkU32)eType]->wcClipName[0] = wcFileName;
+		_mapAnimation[wcModel] = AllocAnimationContainer();
+		_mapAnimation[wcModel]->pAnim = new Animation(GetMeshData(wcModelName), wcAnim, _mapAnimation[wcModel]->MAX_CLIP_NAME_COUNT);
+		_mapAnimation[wcModel]->wcClipName[0] = wcAnim;
 	}
 	else
 	{
-		for (AkU32 i = 0; i < _ppAnimContainerList[(AkU32)eType]->MAX_CLIP_NAME_COUNT; i++)
+		for (AkU32 i = 0; i < _mapAnimation[wcModel]->MAX_CLIP_NAME_COUNT; i++)
 		{
-			if (!_ppAnimContainerList[(AkU32)eType]->wcClipName[i])
+			if (!_mapAnimation[wcModel]->wcClipName[i])
 			{
-				_ppAnimContainerList[(AkU32)eType]->wcClipName[i] = wcFileName;
+				_mapAnimation[wcModel]->wcClipName[i] = wcAnim;
 				break;
 			}
 		}
 	}
 
-	_ppAnimContainerList[(AkU32)eType]->pAnim->ReadClip(wcFilePath, wcFileName);
+	_mapAnimation[wcModel]->pAnim->ReadClip(wcFullPath, wcAnim);
+
+	wcscat_s(wcFullPath, wcAnim);
 
 	wcscat_s(wcFullPath, L"\n");
 	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
@@ -235,18 +375,9 @@ void AssetManager::ReadClip(ASSET_ANIM_TYPE eType, const wchar_t* wcFilePath, co
 
 void AssetManager::CleanUp()
 {
-	for (AkU32 i = 0; i < (AkU32)ASSET_MESH_DATA_TYPE::COUNT; i++)
-	{
-		DeleteMeshData((ASSET_MESH_DATA_TYPE)i);
-	}
-	for (AkU32 i = 0; i < (AkU32)ASSET_TEXTURE_TYPE::COUNT; i++)
-	{
-		DeleteTexture((ASSET_TEXTURE_TYPE)i);
-	}
-	for (AkU32 i = 0; i < (AkU32)ASSET_ANIM_TYPE::COUNT; i++)
-	{
-		DeleteAnimation((ASSET_ANIM_TYPE)i);
-	}
+	DeleteAllMeshData();
+	DeleteAllTexture();
+	DeleteAllAnimation();
 }
 
 AssetTextureContainer_t* AssetManager::AllocTextureContainer()

@@ -291,7 +291,7 @@
     <ClInclude Include="Dancer.h">
       <Filter>src\obj\character</Filter>
     </ClInclude>
-    <ClInclude Include="Swat.h">
+    <ClInclude Include="Soldier.h">
       <Filter>src\obj\character</Filter>
     </ClInclude>
     <ClInclude Include="SquareCollider.h">
@@ -508,7 +508,7 @@
     <ClCompile Include="Dancer.cpp">
       <Filter>src\obj\character</Filter>
     </ClCompile>
-    <ClCompile Include="Swat.cpp">
+    <ClCompile Include="Soldier.cpp">
       <Filter>src\obj\character</Filter>
     </ClCompile>
     <ClCompile Include="SquareCollider.cpp">

@@ -25,6 +25,7 @@ public:
 	virtual void FinalUpdate() = 0;
 	virtual void RenderShadow() = 0;
 	virtual void Render() = 0;
+	virtual void Load(const wchar_t* wcSceneFile) = 0;
 
 	void SetName(const wchar_t* wcName) { Name = wcName; }
 	void AddGameObject(GAME_OBJECT_GROUP_TYPE eGameObjType, Actor* pGameObj);

@@ -60,6 +60,11 @@ private:
 	wchar_t wcAlphaFilenames[2][_MAX_PATH] = {};
 	wchar_t wcHeightMapFilename[_MAX_PATH] = {};
 	wchar_t wcAlbedoFilename[_MAX_PATH] = {};
+	wchar_t wcNormalFilename[_MAX_PATH] = {};
+	wchar_t wcEmissiveFilename[_MAX_PATH] = {};
+	wchar_t wcMetallicFilename[_MAX_PATH] = {};
+	wchar_t wcRoughnewwFilename[_MAX_PATH] = {};
+	wchar_t wcAOFilename[_MAX_PATH] = {};
 };
 
 /*

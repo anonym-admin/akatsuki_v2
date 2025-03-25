@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Swat.h"
+#include "Soldier.h"
 #include "SkinnedModel.h"
 #include "Animation.h"
 #include "Transform.h"
@@ -12,7 +12,7 @@
 #include "Sprite.h"
 #include "BRS_74.h"
 
-Swat::Swat()
+Soldier::Soldier()
 {
 	if (!Initialize())
 	{
@@ -20,7 +20,15 @@ Swat::Swat()
 	}
 }
 
-Swat::~Swat()
+Soldier::Soldier(const wchar_t* wcFile)
+{
+	if (!Soldier::Initialize(wcFile))
+	{
+		__debugbreak();
+	}
+}
+
+Soldier::~Soldier()
 {
 	if (_pSprite)
 	{
@@ -31,30 +39,30 @@ Swat::~Swat()
 	CleanUp();
 }
 
-AkBool Swat::Initialize()
+AkBool Soldier::Initialize()
 {
 	Vector2 vMaxFrame = Vector2(4, 5);
 	_pSprite = new Sprite(L"../../assets/particle/MuzzleFlash_4x5.dds", &vMaxFrame);
 
 	// Create Model.
-	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::SWATGUY);
+	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshData(L"soldier.mesh");
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissive = Vector3(0.0f);
 	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_TRUE);
 
 	// Bind Animation.
-	AssetAnimationContainer_t* pAnimContainer = GAssetManager->GetAnimationContainer(ASSET_ANIM_TYPE::SWATGUY);
+	AssetAnimationContainer_t* pAnimContainer = GAssetManager->GetAnimation(L"soldier");
 	BindAnimation(pAnimContainer->pAnim);
 	memcpy(ANIM_CLIP, pAnimContainer->wcClipName, sizeof(wchar_t*) * COUNT);
-	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetIdle);
-	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
-	_pAnimation->SetEndCallBack(ANIM_CLIP[RIFLE_FIRE], this, ::SetNextFire);
-	_pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
-	_pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
+	// _pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetIdle);
+	// _pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
+	// _pAnimation->SetEndCallBack(ANIM_CLIP[RIFLE_FIRE], this, ::SetNextFire);
+	// _pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
+	// _pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
 	SetAnimation(IDLE);
 
 	// Delete MeshData Resource.
-	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::SWATGUY);
+	// GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::SWATGUY);
 
 	// Create Controller.
 	_pController = CreateController();
@@ -82,9 +90,41 @@ AkBool Swat::Initialize()
 	return AK_TRUE;
 }
 
-void Swat::Update()
+AkBool Soldier::Initialize(const wchar_t* wcFile)
 {
-	_pSprite->Update();
+	if (!Actor::Initialize(wcFile))
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+
+	// Create Controller.
+	_pController = CreateController();
+
+	// Bind Animation.
+	AssetAnimationContainer_t* pAnimContainer = GAssetManager->GetAnimation(L"soldier");
+	BindAnimation(pAnimContainer->pAnim);
+	memcpy(ANIM_CLIP, pAnimContainer->wcClipName, sizeof(wchar_t*) * COUNT);
+	SetAnimation(IDLE);
+
+	// Create Camera.
+	_pCamera = CreateCamera(2.0f, 0.5f);
+	_pCamera->SetOwner(this);
+
+	// Create Gravity
+	_pGravity = CreateGravity();
+
+	// Create Rigidbody
+	_pRigidBody = CreateRigidBody();
+	_pRigidBody->SetFrictionCoef(2.5f);
+	_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
+
+	return AK_TRUE;
+}
+
+void Soldier::Update()
+{
+	// _pSprite->Update();
 
 	if(KEY_DOWN(KEY_INPUT_P))
 	{
@@ -99,7 +139,7 @@ void Swat::Update()
 	_pController->Update();
 }
 
-void Swat::FinalUpdate()
+void Soldier::FinalUpdate()
 {
 	// _pGravity->Update();
 
@@ -118,9 +158,9 @@ void Swat::FinalUpdate()
 	FinalUpdateWeapon();
 }
 
-void Swat::Render()
+void Soldier::Render()
 {
-	_pSprite->Render();
+	// _pSprite->Render();
 
 	// Render model.
 	_pModel->Render();
@@ -129,12 +169,12 @@ void Swat::Render()
 	_pCollider->Render();
 }
 
-void Swat::RenderShadow()
+void Soldier::RenderShadow()
 {
 	_pModel->RenderShadow();
 }
 
-void Swat::OnCollisionEnter(Collider* pOther)
+void Soldier::OnCollisionEnter(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();
 	if (!wcscmp(pOtherOwner->Name, L"BRS_74"))
@@ -144,7 +184,7 @@ void Swat::OnCollisionEnter(Collider* pOther)
 	}
 }
 
-void Swat::OnCollision(Collider* pOther)
+void Soldier::OnCollision(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();
 	if (!wcscmp(pOtherOwner->Name, L"BRS_74"))
@@ -153,12 +193,12 @@ void Swat::OnCollision(Collider* pOther)
 	}
 }
 
-void Swat::OnCollisionExit(Collider* pOther)
+void Soldier::OnCollisionExit(Collider* pOther)
 {
 
 }
 
-void Swat::ActionReaction(Collider* pOther)
+void Soldier::ActionReaction(Collider* pOther)
 {
 	// 대상 충돌체가 육면체일 경우 대각선과 가로 세로의 반지름이 달라 진동하는 현상이 발생한다.
 
@@ -178,12 +218,12 @@ void Swat::ActionReaction(Collider* pOther)
 	_pTransform->SetPosition(&vPos);
 }
 
-void Swat::CleanUp()
+void Soldier::CleanUp()
 {
 	UnBindAnimation();
 }
 
-void Swat::SetIdle()
+void Soldier::SetIdle()
 {
 	Jumping = AK_FALSE;
 	Attack = AK_FALSE;
@@ -191,7 +231,7 @@ void Swat::SetIdle()
 
 	if (BindWeapon)
 	{
-		SetAnimation(RIFLE_IDLE);
+		// SetAnimation(RIFLE_IDLE);
 		((BRS_74*)_pWeapon)->Release();
 	}
 	else
@@ -200,26 +240,24 @@ void Swat::SetIdle()
 	}
 }
 
-void Swat::SetNextPunching()
+void Soldier::SetNextPunching()
 {
-
-	SetAnimation(PUNCHING_02);
-
+	//SetAnimation(PUNCHING_02);
 }
 
-void Swat::SetNextFire()
+void Soldier::SetNextFire()
 {
 	AkF32 fTime = 0.0f;
 	while (fTime <= 1000.0f)
 	{
 		fTime += DT;
-		SetAnimation(RIFLE_FIRE);
+		//SetAnimation(RIFLE_FIRE);
 	}
 	
 	SetIdle();
 }
 
-void Swat::UpdateMove()
+void Soldier::UpdateMove()
 {
 	if (Jumping || Attack)
 		return;
@@ -237,39 +275,39 @@ void Swat::UpdateMove()
 		// [] > 60
 		if (0.866025f < fCosValue0)
 		{
-			 BindWeapon ? SetAnimation(RIFLE_F_WALK) : SetAnimation(F_WALK);
+			 //BindWeapon ? SetAnimation(RIFLE_F_WALK) : SetAnimation(F_WALK);
 		}
 		// 30 <= [] <= 60
 		else if (0.5f <= fCosValue0 && fCosValue0 <= 0.866025f)
 		{
-			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
-			if (fCosValue1 >= 0.0f)
-				SetAnimation(FR_WALK);
-			else
-				SetAnimation(FL_WALK);
+			//AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			//if (fCosValue1 >= 0.0f)
+			//	SetAnimation(FR_WALK);
+			//else
+			//	SetAnimation(FL_WALK);
 		}
 		// -60 < [] < 60
 		else if (-0.5f < fCosValue0 && fCosValue0 < 0.5f)
 		{
-			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
-			if (fCosValue1 >= 0.0f)
-				SetAnimation(R_WALK);
-			else
-				SetAnimation(L_WALK);
+			//AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			//if (fCosValue1 >= 0.0f)
+			//	SetAnimation(R_WALK);
+			//else
+			//	SetAnimation(L_WALK);
 		}
 		// -60 <= [] <= -30
 		else if (-0.866025f <= fCosValue0 && fCosValue0 <= -0.5f)
 		{
-			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
-			if (fCosValue1 >= 0.0f)
-				SetAnimation(BR_WALK);
-			else
-				SetAnimation(BL_WALK);
+			//AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			//if (fCosValue1 >= 0.0f)
+			//	SetAnimation(BR_WALK);
+			//else
+			//	SetAnimation(BL_WALK);
 		}
 		// [] < -60
 		else
 		{
-			SetAnimation(B_WALK);
+			//SetAnimation(B_WALK);
 		}
 
 		// Return Walk Speed.
@@ -277,24 +315,26 @@ void Swat::UpdateMove()
 	}
 	else if (vVelocity.Length() > 3.0f)
 	{
-		// Run.
-		BindWeapon ? SetAnimation(RIFLE_RUN) : SetAnimation(F_RUN);
+		//// Run.
+		//BindWeapon ? SetAnimation(RIFLE_RUN) : SetAnimation(F_RUN);
 	}
 	else if (0.0f >= vVelocity.Length())
 	{
 		// Idle.
-		if (F_WALK <= AnimState && AnimState <= RIFLE_F_WALK)
-			BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
+		//if (F_WALK <= AnimState && AnimState <= RIFLE_F_WALK)
+		//	BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
 
-		if (F_RUN == AnimState || RIFLE_RUN == AnimState)
-			BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
+		//if (F_RUN == AnimState || RIFLE_RUN == AnimState)
+		//	BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
+
+		SetAnimation(ANIM_STATE::IDLE);
 
 		// Return Walk Speed.
 		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 	}
 }
 
-void Swat::UpdateWeapon()
+void Soldier::UpdateWeapon()
 {
 	if (!BindWeapon)
 		return;
@@ -324,7 +364,7 @@ void Swat::UpdateWeapon()
 	RightHand = AK_FALSE;
 }
 
-void Swat::UpdateFire()
+void Soldier::UpdateFire()
 {
 	static AkBool PrevFire = AK_FALSE;
 
@@ -346,7 +386,7 @@ void Swat::UpdateFire()
 	PrevFire = Fire;
 }
 
-void Swat::FinalUpdateWeapon()
+void Soldier::FinalUpdateWeapon()
 {
 	if (!BindWeapon)
 	{
@@ -372,7 +412,7 @@ void Swat::FinalUpdateWeapon()
 	_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
 }
 
-void Swat::SetWeaponRelativePosition()
+void Soldier::SetWeaponRelativePosition()
 {
 	Vector3 vVelocity = _pRigidBody->GetVelocity();
 
@@ -393,7 +433,7 @@ void Swat::SetWeaponRelativePosition()
 	}
 }
 
-void Swat::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)
+void Soldier::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)
 {
 	if (eState != AnimState)
 	{
@@ -404,15 +444,15 @@ void Swat::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)
 
 void SetIdle(Actor* pSwat)
 {
-	((Swat*)pSwat)->SetIdle();
+	((Soldier*)pSwat)->SetIdle();
 }
 
 void SetNextPunching(Actor* pSwat)
 {
-	((Swat*)pSwat)->SetNextPunching();
+	((Soldier*)pSwat)->SetNextPunching();
 }
 
 void SetNextFire(Actor* pSwat)
 {
-	((Swat*)pSwat)->SetNextFire();
+	((Soldier*)pSwat)->SetNextFire();
 }

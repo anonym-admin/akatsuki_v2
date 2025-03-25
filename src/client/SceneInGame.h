@@ -21,6 +21,7 @@ public:
 	virtual void FinalUpdate() override;
 	virtual void RenderShadow() override;
 	virtual void Render() override;
+	virtual void Load(const wchar_t* wcSceneFile) override;
 
 private:
 	// Mini map

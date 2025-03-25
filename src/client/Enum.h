@@ -79,45 +79,6 @@ enum class EVENT_TYPE
 };
 
 /*
-============
-Asset Type
-============
-*/
-
-enum class ASSET_MESH_DATA_TYPE // ASSET_ANIM_TYPE 순서 동일하게.
-{
-	// SKINNED
-	SWATGUY,
-	DANCER,
-
-	// NOT SKINNED
-	BRS_74,
-	BULLET,
-	CASING,
-
-	COUNT,
-};
-
-enum class ASSET_TEXTURE_TYPE
-{
-	ENV,
-	IRRADIANCE,
-	SPECULAR,
-	BRDF,
-	DYNAMIC,
-
-	COUNT,
-};
-
-enum class ASSET_ANIM_TYPE
-{
-	SWATGUY,
-	DANCER,
-
-	COUNT,
-};
-
-/*
 ==================
 Camera Type
 ==================

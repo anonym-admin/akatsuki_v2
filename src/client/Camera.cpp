@@ -5,7 +5,8 @@
 #include "RigidBody.h"
 #include "Transform.h"
 #include "Timer.h"
-#include "Swat.h"
+
+#include "Soldier.h"
 
 /*
 ===================

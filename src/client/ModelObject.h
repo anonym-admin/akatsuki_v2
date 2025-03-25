@@ -21,7 +21,6 @@ public:
 
 	AkBool Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsAnim);
 	AkBool Initialize(const wchar_t* wcFilename, AkBool bIsAnim);
-	AkBool Initialize(const wchar_t* wcScript);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
 	virtual void Render() override;
@@ -40,8 +39,6 @@ private:
 	void CleanUp();
 
 private:
-	Collider* _pEventCollider[MAX_EVENT_COLLIDER_NUM] = {};
-	AkU32 _uEventColliderNum = 0;
 	AkBool _bUseGizmo = AK_FALSE;
 
 	// Bone Info.
@@ -51,7 +48,5 @@ private:
 	AkU32 _uBoneNum = 0;
 	Matrix _mDefaultMatrix = Matrix();
 	AkBool _bEditMode = AK_FALSE;
-
-	wchar_t _wcModelName[_MAX_PATH] = {};
 };
 

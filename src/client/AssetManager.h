@@ -10,19 +10,25 @@ class AssetManager
 public:
 	~AssetManager();
 
-	void AddMeshData(ASSET_MESH_DATA_TYPE eType, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim);
+	void AddMeshData(const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim);
 	void AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* wcEnvFilename, const wchar_t* wcIrradianceFilename, const wchar_t* wcSpecularFilename, const wchar_t* wcBrdfFilaename);
 	void AddDynamicTexture();
-	void DeleteMeshData(ASSET_MESH_DATA_TYPE eType);
-	void DeleteTexture(ASSET_TEXTURE_TYPE eType);
-	void DeleteAnimation(ASSET_ANIM_TYPE eType);
 
-	AssetMeshDataContainer_t* GetMeshDataContainer(ASSET_MESH_DATA_TYPE eType) { return _ppMeshDataContainerList[(AkU32)eType]; }
-	AssetTextureContainer_t* GetTextureContainer(ASSET_TEXTURE_TYPE eType) { return _ppTextureContainerList[(AkU32)eType]; }
-	AssetAnimationContainer_t* GetAnimationContainer(ASSET_ANIM_TYPE eType) { return _ppAnimContainerList[(AkU32)eType]; }
+	void DeleteMeshData(const wchar_t* wcKey);
+	void DeleteAllMeshData();
+
+	void DeleteTexture(const wchar_t* wcKey);
+	void DeleteAllTexture();
+
+	void DeleteAnimation(const wchar_t* wcKey);
+	void DeleteAllAnimation();
+
+	AssetMeshDataContainer_t* GetMeshData(const wchar_t* wcKey);
+	AssetTextureContainer_t* GetTexture(const wchar_t* wcKey);
+	AssetAnimationContainer_t* GetAnimation(const wchar_t* wcKey);
 
 	MeshData_t* ReadFromFile(AssetMeshDataContainer_t* pAassetMeshDataContainer, AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim);
-	void ReadClip(ASSET_ANIM_TYPE eType, const wchar_t* wcFilePath, const wchar_t* wcFileName);
+	void ReadClip(const wchar_t* wcModel, const wchar_t* wcAnim);
 
 private:
 	void CleanUp();
@@ -35,8 +41,8 @@ private:
 	void FreeAnimationContainer(AssetAnimationContainer_t* pAnimContainer);
 
 private:
-	AssetMeshDataContainer_t* _ppMeshDataContainerList[(AkU32)ASSET_MESH_DATA_TYPE::COUNT] = {};
-	AssetTextureContainer_t* _ppTextureContainerList[(AkU32)ASSET_TEXTURE_TYPE::COUNT] = {};
-	AssetAnimationContainer_t* _ppAnimContainerList[(AkU32)ASSET_ANIM_TYPE::COUNT] = {};
+	std::unordered_map<std::wstring, AssetMeshDataContainer_t*> _mapMeshDataList = {};
+	std::unordered_map<std::wstring, AssetTextureContainer_t*> _mapTextures = {};
+	std::unordered_map<std::wstring, AssetAnimationContainer_t*> _mapAnimation = {};
 };
 

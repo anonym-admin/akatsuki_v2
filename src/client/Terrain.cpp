@@ -43,8 +43,15 @@ AkBool Terrain::Initialize(const wchar_t* wcSetUpFile)
 	// Create Render obj.
 	_pTerrain = GRenderer->CreateTerrain();
 	_pTerrain->CreateStaticMeshBuffers(_pVertices, _uVerticeNum, _pIndices, _uIndiceNum);
-	_pTerrain->SetTextures(wcSplatingFilenames[0], wcSplatingFilenames[1], wcAlbedoFilename, L"../../assets/map/texture/GroundSand005_NRM_4K.dds", 
-		nullptr, nullptr, nullptr, L"../../assets/map/texture/GroundSand005_AO_4K.dds");
+	_pTerrain->SetTextures(
+		!wcscmp(wcSplatingFilenames[0], L"None") ? nullptr : wcSplatingFilenames[0],
+		!wcscmp(wcSplatingFilenames[1], L"None") ? nullptr : wcSplatingFilenames[1],
+		!wcscmp(wcAlbedoFilename, L"None") ? nullptr : wcAlbedoFilename,
+		!wcscmp(wcNormalFilename, L"None") ? nullptr : wcNormalFilename,
+		!wcscmp(wcEmissiveFilename, L"None") ? nullptr : wcEmissiveFilename,
+		!wcscmp(wcMetallicFilename, L"None") ? nullptr : wcMetallicFilename,
+		!wcscmp(wcRoughnewwFilename, L"None") ? nullptr : wcRoughnewwFilename,
+		!wcscmp(wcAOFilename, L"None") ? nullptr : wcAOFilename);
 
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissvie = Vector3(0.0f);
@@ -273,6 +280,11 @@ void Terrain::LoadSetUpFile(const wchar_t* wcSetUpFile)
 
 	// 01. Texture name
 	fwscanf_s(fp, L"%s", wcAlbedoFilename, _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcNormalFilename, _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcEmissiveFilename, _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcMetallicFilename, _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcRoughnewwFilename, _MAX_PATH);
+	fwscanf_s(fp, L"%s", wcAOFilename, _MAX_PATH);
 	fwscanf_s(fp, L"%s", wcSplatingFilenames[0], _MAX_PATH);
 	fwscanf_s(fp, L"%s", wcSplatingFilenames[1], _MAX_PATH);
 	fwscanf_s(fp, L"%s", wcHeightMapFilename, _MAX_PATH);

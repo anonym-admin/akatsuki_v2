@@ -3,7 +3,7 @@
 #include "Transform.h"
 #include "RigidBody.h"
 #include "Camera.h"
-#include "Swat.h"
+#include "Soldier.h"
 #include "BRS_74.h"
 
 Controller::Controller(Player* pOwner)
@@ -36,50 +36,50 @@ void Controller::Update()
 
 void Controller::Mouse()
 {
-	static Swat::ANIM_STATE PrevAnimState = Swat::IDLE;
+	static Soldier::ANIM_STATE PrevAnimState = Soldier::IDLE;
 
-	Swat* pSwat = (Swat*)_pOwner;
-	Swat::ANIM_STATE AnimState = pSwat->AnimState;
+	Soldier* pSwat = (Soldier*)_pOwner;
+	Soldier::ANIM_STATE AnimState = pSwat->AnimState;
 
 	if (LBTN_DOWN)
 	{
-		if (Swat::IDLE == AnimState)
-		{
-			pSwat->Attack = AK_TRUE;
-			if (Swat::IDLE == PrevAnimState)
-			{
-				pSwat->SetAnimation(Swat::PUNCHING_01);
-				PrevAnimState = Swat::PUNCHING_01;
+		//if (Soldier::IDLE == AnimState)
+		//{
+		//	pSwat->Attack = AK_TRUE;
+		//	if (Soldier::IDLE == PrevAnimState)
+		//	{
+		//		pSwat->SetAnimation(Soldier::PUNCHING_01);
+		//		PrevAnimState = Soldier::PUNCHING_01;
 
-			}
-			else if (Swat::PUNCHING_01 == PrevAnimState)
-			{
-				pSwat->SetAnimation(Swat::PUNCHING_02);
-				PrevAnimState = Swat::IDLE; // Return Idle.
-			}
-		}
+		//	}
+		//	else if (Soldier::PUNCHING_01 == PrevAnimState)
+		//	{
+		//		pSwat->SetAnimation(Soldier::PUNCHING_02);
+		//		PrevAnimState = Soldier::IDLE; // Return Idle.
+		//	}
+		//}
 	}
 	if (LBTN_HOLD)
 	{
-		if (Swat::RIFLE_IDLE == AnimState)
-		{
-			pSwat->Fire = AK_TRUE;
+		//if (Soldier::RIFLE_IDLE == AnimState)
+		//{
+		//	pSwat->Fire = AK_TRUE;
 
-			((BRS_74*)pSwat->GetWeapon())->Fire();
+		//	((BRS_74*)pSwat->GetWeapon())->Fire();
 
-			pSwat->SetAnimation(Swat::RIFLE_FIRE);
-		}
+		//	pSwat->SetAnimation(Soldier::RIFLE_FIRE);
+		//}
 	}
 }
 
 void Controller::KeyBoard()
 {
-	Swat* pSwat = (Swat*)_pOwner;
+	Soldier* pSwat = (Soldier*)_pOwner;
 
 	if (pSwat->Attack || pSwat->Jumping)
 		return;
 
-	Swat::ANIM_STATE AnimState = pSwat->AnimState;
+	Soldier::ANIM_STATE AnimState = pSwat->AnimState;
 	RigidBody* pRigidBody = pSwat->GetRigidBody();
 
 	Vector3 vVelocity = Vector3(0.0f);
@@ -114,16 +114,16 @@ void Controller::KeyBoard()
 	}
 	if (KEY_DOWN(KEY_INPUT_SPACE))
 	{
-		if (Swat::F_RUN == AnimState || Swat::F_WALK == AnimState)
-		{
-			pSwat->Jumping = AK_TRUE;
-			pSwat->SetAnimation(Swat::RUN_JUMP);
-		}
-		if (Swat::IDLE == AnimState || Swat::RIFLE_IDLE == AnimState)
-		{
-			pSwat->Jumping = AK_TRUE;
-			pSwat->SetAnimation(Swat::IDLE_JUMP);
-		}
+		//if (Soldier::F_RUN == AnimState || Soldier::F_WALK == AnimState)
+		//{
+		//	pSwat->Jumping = AK_TRUE;
+		//	pSwat->SetAnimation(Soldier::RUN_JUMP);
+		//}
+		//if (Soldier::IDLE == AnimState || Soldier::RIFLE_IDLE == AnimState)
+		//{
+		//	pSwat->Jumping = AK_TRUE;
+		//	pSwat->SetAnimation(Soldier::IDLE_JUMP);
+		//}
 	}
 
 	vVelocity.Normalize();

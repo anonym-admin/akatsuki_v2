@@ -42,9 +42,9 @@ AkBool Weapon::Initialize()
 Bullet* Weapon::CreateBullet()
 {
 	Bullet* pBullet = new Bullet(this);
-	pBullet->tLink.pData = pBullet;
-	pBullet->Name = L"Bullet";
-	GSceneManager->GetCurrentScene()->AddGameObject(GAME_OBJECT_GROUP_TYPE::BULLET, pBullet);
+	//pBullet->tLink.pData = pBullet;
+	//pBullet->Name = L"Bullet";
+	//GSceneManager->GetCurrentScene()->AddGameObject(GAME_OBJECT_GROUP_TYPE::BULLET, pBullet);
 	return pBullet;
 }
 

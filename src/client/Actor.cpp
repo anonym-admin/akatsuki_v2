@@ -14,6 +14,119 @@ Actor::~Actor()
 	CleanUp();
 }
 
+AkBool Actor::Initialize(const wchar_t* wcScriptFile)
+{
+	FILE* fp = nullptr;
+	_wfopen_s(&fp, wcScriptFile, L"rt");
+	if (!fp) { __debugbreak(); }
+
+	AkI32 iIsSkinned = 0;
+	fwscanf_s(fp, L"%d\n", &iIsSkinned);
+	if (!iIsSkinned)
+	{
+		wchar_t wcFilePath[_MAX_PATH] = {};
+
+		fwscanf_s(fp, L"%s\n", wcFilePath, _MAX_PATH);
+		wcscpy_s(Name, wcFilePath);
+		wcscat_s(wcFilePath, L".mesh");
+
+		// Asset Manager 에서 검색.
+		Vector3 vAlbedo = Vector3(1.0f);
+		Vector3 vEmissive = Vector3(0.0f);
+		AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshData(wcFilePath);
+		if (pMeshDataContainer)
+		{
+			_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_TRUE);
+		}
+		else
+		{
+			GAssetManager->AddMeshData(MESH_FILE_PATH, wcFilePath, 1.0f, AK_TRUE);
+
+			pMeshDataContainer = GAssetManager->GetMeshData(wcFilePath);
+
+			_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_TRUE);
+		}
+	}
+	else
+	{
+		wchar_t wcFilePath[_MAX_PATH] = {};
+
+		fwscanf_s(fp, L"%s\n", wcFilePath, _MAX_PATH);
+		wcscpy_s(Name, wcFilePath);
+		wcscat_s(wcFilePath, L".mesh");
+
+		// Asset Manager 에서 검색.
+		Vector3 vAlbedo = Vector3(1.0f);
+		Vector3 vEmissive = Vector3(0.0f);
+		AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshData(wcFilePath);
+		if (pMeshDataContainer)
+		{
+			_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_FALSE);
+		}
+		else
+		{
+			GAssetManager->AddMeshData(MESH_FILE_PATH, wcFilePath, 1.0f, AK_FALSE);
+
+			pMeshDataContainer = GAssetManager->GetMeshData(wcFilePath);
+
+			_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_FALSE);
+		}
+	}
+
+	// Collider 갯수 파싱 필요!!
+	AkI32 iColliderNum = 0;
+	fwscanf_s(fp, L"%d\n", &iColliderNum);
+	_uEventColliderNum = (AkU32)iColliderNum - 1;
+
+	for (AkI32 i = 0; i < iColliderNum; i++)
+	{
+		Collider* pCollider = nullptr;
+		AkI32 iColliderType = 0;
+		fwscanf_s(fp, L"%d\n", &iColliderType);
+
+		switch (iColliderType)
+		{
+		case (AkI32)COLLIDER_TYPE::BOX:
+			pCollider = CreateBoxCollider();
+			break;
+		case (AkI32)COLLIDER_TYPE::SPHERE:
+			pCollider = CreateSphereCollider();
+			break;
+		case (AkI32)COLLIDER_TYPE::CAPSULE:
+			pCollider = CreateCapsuleCollider();
+			break;
+		}
+
+		Vector3 vScale = Vector3(1.0f);
+		Vector3 vRotation = Vector3(0.0f);
+		Vector3 vPosition = Vector3(0.0f);
+
+		fwscanf_s(fp, L"%f %f %f\n", &vScale.x, &vScale.y, &vScale.z);
+		fwscanf_s(fp, L"%f %f %f\n", &vRotation.x, &vRotation.y, &vRotation.z);
+		fwscanf_s(fp, L"%f %f %f\n", &vPosition.x, &vPosition.y, &vPosition.z);
+
+		pCollider->GetTransform()->SetScale(&vScale);
+		pCollider->GetTransform()->SetRotation(&vRotation);
+		pCollider->GetTransform()->SetPosition(&vPosition);
+
+		if (0 == i)
+		{
+			_pCollider = pCollider;
+		}
+		else
+		{
+			_pEventCollider[i - 1] = pCollider;
+		}
+	}
+
+	if (fp) { fclose(fp); }
+
+	// Create Transform
+	_pTransform = CreateTransform();
+
+	return AK_TRUE;
+}
+
 Collider* Actor::CreateBoxCollider(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor)
 {
 	Vector3 vMin = Vector3(-0.5f);

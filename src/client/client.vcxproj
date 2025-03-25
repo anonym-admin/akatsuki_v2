@@ -236,7 +236,7 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SquareCollider.h" />
     <ClInclude Include="StringUtils.h" />
-    <ClInclude Include="Swat.h" />
+    <ClInclude Include="Soldier.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
@@ -321,7 +321,7 @@
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SquareCollider.cpp" />
     <ClCompile Include="StringUtils.cpp" />
-    <ClCompile Include="Swat.cpp" />
+    <ClCompile Include="Soldier.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Dancer.cpp" />

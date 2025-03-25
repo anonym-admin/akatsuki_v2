@@ -18,8 +18,11 @@ class Animation;
 class Actor : public BaseObject
 {
 public:
+	static const AkU32 MAX_EVENT_COLLIDER_NUM = 8;
+
 	virtual ~Actor();
 
+	AkBool Initialize(const wchar_t* wcScriptFile);
 	virtual void Update() = 0;
 	virtual void FinalUpdate() = 0;
 	virtual void RenderShadow() = 0;
@@ -65,6 +68,8 @@ private:
 protected:
 	// 中宜端
 	Collider* _pCollider = nullptr;
+	Collider* _pEventCollider[MAX_EVENT_COLLIDER_NUM] = {};
+	AkU32 _uEventColliderNum = 0;
 
 	// 悪端
 	RigidBody* _pRigidBody = nullptr;

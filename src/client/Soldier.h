@@ -4,40 +4,13 @@
 
 class Weapon;
 
-class Swat : public Player
+class Soldier : public Player
 {
 public:
 	enum ANIM_STATE
 	{
 		/*Idle*/
 		IDLE,
-		RIFLE_IDLE,
-
-		/*Walk*/
-		F_WALK,
-		FL_WALK,
-		FR_WALK,
-		L_WALK,
-		R_WALK,
-		BL_WALK,
-		BR_WALK,
-		B_WALK,
-		RIFLE_F_WALK,
-
-		/*Run*/
-		F_RUN,
-		FL_RUN,
-		FR_RUN,
-		RIFLE_RUN,
-
-		/*Attack*/
-		PUNCHING_01,
-		PUNCHING_02,
-		RIFLE_FIRE,
-
-		/*Jump*/
-		RUN_JUMP,
-		IDLE_JUMP,
 
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
 
@@ -46,10 +19,12 @@ public:
 	const wchar_t* ANIM_CLIP[(AkU32)ANIM_STATE::COUNT] = {};
 
 public:
-	Swat();
-	virtual ~Swat();
+	Soldier();
+	Soldier(const wchar_t* wcFile);
+	virtual ~Soldier();
 
 	AkBool Initialize();
+	AkBool Initialize(const wchar_t* wcFile);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
 	virtual void Render() override;

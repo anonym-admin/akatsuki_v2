@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Terrain.h"
 #include "ModelObject.h"
+#include "Scene.h"
 
 /*
 =============
@@ -52,6 +53,13 @@ AkBool EditorMap::BeginEditor()
 AkBool EditorMap::EndEditor()
 {
 	Collider::DRAW_COLLIDER = AK_FALSE;
+
+	SCENE_TYPE eType = GSceneManager->GetCurrentSceneType();
+	if (SCENE_TYPE::INGANE == eType)
+	{
+		Scene* pScene = GSceneManager->GetCurrentScene();
+		pScene->Load(L"../../assets/data/scene/main.scene");
+	}
 
 	return AK_TRUE;
 }
@@ -231,7 +239,6 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		_vecGameObj.push_back(pObj);
 		_vecActFileNameList.push_back(wcName);
 	}
-
 
 	if (fp)
 	{

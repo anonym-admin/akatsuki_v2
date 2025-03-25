@@ -26,7 +26,7 @@ BRS_74::~BRS_74()
 AkBool BRS_74::Initialize()
 {
 	// Create Model.
-	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::BRS_74);
+	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshData(L"brs-74.mesh");
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissive = Vector3(0.0f);
 	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive, AK_FALSE);
@@ -37,7 +37,7 @@ AkBool BRS_74::Initialize()
 	CalcColliderMinMax(pMeshDataContainer->pMeshData, pMeshDataContainer->uMeshDataNum, &vMin, &vMax);
 	_pCollider = CreateBoxCollider(&vMin, &vMax);
 
-	GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::BRS_74);
+	// GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::BRS_74);
 
 	// Create Muzzle Effect.
 	Vector2 vMaxFrame = Vector2(4.0f, 5.0f);

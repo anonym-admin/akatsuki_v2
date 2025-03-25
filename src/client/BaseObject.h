@@ -43,6 +43,6 @@ protected:
 	Transform* _pTransform = nullptr;
 
 public:
-	const wchar_t* Name = nullptr;
+	wchar_t Name[_MAX_PATH] = {};
 };
 

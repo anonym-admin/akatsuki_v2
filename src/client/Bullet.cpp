@@ -20,7 +20,7 @@ AkBool Bullet::Initailize(Weapon* pOwner)
 	_pOwner = pOwner;
 
 	// Create Moodel
-	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshDataContainer(ASSET_MESH_DATA_TYPE::BULLET);
+	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshData(L"bullet.mesh");
 	Vector3 vAlbedo = Vector3(1.0f);
 	Vector3 vEmissvie = Vector3(0.0f);
 	_pModel = CreateModel(pMeshDataContainer, &vAlbedo, 1.0f, 0.0f, &vEmissvie, AK_FALSE);

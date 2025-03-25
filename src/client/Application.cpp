@@ -42,12 +42,12 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 		return AK_FALSE;
 	}
 
-	//// Init Scene.
-	//if (!InitScene())
-	//{
-	//	__debugbreak();
-	//	return AK_FALSE;
-	//}
+	// Init Scene.
+	if (!InitScene())
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
 
 	// Init Editor.
 	if (!InitEditor())
