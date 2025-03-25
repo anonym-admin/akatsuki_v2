@@ -78,11 +78,13 @@ Scene* SceneManager::BindCurrentScene(SCENE_TYPE eType)
 {
     _pCurScene = _pSceneList[(AkU32)eType];
     _eType = eType;
+    _pCurScene->BeginScene();
     return _pCurScene;
 }
 
 void SceneManager::UnBindCurrentScene()
 {
+    _pCurScene->EndScene();
     _pCurScene = nullptr;
 }
 

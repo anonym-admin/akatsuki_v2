@@ -27,7 +27,10 @@ void AssetManager::AddMeshData(const wchar_t* wcBasePath, const wchar_t* wcModel
 	wcscpy_s(wcFullPath, wcBasePath);
 	wcscat_s(wcFullPath, wcModelFilename);
 
-	_mapMeshDataList[wcModelFilename] = pAssetMeshDataContainer;
+	if(!_mapMeshDataList.count(wcModelFilename))
+	{
+		_mapMeshDataList[wcModelFilename] = pAssetMeshDataContainer;
+	}
 
 	wcscat_s(wcFullPath, L"\n");
 

@@ -308,7 +308,7 @@ AkBool Application::InitScene()
 	GSceneManager->AddScene(SCENE_TYPE::LOADING, new SceneLoading());
 	GSceneManager->AddScene(SCENE_TYPE::INGANE, new SceneInGame());
 
-	GSceneManager->BindCurrentScene(SCENE_TYPE::LOADING)->BeginScene();
+	GSceneManager->BindCurrentScene(SCENE_TYPE::LOADING);
 
 	return AK_TRUE;
 }

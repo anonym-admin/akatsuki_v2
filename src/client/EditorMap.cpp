@@ -54,13 +54,6 @@ AkBool EditorMap::EndEditor()
 {
 	Collider::DRAW_COLLIDER = AK_FALSE;
 
-	SCENE_TYPE eType = GSceneManager->GetCurrentSceneType();
-	if (SCENE_TYPE::INGANE == eType)
-	{
-		Scene* pScene = GSceneManager->GetCurrentScene();
-		pScene->Load(L"../../assets/data/scene/main.scene");
-	}
-
 	return AK_TRUE;
 }
 

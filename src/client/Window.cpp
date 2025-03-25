@@ -2,6 +2,8 @@
 #include "Window.h"
 #include "Application.h"
 
+AkBool GFullScreen = AK_TRUE;
+
 LRESULT CALLBACK WndProc(HWND hwnd, AkU32 msg, WPARAM wParam, LPARAM lParam);
 
 /*
@@ -32,7 +34,31 @@ AkBool Window::Initialize(const wchar_t* wcWindowName, const wchar_t* wcClassNam
 	tWc.lpszClassName = wcClassName;
 	RegisterClass(&tWc);
 
-	HWND hWnd = ::CreateWindowEx(0, wcClassName, wcWindowName, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, tWc.hInstance, nullptr);
+	AkU32 uScreenWidth = CW_USEDEFAULT;
+	AkU32 uScreenHeight = CW_USEDEFAULT;
+
+	AkI32 iPosX = CW_USEDEFAULT;
+	AkI32 iPosY = CW_USEDEFAULT;
+
+	if (GFullScreen)
+	{
+		iPosX = 0;
+		iPosY = 0;
+
+		uScreenWidth = GetSystemMetrics(SM_CXSCREEN);
+		uScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+		DEVMODE dmScreenSetting = {};
+		dmScreenSetting.dmSize = sizeof(dmScreenSetting);
+		dmScreenSetting.dmPelsWidth = uScreenWidth;
+		dmScreenSetting.dmPelsHeight = uScreenHeight;
+		dmScreenSetting.dmBitsPerPel = 32;
+		dmScreenSetting.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+		ChangeDisplaySettings(&dmScreenSetting, CDS_FULLSCREEN);
+	}
+
+	HWND hWnd = ::CreateWindowEx(0, wcClassName, wcWindowName, WS_OVERLAPPEDWINDOW, iPosX, iPosY, uScreenWidth, uScreenHeight, nullptr, nullptr, tWc.hInstance, nullptr);
 
 	::ShowWindow(hWnd, SW_SHOW);
 
@@ -96,7 +122,7 @@ AkI32 Window::Run()
 }
 
 // Forward declare message handler from imgui_impl_win32.cpp
- extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT Window::MemWndProc(HWND hWnd, AkU32 uMsg, WPARAM wParam, LPARAM lParam)
 {
