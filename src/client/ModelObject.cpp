@@ -12,6 +12,48 @@ Model Object
 =================
 */
 
+ModelObject::ModelObject(const ModelObject& rOrigin)
+{
+	// Copy Model.
+	_pModel = rOrigin._pModel;
+	
+	// Create Transform.
+	_pTransform = CreateTransform();
+
+	// Create Collider.
+	switch (rOrigin._pCollider->GetType())
+	{
+	case COLLIDER_TYPE::BOX:
+		_pCollider = CreateBoxCollider();
+		break;
+	case COLLIDER_TYPE::SPHERE:
+		_pCollider = CreateSphereCollider();
+		break;
+	case COLLIDER_TYPE::CAPSULE:
+		_pCollider = CreateCapsuleCollider();
+		break;
+	}
+
+	_uEventColliderNum = rOrigin._uEventColliderNum;
+	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	{
+		switch (rOrigin._pEventCollider[i]->GetType())
+		{
+		case COLLIDER_TYPE::BOX:
+			_pEventCollider[i] = CreateBoxCollider();
+			break;
+		case COLLIDER_TYPE::SPHERE:
+			_pCollider = CreateSphereCollider();
+			break;
+		case COLLIDER_TYPE::CAPSULE:
+			_pCollider = CreateCapsuleCollider();
+			break;
+		}
+	}
+
+	wcscpy_s(Name, rOrigin.Name);
+}
+
 ModelObject::ModelObject(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsAnim)
 {
 	if (!Initialize(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive, bIsAnim))
@@ -78,7 +120,6 @@ AkBool ModelObject::Initialize(const wchar_t* wcFilename, AkBool bIsAnim)
 	return AK_TRUE;
 }
 
-
 void ModelObject::Update()
 {
 }
@@ -95,12 +136,11 @@ void ModelObject::FinalUpdate()
 	{
 		_pEventCollider[i]->Update();
 	}
-
-	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());
 }
 
 void ModelObject::Render()
 {
+	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());
 	_pModel->Render();
 
 	_pCollider->Render();
@@ -122,7 +162,7 @@ void ModelObject::RenderGUI()
 		return;
 	}
 
-	std::wstring ModelName = Name;
+	std::wstring ModelName = Name + std::wstring(L"_" + std::to_wstring(_uInstanceCount));
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
 
@@ -252,11 +292,23 @@ void ModelObject::OnCollisionExit(Collider* pOther)
 ModelObject* ModelObject::Clone()
 {
 	Spawn::Clone();
-	return new ModelObject();
+	return new ModelObject(*this);
 }
 
 void ModelObject::CleanUp()
 {
+	if (_pTransform)
+	{
+		delete _pTransform;
+		_pTransform = nullptr;
+	}
+
+	if (_pCollider)
+	{
+		delete _pCollider;
+		_pCollider = nullptr;
+	}
+
 	for (AkU32 i = 0; i < _uEventColliderNum; i++)
 	{
 		if (_pEventCollider[i])
@@ -265,4 +317,6 @@ void ModelObject::CleanUp()
 			_pEventCollider[i] = nullptr;
 		}
 	}
+
+	AkU32 uInstanceCount = _uInstanceCount - 1;
 }

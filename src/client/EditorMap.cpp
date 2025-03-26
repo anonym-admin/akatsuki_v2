@@ -203,11 +203,11 @@ void EditorMap::RenderGUI()
 	ImGui::End();
 
 	ImGui::Begin("Scene Info");
-	if (ImGui::Button("Load Map"))
+	if (ImGui::Button("Load Scene"))
 	{
 		ImGuiFileDialog::Instance()->OpenDialog("SceneInfoLoad", "Choose File", ".scene", tConfig);
 	}
-	if (ImGui::Button("Save Map"))
+	if (ImGui::Button("Save Scene"))
 	{
 		ImGuiFileDialog::Instance()->OpenDialog("SceneInfoSave", "Choose File", ".scene", tConfig);
 	}
@@ -257,7 +257,26 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 	for(AkI32 i = 0; i < iNumGameObj; i++)
 	{
 		fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
-		ModelObject* pObj = new ModelObject(wcName);
+
+		ModelObject* pObj = nullptr;
+		AkU32 uIndex = 0;
+		AkBool bIsInstance = AK_FALSE;
+		for (auto& v : _vecActFileNameList)
+		{
+			if (v == wcName)
+			{
+				pObj = ((ModelObject*)_vecGameObj[uIndex])->Clone();
+				bIsInstance = AK_TRUE;
+			}
+
+			uIndex++;
+		}
+
+		if(!bIsInstance)
+		{
+			pObj = new ModelObject(wcName);
+		}
+
 		pObj->SetEditMode(AK_TRUE);
 		Vector3 vScale = Vector3(1.0f);
 		Vector3 vYawPitchRoll = Vector3(0.0f);

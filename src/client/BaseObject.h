@@ -30,8 +30,6 @@ protected:
 	Model* CreateModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsSkinned);
 	Transform* CreateTransform();
 
-
-
 	Model* CreateBillboardModel(BillboardData_t* pBillboardData); // 삭제 진행 => Billboard 모델을 없애고 Actor 에서 자체적으로 생성.
 
 private:

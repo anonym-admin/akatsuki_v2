@@ -80,11 +80,11 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				// Draw normal.
 				if (pItem->tMeshObjParam.bDrawNormal)
 				{
-					pMeshObj->DrawNormal(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
+					pMeshObj->DrawNormal(uThreadIndex, pCmdList, &pItem->tMeshObjParam.mWorld);
 				}
 				else
 				{
-					pMeshObj->Draw(uThreadIndex, pCmdList, pItem->tMeshObjParam.pWorld);
+					pMeshObj->Draw(uThreadIndex, pCmdList, &pItem->tMeshObjParam.mWorld);
 				}
 			}
 			break;
@@ -94,11 +94,11 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				// Draw normal with skinned mesh obj.
 				if (pItem->tSkinnedMeshObjParam.bDrawNormal)
 				{
-					pMeshObj->DrawNormal(uThreadIndex, pCmdList, pItem->tSkinnedMeshObjParam.pWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
+					pMeshObj->DrawNormal(uThreadIndex, pCmdList, &pItem->tSkinnedMeshObjParam.mWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
 				}
 				else
 				{
-					pMeshObj->Draw(uThreadIndex, pCmdList, pItem->tSkinnedMeshObjParam.pWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
+					pMeshObj->Draw(uThreadIndex, pCmdList, &pItem->tSkinnedMeshObjParam.mWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
 				}
 			}
 			break;
@@ -109,20 +109,20 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				TextureHandle_t* pDiffuseHDR = (TextureHandle_t*)pItem->tSkyboxObjParam.pDiffuseHDR;
 				TextureHandle_t* pSpecularHDR = (TextureHandle_t*)pItem->tSkyboxObjParam.pSpecularHDR;
 
-				pSkyboxObj->Draw(uThreadIndex, pCmdList, pItem->tSkyboxObjParam.pWorld, pEnvHDR, pDiffuseHDR, pSpecularHDR);
+				pSkyboxObj->Draw(uThreadIndex, pCmdList, &pItem->tSkyboxObjParam.mWorld, pEnvHDR, pDiffuseHDR, pSpecularHDR);
 			}
 			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_LINE_OBJ:
 			{
 				FLineObject* pLineObj = (FLineObject*)pItem->pObjHandle;
-				pLineObj->Draw(uThreadIndex, pCmdList, pItem->tLineObjParam.pWorld);
+				pLineObj->Draw(uThreadIndex, pCmdList, &pItem->tLineObjParam.mWorld);
 			}
 			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD:
 			{
 				FBillboardObjects* pBillboards = (FBillboardObjects*)pItem->pObjHandle;
 
-				pBillboards->Draw(uThreadIndex, pCmdList, pItem->tBillboardParam.pWorld);
+				pBillboards->Draw(uThreadIndex, pCmdList, &pItem->tBillboardParam.mWorld);
 			}
 			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ:
@@ -131,11 +131,11 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				// Draw normal.
 				if (pItem->tTerrianParam.bDrawNormal)
 				{
-					pTerrainObj->DrawNormal(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld);
+					pTerrainObj->DrawNormal(uThreadIndex, pCmdList, &pItem->tTerrianParam.mWorld);
 				}
 				else
 				{
-					pTerrainObj->Draw(uThreadIndex, pCmdList, pItem->tTerrianParam.pWorld, pItem->tTerrianParam.pBrush);
+					pTerrainObj->Draw(uThreadIndex, pCmdList, &pItem->tTerrianParam.mWorld, pItem->tTerrianParam.pBrush);
 				}
 			}
 			break;

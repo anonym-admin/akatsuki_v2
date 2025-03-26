@@ -73,10 +73,10 @@ DWORD FRenderParticle::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPoo
 			{
 				FParticle* pParticle = (FParticle*)pItem->pObjHandle;
 				
-				if(pItem->tParticleParam.pWorldRow)
+				if(pItem->tParticleParam.uParticleNum)
 				{
 					// Draw Spark
-					pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pWorldRow, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.uParticleNum, pItem->tParticleParam.fTime, pItem->tParticleParam.fDuration, pItem->tParticleParam.pStartSize, pItem->tParticleParam.pStartDirection, pItem->tParticleParam.fSizeOverLifeTime, pItem->tParticleParam.pRotOverLifeTime, pItem->tParticleParam.pTotalColor, pItem->tParticleParam.pColorOverLifeTime);
+					pParticle->Draw(uThreadIndex, pCmdList, &pItem->tParticleParam.mWorld, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.uParticleNum, pItem->tParticleParam.fTime, pItem->tParticleParam.fDuration, pItem->tParticleParam.pStartSize, pItem->tParticleParam.pStartDirection, pItem->tParticleParam.fSizeOverLifeTime, pItem->tParticleParam.pRotOverLifeTime, pItem->tParticleParam.pTotalColor, pItem->tParticleParam.pColorOverLifeTime);
 				}
 				else
 				{

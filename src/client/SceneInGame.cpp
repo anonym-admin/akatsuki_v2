@@ -194,13 +194,36 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 	{
 		fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
 
+		AkBool bInst = AK_FALSE;
+		GameObjContainer_t** ppGameObjectContainer = GetAllGameObject();
+		for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
+		{
+			if (ppGameObjectContainer[i])
+			{
+				List_t* pCur = ppGameObjectContainer[i]->pGameObjHead;
+				while (pCur != nullptr)
+				{
+					if (!wcscmp(wcName, ((Actor*)pCur->pData)->Name))
+					{
+						pActor = ((ModelObject*)pCur->pData)->Clone();
+						bInst = AK_TRUE;
+					}
+
+					pCur = pCur->pNext;
+				}
+			}
+		}
+
 		if (GetFileNmaeExcludeExt(GetFileName(wcName)) == L"soldier")
 		{
 			pActor = new Soldier(wcName);
 		}
 		else
 		{
-			pActor = new ModelObject(wcName);
+			if (!bInst)
+			{
+				pActor = new ModelObject(wcName);
+			}
 		}
 
 		Vector3 vScale = Vector3(1.0f);

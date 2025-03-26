@@ -14,6 +14,7 @@ public:
 	static const AkU32 MAX_EVENT_COLLIDER_NUM = 8;
 
 	ModelObject() = default;
+	ModelObject(const ModelObject& rOrigin);
 	ModelObject(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive, AkBool bIsAnim);
 	ModelObject(const wchar_t* wcFilename, AkBool bIsAnim);
 	ModelObject(const wchar_t* wcScript);
@@ -40,13 +41,6 @@ private:
 
 private:
 	AkBool _bUseGizmo = AK_FALSE;
-
-	// Bone Info.
-	const Matrix* _pBoneOffsetMatrixList = nullptr;
-	const AkI32* _pBoneHierarchyList = nullptr;
-	char** _ppBoneName = nullptr;
-	AkU32 _uBoneNum = 0;
-	Matrix _mDefaultMatrix = Matrix();
 	AkBool _bEditMode = AK_FALSE;
 };
 

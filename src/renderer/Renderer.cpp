@@ -702,7 +702,7 @@ void FRenderer::RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorl
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ;
 	tItem.pObjHandle = pMeshObj;
-	tItem.tMeshObjParam.pWorld = pWorldMat;
+	tItem.tMeshObjParam.mWorld = *pWorldMat;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
 	{
@@ -718,7 +718,7 @@ void FRenderer::RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matri
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ;
 	tItem.pObjHandle = pMeshObj;
-	tItem.tMeshObjParam.pWorld = pWorldMat;
+	tItem.tMeshObjParam.mWorld = *pWorldMat;
 	tItem.tMeshObjParam.bDrawNormal = AK_TRUE;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
@@ -744,7 +744,7 @@ void FRenderer::RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWo
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ;
 	tItem.pObjHandle = pMeshObj;
-	tItem.tSkinnedMeshObjParam.pWorld = pWorldMat;
+	tItem.tSkinnedMeshObjParam.mWorld = *pWorldMat;
 	tItem.tSkinnedMeshObjParam.pBonesTransform = pBonesTransform;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
@@ -761,7 +761,7 @@ void FRenderer::RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Mat
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ;
 	tItem.pObjHandle = pMeshObj;
-	tItem.tSkinnedMeshObjParam.pWorld = pWorldMat;
+	tItem.tSkinnedMeshObjParam.mWorld = *pWorldMat;
 	tItem.tSkinnedMeshObjParam.pBonesTransform = pBonesTransform;
 	tItem.tSkinnedMeshObjParam.bDrawNormal = AK_TRUE;
 
@@ -840,7 +840,7 @@ void FRenderer::RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void*
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKYBOX_OBJ;
 	tItem.pObjHandle = pSkyboxObj;
-	tItem.tSkyboxObjParam.pWorld = pWorldMat;
+	tItem.tSkyboxObjParam.mWorld = *pWorldMat;
 	tItem.tSkyboxObjParam.pEnvHDR = pEnvHDR;
 	tItem.tSkyboxObjParam.pDiffuseHDR = pDiffuseHDR;
 	tItem.tSkyboxObjParam.pSpecularHDR = pSpecularHDR;
@@ -859,7 +859,7 @@ void FRenderer::RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat)
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_LINE_OBJ;
 	tItem.pObjHandle = pLineObj;
-	tItem.tLineObjParam.pWorld = pWorldMat;
+	tItem.tLineObjParam.mWorld = *pWorldMat;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
 	{
@@ -875,7 +875,7 @@ void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD;
 	tItem.pObjHandle = pBillboard;
-	tItem.tBillboardParam.pWorld = pWorldMat;
+	tItem.tBillboardParam.mWorld = *pWorldMat;
 
 	if (!_ppRenderQueue[_uCurContextIndex]->Add(&tItem))
 	{
@@ -900,7 +900,7 @@ void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void*
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ;
 	tItem.pObjHandle = pTerrain;
-	tItem.tTerrianParam.pWorld = pWorldMat;
+	tItem.tTerrianParam.mWorld = *pWorldMat;
 	tItem.tTerrianParam.pBrush = pBrush;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
@@ -917,7 +917,7 @@ void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMa
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ;
 	tItem.pObjHandle = pTerrain;
-	tItem.tTerrianParam.pWorld = pWorldMat;
+	tItem.tTerrianParam.mWorld = *pWorldMat;
 	tItem.tTerrianParam.pBrush = pBrush;
 	tItem.tTerrianParam.bDrawNormal = AK_TRUE;
 
@@ -935,7 +935,7 @@ void FRenderer::RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRo
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_PARTICLE;
 	tItem.pObjHandle = pParticle;
-	tItem.tParticleParam.pWorldRow = pWorldRow;
+	tItem.tParticleParam.mWorld = *pWorldRow;
 	tItem.tParticleParam.pDBHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
 	tItem.tParticleParam.uParticleNum = uParticleNum;
 	tItem.tParticleParam.fTime = fTime;

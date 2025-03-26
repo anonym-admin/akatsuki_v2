@@ -199,6 +199,15 @@ void Actor::DestroyCollider()
 		delete _pCollider;
 		_pCollider = nullptr;
 	}
+
+	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	{
+		if (_pEventCollider[i])
+		{
+			delete _pEventCollider[i];
+			_pEventCollider[i] = nullptr;
+		}
+	}
 }
 
 void Actor::DesteoyRigidBody()

@@ -14,20 +14,20 @@ enum class RENDER_ITEM_TYPE
 
 struct RenderMeshObjParam_t
 {
-	const Matrix* pWorld = nullptr;
+	Matrix mWorld = Matrix();
 	AkBool bDrawNormal = AK_FALSE;
 };
 
 struct RenderSkinnedMeshObjParam_t
 {
-	const Matrix* pWorld = nullptr;
+	Matrix mWorld = Matrix();
 	const Matrix* pBonesTransform = nullptr;
 	AkBool bDrawNormal = AK_FALSE;
 };
 
 struct RenderSkyboxObjParam_t
 {
-	const Matrix* pWorld = nullptr;
+	Matrix mWorld = Matrix();
 	void* pEnvHDR = nullptr;
 	void* pDiffuseHDR = nullptr;
 	void* pSpecularHDR = nullptr;
@@ -48,24 +48,24 @@ struct RenderSpriteObjParam_t
 
 struct RenderLineObjParam_t
 {
-	const Matrix* pWorld = nullptr;
+	Matrix mWorld = Matrix();
 };
 
 struct RenderBillboardParam_t
 {
-	const Matrix* pWorld = nullptr;
+	Matrix mWorld = Matrix();
 };
 
 struct RenderTerrainParam_t
 {
-	const Matrix* pWorld = nullptr;
+	Matrix mWorld = Matrix();
 	void* pBrush = nullptr;
 	AkBool bDrawNormal = AK_FALSE;
 };
 
 struct ParticleParam_t
 {
-	const Matrix* pWorldRow = nullptr;
+	Matrix mWorld = Matrix();
 	DynamicDefaultBufferHandle_t* pDBHandle = nullptr;
 	AkU32 uParticleNum = 0;
 	AkF32 fTime = 0.0f;

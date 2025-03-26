@@ -45,6 +45,7 @@ public:
 	AkI32 GetID() { return _iID; }
 	COLLIDER_TYPE GetType() { return _eType; }
 	void SetColor(const Vector3* pColor);
+	void SetOwner(Actor* pOwner) { _pOwner = pOwner; }
 	AkBool IsPick() { return _bUseGizmo; }
 
 private:
