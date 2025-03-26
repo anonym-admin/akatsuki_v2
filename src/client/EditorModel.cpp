@@ -100,7 +100,7 @@ void EditorModel::Update()
 		_pCamera->Update();
 	}
 
-	if (_mapAnim[_CurCharacter] && _bPlayAnim)
+	if (!_mapAnim.empty() && _bPlayAnim)
 	{
 		_mapAnim[_CurCharacter]->Update();
 	}
@@ -1061,6 +1061,7 @@ void EditorModel::UpdateFileDialog()
 		{
 			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
 			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
 
 			SaveDDS(ToWString(FileName).c_str(), AK_FALSE);
 		}

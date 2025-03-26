@@ -35,6 +35,11 @@ AkBool EditorMap::Initialize()
 	// Editor 에서는 Scene에 Obj 를 등록하지 않는다.
 	_pTerrainEdit = new TerrainEdit;
 
+
+	_pOcean = GRenderer->CreateEnvironmentObject();
+
+	
+
 	return AK_TRUE;
 }
 
@@ -118,7 +123,10 @@ void EditorMap::Render()
 			e.second->Render();
 		}
 	}
-	
+
+	Matrix world = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
+
+	GRenderer->RenderOcean(_pOcean, GTimer->GetTotalTime(), &world);
 }
 
 void EditorMap::RenderShadow()
@@ -386,6 +394,12 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 
 void EditorMap::CleanUp()
 {
+	if (_pOcean)
+	{
+		_pOcean->Release();
+		_pOcean = nullptr;
+	}
+
 	for (auto& e : _mapBillboard)
 	{
 		if (e.second)

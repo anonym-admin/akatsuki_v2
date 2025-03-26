@@ -10,6 +10,7 @@ enum class RENDER_ITEM_TYPE
 	RENDER_ITEM_TYPE_BILLBOARD,
 	RENDER_ITEM_TYPE_TERRAIN_OBJ,
 	RENDER_ITEM_TYPE_PARTICLE,
+	RENDER_ITEM_TYPE_OCEAN,
 };
 
 struct RenderMeshObjParam_t
@@ -80,6 +81,12 @@ struct ParticleParam_t
 	const Vector2* pCurFrame = nullptr;
 };
 
+struct RenderOceanParam_t
+{
+	Matrix mWorld = Matrix();
+	AkF32 fTime = 0.0f;
+};
+
 struct RenderItem_t
 {
 	RENDER_ITEM_TYPE eItemType = {};
@@ -94,6 +101,7 @@ struct RenderItem_t
 		RenderBillboardParam_t tBillboardParam;
 		RenderTerrainParam_t tTerrianParam;
 		ParticleParam_t tParticleParam;
+		RenderOceanParam_t tOceanParam;
 	};
 };
 

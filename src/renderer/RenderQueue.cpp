@@ -8,7 +8,7 @@
 #include "LineObject.h"
 #include "BillboardObject.h"
 #include "TerrainObject.h"
-#include "Particle.h"
+#include "Environment.h"
 
 /*
 ==============
@@ -137,6 +137,13 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				{
 					pTerrainObj->Draw(uThreadIndex, pCmdList, &pItem->tTerrianParam.mWorld, pItem->tTerrianParam.pBrush);
 				}
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_OCEAN:
+			{
+				FEnvironmentObject* pEnvObj = (FEnvironmentObject*)pItem->pObjHandle;
+			
+				pEnvObj->Draw(uThreadIndex, pCmdList, pItem->tOceanParam.fTime, &pItem->tOceanParam.mWorld);
 			}
 			break;
 			default:

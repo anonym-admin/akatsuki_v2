@@ -52,6 +52,9 @@ struct GlobalConstantBuffer_t
 	Matrix mInvView = Matrix();
 	Matrix mInvProj = Matrix();
 
+	AkF32 fTime = 0.0f;
+	Vector3 vDummy;
+
 	Light_t tLights[MAX_LIGHTS_COUNT] = {};
 };
 

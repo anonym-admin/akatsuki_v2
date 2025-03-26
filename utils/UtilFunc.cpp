@@ -168,15 +168,31 @@ void CalcColliderMinMax(MeshData_t* pMeshData, AkU32 uMeshDataNum, Vector3* pOut
 	Vector3 vMax = Vector3(-AK_MAX_F32);
 	for (AkU32 i = 0; i < uMeshDataNum; i++)
 	{
-		for (AkU32 j = 0; j < pMeshData[i].uVerticeNum; j++)
+		if (pMeshData[i].pVertices)
 		{
-			vMin.x = std::min(vMin.x, pMeshData[i].pVertices[j].vPosition.x);
-			vMin.y = std::min(vMin.y, pMeshData[i].pVertices[j].vPosition.y);
-			vMin.z = std::min(vMin.z, pMeshData[i].pVertices[j].vPosition.z);
+			for (AkU32 j = 0; j < pMeshData[i].uVerticeNum; j++)
+			{
+				vMin.x = std::min(vMin.x, pMeshData[i].pVertices[j].vPosition.x);
+				vMin.y = std::min(vMin.y, pMeshData[i].pVertices[j].vPosition.y);
+				vMin.z = std::min(vMin.z, pMeshData[i].pVertices[j].vPosition.z);
 
-			vMax.x = std::max(vMax.x, pMeshData[i].pVertices[j].vPosition.x);
-			vMax.y = std::max(vMax.y, pMeshData[i].pVertices[j].vPosition.y);
-			vMax.z = std::max(vMax.z, pMeshData[i].pVertices[j].vPosition.z);
+				vMax.x = std::max(vMax.x, pMeshData[i].pVertices[j].vPosition.x);
+				vMax.y = std::max(vMax.y, pMeshData[i].pVertices[j].vPosition.y);
+				vMax.z = std::max(vMax.z, pMeshData[i].pVertices[j].vPosition.z);
+			}
+		}
+		else if (pMeshData[i].pSkinnedVertices)
+		{
+			for (AkU32 j = 0; j < pMeshData[i].uVerticeNum; j++)
+			{
+				vMin.x = std::min(vMin.x, pMeshData[i].pSkinnedVertices[j].vPosition.x);
+				vMin.y = std::min(vMin.y, pMeshData[i].pSkinnedVertices[j].vPosition.y);
+				vMin.z = std::min(vMin.z, pMeshData[i].pSkinnedVertices[j].vPosition.z);
+
+				vMax.x = std::max(vMax.x, pMeshData[i].pSkinnedVertices[j].vPosition.x);
+				vMax.y = std::max(vMax.y, pMeshData[i].pSkinnedVertices[j].vPosition.y);
+				vMax.z = std::max(vMax.z, pMeshData[i].pSkinnedVertices[j].vPosition.z);
+			}
 		}
 	}
 

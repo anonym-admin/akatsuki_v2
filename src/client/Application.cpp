@@ -218,6 +218,7 @@ void Application::CleanUp()
 	if (GImGui)
 	{
 		GRenderer->UnBindImGui();
+		GImGui = nullptr;
 	}
 	if (GFont)
 	{

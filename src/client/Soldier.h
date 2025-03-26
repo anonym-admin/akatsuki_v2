@@ -9,9 +9,8 @@ class Soldier : public Player
 public:
 	enum ANIM_STATE
 	{
-		/*Idle*/
 		IDLE,
-
+		WALK,
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
 
 	} AnimState;

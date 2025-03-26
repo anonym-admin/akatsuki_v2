@@ -48,6 +48,7 @@ public:
 	virtual IBillboard* CreateBillboard() override;
 	virtual ITerrain* CreateTerrain() override;
 	virtual IParticle* CreateParticle() override;
+	virtual IEnvironmentObject* CreateEnvironmentObject() override;
 	virtual void* CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray = AK_FALSE) override;
 	virtual void* CreateCubeMapTexture(const wchar_t* wcFilename) override;
 	virtual void* CreateDynamicTexture(AkU32 uTexWidth, AkU32 uTexHeight) override;
@@ -80,6 +81,7 @@ public:
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
 	virtual void RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime) override;
 	virtual void RenderParticleSprite(IParticle* pParticle, void* pDBHandle, const Vector2* pMaxFrame, const Vector2* pCurFrame) override;
+	virtual void RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matrix* pWorldMat) override;
 	virtual void RotateXCamera(AkF32 fRadian) override;
 	virtual void RotateYCamera(AkF32 fRadian) override;
 	virtual void RotateYawPitchRollCamera(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll) override;

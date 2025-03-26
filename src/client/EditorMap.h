@@ -86,5 +86,8 @@ private:
 	// 05. Tree Billboard
 	std::unordered_map<std::wstring, Billboard*> _mapBillboard = {};
 	std::unordered_map<std::wstring, std::array<VertexSize_t, 20>> _mapVertices = {};
+
+	// ocean
+	IEnvironmentObject* _pOcean = nullptr;
 };
 

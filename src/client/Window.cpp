@@ -126,7 +126,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 LRESULT Window::MemWndProc(HWND hWnd, AkU32 uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+	if (GImGui && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 		return AK_TRUE;
 
 	switch (uMsg)

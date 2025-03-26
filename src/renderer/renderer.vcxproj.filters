@@ -37,6 +37,9 @@
     <Filter Include="src\particle">
       <UniqueIdentifier>{9d2fef40-00b3-43a8-bb67-499660c72b35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\env">
+      <UniqueIdentifier>{492f2a95-2823-4a31-86e0-f75b64e7f30b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -154,6 +157,9 @@
     <ClCompile Include="RenderParticle.cpp">
       <Filter>src\body</Filter>
     </ClCompile>
+    <ClCompile Include="Environment.cpp">
+      <Filter>src\env</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\interface\IRenderer.h">
@@ -267,6 +273,9 @@
     <ClInclude Include="RenderParticle.h">
       <Filter>src\body</Filter>
     </ClInclude>
+    <ClInclude Include="Environment.h">
+      <Filter>src\env</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\Basic.hlsl">
@@ -309,6 +318,9 @@
       <Filter>shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\shader\DepthBillboard.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\Ocean.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
   </ItemGroup>

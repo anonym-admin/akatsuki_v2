@@ -29,6 +29,8 @@ private:
 
 private:
 	Animation* _pAnim = nullptr;
+
+	Matrix _pIdentity[96] = {}; // For Bone Transform => 애니매이션이 바운딩 되지 않았을때 사용.
 };
 
 /*

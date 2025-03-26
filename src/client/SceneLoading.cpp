@@ -40,6 +40,7 @@ AkBool SceneLoading::BeginScene()
 	// Load Animation.
 	{
 		GAssetManager->ReadClip(L"soldier", L"soldier_idle.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_walk.anim");
 	}
 
 	// Image based lighting textures.

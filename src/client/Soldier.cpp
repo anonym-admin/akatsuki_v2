@@ -307,8 +307,9 @@ void Soldier::UpdateMove()
 		// [] < -60
 		else
 		{
-			//SetAnimation(B_WALK);
 		}
+
+		SetAnimation(WALK);
 
 		// Return Walk Speed.
 		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);

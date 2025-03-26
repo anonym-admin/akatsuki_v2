@@ -21,6 +21,7 @@
 #include "RenderUI.h"
 #include "RenderParticle.h"
 #include "Particle.h"
+#include "Environment.h"
 
 // For ImGui;
 extern ImGuiContext* GImGui;
@@ -579,6 +580,13 @@ IParticle* FRenderer::CreateParticle()
 	return pParticle;
 }
 
+IEnvironmentObject* FRenderer::CreateEnvironmentObject()
+{
+	FEnvironmentObject* pEnvObj = new FEnvironmentObject;
+	pEnvObj->Initialize(this);
+	return pEnvObj;
+}
+
 void* FRenderer::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray)
 {
 	TextureHandle_t* pTexHandle = _pTextureManager->CreateTextureFromFile(wcFilename, bUseSRGB, bIsArray);
@@ -966,6 +974,23 @@ void FRenderer::RenderParticleSprite(IParticle* pParticle, void* pDBHandle, cons
 	{
 		__debugbreak();
 	}
+}
+
+void FRenderer::RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matrix* pWorldMat)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_OCEAN;
+	tItem.pObjHandle = pOcean;
+	tItem.tOceanParam.fTime = fTime;
+	tItem.tOceanParam.mWorld = *pWorldMat;
+
+	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	{
+		__debugbreak();
+	}
+
+	_uCurThreadIndex++;
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)

@@ -27,6 +27,9 @@ cbuffer GlobalConsts : register(b0)
     matrix invView;
     matrix invProj;
     
+    float globalTime;
+    float3 dummy;
+    
     LightConsts lights[MAX_LIGHTS_COUNT];
 };
 

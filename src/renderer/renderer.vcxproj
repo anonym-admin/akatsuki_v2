@@ -197,6 +197,7 @@
     <ClCompile Include="DescriptorAllocator.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3DUtils.cpp" />
+    <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ImageFiler.cpp" />
     <ClCompile Include="FontManager.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="D3DUtils.h" />
     <ClInclude Include="DescriptorPool.h" />
     <ClInclude Include="DescriptorAllocator.h" />
+    <ClInclude Include="Environment.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ImageFiler.h" />
     <ClInclude Include="FontManager.h" />
@@ -324,6 +326,11 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\DepthBillboard.hlsl">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\shader\Ocean.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
