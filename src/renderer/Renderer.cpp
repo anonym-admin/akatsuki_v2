@@ -886,6 +886,15 @@ void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
+void FRenderer::RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
+{
+	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	FBillboardObjects* pBillboardObj = reinterpret_cast<FBillboardObjects*>(pBillboard);
+	pBillboardObj->DrawShadow(pCmdList, pWorldMat);
+}
+
 void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
 {
 	RenderItem_t tItem = {};

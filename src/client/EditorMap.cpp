@@ -4,6 +4,7 @@
 #include "Terrain.h"
 #include "ModelObject.h"
 #include "Scene.h"
+#include "TreeBillboards.h"
 
 /*
 =============
@@ -74,10 +75,28 @@ void EditorMap::Update()
 		e->Update();
 	}
 
+	// Update Tree Billboard
+	for (auto& e : _mapBillboard)
+	{
+		if (e.second)
+		{
+			e.second->Update();
+		}
+	}
+
 	// Final Update
 	for (auto& e : _vecGameObj)
 	{
 		e->FinalUpdate();
+	}
+
+	// Final Update Tree Billboard
+	for (auto& e : _mapBillboard)
+	{
+		if (e.second)
+		{
+			e.second->FinalUpdate();
+		}
 	}
 }
 
@@ -91,6 +110,15 @@ void EditorMap::Render()
 	{
 		e->Render();
 	}
+
+	for(auto& e : _mapBillboard)
+	{
+		if(e.second)
+		{
+			e.second->Render();
+		}
+	}
+	
 }
 
 void EditorMap::RenderShadow()
@@ -98,6 +126,14 @@ void EditorMap::RenderShadow()
 	for (auto& e : _vecGameObj)
 	{
 		e->RenderShadow();
+	}
+
+	for (auto& e : _mapBillboard)
+	{
+		if (e.second)
+		{
+			e.second->RenderShadow();
+		}
 	}
 }
 
@@ -177,6 +213,14 @@ void EditorMap::RenderGUI()
 	}
 	ImGui::End();
 
+	ImGui::Begin("Billboard");
+	const char* pBillboardItems[] = { "Tree", "Grass" };
+	if (ImGui::Combo("Billboard Type", &_iBillboardType, pBillboardItems, IM_ARRAYSIZE(pBillboardItems)))
+	{
+		ImGuiFileDialog::Instance()->OpenDialog("LoadBillboard", "Choose File", ".dds", tConfig);
+	}
+	ImGui::End();
+
 	UpdateFileDialog();
 }
 
@@ -233,6 +277,34 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		_vecActFileNameList.push_back(wcName);
 	}
 
+	// 03. billboard.
+	AkI32 iNumBillboard = 0;
+	fwscanf_s(fp, L"%d", &iNumBillboard);
+	for (AkI32 i = 0; i < iNumBillboard; i++)
+	{
+		fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
+
+		AkI32 iVertexNum = 0;
+		fwscanf_s(fp, L"%d", &iVertexNum);
+
+		VertexSize_t* pVertices = new VertexSize_t[iVertexNum];
+		for (AkI32 i = 0; i < iVertexNum; i++)
+		{
+			fwscanf_s(fp, L"%f %f %f", &pVertices[i].vPosition.x, &pVertices[i].vPosition.y, &pVertices[i].vPosition.z);
+			fwscanf_s(fp, L"%f %f", &pVertices[i].vSize.x, &pVertices[i].vSize.y);
+		}
+
+		Billboard* pBillboard = new Billboard(wcName, pVertices, iVertexNum);
+		_mapBillboard[wcName] = pBillboard;
+		memcpy(_mapVertices[wcName].data(), pVertices, sizeof(VertexSize_t) * iVertexNum);
+
+		if (pVertices)
+		{
+			delete[] pVertices;
+			pVertices = nullptr;
+		}
+	}
+
 	if (fp)
 	{
 		fclose(fp);
@@ -270,6 +342,22 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 		uIndex++;
 	}
 
+	// 03. billboard.
+	fwprintf_s(fp, L"%d\n", (AkI32)_mapBillboard.size());
+	for (auto& e : _mapBillboard)
+	{
+		fwprintf_s(fp, L"%s\n", e.first.c_str());
+		if (_mapVertices.count(e.first))
+		{
+			fwprintf_s(fp, L"%d\n", (AkI32)_mapVertices[e.first].size());
+			for (auto& v : _mapVertices[e.first])
+			{
+				fwprintf_s(fp, L"%lf %lf %lf\n", v.vPosition.x, v.vPosition.y, v.vPosition.z);
+				fwprintf_s(fp, L"%lf %lf\n", v.vSize.x, v.vSize.y);
+			}
+		}
+	}
+
 	if (fp)
 	{
 		fclose(fp);
@@ -279,6 +367,15 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 
 void EditorMap::CleanUp()
 {
+	for (auto& e : _mapBillboard)
+	{
+		if (e.second)
+		{
+			delete e.second;
+			e.second = nullptr;
+		}
+	}
+
 	for (auto& e : _vecGameObj)
 	{
 		delete e;
@@ -296,6 +393,12 @@ void EditorMap::CleanUp()
 		delete _pCamera;
 		_pCamera = nullptr;
 	}
+}
+
+Billboard* EditorMap::CreateBillboards(const std::wstring& wcFilePath, VertexSize_t* pVertices, AkU32 uNum)
+{
+	Billboard* pTreeBilloards = new Billboard(wcFilePath.c_str(), pVertices, uNum);
+	return pTreeBilloards;
 }
 
 void EditorMap::ExportMap(const std::wstring& wcFilePath)
@@ -545,7 +648,7 @@ void EditorMap::UpdateFileDialog()
 
 		ImGuiFileDialog::Instance()->Close();
 	}
-	// Load Load Scene File.
+	// Load Scene File.
 	if (ImGuiFileDialog::Instance()->Display("SceneInfoLoad"))
 	{
 		if (ImGuiFileDialog::Instance()->IsOk() == true)
@@ -558,7 +661,7 @@ void EditorMap::UpdateFileDialog()
 
 		ImGuiFileDialog::Instance()->Close();
 	}
-	// Save Load Scene File.
+	// Save Scene File.
 	if (ImGuiFileDialog::Instance()->Display("SceneInfoSave"))
 	{
 		if (ImGuiFileDialog::Instance()->IsOk() == true)
@@ -569,6 +672,33 @@ void EditorMap::UpdateFileDialog()
 			CreateFolders(FilePath);
 
 			Save(ToWString(FileName));
+		}
+
+		ImGuiFileDialog::Instance()->Close();
+	}
+	// Save Scene File.
+	if (ImGuiFileDialog::Instance()->Display("LoadBillboard"))
+	{
+		if (ImGuiFileDialog::Instance()->IsOk() == true)
+		{
+			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+			std::array<VertexSize_t, 20> _arrVertices = {};
+			for (AkU32 i = 0; i < _arrVertices.size(); i++)
+			{
+				AkF32 fX = Random(-50.0f, 50.0f);
+				AkF32 fY = 0.0f;
+				AkF32 fZ = Random(-50.0f, 50.0f);
+
+				_arrVertices[i].vPosition = Vector4(fX, fY, fZ, 1.0f);
+				_arrVertices[i].vSize = Vector2(1.0f);
+			}
+
+			Billboard* pBillboard = CreateBillboards(ToWString(FileName), _arrVertices.data(), (AkU32)_arrVertices.size());
+
+			_mapVertices[ToWString(FileName)] = _arrVertices;
+			_mapBillboard[ToWString(FileName)] = pBillboard;
 		}
 
 		ImGuiFileDialog::Instance()->Close();

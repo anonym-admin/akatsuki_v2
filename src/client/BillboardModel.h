@@ -16,6 +16,7 @@ public:
 
 	AkBool Initialize(BillboardData_t* pBillboardData);
 	virtual void Render() override;
+	virtual void RenderShadow() override;
 
 private:
 	void CleanUp();

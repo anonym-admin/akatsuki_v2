@@ -24,6 +24,7 @@ public:
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
 	virtual ULONG STDMETHODCALLTYPE Release(void) override;
 	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
+	void DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
 private:
 	void CleanUp();
@@ -37,6 +38,7 @@ private:
 private:
 	static ID3D12RootSignature* sm_pRootSignature;
 	static ID3D12PipelineState* sm_pBillboardPSO;
+	static ID3D12PipelineState* sm_pDepthOnlyPSO;
 	static AkU32 sm_uInitRefCount;
 	AkU32 _uRefCount = 1;
 	FRenderer* _pRenderer = nullptr;

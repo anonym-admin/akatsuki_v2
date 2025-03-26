@@ -172,6 +172,11 @@ void EditorModel::RenderGUI()
 		ImGuiFileDialog::Instance()->OpenDialog("ImportKey", "Choose File", ".mesh,.anim", tConfig);
 	}
 
+	if (ImGui::Button("Convert To DDS File"))
+	{
+		ImGuiFileDialog::Instance()->OpenDialog("DDSKey", "Choose File", ".jpg,.png,.dds", tConfig);
+	}
+
 	tConfig.filePathName = "../../assets/model_new/textures/";
 	const char* pItems3[] = { "Albedo", "Emissive", "Height", "Normal", "Metallic", "Roughness", "AO" };
 	if (ImGui::Combo("Import Texture Type", &_iTextureType, pItems3, IM_ARRAYSIZE(pItems3)))
@@ -866,7 +871,6 @@ void EditorModel::CreateCollider(COLLIDER_TYPE eType)
 void EditorModel::LoadTextures(const std::wstring& wcBasePath, const std::wstring& wcFilename)
 {
 	std::wstring wcFilePath = wcBasePath + wcFilename;
-	SaveDDS(wcFilePath.c_str(), AK_FALSE);
 
 	wcFilePath = GetFileNmaeExcludeExt(wcFilePath);
 	wcFilePath += L".dds";
@@ -1046,6 +1050,19 @@ void EditorModel::UpdateFileDialog()
 				CreateClip(ToWString(FilePath), ToWString(GetFileName(FileName)));
 				break;
 			}
+		}
+
+		ImGuiFileDialog::Instance()->Close();
+	}
+
+	if (ImGuiFileDialog::Instance()->Display("DDSKey"))
+	{
+		if (ImGuiFileDialog::Instance()->IsOk() == true)
+		{
+			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+			SaveDDS(ToWString(FileName).c_str(), AK_FALSE);
 		}
 
 		ImGuiFileDialog::Instance()->Close();

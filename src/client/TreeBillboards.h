@@ -8,16 +8,16 @@ Tree Billboard
 ===============
 */
 
-class TreeBillboard : public Actor
+class Billboard : public Actor
 {
 public:
-	TreeBillboard();
-	~TreeBillboard();
+	Billboard(const wchar_t* wcTexArray, VertexSize_t* pVertices, AkU32 uNum);
+	~Billboard();
 
-	AkBool Initialize();
+	AkBool Initialize(const wchar_t* wcTexArray, VertexSize_t* pVertices, AkU32 uNum);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
-	virtual void RenderShadow() {};
+	virtual void RenderShadow() override;
 	virtual void Render() override;
 
 	virtual void OnCollision(class Collider* pOther) {};

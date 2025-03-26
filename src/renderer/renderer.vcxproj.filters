@@ -308,5 +308,8 @@
     <CustomBuild Include="..\..\shader\ParticleSprite.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\shader\DepthBillboard.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

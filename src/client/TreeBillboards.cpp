@@ -9,37 +9,26 @@ Tree Billboard
 */
 
 
-TreeBillboard::TreeBillboard()
+Billboard::Billboard(const wchar_t* wcTexArray, VertexSize_t* pVertices, AkU32 uNum)
 {
-	if (!Initialize())
+	if (!Initialize(wcTexArray, pVertices, uNum))
 	{
 		__debugbreak();
 	}
 }
 
-TreeBillboard::~TreeBillboard()
+Billboard::~Billboard()
 {
 	CleanUp();
 }
 
-AkBool TreeBillboard::Initialize()
+AkBool Billboard::Initialize(const wchar_t* wcTexArray, VertexSize_t* pVertices, AkU32 uNum)
 {
-	VertexSize_t pVertices[5] = {};
-	pVertices[0].vPosition = Vector4(-22.5f, 0.0f, 35.0f, 1.0f);
-	pVertices[0].vSize = Vector2(1.0f);
-	pVertices[1].vPosition = Vector4(-21.5f, 0.0f, 35.0f, 1.0f);
-	pVertices[1].vSize = Vector2(1.0f);
-	pVertices[2].vPosition = Vector4(-20.0f, 0.0f, 35.0f, 1.0f);
-	pVertices[2].vSize = Vector2(1.0f);
-	pVertices[3].vPosition = Vector4(-19.0f, 0.0f, 35.0f, 1.0f);
-	pVertices[3].vSize = Vector2(1.0f);
-	pVertices[4].vPosition = Vector4(-18.0f, 0.0f, 35.0f, 1.0f);
-	pVertices[4].vSize = Vector2(1.0f);
-
+	// Random Location.
 	BillboardData_t pBillboardData = {};
 	pBillboardData.pVertice = pVertices;
-	pBillboardData.uPointsNum = _countof(pVertices);
-	wcscpy_s(pBillboardData.wcArrayFilename, L"../../assets/treeArray2.dds");
+	pBillboardData.uPointsNum = uNum;
+	wcscpy_s(pBillboardData.wcArrayFilename, wcTexArray);
 
 	_pModel = CreateBillboardModel(&pBillboardData);
 
@@ -50,22 +39,27 @@ AkBool TreeBillboard::Initialize()
 	return AK_TRUE;
 }
 
-void TreeBillboard::Update()
+void Billboard::Update()
 {
 }
 
-void TreeBillboard::FinalUpdate()
+void Billboard::FinalUpdate()
 {
 	_pTransform->Update();
 
 	_pModel->UpdateWorldRow(&_pTransform->GetWorldTransform());
 }
 
-void TreeBillboard::Render()
+void Billboard::RenderShadow()
+{
+	_pModel->RenderShadow();
+}
+
+void Billboard::Render()
 {
 	_pModel->Render();
 }
 
-void TreeBillboard::CleanUp()
+void Billboard::CleanUp()
 {
 }

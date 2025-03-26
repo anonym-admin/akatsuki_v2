@@ -9,6 +9,7 @@ Editor Map
 */
 
 class TerrainEdit;
+class Billboard;
 
 class EditorMap : public Editor
 {
@@ -25,11 +26,13 @@ public:
 	virtual void RenderShadow() override;
 
 protected:
-	virtual void Load(const std::wstring& wcFilePath) override;
+	virtual void Load(const std::wstring& wcFilePath) override; // Load Scene.
 	virtual void Save(const std::wstring& wcFilePath) override; // Save Scene.
 
 private:
 	void CleanUp();
+
+	Billboard* CreateBillboards(const std::wstring& wcFilePath, VertexSize_t* pVertices, AkU32 uNum);
 
 	void ImportMap(const std::wstring& wcFilePath);
 	void ImportActor(const std::wstring& wcFilePath);
@@ -50,6 +53,7 @@ private:
 
 	AkI32 _iSelectMode = 0; // 0: Height 1: Splating 2: Texture 3: Map
 	AkI32 _iTextureType = 0; // 0: Albedo ~ 5 : AO 6: Second 7: Third
+	AkI32 _iBillboardType = -1; // 0: Tree 1: Grass
 
 	// 해당 클래스에서 임시로 쓸 수 있는 문자열
 	std::wstring _wcFileName = L"";
@@ -78,5 +82,9 @@ private:
 	// 04. Game Objs
 	std::vector<Actor*> _vecGameObj = {};
 	std::vector<std::wstring> _vecActFileNameList = {};
+
+	// 05. Tree Billboard
+	std::unordered_map<std::wstring, Billboard*> _mapBillboard = {};
+	std::unordered_map<std::wstring, std::array<VertexSize_t, 20>> _mapVertices = {};
 };
 

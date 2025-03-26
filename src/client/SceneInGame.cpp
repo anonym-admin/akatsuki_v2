@@ -186,7 +186,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 	pTerrain->tLink.pData = pTerrain;
 	AddGameObject(GAME_OBJECT_GROUP_TYPE::TERRAIN, pTerrain);
 
-	// 02. game obj
+	// 02. obj
 	Actor* pActor = nullptr;
 	AkI32 iNumGameObj = 0;
 	fwscanf_s(fp, L"%d", &iNumGameObj);
@@ -219,6 +219,34 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 
 		pActor->tLink.pData = pActor;
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pActor);
+	}
+
+	// 03. billboard
+	AkI32 iNumBillboard = 0;
+	fwscanf_s(fp, L"%d", &iNumBillboard);
+	for (AkI32 i = 0; i < iNumBillboard; i++)
+	{
+		fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
+
+		AkI32 iVertexNum = 0;
+		fwscanf_s(fp, L"%d", &iVertexNum);
+
+		VertexSize_t* pVertices = new VertexSize_t[iVertexNum];
+		for (AkI32 i = 0; i < iVertexNum; i++)
+		{
+			fwscanf_s(fp, L"%f %f %f", &pVertices[i].vPosition.x, &pVertices[i].vPosition.y, &pVertices[i].vPosition.z);
+			fwscanf_s(fp, L"%f %f", &pVertices[i].vSize.x, &pVertices[i].vSize.y);
+		}
+
+		Billboard* pBillboard = new Billboard(wcName, pVertices, iVertexNum);
+		pBillboard->tLink.pData = pBillboard;
+		AddGameObject(GAME_OBJECT_GROUP_TYPE::BILLBOARD, pBillboard);
+
+		if(pVertices)
+		{
+			delete[] pVertices;
+			pVertices = nullptr;
+		}
 	}
 
 	if (fp)

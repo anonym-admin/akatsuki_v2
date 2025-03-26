@@ -119,6 +119,7 @@ interface IRenderer : public IUnknown
 	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) = 0;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
+	virtual void RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime) = 0;

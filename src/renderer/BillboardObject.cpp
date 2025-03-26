@@ -15,6 +15,7 @@ BillboardObject
 
 ID3D12RootSignature* FBillboardObjects::sm_pRootSignature;
 ID3D12PipelineState* FBillboardObjects::sm_pBillboardPSO;
+ID3D12PipelineState* FBillboardObjects::sm_pDepthOnlyPSO;
 AkU32 FBillboardObjects::sm_uInitRefCount;
 
 FBillboardObjects::FBillboardObjects()
@@ -384,6 +385,234 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 	pCmdList->DrawInstanced(_uPointNum, 1, 0, 0);
 }
 
+void FBillboardObjects::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
+{
+	ID3D12Device* pDevice = _pRenderer->GetDevice();
+	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(0);
+	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
+	FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(0, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
+	FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(0, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
+	FConstantBufferPool* pMaterialCBPool = _pRenderer->GetConstantBufferPool(0, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MATERIAL);
+	AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ * (_uPointNum * DESCRIPTOR_COUNT_PER_MESH);
+
+	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
+	{
+		__debugbreak();
+		return;
+	}
+
+	CBContainer_t* pGlobalCBContainer = pGlobalCBPool->Alloc();
+	if (!pGlobalCBContainer)
+	{
+		__debugbreak();
+		return;
+	}
+
+	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
+	Matrix mViewRow = Matrix();
+	Matrix mProjRow = Matrix();
+	_pRenderer->GetShadowViewProjMatrix(&mViewRow, &mProjRow, _pRenderer->GetCascadeIndex() - 1);
+	pGlobalConstantBuffer->mView = mViewRow.Transpose();
+	pGlobalConstantBuffer->mProj = mProjRow.Transpose();
+
+	// Per Obj (b0).
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
+	pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	CBContainer_t* pMeshCBContainer = pMeshCBPool->Alloc();
+	if (!pMeshCBContainer)
+	{
+		__debugbreak();
+		return;
+	}
+
+	MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr);
+	Matrix mWorldRow = *pWorldMat;
+	pMeshConstantBuffer->mWorld = mWorldRow.Transpose();
+	mWorldRow.Translation(Vector3(0.0f));
+	mWorldRow.Invert().Transpose();
+	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
+
+	// Per Obj (b1).
+	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	// Per Billboard 
+	TextureHandle_t* pIrradianceTexHandle = nullptr;
+	TextureHandle_t* pSpecularTexHandle = nullptr;
+	TextureHandle_t* pBrdfTexHandle = nullptr;
+	_pRenderer->GetIBLTexture(&pIrradianceTexHandle, &pSpecularTexHandle, &pBrdfTexHandle);
+
+	for (AkU32 i = 0; i < _uPointNum; i++)
+	{
+		CBContainer_t* pMaterialCBContainer = pMaterialCBPool->Alloc();
+		if (!pMaterialCBContainer)
+		{
+			__debugbreak();
+			return;
+		}
+
+		MaterialConstantBuffer_t* pMaterialConstantBuffer = reinterpret_cast<MaterialConstantBuffer_t*>(pMaterialCBContainer->pSystemMemAddr);
+		memcpy(pMaterialConstantBuffer, &_pMaterials[i], sizeof(MaterialConstantBuffer_t));
+
+		// Material CB(b2)
+		pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		hDest.Offset(1, uDescriptorSize);
+
+		// Albedo
+		TextureHandle_t* pTexHandle = _pAlbedoTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Normal
+		pTexHandle = _pNormalTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Emissive
+		pTexHandle = _pEmissiveTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Metallic
+		pTexHandle = _pMetallicTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Roughness
+		pTexHandle = _pRoughnessTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// AO
+		pTexHandle = _pAoTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Irradiance IBL.
+		if (pIrradianceTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pIrradianceTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Specular IBL
+		if (pSpecularTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pSpecularTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Brdf Tex
+		if (pBrdfTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pBrdfTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Shadow Map
+		for (AkU32 uCascadeIndex = 0; uCascadeIndex < FRenderer::CASCADE_SHADOW_MAP_LEVEL; uCascadeIndex++)
+		{
+			D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
+			_pRenderer->GetShadowMapSrv(&hSRV, uCascadeIndex);
+			if (hSRV.ptr)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				AkI32 a = 3;
+			}
+			hDest.Offset(1, uDescriptorSize);
+		}
+
+		// Array Tex
+		pTexHandle = _pArrayTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+	}
+
+	// Set RootSignature.
+	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
+	pCmdList->SetPipelineState(sm_pDepthOnlyPSO);
+
+	// Obj (root param 0)
+	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
+	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
+	pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
+	pCmdList->IASetVertexBuffers(0, 1, &_tVertexBufferView);
+	pCmdList->DrawInstanced(_uPointNum, 1, 0, 0);
+}
+
 void FBillboardObjects::CleanUp()
 {
 	_pRenderer->EnsureCompleted();
@@ -532,6 +761,7 @@ AkBool FBillboardObjects::CreatePipelineState()
 	ID3DBlob* pBillboardVS = nullptr;
 	ID3DBlob* pBillboardGS = nullptr;
 	ID3DBlob* pBillboardPS = nullptr;
+	ID3DBlob* pDepthOnlyPS = nullptr;
 
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
@@ -560,6 +790,15 @@ AkBool FBillboardObjects::CreatePipelineState()
 		__debugbreak();
 	}
 	if (FAILED(D3DCompileFromFile(L"../../shader/Billboard.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pBillboardPS, &pErrorBlob)))
+	{
+		if (pErrorBlob != nullptr)
+		{
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
+		__debugbreak();
+	}
+	if (FAILED(D3DCompileFromFile(L"../../shader/DepthBillboard.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pDepthOnlyPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -602,6 +841,24 @@ AkBool FBillboardObjects::CreatePipelineState()
 		__debugbreak();
 	}
 
+	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pDepthOnlyPS->GetBufferPointer(), pDepthOnlyPS->GetBufferSize());
+	tPsoDesc.NumRenderTargets = 0;
+	tPsoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
+	tPsoDesc.RasterizerState.DepthBias = 100000;
+	tPsoDesc.RasterizerState.DepthBiasClamp = 0.0f;
+	tPsoDesc.RasterizerState.SlopeScaledDepthBias = 1.0f;
+	tPsoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	tPsoDesc.SampleDesc.Count = 1;
+	tPsoDesc.SampleDesc.Quality = 0;
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pDepthOnlyPSO))))
+	{
+		__debugbreak();
+	}
+
+	if (pDepthOnlyPS)
+	{
+		pDepthOnlyPS->Release();
+	}
 	if (pBillboardPS)
 	{
 		pBillboardPS->Release();
@@ -644,6 +901,11 @@ void FBillboardObjects::DestroyRootSignature()
 
 void FBillboardObjects::DestroyPipelineState()
 {
+	if (sm_pDepthOnlyPSO)
+	{
+		sm_pDepthOnlyPSO->Release();
+		sm_pDepthOnlyPSO = nullptr;
+	}
 	if (sm_pBillboardPSO)
 	{
 		sm_pBillboardPSO->Release();
