@@ -129,18 +129,18 @@ void EditorMap::Render()
 	GRenderer->RenderOcean(_pOcean, GTimer->GetTotalTime(), &world);
 }
 
-void EditorMap::RenderShadow()
+void EditorMap::RenderShadowMaps()
 {
 	for (auto& e : _vecGameObj)
 	{
-		e->RenderShadow();
+		e->RenderShadowMaps();
 	}
 
 	for (auto& e : _mapBillboard)
 	{
 		if (e.second)
 		{
-			e.second->RenderShadow();
+			e.second->RenderShadowMaps();
 		}
 	}
 }

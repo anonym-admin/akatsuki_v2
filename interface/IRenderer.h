@@ -87,8 +87,8 @@ interface IRenderer : public IUnknown
 	virtual AkBool Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnableGBV) = 0;
 	virtual void BeginRender() = 0;
 	virtual void EndRender() = 0;
-	virtual void BeginCasterRenderPreparation() = 0;
-	virtual void EndCasterRenderPreparation() = 0;
+	virtual void BeginShadowMapsRenderPreparation() = 0;
+	virtual void EndShadowMapsRenderPreparation() = 0;
 	virtual void Present() = 0;
 	virtual IMeshObject* CreateBasicMeshObject() = 0;
 	virtual IMeshObject* CreateSkinnedMeshObject() = 0;
@@ -150,6 +150,7 @@ interface IRenderer : public IUnknown
 	virtual Vector3 GetWorldNearPosition(AkF32 fNdcX, AkF32 fNdcY) = 0;
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) = 0;
 	virtual void GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat) = 0;
+	virtual void GetRelectionViewProjMatrix(Matrix* pViewMat, Matrix* pProjMat) = 0;
 	virtual AkBool MousePickingToPlane(DirectX::SimpleMath::Plane* pPlane, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
 	virtual AkBool MousePickingToTriangle(Vector3* pV0, Vector3* pV1, Vector3* pV2, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;
 	virtual AkBool MousePickingToSqaure(Vector3* pV0, Vector3* pV1, Vector3* pV2, Vector3* pV3, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) = 0;

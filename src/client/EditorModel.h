@@ -23,7 +23,7 @@ public:
 	virtual AkBool EndEditor() override;
 	virtual void Update() override;
 	virtual void Render() override;
-	virtual void RenderShadow() override;
+	virtual void RenderShadowMaps() override;
 	virtual void RenderGUI() override;
 
 private:

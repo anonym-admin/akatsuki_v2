@@ -17,7 +17,7 @@ public:
 	AkBool Initialize(const wchar_t* wcTexArray, VertexSize_t* pVertices, AkU32 uNum);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
-	virtual void RenderShadow() override;
+	virtual void RenderShadowMaps() override;
 	virtual void Render() override;
 
 	virtual void OnCollision(class Collider* pOther) {};

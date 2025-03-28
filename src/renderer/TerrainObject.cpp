@@ -396,7 +396,7 @@ void FTerrainObject::DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList* p
 	}
 }
 
-void FTerrainObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
+void FTerrainObject::DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(0);

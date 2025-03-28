@@ -60,12 +60,12 @@ void Model::Render()
 	GRenderer->RenderBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
-void Model::RenderNormal()
+void Model::RenderNormals()
 {
 	GRenderer->RenderNormalOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
-void Model::RenderShadow()
+void Model::RenderShadowMaps()
 {
 	GRenderer->RenderShadowOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }

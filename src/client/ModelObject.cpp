@@ -150,9 +150,9 @@ void ModelObject::Render()
 	}
 }
 
-void ModelObject::RenderShadow()
+void ModelObject::RenderShadowMaps()
 {
-	_pModel->RenderShadow();
+	_pModel->RenderShadowMaps();
 }
 
 void ModelObject::RenderGUI()

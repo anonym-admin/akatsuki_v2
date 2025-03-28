@@ -169,9 +169,9 @@ void Soldier::Render()
 	_pCollider->Render();
 }
 
-void Soldier::RenderShadow()
+void Soldier::RenderShadowMaps()
 {
-	_pModel->RenderShadow();
+	_pModel->RenderShadowMaps();
 }
 
 void Soldier::OnCollisionEnter(Collider* pOther)

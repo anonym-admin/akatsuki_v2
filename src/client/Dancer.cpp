@@ -77,7 +77,7 @@ void Dancer::Render()
 	//_pModel->Render();
 }
 
-void Dancer::RenderShadow()
+void Dancer::RenderShadowMaps()
 {
 	//_pModel->RenderShadow();
 }

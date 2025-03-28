@@ -19,7 +19,7 @@ void MapObjects::FinalUpdate()
 {
 }
 
-void MapObjects::RenderShadow()
+void MapObjects::RenderShadowMaps()
 {
 	for (AkU32 i = 0; i < _uMsshObjListNum; i++)
 	{

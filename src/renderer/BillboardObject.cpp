@@ -385,7 +385,7 @@ void FBillboardObjects::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmd
 	pCmdList->DrawInstanced(_uPointNum, 1, 0, 0);
 }
 
-void FBillboardObjects::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
+void FBillboardObjects::DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(0);

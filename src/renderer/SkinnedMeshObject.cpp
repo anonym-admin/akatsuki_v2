@@ -388,7 +388,7 @@ void FSkinnedMeshObject::DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandLis
 	}
 }
 
-void FSkinnedMeshObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, const Matrix* pBonesTransform)
+void FSkinnedMeshObject::DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, const Matrix* pBonesTransform)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(0);

@@ -15,7 +15,7 @@ public:
 
 	void Update();
 	void Render();
-	void RenderShadow();
+	void RenderShadowMaps();
 	void RenderGUI();
 
 	void ChangeEditor(EDITOR_TYPE eEditorType);

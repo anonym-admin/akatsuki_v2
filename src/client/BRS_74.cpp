@@ -84,9 +84,9 @@ void BRS_74::Render()
 	}
 }
 
-void BRS_74::RenderShadow()
+void BRS_74::RenderShadowMaps()
 {
-	_pModel->RenderShadow();
+	_pModel->RenderShadowMaps();
 }
 
 void BRS_74::OnCollisionEnter(Collider* pOther)

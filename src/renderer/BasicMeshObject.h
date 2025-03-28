@@ -22,7 +22,8 @@ public:
     AkBool Initialize(FRenderer* pRenderer);
     void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
     void DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
-    void DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
+    void DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
+    void DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
     virtual AkBool CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDataNum) override;
     virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) override;
@@ -47,6 +48,9 @@ private:
     static ID3D12RootSignature* sm_pRootSignature;
     static ID3D12PipelineState* sm_pBasicSolidPSO;
     static ID3D12PipelineState* sm_pBasicWirePSO;
+    static ID3D12PipelineState* sm_pStencilMaskPSO;
+    static ID3D12PipelineState* sm_pReflectSolidPSO;
+    static ID3D12PipelineState* sm_pReflectWirePSO;
     static ID3D12PipelineState* sm_pNormalPSO;
     static ID3D12PipelineState* sm_pDepthOnlyPSO;
 

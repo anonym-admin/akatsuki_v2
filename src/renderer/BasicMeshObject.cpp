@@ -17,6 +17,9 @@ AkU32 FBasicMeshObject::sm_uInitRefCount;
 ID3D12RootSignature* FBasicMeshObject::sm_pRootSignature;
 ID3D12PipelineState* FBasicMeshObject::sm_pBasicSolidPSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pBasicWirePSO;
+ID3D12PipelineState* FBasicMeshObject::sm_pStencilMaskPSO;
+ID3D12PipelineState* FBasicMeshObject::sm_pReflectSolidPSO;
+ID3D12PipelineState* FBasicMeshObject::sm_pReflectWirePSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pNormalPSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pDepthOnlyPSO;
 
@@ -364,7 +367,7 @@ void FBasicMeshObject::DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList*
 	}
 }
 
-void FBasicMeshObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
+void FBasicMeshObject::DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(0);
@@ -582,6 +585,264 @@ void FBasicMeshObject::DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Mat
 	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
 	pCmdList->SetPipelineState(sm_pDepthOnlyPSO);
+
+	// Obj (root param 0)
+	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
+	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
+	for (AkU32 i = 0; i < _uMeshNum; i++)
+	{
+		// Draw Mesh(root param 1)
+		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
+		hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
+
+		pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
+		pCmdList->IASetIndexBuffer(&_pMeshes[i].tIBView);
+		pCmdList->DrawIndexedInstanced(_pMeshes[i].uIndexCountPerInstance, 1, 0, 0, 0);
+	}
+}
+
+void FBasicMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
+{
+	ID3D12Device* pDevice = _pRenderer->GetDevice();
+	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
+	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
+	FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
+	FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
+	FConstantBufferPool* pMaterialCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MATERIAL);
+	AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + (_uMeshNum * DESCRIPTOR_COUNT_PER_MESH);
+
+	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
+	{
+		__debugbreak();
+		return;
+	}
+
+	CBContainer_t* pGlobalCBContainer = pGlobalCBPool->Alloc();
+	if (!pGlobalCBContainer)
+	{
+		__debugbreak();
+		return;
+	}
+
+	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
+	_pRenderer->GetRelectionViewProjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
+	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
+	pGlobalConstantBuffer->fStrengthIBL = _pRenderer->GetIBLStrength();
+
+	//AkU32 uLightNum = 0;
+	//Light_t* pLights = _pRenderer->GetLights(&uLightNum);
+	//memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
+
+	Light_t tLight;
+	_pRenderer->GetGlobalLight(&tLight);
+	memcpy(pGlobalConstantBuffer->tLights, &tLight, sizeof(Light_t));
+
+	Matrix mLightView = Matrix();
+	Matrix mLightProj = Matrix();
+	_pRenderer->GetShadowViewProjMatrix(&mLightView, &mLightProj, 0);
+	pGlobalConstantBuffer->tLights->mViewProj[0] = (mLightView * mLightProj).Transpose();
+	_pRenderer->GetShadowViewProjMatrix(&mLightView, &mLightProj, 1);
+	pGlobalConstantBuffer->tLights->mViewProj[1] = (mLightView * mLightProj).Transpose();
+	_pRenderer->GetShadowViewProjMatrix(&mLightView, &mLightProj, 2);
+	pGlobalConstantBuffer->tLights->mViewProj[2] = (mLightView * mLightProj).Transpose();
+	_pRenderer->GetShadowViewProjMatrix(&mLightView, &mLightProj, 3);
+	pGlobalConstantBuffer->tLights->mViewProj[3] = (mLightView * mLightProj).Transpose();
+	_pRenderer->GetShadowViewProjMatrix(&mLightView, &mLightProj, 4);
+	pGlobalConstantBuffer->tLights->mViewProj[4] = (mLightView * mLightProj).Transpose();
+
+	// Per Obj (b0).
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
+	pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	CBContainer_t* pMeshCBContainer = pMeshCBPool->Alloc();
+	if (!pMeshCBContainer)
+	{
+		__debugbreak();
+		return;
+	}
+
+	MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr);
+	Matrix mWorldRow = *pWorldMat;
+	pMeshConstantBuffer->mWorld = mWorldRow.Transpose();
+	mWorldRow.Translation(Vector3(0.0f));
+	mWorldRow.Invert().Transpose();
+	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
+	pMeshConstantBuffer->fHeightScale = 0.5f;
+
+	// Per Obj (b1).
+	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	// Per Mesh
+	TextureHandle_t* pIrradianceTexHandle = nullptr;
+	TextureHandle_t* pSpecularTexHandle = nullptr;
+	TextureHandle_t* pBrdfTexHandle = nullptr;
+	_pRenderer->GetIBLTexture(&pIrradianceTexHandle, &pSpecularTexHandle, &pBrdfTexHandle);
+
+	for (AkU32 i = 0; i < _uMeshNum; i++)
+	{
+		CBContainer_t* pMaterialCBContainer = pMaterialCBPool->Alloc();
+		if (!pMaterialCBContainer)
+		{
+			__debugbreak();
+			return;
+		}
+
+		MaterialConstantBuffer_t* pMaterialConstantBuffer = reinterpret_cast<MaterialConstantBuffer_t*>(pMaterialCBContainer->pSystemMemAddr);
+		memcpy(pMaterialConstantBuffer, &_pMaterials[i], sizeof(MaterialConstantBuffer_t));
+
+		// Material CB(b2)
+		pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		hDest.Offset(1, uDescriptorSize);
+
+		// Albedo
+		TextureHandle_t* pTexHandle = _pMeshes[i].pAldedoTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Normal
+		pTexHandle = _pMeshes[i].pNormalTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Emissive
+		pTexHandle = _pMeshes[i].pEmissiveTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Metallic
+		pTexHandle = _pMeshes[i].pMetallicTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Roughness
+		pTexHandle = _pMeshes[i].pRoughnessTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// AO
+		pTexHandle = _pMeshes[i].pAoTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Height
+		pTexHandle = _pMeshes[i].pHeightTextureHandle;
+		if (pTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Irradiance IBL.
+		if (pIrradianceTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pIrradianceTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Specular IBL
+		if (pSpecularTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pSpecularTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Brdf Tex
+		if (pBrdfTexHandle)
+		{
+			pDevice->CopyDescriptorsSimple(1, hDest, pBrdfTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		}
+		else
+		{
+			__debugbreak();
+		}
+		hDest.Offset(1, uDescriptorSize);
+
+		// Shadow Map
+		for (AkU32 uCascadeIndex = 0; uCascadeIndex < FRenderer::CASCADE_SHADOW_MAP_LEVEL; uCascadeIndex++)
+		{
+			D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
+			_pRenderer->GetShadowMapSrv(&hSRV, uCascadeIndex);
+			if (hSRV.ptr)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				AkI32 a = 3;
+			}
+			hDest.Offset(1, uDescriptorSize);
+		}
+	}
+
+	// 1로 표기 된 곳에 물체들을 랜더링
+	pCmdList->OMSetStencilRef(1);
+
+	// Set RootSignature.
+	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
+	pCmdList->SetPipelineState(_bIsWire ? sm_pBasicWirePSO : sm_pBasicSolidPSO); // Wire Frame.
 
 	// Obj (root param 0)
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
@@ -1167,6 +1428,18 @@ AkBool FBasicMeshObject::CreatePipelineState()
 	tPsoDesc.SampleDesc.Count = 1;
 	tPsoDesc.SampleDesc.Quality = 0;
 	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pDepthOnlyPSO))))
+	{
+		__debugbreak();
+	}
+
+	// Stencil 에 1로 표기해주는 State.
+	tPsoDesc.DepthStencilState.StencilEnable = TRUE;
+	tPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	const D3D12_DEPTH_STENCILOP_DESC tDefaultStencilOp = 
+	{ D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_REPLACE, D3D12_COMPARISON_FUNC_ALWAYS };
+	tPsoDesc.DepthStencilState.FrontFace = tDefaultStencilOp;
+	tPsoDesc.DepthStencilState.BackFace = tDefaultStencilOp;
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pStencilMaskPSO))))
 	{
 		__debugbreak();
 	}

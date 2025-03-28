@@ -143,7 +143,7 @@ void EditorParticle::Render()
     }
 }
 
-void EditorParticle::RenderShadow()
+void EditorParticle::RenderShadowMaps()
 {
 
 }

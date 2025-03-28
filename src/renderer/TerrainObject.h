@@ -22,7 +22,7 @@ public:
     AkBool Initialize(FRenderer* pRenderer);
     void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, void* pBrush);
     void DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
-    void DrawShadow(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
+    void DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
     virtual AkBool CreateStaticMeshBuffers(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
     virtual void* CreateDynamicMeshBuffers(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;

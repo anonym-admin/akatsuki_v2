@@ -50,9 +50,9 @@ void Billboard::FinalUpdate()
 	_pModel->UpdateWorldRow(&_pTransform->GetWorldTransform());
 }
 
-void Billboard::RenderShadow()
+void Billboard::RenderShadowMaps()
 {
-	_pModel->RenderShadow();
+	_pModel->RenderShadowMaps();
 }
 
 void Billboard::Render()

@@ -425,7 +425,7 @@ void EditorModel::Render()
 	}
 }
 
-void EditorModel::RenderShadow()
+void EditorModel::RenderShadowMaps()
 {
 	for (auto& e : _vecModel)
 	{
@@ -434,10 +434,10 @@ void EditorModel::RenderShadow()
 			continue;
 		}
 
-		e->RenderShadow();
+		e->RenderShadowMaps();
 	}
 
-	_pGround->RenderShadow();
+	_pGround->RenderShadowMaps();
 }
 
 void EditorModel::CleanUp()

@@ -36,8 +36,8 @@ public:
 	virtual AkBool Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnableGBV) override;
 	virtual void BeginRender() override;
 	virtual void EndRender() override;
-	virtual void BeginCasterRenderPreparation() override;
-	virtual void EndCasterRenderPreparation() override;
+	virtual void BeginShadowMapsRenderPreparation() override;
+	virtual void EndShadowMapsRenderPreparation() override;
 	virtual void Present() override;
 	virtual IMeshObject* CreateBasicMeshObject() override;
 	virtual IMeshObject* CreateSkinnedMeshObject() override;
@@ -100,6 +100,7 @@ public:
 	virtual Vector3 GetWorldNearPosition(AkF32 fNdcX, AkF32 fNdcY) override;
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) override;
 	virtual void GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat) override;
+	virtual void GetRelectionViewProjMatrix(Matrix* pViewMat, Matrix* pProjMat) override;
 	virtual void GetFrustum(Vector4* ppOutPlane) override;
 	virtual AkBool MousePickingToPlane(DirectX::SimpleMath::Plane* pPlane, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
 	virtual AkBool MousePickingToTriangle(Vector3* pV0, Vector3* pV1, Vector3* pV2, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
@@ -286,6 +287,9 @@ private:
 	FRenderUI* _pRenderUI = nullptr;
 
 	// For Rendering Particle.
-	FRenderParticle* _pRenderParticle = nullptr;
+	FRenderParticle* _pRenderParticle = nullptr; // Render Blend ∑Œ »Æ¿Â.
+
+	// For Mirror.
+	DirectX::SimpleMath::Plane _tMirrorPlane = {};
 };
 

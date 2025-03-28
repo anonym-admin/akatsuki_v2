@@ -103,12 +103,12 @@ void Application::RunApplication()
 	// Shadow Pass.
 	for (AkU32 i = 0; i < 5; i++)
 	{
-		GRenderer->BeginCasterRenderPreparation();
+		GRenderer->BeginShadowMapsRenderPreparation();
 
-		GEditorManager->RenderShadow();
-		GSceneManager->RenderShadow();
+		GEditorManager->RenderShadowMaps();
+		GSceneManager->RenderShadowMaps();
 
-		GRenderer->EndCasterRenderPreparation();
+		GRenderer->EndShadowMapsRenderPreparation();
 	}
 
 	// Begin render.
@@ -123,7 +123,7 @@ void Application::RunApplication()
 	// Post Process Control.
 	if (_bUsePostProcessController)
 	{
-		_pPostProcess->RenderPost();
+		_pPostProcess->RendeGUI();
 	}
 
 	// ImGui Render.

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "PostRenderControl.h"
 
-void PostRenderControl::RenderPost()
+void PostRenderControl::RendeGUI()
 {
 	ImGui::Begin("Post Process Control");
 

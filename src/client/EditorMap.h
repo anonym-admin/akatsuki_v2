@@ -22,8 +22,8 @@ public:
 	virtual AkBool EndEditor() override;
 	virtual void Update() override;
 	virtual void RenderGUI() override;
+	virtual void RenderShadowMaps() override;
 	virtual void Render() override;
-	virtual void RenderShadow() override;
 
 protected:
 	virtual void Load(const std::wstring& wcFilePath) override; // Load Scene.

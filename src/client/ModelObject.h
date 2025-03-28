@@ -25,7 +25,7 @@ public:
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
 	virtual void Render() override;
-	virtual void RenderShadow() override;
+	virtual void RenderShadowMaps() override;
 
 	void RenderGUI();
 	void SetEditMode(AkBool bIsEditMode) { _bEditMode = bIsEditMode; }

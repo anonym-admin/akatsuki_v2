@@ -3,7 +3,7 @@
 class PostRenderControl
 {
 public:
-	void RenderPost();
+	void RendeGUI();
 
 private:
 	AkI32 _iBloomLevel = 4;

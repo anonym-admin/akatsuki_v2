@@ -37,14 +37,14 @@ void SkinnedModel::Render()
 	GRenderer->RenderSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
 }
 
-void SkinnedModel::RenderNormal()
+void SkinnedModel::RenderNormals()
 {
 	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetBoneTransforms() : _pIdentity;
 
 	GRenderer->RenderNormalOfSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
 }
 
-void SkinnedModel::RenderShadow()
+void SkinnedModel::RenderShadowMaps()
 {
 	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetBoneTransforms() : _pIdentity;
 

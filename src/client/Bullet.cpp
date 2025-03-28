@@ -72,9 +72,9 @@ void Bullet::Render()
 	_pCollider->Render();
 }
 
-void Bullet::RenderShadow()
+void Bullet::RenderShadowMaps()
 {
-	_pModel->RenderShadow();
+	_pModel->RenderShadowMaps();
 }
 
 void Bullet::OnCollisionEnter(Collider* pOther)

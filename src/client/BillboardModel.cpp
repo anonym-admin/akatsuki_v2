@@ -37,7 +37,7 @@ void BillboardModels::Render()
     GRenderer->RenderBillboard(_pBillboard, &_mWorldRow);
 }
 
-void BillboardModels::RenderShadow()
+void BillboardModels::RenderShadowMaps()
 {
     GRenderer->RenderShadowOfBillboard(_pBillboard, &_mWorldRow);
 }

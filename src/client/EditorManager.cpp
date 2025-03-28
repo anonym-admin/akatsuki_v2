@@ -21,11 +21,11 @@ void EditorManager::Update()
     }
 }
 
-void EditorManager::RenderShadow()
+void EditorManager::RenderShadowMaps()
 {
     if (_pCurEditor)
     {
-        _pCurEditor->RenderShadow();
+        _pCurEditor->RenderShadowMaps();
     }
 }
 

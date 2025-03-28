@@ -70,7 +70,7 @@ void Scene::RenderShadow()
 			while (pCur != nullptr)
 			{
 				Actor* pActor = reinterpret_cast<Actor*>(pCur->pData);
-				pActor->RenderShadow();
+				pActor->RenderShadowMaps();
 
 				pCur = pCur->pNext;
 			}

@@ -251,7 +251,7 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 }
 
 // Multi thread rendering 적용.
-void FRenderer::BeginCasterRenderPreparation()
+void FRenderer::BeginShadowMapsRenderPreparation()
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
@@ -267,7 +267,7 @@ void FRenderer::BeginCasterRenderPreparation()
 	pCmdList->OMSetRenderTargets(0, nullptr, AK_FALSE, &hDSVHeap);
 }
 
-void FRenderer::EndCasterRenderPreparation()
+void FRenderer::EndShadowMapsRenderPreparation()
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
@@ -744,7 +744,7 @@ void FRenderer::RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matri
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 
 	FBasicMeshObject* pBasicMeshObj = reinterpret_cast<FBasicMeshObject*>(pMeshObj);
-	pBasicMeshObj->DrawShadow(pCmdList, pWorldMat);
+	pBasicMeshObj->DrawShadowMaps(pCmdList, pWorldMat);
 }
 
 void FRenderer::RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
@@ -788,7 +788,7 @@ void FRenderer::RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Mat
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 
 	FSkinnedMeshObject* pSkinnedMeshObj = reinterpret_cast<FSkinnedMeshObject*>(pMeshObj);
-	pSkinnedMeshObj->DrawShadow(pCmdList, pWorldMat, pBonesTransform);
+	pSkinnedMeshObj->DrawShadowMaps(pCmdList, pWorldMat, pBonesTransform);
 }
 
 void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, AkBool bUseBlend)
@@ -900,7 +900,7 @@ void FRenderer::RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pW
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 
 	FBillboardObjects* pBillboardObj = reinterpret_cast<FBillboardObjects*>(pBillboard);
-	pBillboardObj->DrawShadow(pCmdList, pWorldMat);
+	pBillboardObj->DrawShadowMaps(pCmdList, pWorldMat);
 }
 
 void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -1310,6 +1310,14 @@ FConstantBufferPool* FRenderer::GetConstantBufferPool(AkU32 uThreadIndex, CONSTA
 void FRenderer::GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat)
 {
 	*pViewMat = _mViewMat.Transpose();
+	*pProjMat = _mProjMat.Transpose();
+}
+
+void FRenderer::GetRelectionViewProjMatrix(Matrix* pViewMat, Matrix* pProjMat)
+{
+	Matrix mReflectionRow = Matrix::CreateReflection(_tMirrorPlane);
+
+	*pViewMat = (mReflectionRow * _mViewMat).Transpose();
 	*pProjMat = _mProjMat.Transpose();
 }
 

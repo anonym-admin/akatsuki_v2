@@ -19,7 +19,7 @@ public:
 	AkBool Initialize(const wchar_t* wcSetUpFile);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
-	virtual void RenderShadow() override;
+	virtual void RenderShadowMaps() override;
 	virtual void Render() override;
 
 	virtual void OnCollision(class Collider* pOther) override;

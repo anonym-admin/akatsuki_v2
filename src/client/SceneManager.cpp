@@ -31,7 +31,7 @@ void SceneManager::FinalUpdate()
     }
 }
 
-void SceneManager::RenderShadow()
+void SceneManager::RenderShadowMaps()
 {
     if (_pCurScene)
     {

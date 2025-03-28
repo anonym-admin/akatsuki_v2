@@ -76,7 +76,7 @@ void Terrain::FinalUpdate()
 	_pTransform->Update();
 }
 
-void Terrain::RenderShadow()
+void Terrain::RenderShadowMaps()
 {
 }
 

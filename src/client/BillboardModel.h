@@ -15,8 +15,8 @@ public:
 	~BillboardModels();
 
 	AkBool Initialize(BillboardData_t* pBillboardData);
+	virtual void RenderShadowMaps() override;
 	virtual void Render() override;
-	virtual void RenderShadow() override;
 
 private:
 	void CleanUp();

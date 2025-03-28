@@ -32,7 +32,7 @@ void Casing::Render()
 {
 }
 
-void Casing::RenderShadow()
+void Casing::RenderShadowMaps()
 {
 }
 

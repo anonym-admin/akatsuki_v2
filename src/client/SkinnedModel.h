@@ -17,9 +17,10 @@ public:
 	SkinnedModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	~SkinnedModel();
 
-	virtual void Render();
-	virtual void RenderNormal();
-	virtual void RenderShadow();
+	virtual void RenderShadowMaps() override;
+	virtual void Render() override;
+	virtual void RenderNormals() override;
+
 	void BindAnimation(Animation* pAnim) { _pAnim = pAnim; }
 	void UnBindAnimation() { _pAnim = nullptr; }
 	Animation* GetAnimation() { return _pAnim; }
@@ -32,12 +33,5 @@ private:
 
 	Matrix _pIdentity[96] = {}; // For Bone Transform => 애니매이션이 바운딩 되지 않았을때 사용.
 };
-
-/*
-======================
-SkinnedModel Edit
-======================
-*/
-
 
 
