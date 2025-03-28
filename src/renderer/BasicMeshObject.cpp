@@ -1509,6 +1509,11 @@ void FBasicMeshObject::DestroyRootSignature()
 
 void FBasicMeshObject::DestroyPipelineState()
 {
+	if (sm_pStencilMaskPSO)
+	{
+		sm_pStencilMaskPSO->Release();
+		sm_pStencilMaskPSO = nullptr;
+	}
 	if (sm_pDepthOnlyPSO)
 	{
 		sm_pDepthOnlyPSO->Release();
