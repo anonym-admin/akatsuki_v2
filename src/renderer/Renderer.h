@@ -66,7 +66,7 @@ public:
 	virtual void DestroyTexture(void* pTexHandle) override;
 	virtual void DestroyFontObject(void* pFontHandle) override;
 	virtual void DestroyDynamicVertex(void* pDVHandle) override;
-	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
+	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Vector3* pClipMin = nullptr, const Vector3* pClipMax = nullptr) override;
 	virtual void RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) override;

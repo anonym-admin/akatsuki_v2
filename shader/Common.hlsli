@@ -26,6 +26,9 @@ cbuffer MeshConsts : register(b1)
     matrix worldIT;
     
     float heightScale;
+    float3 clipMin;
+    float reserve0;
+    float3 clipMax;
 };
 
 #ifdef SKINNED

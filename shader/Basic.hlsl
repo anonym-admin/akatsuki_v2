@@ -67,6 +67,13 @@ PSInput VSMain(VSInput input)
 // Pixel Shader
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    if (clipMin.x < input.posWorld.x && input.posWorld.x < clipMax.x && 
+        clipMin.y < input.posWorld.y && input.posWorld.y < clipMax.y &&
+        clipMin.z < input.posWorld.z && input.posWorld.z < clipMax.z )
+    {
+        discard;
+    }
+    
     float3 pixelToEye = normalize(eyeWorld - input.posWorld);
     float3 normalWorld = GetNormal(input.normalWorld, input.texCoord, input.tangentWorld);
     

@@ -455,6 +455,117 @@ LineData_t* GeometryGenerator::MakeCube(const Vector3* pMin, const Vector3* pMax
 	return pLineData;
 }
 
+MeshData_t* GeometryGenerator::MakeCube(const Vector3* pMin, const Vector3* pMax)
+{
+	MeshData_t* pMeshData = nullptr;
+	AkU32 numMeshData = 1;
+	pMeshData = new MeshData_t;
+
+	pMeshData->uVerticeNum = 24;
+	pMeshData->uIndicesNum = 36;
+	pMeshData->pVertices = new Vertex_t[pMeshData->uVerticeNum];
+	pMeshData->pIndices = new AkU32[pMeshData->uIndicesNum];
+
+	// À­¸é
+	pMeshData->pVertices[0].vPosition = Vector3(pMin->x, pMax->y, pMin->z);
+	pMeshData->pVertices[1].vPosition = Vector3(pMin->x, pMax->y, pMax->z);
+	pMeshData->pVertices[2].vPosition = Vector3(pMax->x, pMax->y, pMax->z);
+	pMeshData->pVertices[3].vPosition = Vector3(pMax->x, pMax->y, pMin->z);
+	pMeshData->pVertices[0].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData->pVertices[1].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData->pVertices[2].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData->pVertices[3].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData->pVertices[0].vTexCoord = Vector2(0.0f, 1.0f);
+	pMeshData->pVertices[1].vTexCoord = Vector2(0.0f, 0.0f);
+	pMeshData->pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
+	pMeshData->pVertices[3].vTexCoord = Vector2(1.0f, 1.0f);
+
+	// ¾Æ·§¸é
+	pMeshData->pVertices[4].vPosition = Vector3(pMin->x, pMin->y, pMin->z);
+	pMeshData->pVertices[5].vPosition = Vector3(pMax->x, pMin->y, pMin->z);
+	pMeshData->pVertices[6].vPosition = Vector3(pMax->x, pMin->y, pMax->z);
+	pMeshData->pVertices[7].vPosition = Vector3(pMin->x, pMin->y, pMax->z);
+	pMeshData->pVertices[4].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
+	pMeshData->pVertices[5].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
+	pMeshData->pVertices[6].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
+	pMeshData->pVertices[7].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
+	pMeshData->pVertices[4].vTexCoord = Vector2(0.0f, 1.0f);
+	pMeshData->pVertices[5].vTexCoord = Vector2(0.0f, 0.0f);
+	pMeshData->pVertices[6].vTexCoord = Vector2(1.0f, 0.0f);
+	pMeshData->pVertices[7].vTexCoord = Vector2(1.0f, 1.0f);
+
+	// ¾Õ¸é
+	pMeshData->pVertices[8].vPosition = Vector3(pMin->x, pMin->y, pMin->z);
+	pMeshData->pVertices[9].vPosition = Vector3(pMin->x, pMax->y, pMin->z);
+	pMeshData->pVertices[10].vPosition = Vector3(pMax->x, pMax->y, pMin->z);
+	pMeshData->pVertices[11].vPosition = Vector3(pMax->x, pMin->y, pMin->z);
+	pMeshData->pVertices[8].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
+	pMeshData->pVertices[9].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
+	pMeshData->pVertices[10].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
+	pMeshData->pVertices[11].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
+	pMeshData->pVertices[8].vTexCoord = Vector2(0.0f, 1.0f);
+	pMeshData->pVertices[9].vTexCoord = Vector2(0.0f, 0.0f);
+	pMeshData->pVertices[10].vTexCoord = Vector2(1.0f, 0.0f);
+	pMeshData->pVertices[11].vTexCoord = Vector2(1.0f, 1.0f);
+
+	// µÞ¸é
+	pMeshData->pVertices[12].vPosition = Vector3(pMin->x, pMin->y, pMax->z);
+	pMeshData->pVertices[13].vPosition = Vector3(pMax->x, pMin->y, pMax->z);
+	pMeshData->pVertices[14].vPosition = Vector3(pMax->x, pMax->y, pMax->z);
+	pMeshData->pVertices[15].vPosition = Vector3(pMin->x, pMax->y, pMax->z);
+	pMeshData->pVertices[12].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
+	pMeshData->pVertices[13].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
+	pMeshData->pVertices[14].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
+	pMeshData->pVertices[15].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
+	pMeshData->pVertices[12].vTexCoord = Vector2(0.0f, 1.0f);
+	pMeshData->pVertices[13].vTexCoord = Vector2(0.0f, 0.0f);
+	pMeshData->pVertices[14].vTexCoord = Vector2(1.0f, 0.0f);
+	pMeshData->pVertices[15].vTexCoord = Vector2(1.0f, 1.0f);
+
+	// ¿ÞÂÊ
+	pMeshData->pVertices[16].vPosition = Vector3(pMin->x, pMin->y, pMax->z);
+	pMeshData->pVertices[17].vPosition = Vector3(pMin->x, pMax->y, pMax->z);
+	pMeshData->pVertices[18].vPosition = Vector3(pMin->x, pMax->y, pMin->z);
+	pMeshData->pVertices[19].vPosition = Vector3(pMin->x, pMin->y, pMin->z);
+	pMeshData->pVertices[16].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[17].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[18].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[19].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[16].vTexCoord = Vector2(0.0f, 1.0f);
+	pMeshData->pVertices[17].vTexCoord = Vector2(0.0f, 0.0f);
+	pMeshData->pVertices[18].vTexCoord = Vector2(1.0f, 0.0f);
+	pMeshData->pVertices[19].vTexCoord = Vector2(1.0f, 1.0f);
+
+	// ¿À¸¥ÂÊ
+	pMeshData->pVertices[20].vPosition = Vector3(pMax->x, pMin->y, pMax->z);
+	pMeshData->pVertices[21].vPosition = Vector3(pMax->x, pMin->y, pMin->z);
+	pMeshData->pVertices[22].vPosition = Vector3(pMax->x, pMax->y, pMin->z);
+	pMeshData->pVertices[23].vPosition = Vector3(pMax->x, pMax->y, pMax->z);
+	pMeshData->pVertices[20].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[21].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[22].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[23].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData->pVertices[20].vTexCoord = Vector2(0.0f, 1.0f);
+	pMeshData->pVertices[21].vTexCoord = Vector2(0.0f, 0.0f);
+	pMeshData->pVertices[22].vTexCoord = Vector2(1.0f, 0.0f);
+	pMeshData->pVertices[23].vTexCoord = Vector2(1.0f, 1.0f);
+
+	AkU32 uIndex = 0;
+	AkU32 pIndices[36] =
+	{
+		0,  1,  2,  0,  2,  3,  // À­¸é
+		4,  5,  6,  4,  6,  7,  // ¾Æ·§¸é
+		8,  9,  10, 8,  10, 11, // ¾Õ¸é
+		12, 13, 14, 12, 14, 15, // µÞ¸é
+		16, 17, 18, 16, 18, 19, // ¿ÞÂÊ
+		20, 21, 22, 20, 22, 23  // ¿À¸¥ÂÊ
+	};
+
+	memcpy(pMeshData->pIndices, pIndices, sizeof(AkU32) * 36);
+
+	return pMeshData;
+}
+
 MeshData_t* GeometryGenerator::MakeCubeWidthExtent(AkU32* pMeshDataNum, const Vector3* pExtent)
 {
 	MeshData_t* pMeshData = nullptr;

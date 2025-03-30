@@ -38,7 +38,12 @@ AkBool EditorMap::Initialize()
 
 	_pOcean = GRenderer->CreateEnvironmentObject();
 
-	
+	_pCSGCube = GRenderer->CreateBasicMeshObject();
+
+	Vector3 vMin = Vector3(-0.5f);
+	Vector3 vMax = Vector3(0.5f);
+	_pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
+	_pCSGDBHandle = _pCSGCube->CreateDynamicMeshBuffers(_pCube->pVertices, _pCube->uVerticeNum, _pCube->pIndices, _pCube->uIndicesNum);
 
 	return AK_TRUE;
 }
@@ -103,6 +108,8 @@ void EditorMap::Update()
 			e.second->FinalUpdate();
 		}
 	}
+
+	GRenderer->UpdateDynamicVertexBuffer(_pCSGDBHandle, _pCube->pVertices);
 }
 
 void EditorMap::Render()
@@ -127,6 +134,17 @@ void EditorMap::Render()
 	Matrix world = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
 
 	GRenderer->RenderOcean(_pOcean, GTimer->GetTotalTime(), &world);
+
+
+	_mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
+
+	Vector3 vTempMin = Vector3(-0.25f);
+	Vector3 vTempMax = Vector3(0.25f);
+
+	vMin = Vector3::Transform(vTempMin, Matrix::CreateTranslation(Vector3(0.3f, 1.0f, 0.0f)));
+	vMax = Vector3::Transform(vTempMax, Matrix::CreateTranslation(Vector3(0.3f, 1.0f, 0.0f)));
+
+	GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow, &vMin, &vMax);
 }
 
 void EditorMap::RenderShadowMaps()
@@ -394,6 +412,16 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 
 void EditorMap::CleanUp()
 {
+	if (_pCube)
+	{
+		GeometryGenerator::DestroyGeometry(_pCube, 1);
+		_pCube = nullptr;
+	}
+	if (_pCSGCube)
+	{
+		_pCSGCube->Release();
+		_pCSGCube = nullptr;
+	}
 	if (_pOcean)
 	{
 		_pOcean->Release();

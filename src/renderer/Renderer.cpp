@@ -726,12 +726,14 @@ void FRenderer::DestroyDynamicVertex(void* pDVHandle)
 	}
 }
 
-void FRenderer::RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
+void FRenderer::RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Vector3* pClipMin, const Vector3* pClipMax)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ;
 	tItem.pObjHandle = pMeshObj;
 	tItem.tMeshObjParam.mWorld = *pWorldMat;
+	tItem.tMeshObjParam.vClipMin = pClipMin ? *pClipMin : Vector3(0.0f);
+	tItem.tMeshObjParam.vClipMax = pClipMax ? *pClipMax : Vector3(0.0f);
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
 	{

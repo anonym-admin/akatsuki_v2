@@ -26,6 +26,7 @@ public:
     void DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
     virtual AkBool CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDataNum) override;
+    virtual void* CreateDynamicMeshBuffers(Vertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
     virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) override;
     virtual void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO) override;
     virtual void EnableWireFrame() override { _bIsWire = AK_TRUE; }
@@ -37,6 +38,7 @@ public:
 protected:
     void CleanUp();
     virtual void CreateVertexAndIndexBuffer(MeshData_t* pMeshData, AkU32 uMeshDataIndex);
+    DynamicVertexBufferHandle_t* CreateDynamicVertexAndIndexBuffer(Vertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
     virtual AkBool CreateCommonResources();
     virtual AkBool CreateRootSignature();
     virtual AkBool CreatePipelineState();

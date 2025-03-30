@@ -64,6 +64,9 @@ struct MeshConstantBuffer_t
 	Matrix mWorldIT = Matrix();
 
 	AkF32 fHeightScale = 1.0f;
+	Vector3 vClipMin = Vector3(0.0f);
+	AkF32 fReserve0;
+	Vector3 vClipMax = Vector3(0.0f);
 };
 
 struct LineConstantBuffer_t

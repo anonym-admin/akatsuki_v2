@@ -89,5 +89,15 @@ private:
 
 	// ocean
 	IEnvironmentObject* _pOcean = nullptr;
+
+	// csg
+	IMeshObject* _pCSGCube = nullptr;
+	void* _pCSGDBHandle = nullptr;
+	MeshData_t* _pCube = nullptr;
+	AkU32 _uMeshDataNum = 0;
+	Matrix _mCSGWorldRow = Matrix();
+
+	Vector3 vMin = Vector3(-0.25f);
+	Vector3 vMax = Vector3(0.25f);
 };
 

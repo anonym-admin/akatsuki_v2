@@ -43,9 +43,6 @@ AkBool FBasicMeshObject::Initialize(FRenderer* pRenderer)
 
 void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
 {
-	// 1로 표기 된 곳에 물체들을 랜더링
-	pCmdList->OMSetStencilRef(1);
-
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
@@ -977,6 +974,30 @@ AkBool FBasicMeshObject::CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDat
 	return AK_TRUE;
 }
 
+void* FBasicMeshObject::CreateDynamicMeshBuffers(Vertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
+{
+	FTextureManager* pTextureManager = _pRenderer->GetTextureManager();
+	DynamicVertexBufferHandle_t* pDVHandle = nullptr;
+
+	_pMeshes = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
+	_uMeshNum = 1;
+
+	memset(_pMeshes, 0, sizeof(Mesh_t));
+
+	_pMeshes->pAldedoTextureHandle = pTextureManager->CreateNullTexture();
+	_pMeshes->pNormalTextureHandle = pTextureManager->CreateNullTexture();
+	_pMeshes->pEmissiveTextureHandle = pTextureManager->CreateNullTexture();
+	_pMeshes->pHeightTextureHandle = pTextureManager->CreateNullTexture();
+	_pMeshes->pMetallicTextureHandle = pTextureManager->CreateNullTexture();
+	_pMeshes->pRoughnessTextureHandle = pTextureManager->CreateNullTexture();
+	_pMeshes->pAoTextureHandle = pTextureManager->CreateNullTexture();
+
+	_pMaterials = reinterpret_cast<MaterialConstantBuffer_t*>(malloc(sizeof(MaterialConstantBuffer_t)));
+	memset(_pMaterials, 0, sizeof(MaterialConstantBuffer_t));
+
+	return CreateDynamicVertexAndIndexBuffer(pVertices, uVerticeNum, pIndices, uIndiceNum);
+}
+
 void FBasicMeshObject::SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO)
 {
 	for (AkU32 i = 0; i < _uMeshNum; i++)
@@ -1189,6 +1210,37 @@ void FBasicMeshObject::CreateVertexAndIndexBuffer(MeshData_t* pMeshData, AkU32 u
 		_pMeshes[uMeshDataIndex].uVertexCountPerInstance = pMeshData[uMeshDataIndex].uVerticeNum;
 		_pMeshes[uMeshDataIndex].uIndexCountPerInstance = pMeshData[uMeshDataIndex].uIndicesNum;
 	}
+}
+
+DynamicVertexBufferHandle_t* FBasicMeshObject::CreateDynamicVertexAndIndexBuffer(Vertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
+{
+	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
+	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
+	D3D12_INDEX_BUFFER_VIEW tIBView = {};
+	ID3D12Resource* pVertexBuffer = nullptr;
+	ID3D12Resource* pIndexBuffer = nullptr;
+	DynamicVertexBufferHandle_t* pDVHandle = nullptr;
+
+	if (pResourceManager->CreateDynamicVertexBuffer(sizeof(Vertex_t), uVerticeNum, &tVBView, &pVertexBuffer))
+	{
+		_pMeshes[0].pVB = pVertexBuffer;
+		_pMeshes[0].tVBView = tVBView;
+
+		pDVHandle = new DynamicVertexBufferHandle_t;
+		pDVHandle->pUploadBuffer = pVertexBuffer;
+		pDVHandle->uSizePerVertex = sizeof(Vertex_t);
+		pDVHandle->uVertexNum = uVerticeNum;
+	}
+
+	if (pResourceManager->CreateIndexBuffer(uIndiceNum, &tIBView, &pIndexBuffer, pIndices))
+	{
+		_pMeshes[0].pIB = pIndexBuffer;
+		_pMeshes[0].tIBView = tIBView;
+		_pMeshes[0].uVertexCountPerInstance = uVerticeNum;
+		_pMeshes[0].uIndexCountPerInstance = uIndiceNum;
+	}
+
+	return pDVHandle;
 }
 
 AkBool FBasicMeshObject::CreateCommonResources()

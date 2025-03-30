@@ -20,6 +20,8 @@ struct RenderMeshObjParam_t
 {
 	Matrix mWorld = Matrix();
 	AkBool bDrawNormal = AK_FALSE;
+	Vector3 vClipMin = Vector3(0.0f);
+	Vector3 vClipMax = Vector3(0.0f);
 };
 
 struct RenderSkinnedMeshObjParam_t
