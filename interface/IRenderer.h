@@ -13,6 +13,7 @@ interface IMeshObject : public IUnknown
 	virtual void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO) = 0;
 	virtual void EnableWireFrame() = 0;
 	virtual void DisableWireFrame() = 0;
+	virtual void DestoryDynamicVertexBuferHandle(void* pDVHandle) = 0;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
@@ -117,7 +118,7 @@ interface IRenderer : public IUnknown
 	virtual void DestroyTexture(void* pTexHandle) = 0;
 	virtual void DestroyFontObject(void* pFontHandle) = 0;
 	virtual void DestroyDynamicVertex(void* pDVHandle) = 0;
-	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Vector3* pClipMin = nullptr, const Vector3* pClipMax = nullptr) = 0;
+	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) = 0;
@@ -136,6 +137,8 @@ interface IRenderer : public IUnknown
 	virtual void RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matrix* pWorldMat) = 0;
 	virtual void RenderReflectionOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderReflectionOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBoneTransform) = 0;
+	virtual void RenderReflectionOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat) = 0;
+	virtual void RenderReflectionOfSkybox(ISkybox* pSkybox, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) = 0;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) = 0;
 	virtual void RotateXCamera(AkF32 fRadian) = 0;
 	virtual void RotateYCamera(AkF32 fRadian) = 0;

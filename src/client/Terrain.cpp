@@ -83,6 +83,8 @@ void Terrain::RenderShadowMaps()
 void Terrain::Render()
 {
 	GRenderer->RenderTerrain(_pTerrain, &_pTransform->GetWorldTransform(), nullptr);
+
+	GRenderer->RenderReflectionOfTerrain(_pTerrain, &_pTransform->GetWorldTransform());
 }
 
 void Terrain::OnCollision(Collider* pOther)

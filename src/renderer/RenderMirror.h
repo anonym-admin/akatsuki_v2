@@ -44,7 +44,8 @@ private:
 private:
 	static ID3D12RootSignature* sm_pRootSignature;
 	static ID3D12PipelineState* sm_pStencilMaskPSO;
-	static ID3D12PipelineState* sm_pAccumulatePSO;
+	static ID3D12PipelineState* sm_pMirrorBlendPSO;
+	static ID3D12PipelineState* sm_pBasicSolidPSO;
 	static AkU32 sm_uInitRefCount;
 	static Mesh_t* sm_pMesh;
 	static MaterialConstantBuffer_t* sm_pMaterial;
@@ -55,5 +56,8 @@ private:
 	AkU32 _uAllocatedSize = 0;
 	AkU32 _uReadBufferPos = 0;
 	AkU32 _uItemCount = 0;
+
+public:
+	AkF32 _fAlpha = 0.8f;
 };
 

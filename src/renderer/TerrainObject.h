@@ -23,6 +23,7 @@ public:
     void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, void* pBrush);
     void DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
     void DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
+    void DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
     virtual AkBool CreateStaticMeshBuffers(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
     virtual void* CreateDynamicMeshBuffers(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
@@ -37,6 +38,7 @@ public:
 
 private:
     void CleanUp();
+
     DynamicVertexBufferHandle_t* CreateDynamicVertexAndIndexBuffer(VertexNormalTexcoordTangentAlpha_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum);
     AkBool CreateCommonResources();
     AkBool CreateRootSignature();
@@ -53,6 +55,7 @@ private:
     static ID3D12PipelineState* sm_pBasicWirePSO;
     static ID3D12PipelineState* sm_pNormalPSO;
     static ID3D12PipelineState* sm_pDepthOnlyPSO;
+    static ID3D12PipelineState* sm_pDrawMaskedSolidPSO;
 
 protected:
     static AkU32 sm_uInitRefCount;

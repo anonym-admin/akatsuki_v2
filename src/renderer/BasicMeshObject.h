@@ -31,6 +31,7 @@ public:
     virtual void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO) override;
     virtual void EnableWireFrame() override { _bIsWire = AK_TRUE; }
     virtual void DisableWireFrame() override { _bIsWire = AK_FALSE; }
+    virtual void DestoryDynamicVertexBuferHandle(void* pDVHandle) override;
     virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
     virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
     virtual ULONG __stdcall Release(void) override;

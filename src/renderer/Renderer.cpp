@@ -344,20 +344,20 @@ void FRenderer::EndRender()
 #endif
 
 	// Render Particle.
+	_pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-	_pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	// Render Mirror.
+	_pRenderMirror->BeginMirrorRender(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 	
-	//// Render Mirror.
-	//_pRenderMirror->BeginMirrorRender(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
-	//
-	//pCmdList = pCmdListPool->GetCurrentCmdList();
-	//pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	pCmdList = pCmdListPool->GetCurrentCmdList();
+	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-	//_pRenderMirror->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+	_pRenderMirror->Process(2, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 
-	//_pRenderMirror->EndMirrorRender(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+	_pRenderMirror->EndMirrorRender(3, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 
 	pCmdList = pCmdListPool->GetCurrentCmdList();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hBackBufferRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize);
@@ -726,14 +726,12 @@ void FRenderer::DestroyDynamicVertex(void* pDVHandle)
 	}
 }
 
-void FRenderer::RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Vector3* pClipMin, const Vector3* pClipMax)
+void FRenderer::RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ;
 	tItem.pObjHandle = pMeshObj;
 	tItem.tMeshObjParam.mWorld = *pWorldMat;
-	tItem.tMeshObjParam.vClipMin = pClipMin ? *pClipMin : Vector3(0.0f);
-	tItem.tMeshObjParam.vClipMax = pClipMax ? *pClipMax : Vector3(0.0f);
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
 	{
@@ -1036,6 +1034,35 @@ void FRenderer::RenderReflectionOfSkinnedMeshObject(IMeshObject* pMeshObj, const
 	tItem.pObjHandle = pMeshObj;
 	tItem.tSkinnedMeshObjParam.mWorld = *pWorldMat;
 	tItem.tSkinnedMeshObjParam.pBonesTransform = pBoneTransform;
+
+	if (!_pRenderMirror->Add(&tItem))
+	{
+		__debugbreak();
+	}
+}
+
+void FRenderer::RenderReflectionOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ_REFL;
+	tItem.pObjHandle = pTerrain;
+	tItem.tTerrianParam.mWorld = *pWorldMat;
+
+	if (!_pRenderMirror->Add(&tItem))
+	{
+		__debugbreak();
+	}
+}
+
+void FRenderer::RenderReflectionOfSkybox(ISkybox* pSkybox, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKYBOX_OBJ_REFL;
+	tItem.pObjHandle = pSkybox;
+	tItem.tSkyboxObjParam.mWorld = *pWorldMat;
+	tItem.tSkyboxObjParam.pEnvHDR = pEnvHDR;
+	tItem.tSkyboxObjParam.pDiffuseHDR = pDiffuseHDR;
+	tItem.tSkyboxObjParam.pSpecularHDR = pSpecularHDR;
 
 	if (!_pRenderMirror->Add(&tItem))
 	{

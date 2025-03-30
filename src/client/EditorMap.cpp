@@ -135,16 +135,9 @@ void EditorMap::Render()
 
 	GRenderer->RenderOcean(_pOcean, GTimer->GetTotalTime(), &world);
 
-
 	_mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
 
-	Vector3 vTempMin = Vector3(-0.25f);
-	Vector3 vTempMax = Vector3(0.25f);
-
-	vMin = Vector3::Transform(vTempMin, Matrix::CreateTranslation(Vector3(0.3f, 1.0f, 0.0f)));
-	vMax = Vector3::Transform(vTempMax, Matrix::CreateTranslation(Vector3(0.3f, 1.0f, 0.0f)));
-
-	GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow, &vMin, &vMax);
+	GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
 }
 
 void EditorMap::RenderShadowMaps()
@@ -412,6 +405,11 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 
 void EditorMap::CleanUp()
 {
+	if (_pCSGDBHandle)
+	{
+		_pCSGCube->DestoryDynamicVertexBuferHandle(_pCSGDBHandle);
+		_pCSGDBHandle = nullptr;
+	}
 	if (_pCube)
 	{
 		GeometryGenerator::DestroyGeometry(_pCube, 1);

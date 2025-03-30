@@ -1101,6 +1101,14 @@ AkBool FBasicMeshObject::UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF
 	return AK_TRUE;
 }
 
+void FBasicMeshObject::DestoryDynamicVertexBuferHandle(void* pDVHandle)
+{
+	if (pDVHandle)
+	{
+		delete pDVHandle;
+	}
+}
+
 HRESULT __stdcall FBasicMeshObject::QueryInterface(REFIID riid, void** ppvObject)
 {
 	return E_NOTIMPL;

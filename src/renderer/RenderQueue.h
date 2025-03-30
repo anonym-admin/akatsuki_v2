@@ -14,14 +14,14 @@ enum class RENDER_ITEM_TYPE
 
 	RENDER_ITEM_TYPE_MESH_OBJ_REFL,
 	RENDER_ITEM_TYPE_SKINNED_MESH_OBJ_REFL,
+	RENDER_ITEM_TYPE_SKYBOX_OBJ_REFL,
+	RENDER_ITEM_TYPE_TERRAIN_OBJ_REFL,
 };
 
 struct RenderMeshObjParam_t
 {
 	Matrix mWorld = Matrix();
 	AkBool bDrawNormal = AK_FALSE;
-	Vector3 vClipMin = Vector3(0.0f);
-	Vector3 vClipMax = Vector3(0.0f);
 };
 
 struct RenderSkinnedMeshObjParam_t

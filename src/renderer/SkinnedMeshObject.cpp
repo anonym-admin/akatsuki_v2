@@ -830,7 +830,13 @@ void FSkinnedMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsComman
 		pTexHandle = _pMeshes[i].pHeightTextureHandle;
 		if (pTexHandle)
 		{
+			if (pTexHandle->pTextureResource)
+				pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pTexHandle->pTextureResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE));
+
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			if (pTexHandle->pTextureResource)
+				pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pTexHandle->pTextureResource, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 		}
 		else
 		{

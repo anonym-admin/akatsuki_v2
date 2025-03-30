@@ -15,6 +15,7 @@ SkyboxObject
 AkU32 FSkyboxObject::sm_uInitRefCount;
 ID3D12RootSignature* FSkyboxObject::sm_pRootSignature;
 ID3D12PipelineState* FSkyboxObject::sm_pSkyboxPSO;
+ID3D12PipelineState* FSkyboxObject::sm_pDrawMaskedSolidPSO;
 
 ID3D12Resource* FSkyboxObject::sm_pVertexBuffer;
 D3D12_VERTEX_BUFFER_VIEW FSkyboxObject::sm_tVertexBufferView;
@@ -39,7 +40,7 @@ AkBool FSkyboxObject::Initialize(FRenderer* pRenderer)
 	return bResult;
 }
 
-void FSkyboxObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, TextureHandle_t* pEnvHDR, TextureHandle_t* pDiffuseHDR, TextureHandle_t* pSpecular)
+void FSkyboxObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, TextureHandle_t* pEnvHDR, TextureHandle_t* pDiffuseHDR, TextureHandle_t* pSpecularHDR)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
@@ -81,13 +82,79 @@ void FSkyboxObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList
 	pDevice->CopyDescriptorsSimple(1, hDest, pDiffuseHDR->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
 
-	pDevice->CopyDescriptorsSimple(1, hDest, pSpecular->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	pDevice->CopyDescriptorsSimple(1, hDest, pSpecularHDR->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	hDest.Offset(1, uDescriptorSize);
 
 	// Set RootSignature.
 	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
 	pCmdList->SetPipelineState(sm_pSkyboxPSO);
+
+	// Obj (root param 0)
+	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
+
+	hGPU.Offset(1, uDescriptorSize);
+
+	// Obj (root param 1)
+	pCmdList->SetGraphicsRootDescriptorTable(1, hGPU);
+
+	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pCmdList->IASetVertexBuffers(0, 1, &sm_tVertexBufferView);
+	pCmdList->IASetIndexBuffer(&sm_tIndexBufferView);
+	pCmdList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+}
+
+void FSkyboxObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, TextureHandle_t* pEnvHDR, TextureHandle_t* pDiffuseHDR, TextureHandle_t* pSpecularHDR)
+{
+	pCmdList->OMSetStencilRef(1);
+
+	ID3D12Device* pDevice = _pRenderer->GetDevice();
+	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
+	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
+	FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
+	FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
+	AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + (MAX_MESH_COUNT_PER_OBJ * DESCRIPTOR_COUNT_PER_MESH);
+
+	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
+	{
+		__debugbreak();
+		return;
+	}
+
+	CBContainer_t* pGlobalCBContainer = pGlobalCBPool->Alloc();
+	if (!pGlobalCBContainer)
+	{
+		__debugbreak();
+		return;
+	}
+
+	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
+	_pRenderer->GetRelectionViewProjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
+	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
+
+	// Per Obj (b0).
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
+	pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	// Per Mesh
+	pDevice->CopyDescriptorsSimple(1, hDest, pEnvHDR->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	pDevice->CopyDescriptorsSimple(1, hDest, pDiffuseHDR->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	pDevice->CopyDescriptorsSimple(1, hDest, pSpecularHDR->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	hDest.Offset(1, uDescriptorSize);
+
+	// Set RootSignature.
+	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
+	pCmdList->SetPipelineState(sm_pDrawMaskedSolidPSO);
 
 	// Obj (root param 0)
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
@@ -219,10 +286,10 @@ AkBool FSkyboxObject::CreateRootSignature()
 
 AkBool FSkyboxObject::CreatePipelineState()
 {
-	ID3D12Device* pD3DDeivce = _pRenderer->GetDevice();
+	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
-	ID3DBlob* pVertexShader = nullptr;
-	ID3DBlob* pPixelShader = nullptr;
+	ID3DBlob* pSkyboxVS = nullptr;
+	ID3DBlob* pSkyboxPS = nullptr;
 
 
 #if defined(_DEBUG)
@@ -234,7 +301,7 @@ AkBool FSkyboxObject::CreatePipelineState()
 	//m_pRenderer->SetCurrentPathForShader();
 
 	ID3DBlob* pErrorBlob = nullptr;
-	if (FAILED(D3DCompileFromFile(L"../../shader/Skybox.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", compileFlags, 0, &pVertexShader, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Skybox.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", compileFlags, 0, &pSkyboxVS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -243,7 +310,7 @@ AkBool FSkyboxObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
-	if (FAILED(D3DCompileFromFile(L"../../shader/Skybox.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", compileFlags, 0, &pPixelShader, &pErrorBlob)))
+	if (FAILED(D3DCompileFromFile(L"../../shader/Skybox.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", compileFlags, 0, &pSkyboxPS, &pErrorBlob)))
 	{
 		if (pErrorBlob != nullptr)
 		{
@@ -259,41 +326,61 @@ AkBool FSkyboxObject::CreatePipelineState()
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	};
 
-
 	// Describe and create the graphics pipeline state object (PSO).
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC tOpaquePsoDesc = {};
-	tOpaquePsoDesc.InputLayout = { tInputElementDescs, _countof(tInputElementDescs) };
-	tOpaquePsoDesc.pRootSignature = sm_pRootSignature;
-	tOpaquePsoDesc.VS = CD3DX12_SHADER_BYTECODE(pVertexShader->GetBufferPointer(), pVertexShader->GetBufferSize());
-	tOpaquePsoDesc.PS = CD3DX12_SHADER_BYTECODE(pPixelShader->GetBufferPointer(), pPixelShader->GetBufferSize());
-	tOpaquePsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	tOpaquePsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	tOpaquePsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	tOpaquePsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-	tOpaquePsoDesc.DepthStencilState.StencilEnable = FALSE;
-	tOpaquePsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	//tOpaquePsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
-	tOpaquePsoDesc.SampleMask = UINT_MAX;
-	tOpaquePsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	tOpaquePsoDesc.NumRenderTargets = 1;
-	tOpaquePsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
-	tOpaquePsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	tOpaquePsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
-	tOpaquePsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
-	if (FAILED(pD3DDeivce->CreateGraphicsPipelineState(&tOpaquePsoDesc, IID_PPV_ARGS(&sm_pSkyboxPSO))))
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC tPsoDesc = {};
+	tPsoDesc.InputLayout = { tInputElementDescs, _countof(tInputElementDescs) };
+	tPsoDesc.pRootSignature = sm_pRootSignature;
+	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pSkyboxVS->GetBufferPointer(), pSkyboxVS->GetBufferSize());
+	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pSkyboxPS->GetBufferPointer(), pSkyboxPS->GetBufferSize());
+	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	tPsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
+	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	tPsoDesc.SampleMask = UINT_MAX;
+	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	tPsoDesc.NumRenderTargets = 1;
+	tPsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
+	tPsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	tPsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
+	tPsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pSkyboxPSO))))
 	{
 		__debugbreak();
 	}
 
-	if (pVertexShader)
+	// Stencil 에 1로 표기 된 곳을 랜더링.
+	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pSkyboxVS->GetBufferPointer(), pSkyboxVS->GetBufferSize());
+	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pSkyboxPS->GetBufferPointer(), pSkyboxPS->GetBufferSize());
+	tPsoDesc.NumRenderTargets = 1;
+	tPsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
+	tPsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	tPsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
+	tPsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
+	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	tPsoDesc.RasterizerState.FrontCounterClockwise = TRUE;
+	tPsoDesc.DepthStencilState.StencilEnable = TRUE;
+	tPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	const D3D12_DEPTH_STENCILOP_DESC tDefaultStencilOp =
+	{ D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_COMPARISON_FUNC_EQUAL };
+	tPsoDesc.DepthStencilState.FrontFace = tDefaultStencilOp;
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pDrawMaskedSolidPSO))))
 	{
-		pVertexShader->Release();
-		pVertexShader = nullptr;
+		__debugbreak();
 	}
-	if (pPixelShader)
+
+	if (pSkyboxVS)
 	{
-		pPixelShader->Release();
-		pPixelShader = nullptr;
+		pSkyboxVS->Release();
+		pSkyboxVS = nullptr;
+	}
+	if (pSkyboxPS)
+	{
+		pSkyboxPS->Release();
+		pSkyboxPS = nullptr;
 	}
 	return AK_TRUE;
 }
@@ -384,6 +471,8 @@ AkBool FSkyboxObject::CreateMesh()
 	pIndices[34] = 22;
 	pIndices[35] = 23;
 
+	std::reverse(pIndices, pIndices + 36);
+
 	if (FAILED(pResourceManager->CreateVertexBuffer(sizeof(Vector3), uVerticesNum, &sm_tVertexBufferView, &sm_pVertexBuffer, pVertices)))
 	{
 		__debugbreak();
@@ -422,6 +511,11 @@ void FSkyboxObject::DestroyCommonResources()
 		{
 			sm_pSkyboxPSO->Release();
 			sm_pSkyboxPSO = nullptr;
+		}
+		if (sm_pDrawMaskedSolidPSO)
+		{
+			sm_pDrawMaskedSolidPSO->Release();
+			sm_pDrawMaskedSolidPSO = nullptr;
 		}
 		if (sm_pVertexBuffer)
 		{

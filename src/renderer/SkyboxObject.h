@@ -23,6 +23,7 @@ public:
 
 	AkBool Initialize(FRenderer* pRenderer);
 	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, TextureHandle_t* pEnvHDR, TextureHandle_t* pDiffuseHDR, TextureHandle_t* pSpecularHDR);
+	void DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, TextureHandle_t* pEnvHDR, TextureHandle_t* pDiffuseHDR, TextureHandle_t* pSpecularHDR);
 
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
@@ -35,6 +36,7 @@ private:
 	AkBool CreateRootSignature();
 	AkBool CreatePipelineState();
 	AkBool CreateMesh();
+
 	void DestroyCommonResources();
 	void DestroyRootSignature();
 	void DestroyPipelineState();
@@ -47,6 +49,7 @@ private:
 	static AkU32 sm_uInitRefCount;
 	static ID3D12RootSignature* sm_pRootSignature;
 	static ID3D12PipelineState* sm_pSkyboxPSO;
+	static ID3D12PipelineState* sm_pDrawMaskedSolidPSO;
 
 	// vertex data
 	static ID3D12Resource* sm_pVertexBuffer;

@@ -165,6 +165,7 @@ void SceneInGame::Render()
 
 	// Render skybox.
 	GRenderer->RenderSkybox(_pSkyboxObj, &_mSkyboxTransform, pEnv->pTexHandle, pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle);
+	GRenderer->RenderReflectionOfSkybox(_pSkyboxObj, &_mSkyboxTransform, pEnv->pTexHandle, pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle);
 }
 
 void SceneInGame::Load(const wchar_t* wcSceneFile)

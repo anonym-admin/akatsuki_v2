@@ -66,7 +66,7 @@ public:
 	virtual void DestroyTexture(void* pTexHandle) override;
 	virtual void DestroyFontObject(void* pFontHandle) override;
 	virtual void DestroyDynamicVertex(void* pDVHandle) override;
-	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Vector3* pClipMin = nullptr, const Vector3* pClipMax = nullptr) override;
+	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) override;
@@ -85,6 +85,8 @@ public:
 	virtual void RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matrix* pWorldMat) override;
 	virtual void RenderReflectionOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderReflectionOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBoneTransform) override;
+	virtual void RenderReflectionOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat) override;
+	virtual void RenderReflectionOfSkybox(ISkybox* pSkybox, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) override;
 	virtual void RotateXCamera(AkF32 fRadian) override;
 	virtual void RotateYCamera(AkF32 fRadian) override;
 	virtual void RotateYawPitchRollCamera(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll) override;

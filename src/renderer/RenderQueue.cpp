@@ -84,7 +84,7 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				}
 				else
 				{
-					pMeshObj->Draw(uThreadIndex, pCmdList, &pItem->tMeshObjParam.mWorld, &pItem->tMeshObjParam.vClipMin, &pItem->tMeshObjParam.vClipMax);
+					pMeshObj->Draw(uThreadIndex, pCmdList, &pItem->tMeshObjParam.mWorld);
 				}
 			}
 			break;

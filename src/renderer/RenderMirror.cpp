@@ -8,6 +8,8 @@
 #include "ResourceManager.h"
 #include "BasicMeshObject.h"
 #include "SkinnedMeshObject.h"
+#include "TerrainObject.h"
+#include "SkyboxObject.h"
 #include "TextureManager.h"
 
 /*
@@ -17,7 +19,8 @@ Render Mirror Pass
 */
 
 ID3D12PipelineState* FRenderMirror::sm_pStencilMaskPSO;
-ID3D12PipelineState* FRenderMirror::sm_pAccumulatePSO;
+ID3D12PipelineState* FRenderMirror::sm_pMirrorBlendPSO;
+ID3D12PipelineState* FRenderMirror::sm_pBasicSolidPSO;
 ID3D12RootSignature* FRenderMirror::sm_pRootSignature;
 AkU32 FRenderMirror::sm_uInitRefCount;
 Mesh_t* FRenderMirror::sm_pMesh;
@@ -65,9 +68,14 @@ AkBool FRenderMirror::Add(const RenderItem_t* pItem)
 
 void FRenderMirror::BeginMirrorRender(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
 {
+	if (_fAlpha == 1.0f)
+	{
+		return;
+	}
+
 	ID3D12GraphicsCommandList* pCmdList = nullptr;
 
-	pCmdList = pCmdListPool->GetCurrentCmdList();	
+	pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->OMSetStencilRef(1);
 	pCmdList->RSSetViewports(1, pViewport);
 	pCmdList->RSSetScissorRects(1, pScissorRect);
@@ -306,243 +314,495 @@ void FRenderMirror::EndMirrorRender(DWORD uThreadIndex, FCommandListPool* pCmdLi
 {
 	ID3D12GraphicsCommandList* pCmdList = nullptr;
 
-	pCmdList = pCmdListPool->GetCurrentCmdList();
-	pCmdList->OMSetStencilRef(1);
-	pCmdList->RSSetViewports(1, pViewport);
-	pCmdList->RSSetScissorRects(1, pScissorRect);
-	pCmdList->OMSetRenderTargets(1, &hRTV, AK_FALSE, &hDSV);
-
-	// Stencil 에 1로 마킹
-	ID3D12Device* pDevice = _pRenderer->GetDevice();
-	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
-	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
-	FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
-	FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
-	FConstantBufferPool* pMaterialCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MATERIAL);
-	AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
-	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
-	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + DESCRIPTOR_COUNT_PER_MESH;
-
-	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
+	if (_fAlpha < 1.0f)
 	{
-		__debugbreak();
-		return;
-	}
+		pCmdList = pCmdListPool->GetCurrentCmdList();
+		pCmdList->OMSetStencilRef(1);
+		pCmdList->RSSetViewports(1, pViewport);
+		pCmdList->RSSetScissorRects(1, pScissorRect);
+		pCmdList->OMSetRenderTargets(1, &hRTV, AK_FALSE, &hDSV);
 
-	CBContainer_t* pGlobalCBContainer = pGlobalCBPool->Alloc();
-	if (!pGlobalCBContainer)
-	{
-		__debugbreak();
-		return;
-	}
+		const AkF32 fBlendColor[4] = { _fAlpha, _fAlpha, _fAlpha, 1.0f };
+		pCmdList->OMSetBlendFactor(fBlendColor);
 
-	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
-	_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
-	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
+		// Stencil 에 1로 마킹
+		ID3D12Device* pDevice = _pRenderer->GetDevice();
+		FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
+		ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
+		FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
+		FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
+		FConstantBufferPool* pMaterialCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MATERIAL);
+		AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
 
-	// Per Obj (b0).
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
-	pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	hDest.Offset(1, uDescriptorSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
+		CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
+		AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + DESCRIPTOR_COUNT_PER_MESH;
 
-	CBContainer_t* pMeshCBContainer = pMeshCBPool->Alloc();
-	if (!pMeshCBContainer)
-	{
-		__debugbreak();
-		return;
-	}
-
-	MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr);
-	Matrix mWorldRow = Matrix(); // TODO => Mirror 의 Transform 설정 함수 필요.
-	pMeshConstantBuffer->mWorld = mWorldRow.Transpose();
-	mWorldRow.Translation(Vector3(0.0f));
-	mWorldRow.Invert().Transpose();
-	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
-
-	// Per Obj (b1).
-	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	hDest.Offset(1, uDescriptorSize);
-
-	// Per Mesh
-	TextureHandle_t* pIrradianceTexHandle = nullptr;
-	TextureHandle_t* pSpecularTexHandle = nullptr;
-	TextureHandle_t* pBrdfTexHandle = nullptr;
-	_pRenderer->GetIBLTexture(&pIrradianceTexHandle, &pSpecularTexHandle, &pBrdfTexHandle);
-
-	for (AkU32 i = 0; i < 1; i++)
-	{
-		CBContainer_t* pMaterialCBContainer = pMaterialCBPool->Alloc();
-		if (!pMaterialCBContainer)
+		if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
 		{
 			__debugbreak();
 			return;
 		}
 
-		MaterialConstantBuffer_t* pMaterialConstantBuffer = reinterpret_cast<MaterialConstantBuffer_t*>(pMaterialCBContainer->pSystemMemAddr);
-		memcpy(pMaterialConstantBuffer, sm_pMaterial, sizeof(MaterialConstantBuffer_t));
-
-		// Material CB(b2)
-		pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		hDest.Offset(1, uDescriptorSize);
-
-		// Albedo
-		TextureHandle_t* pTexHandle = sm_pMesh->pAldedoTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
+		CBContainer_t* pGlobalCBContainer = pGlobalCBPool->Alloc();
+		if (!pGlobalCBContainer)
 		{
 			__debugbreak();
+			return;
 		}
+
+		GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
+		_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
+		_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
+
+		// Per Obj (b0).
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
+		pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
 
-		// Normal
-		pTexHandle = sm_pMesh->pNormalTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
+		CBContainer_t* pMeshCBContainer = pMeshCBPool->Alloc();
+		if (!pMeshCBContainer)
 		{
 			__debugbreak();
+			return;
 		}
+
+		MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr);
+		Matrix mWorldRow = Matrix(); // TODO => Mirror 의 Transform 설정 함수 필요.
+		pMeshConstantBuffer->mWorld = mWorldRow.Transpose();
+		mWorldRow.Translation(Vector3(0.0f));
+		mWorldRow.Invert().Transpose();
+		pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
+
+		// Per Obj (b1).
+		pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
 
-		// Emissive
-		pTexHandle = sm_pMesh->pEmissiveTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
+		// Per Mesh
+		TextureHandle_t* pIrradianceTexHandle = nullptr;
+		TextureHandle_t* pSpecularTexHandle = nullptr;
+		TextureHandle_t* pBrdfTexHandle = nullptr;
+		_pRenderer->GetIBLTexture(&pIrradianceTexHandle, &pSpecularTexHandle, &pBrdfTexHandle);
 
-		// Metallic
-		pTexHandle = sm_pMesh->pMetallicTextureHandle;
-		if (pTexHandle)
+		for (AkU32 i = 0; i < 1; i++)
 		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Roughness
-		pTexHandle = sm_pMesh->pRoughnessTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// AO
-		pTexHandle = sm_pMesh->pAoTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Height
-		pTexHandle = sm_pMesh->pHeightTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Irradiance IBL.
-		if (pIrradianceTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pIrradianceTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			//__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Specular IBL
-		if (pSpecularTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pSpecularTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			//__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Brdf Tex
-		if (pBrdfTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pBrdfTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			//__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Shadow Map
-		for (AkU32 uCascadeIndex = 0; uCascadeIndex < FRenderer::CASCADE_SHADOW_MAP_LEVEL; uCascadeIndex++)
-		{
-			D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
-			_pRenderer->GetShadowMapSrv(&hSRV, uCascadeIndex);
-			if (hSRV.ptr)
+			CBContainer_t* pMaterialCBContainer = pMaterialCBPool->Alloc();
+			if (!pMaterialCBContainer)
 			{
-				pDevice->CopyDescriptorsSimple(1, hDest, hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				__debugbreak();
+				return;
+			}
+
+			MaterialConstantBuffer_t* pMaterialConstantBuffer = reinterpret_cast<MaterialConstantBuffer_t*>(pMaterialCBContainer->pSystemMemAddr);
+			memcpy(pMaterialConstantBuffer, sm_pMaterial, sizeof(MaterialConstantBuffer_t));
+
+			// Material CB(b2)
+			pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			hDest.Offset(1, uDescriptorSize);
+
+			// Albedo
+			TextureHandle_t* pTexHandle = sm_pMesh->pAldedoTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 			}
 			else
 			{
-				AkI32 a = 3;
+				__debugbreak();
 			}
 			hDest.Offset(1, uDescriptorSize);
+
+			// Normal
+			pTexHandle = sm_pMesh->pNormalTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Emissive
+			pTexHandle = sm_pMesh->pEmissiveTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Metallic
+			pTexHandle = sm_pMesh->pMetallicTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Roughness
+			pTexHandle = sm_pMesh->pRoughnessTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// AO
+			pTexHandle = sm_pMesh->pAoTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Height
+			pTexHandle = sm_pMesh->pHeightTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Irradiance IBL.
+			if (pIrradianceTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pIrradianceTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				//__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Specular IBL
+			if (pSpecularTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pSpecularTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				//__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Brdf Tex
+			if (pBrdfTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pBrdfTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				//__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Shadow Map
+			for (AkU32 uCascadeIndex = 0; uCascadeIndex < FRenderer::CASCADE_SHADOW_MAP_LEVEL; uCascadeIndex++)
+			{
+				D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
+				_pRenderer->GetShadowMapSrv(&hSRV, uCascadeIndex);
+				if (hSRV.ptr)
+				{
+					pDevice->CopyDescriptorsSimple(1, hDest, hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+				else
+				{
+					AkI32 a = 3;
+				}
+				hDest.Offset(1, uDescriptorSize);
+			}
 		}
+
+		// Set RootSignature.
+		pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+		pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
+		pCmdList->SetPipelineState(sm_pMirrorBlendPSO);
+
+		// Obj (root param 0)
+		pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
+		pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
+		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
+
+		pCmdList->IASetVertexBuffers(0, 1, &sm_pMesh->tVBView);
+		pCmdList->IASetIndexBuffer(&sm_pMesh->tIBView);
+		pCmdList->DrawIndexedInstanced(sm_pMesh->uIndexCountPerInstance, 1, 0, 0, 0);
+
+		pCmdListPool->Close();
+		pCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList**)&pCmdList);
+		pCmdList = nullptr;
 	}
+	else if (_fAlpha == 1.0f)
+	{
+		pCmdList = pCmdListPool->GetCurrentCmdList();
+		pCmdList->RSSetViewports(1, pViewport);
+		pCmdList->RSSetScissorRects(1, pScissorRect);
+		pCmdList->OMSetRenderTargets(1, &hRTV, AK_FALSE, &hDSV);
 
-	// Set RootSignature.
-	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
-	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
-	pCmdList->SetPipelineState(sm_pAccumulatePSO);
+		// Stencil 에 1로 마킹
+		ID3D12Device* pDevice = _pRenderer->GetDevice();
+		FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
+		ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
+		FConstantBufferPool* pGlobalCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_GLOBAL);
+		FConstantBufferPool* pMeshCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MESH);
+		FConstantBufferPool* pMaterialCBPool = _pRenderer->GetConstantBufferPool(uThreadIndex, CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MATERIAL);
+		AkU32 uDescriptorSize = pDescriptorPool->GetDescriptorTypeSize();
 
-	// Obj (root param 0)
-	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
-	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
+		CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
+		AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + DESCRIPTOR_COUNT_PER_MESH;
 
-	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
-	pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
+		if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
+		{
+			__debugbreak();
+			return;
+		}
 
-	pCmdList->IASetVertexBuffers(0, 1, &sm_pMesh->tVBView);
-	pCmdList->IASetIndexBuffer(&sm_pMesh->tIBView);
-	pCmdList->DrawIndexedInstanced(sm_pMesh->uIndexCountPerInstance, 1, 0, 0, 0);
+		CBContainer_t* pGlobalCBContainer = pGlobalCBPool->Alloc();
+		if (!pGlobalCBContainer)
+		{
+			__debugbreak();
+			return;
+		}
 
-	pCmdListPool->Close();
-	pCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList**)&pCmdList);
+		GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
+		_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
+		_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
+
+		// Per Obj (b0).
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
+		pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		hDest.Offset(1, uDescriptorSize);
+
+		CBContainer_t* pMeshCBContainer = pMeshCBPool->Alloc();
+		if (!pMeshCBContainer)
+		{
+			__debugbreak();
+			return;
+		}
+
+		MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr);
+		Matrix mWorldRow = Matrix(); // TODO => Mirror 의 Transform 설정 함수 필요.
+		pMeshConstantBuffer->mWorld = mWorldRow.Transpose();
+		mWorldRow.Translation(Vector3(0.0f));
+		mWorldRow.Invert().Transpose();
+		pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
+
+		// Per Obj (b1).
+		pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+		hDest.Offset(1, uDescriptorSize);
+
+		// Per Mesh
+		TextureHandle_t* pIrradianceTexHandle = nullptr;
+		TextureHandle_t* pSpecularTexHandle = nullptr;
+		TextureHandle_t* pBrdfTexHandle = nullptr;
+		_pRenderer->GetIBLTexture(&pIrradianceTexHandle, &pSpecularTexHandle, &pBrdfTexHandle);
+
+		for (AkU32 i = 0; i < 1; i++)
+		{
+			CBContainer_t* pMaterialCBContainer = pMaterialCBPool->Alloc();
+			if (!pMaterialCBContainer)
+			{
+				__debugbreak();
+				return;
+			}
+
+			MaterialConstantBuffer_t* pMaterialConstantBuffer = reinterpret_cast<MaterialConstantBuffer_t*>(pMaterialCBContainer->pSystemMemAddr);
+			memcpy(pMaterialConstantBuffer, sm_pMaterial, sizeof(MaterialConstantBuffer_t));
+
+			// Material CB(b2)
+			pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			hDest.Offset(1, uDescriptorSize);
+
+			// Albedo
+			TextureHandle_t* pTexHandle = sm_pMesh->pAldedoTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Normal
+			pTexHandle = sm_pMesh->pNormalTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Emissive
+			pTexHandle = sm_pMesh->pEmissiveTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Metallic
+			pTexHandle = sm_pMesh->pMetallicTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Roughness
+			pTexHandle = sm_pMesh->pRoughnessTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// AO
+			pTexHandle = sm_pMesh->pAoTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Height
+			pTexHandle = sm_pMesh->pHeightTextureHandle;
+			if (pTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Irradiance IBL.
+			if (pIrradianceTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pIrradianceTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				//__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Specular IBL
+			if (pSpecularTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pSpecularTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				//__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Brdf Tex
+			if (pBrdfTexHandle)
+			{
+				pDevice->CopyDescriptorsSimple(1, hDest, pBrdfTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			}
+			else
+			{
+				//__debugbreak();
+			}
+			hDest.Offset(1, uDescriptorSize);
+
+			// Shadow Map
+			for (AkU32 uCascadeIndex = 0; uCascadeIndex < FRenderer::CASCADE_SHADOW_MAP_LEVEL; uCascadeIndex++)
+			{
+				D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
+				_pRenderer->GetShadowMapSrv(&hSRV, uCascadeIndex);
+				if (hSRV.ptr)
+				{
+					pDevice->CopyDescriptorsSimple(1, hDest, hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				}
+				else
+				{
+					AkI32 a = 3;
+				}
+				hDest.Offset(1, uDescriptorSize);
+			}
+		}
+
+		// Set RootSignature.
+		pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+		pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
+		pCmdList->SetPipelineState(sm_pBasicSolidPSO);
+
+		// Obj (root param 0)
+		pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
+		pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
+		for (AkU32 i = 0; i < 1; i++)
+		{
+			pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
+			hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
+
+			pCmdList->IASetVertexBuffers(0, 1, &sm_pMesh->tVBView);
+			pCmdList->IASetIndexBuffer(&sm_pMesh->tIBView);
+			pCmdList->DrawIndexedInstanced(sm_pMesh->uIndexCountPerInstance, 1, 0, 0, 0);
+		}
+
+		pCmdListPool->Close();
+		pCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList**)&pCmdList);
+		pCmdList = nullptr;
+	}
 }
 
 DWORD FRenderMirror::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
 {
+	if (_fAlpha == 1.0f)
+	{
+		return 0;
+	}
+
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
 	ID3D12GraphicsCommandList* ppCmdLists[64] = {};
@@ -561,23 +821,39 @@ DWORD FRenderMirror::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool,
 
 		switch (pItem->eItemType)
 		{
-		case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ_REFL:
-		{
-			FBasicMeshObject* pMeshObj = (FBasicMeshObject*)pItem->pObjHandle;
-			pMeshObj->DrawReflection(uThreadIndex, pCmdList, &pItem->tMeshObjParam.mWorld);
-		}
-		break;
-		case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ_REFL:
-		{
-			FSkinnedMeshObject* pMeshObj = (FSkinnedMeshObject*)pItem->pObjHandle;
-			pMeshObj->DrawReflection(uThreadIndex, pCmdList, &pItem->tSkinnedMeshObjParam.mWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
-		}
-		break;
-		default:
-		{
-			__debugbreak();
-		}
-		break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ_REFL:
+			{
+				FBasicMeshObject* pMeshObj = (FBasicMeshObject*)pItem->pObjHandle;
+				pMeshObj->DrawReflection(uThreadIndex, pCmdList, &pItem->tMeshObjParam.mWorld);
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ_REFL:
+			{
+				FSkinnedMeshObject* pMeshObj = (FSkinnedMeshObject*)pItem->pObjHandle;
+				pMeshObj->DrawReflection(uThreadIndex, pCmdList, &pItem->tSkinnedMeshObjParam.mWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKYBOX_OBJ_REFL:
+			{
+				FSkyboxObject* pSkyboxObj = (FSkyboxObject*)pItem->pObjHandle;
+				TextureHandle_t* pEnvHDR = (TextureHandle_t*)pItem->tSkyboxObjParam.pEnvHDR;
+				TextureHandle_t* pDiffuseHDR = (TextureHandle_t*)pItem->tSkyboxObjParam.pDiffuseHDR;
+				TextureHandle_t* pSpecularHDR = (TextureHandle_t*)pItem->tSkyboxObjParam.pSpecularHDR;
+
+				pSkyboxObj->DrawReflection(uThreadIndex, pCmdList, &pItem->tSkyboxObjParam.mWorld, pEnvHDR, pDiffuseHDR, pSpecularHDR);
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ_REFL:
+			{
+				FTerrainObject* pTerrainObj = (FTerrainObject*)pItem->pObjHandle;
+				pTerrainObj->DrawReflection(uThreadIndex, pCmdList, &pItem->tTerrianParam.mWorld);
+			}
+			break;
+			default:
+			{
+				__debugbreak();
+			}
+			break;
 		}
 
 		dwProcessedCount++;
@@ -808,7 +1084,6 @@ AkBool FRenderMirror::CreatePipelineState()
 	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	tPsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	//psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	tPsoDesc.SampleMask = UINT_MAX;
 	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -825,7 +1100,6 @@ AkBool FRenderMirror::CreatePipelineState()
 	const D3D12_DEPTH_STENCILOP_DESC tDefaultStencilOp0 =
 	{ D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_REPLACE, D3D12_COMPARISON_FUNC_ALWAYS };
 	tPsoDesc.DepthStencilState.FrontFace = tDefaultStencilOp0;
-	// tPsoDesc.DepthStencilState.BackFace = tDefaultStencilOp0;
 	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pStencilMaskPSO))))
 	{
 		__debugbreak();
@@ -852,11 +1126,11 @@ AkBool FRenderMirror::CreatePipelineState()
 	D3D12_RENDER_TARGET_BLEND_DESC tTransparencyBlendDesc = {};
 	tTransparencyBlendDesc.BlendEnable = AK_TRUE;
 	tTransparencyBlendDesc.LogicOpEnable = AK_FALSE;
-	tTransparencyBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	tTransparencyBlendDesc.DestBlend = D3D12_BLEND_ONE;
+	tTransparencyBlendDesc.SrcBlend = D3D12_BLEND_BLEND_FACTOR;
+	tTransparencyBlendDesc.DestBlend = D3D12_BLEND_INV_BLEND_FACTOR;
 	tTransparencyBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
 	tTransparencyBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
-	tTransparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+	tTransparencyBlendDesc.DestBlendAlpha = D3D12_BLEND_ONE;
 	tTransparencyBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	tTransparencyBlendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
 	tTransparencyBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
@@ -864,7 +1138,28 @@ AkBool FRenderMirror::CreatePipelineState()
 	tAccumulatePSODesc.BlendState.AlphaToCoverageEnable = AK_TRUE;
 	tAccumulatePSODesc.BlendState.RenderTarget[0] = tTransparencyBlendDesc;
 
-	if (FAILED(pDevice->CreateGraphicsPipelineState(&tAccumulatePSODesc, IID_PPV_ARGS(&sm_pAccumulatePSO))))
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tAccumulatePSODesc, IID_PPV_ARGS(&sm_pMirrorBlendPSO))))
+	{
+		__debugbreak();
+	}
+
+	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pBasicVS->GetBufferPointer(), pBasicVS->GetBufferSize());
+	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pBasicPS->GetBufferPointer(), pBasicPS->GetBufferSize());
+	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	tPsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
+	//psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	tPsoDesc.SampleMask = UINT_MAX;
+	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	tPsoDesc.NumRenderTargets = 1;
+	tPsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
+	tPsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	tPsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
+	tPsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pBasicSolidPSO))))
 	{
 		__debugbreak();
 	}
@@ -915,6 +1210,16 @@ AkBool FRenderMirror::CreateMeshBuffers()
 	pVertices[1].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
 	pVertices[2].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
 	pVertices[3].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
+
+	pVertices[0].vTexCoord = Vector2(0.0f, 0.0f);
+	pVertices[1].vTexCoord = Vector2(1.0f, 0.0f);
+	pVertices[2].vTexCoord = Vector2(1.0f, 1.0f);
+	pVertices[3].vTexCoord = Vector2(0.0f, 1.0f);
+
+	pVertices[0].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pVertices[1].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pVertices[2].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pVertices[3].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
 
 	AkU32 pIndices[6] =
 	{
@@ -991,10 +1296,15 @@ void FRenderMirror::DestroyRootSignature()
 
 void FRenderMirror::DestroyPipelineState()
 {
-	if (sm_pAccumulatePSO)
+	if (sm_pBasicSolidPSO)
 	{
-		sm_pAccumulatePSO->Release();
-		sm_pAccumulatePSO = nullptr;
+		sm_pBasicSolidPSO->Release();
+		sm_pBasicSolidPSO = nullptr;
+	}
+	if (sm_pMirrorBlendPSO)
+	{
+		sm_pMirrorBlendPSO->Release();
+		sm_pMirrorBlendPSO = nullptr;
 	}
 	if (sm_pStencilMaskPSO)
 	{
