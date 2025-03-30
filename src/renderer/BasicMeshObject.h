@@ -48,11 +48,9 @@ private:
     static ID3D12RootSignature* sm_pRootSignature;
     static ID3D12PipelineState* sm_pBasicSolidPSO;
     static ID3D12PipelineState* sm_pBasicWirePSO;
-    static ID3D12PipelineState* sm_pStencilMaskPSO;
-    static ID3D12PipelineState* sm_pReflectSolidPSO;
-    static ID3D12PipelineState* sm_pReflectWirePSO;
     static ID3D12PipelineState* sm_pNormalPSO;
     static ID3D12PipelineState* sm_pDepthOnlyPSO;
+    static ID3D12PipelineState* sm_pDrawMaskedSolidPSO;
 
 protected:
     static AkU32 sm_uInitRefCount;

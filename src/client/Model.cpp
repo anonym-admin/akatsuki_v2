@@ -58,6 +58,9 @@ AkBool Model::Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector
 void Model::Render()
 {
 	GRenderer->RenderBasicMeshObject(_pMeshObj, &_mWorldRow);
+
+	// TODO
+	GRenderer->RenderReflectionOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
 void Model::RenderNormals()

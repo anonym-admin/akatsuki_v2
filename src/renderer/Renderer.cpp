@@ -20,6 +20,7 @@
 #include "PostProcess.h"
 #include "RenderUI.h"
 #include "RenderParticle.h"
+#include "RenderMirror.h"
 #include "Particle.h"
 #include "Environment.h"
 
@@ -219,6 +220,12 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 		__debugbreak();
 		return AK_FALSE;
 	}
+
+	if (!CreateRenderMirror())
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
 	
 	if (!CreateRenderUI())
 	{
@@ -337,9 +344,22 @@ void FRenderer::EndRender()
 #endif
 
 	// Render Particle.
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
 	_pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
 	
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	//// Render Mirror.
+	//_pRenderMirror->BeginMirrorRender(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+	//
+	//pCmdList = pCmdListPool->GetCurrentCmdList();
+	//pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	//_pRenderMirror->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+
+	//_pRenderMirror->EndMirrorRender(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+
+	pCmdList = pCmdListPool->GetCurrentCmdList();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hBackBufferRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize);
 
 	D3D12_RESOURCE_BARRIER pBarriers0[] =
@@ -353,7 +373,7 @@ void FRenderer::EndRender()
 	// Copy To Resolved Buffer.
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	
-	// Post Process	.
+	// Post Process.
 	_pPostProcess->Process(0, pCmdList, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
 
 	// MSAA 를 사용하지 않는 DSV Heap 영역에 접근
@@ -391,6 +411,7 @@ void FRenderer::EndRender()
 	}
 
 	_pRenderParticle->Reset();
+	_pRenderMirror->Reset();
 	_pRenderUI->Reset();
 }
 
@@ -993,6 +1014,33 @@ void FRenderer::RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matri
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
+void FRenderer::RenderReflectionOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ_REFL;
+	tItem.pObjHandle = pMeshObj;
+	tItem.tMeshObjParam.mWorld = *pWorldMat;
+
+	if (!_pRenderMirror->Add(&tItem))
+	{
+		__debugbreak();
+	}
+}
+
+void FRenderer::RenderReflectionOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBoneTransform)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ_REFL;
+	tItem.pObjHandle = pMeshObj;
+	tItem.tSkinnedMeshObjParam.mWorld = *pWorldMat;
+	tItem.tSkinnedMeshObjParam.pBonesTransform = pBoneTransform;
+
+	if (!_pRenderMirror->Add(&tItem))
+	{
+		__debugbreak();
+	}
+}
+
 void FRenderer::SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ)
 {
 	_vCamPos.x = fX;
@@ -1315,8 +1363,8 @@ void FRenderer::GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat)
 
 void FRenderer::GetRelectionViewProjMatrix(Matrix* pViewMat, Matrix* pProjMat)
 {
+	_tMirrorPlane = DirectX::SimpleMath::Plane(Vector3(0.0f), Vector3(0.0f, 0.0f, -1.0f));
 	Matrix mReflectionRow = Matrix::CreateReflection(_tMirrorPlane);
-
 	*pViewMat = (mReflectionRow * _mViewMat).Transpose();
 	*pProjMat = _mProjMat.Transpose();
 }
@@ -1408,6 +1456,8 @@ void FRenderer::CleanUp()
 	{
 		WaitForFenceValue(_u64FenceValue[i]);
 	}
+
+	DestroyRenderMirror();
 
 	for (AkU32 i = 0; i < _uRenderThreadCount; i++)
 	{
@@ -2019,6 +2069,12 @@ AkBool FRenderer::CreateRenderParticle()
 	return _pRenderParticle->Initialize(this, 256);
 }
 
+AkBool FRenderer::CreateRenderMirror()
+{
+	_pRenderMirror = new FRenderMirror;
+	return _pRenderMirror->Initialize(this, 4096);
+}
+
 void FRenderer::InitViewports(AkF32 fWidth, AkF32 fHeight)
 {
 	_tViewport.Width = fWidth;
@@ -2349,6 +2405,15 @@ void FRenderer::DestroyRenderParticle()
 	{
 		delete _pRenderParticle;
 		_pRenderParticle = nullptr;
+	}
+}
+
+void FRenderer::DestroyRenderMirror()
+{
+	if (_pRenderMirror)
+	{
+		delete _pRenderMirror;
+		_pRenderMirror = nullptr;
 	}
 }
 

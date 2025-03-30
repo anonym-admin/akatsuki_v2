@@ -17,9 +17,7 @@ AkU32 FBasicMeshObject::sm_uInitRefCount;
 ID3D12RootSignature* FBasicMeshObject::sm_pRootSignature;
 ID3D12PipelineState* FBasicMeshObject::sm_pBasicSolidPSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pBasicWirePSO;
-ID3D12PipelineState* FBasicMeshObject::sm_pStencilMaskPSO;
-ID3D12PipelineState* FBasicMeshObject::sm_pReflectSolidPSO;
-ID3D12PipelineState* FBasicMeshObject::sm_pReflectWirePSO;
+ID3D12PipelineState* FBasicMeshObject::sm_pDrawMaskedSolidPSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pNormalPSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pDepthOnlyPSO;
 
@@ -45,6 +43,9 @@ AkBool FBasicMeshObject::Initialize(FRenderer* pRenderer)
 
 void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
 {
+	// 1로 표기 된 곳에 물체들을 랜더링
+	pCmdList->OMSetStencilRef(1);
+
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
@@ -605,6 +606,8 @@ void FBasicMeshObject::DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const
 
 void FBasicMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat)
 {
+	pCmdList->OMSetStencilRef(1);
+
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
@@ -778,7 +781,13 @@ void FBasicMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 		pTexHandle = _pMeshes[i].pHeightTextureHandle;
 		if (pTexHandle)
 		{
+			if (pTexHandle->pTextureResource)
+				pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pTexHandle->pTextureResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE));
+
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			if (pTexHandle->pTextureResource)
+				pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pTexHandle->pTextureResource, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 		}
 		else
 		{
@@ -836,13 +845,10 @@ void FBasicMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 		}
 	}
 
-	// 1로 표기 된 곳에 물체들을 랜더링
-	pCmdList->OMSetStencilRef(1);
-
 	// Set RootSignature.
 	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
-	pCmdList->SetPipelineState(_bIsWire ? sm_pBasicWirePSO : sm_pBasicSolidPSO); // Wire Frame.
+	pCmdList->SetPipelineState(sm_pDrawMaskedSolidPSO); // Wire Frame.
 
 	// Obj (root param 0)
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
@@ -1231,7 +1237,7 @@ AkBool FBasicMeshObject::CreateRootSignature()
 	CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[4] = {};
 	tRangesPerTriGroup[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2: Constant Buffer View per Mesh
 	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0);	// t0~t6 : Shader Resource View(Tex) per Mesh.
-	tRangesPerTriGroup[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 11);	// t10, t11, t12, t13 : Shader Resource View(Tex) per Mesh. (IBL Texture)
+	tRangesPerTriGroup[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 11);	// t11, t12, t13 : Shader Resource View(Tex) per Mesh. (IBL Texture)
 	tRangesPerTriGroup[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 15);	// t15, t16, t17, t18, t19 : Shadow Map
 
 	CD3DX12_ROOT_PARAMETER tRootParameters[2] = {};
@@ -1252,7 +1258,6 @@ AkBool FBasicMeshObject::CreateRootSignature()
 
 	// Create an empty root signature.
 	CD3DX12_ROOT_SIGNATURE_DESC tRootSignatureDesc;
-	//rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 	tRootSignatureDesc.Init(_countof(tRootParameters), tRootParameters, _countof(pSamplerDesc), pSamplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	if (FAILED(D3D12SerializeRootSignature(&tRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &pSignature, &pError)))
@@ -1432,14 +1437,24 @@ AkBool FBasicMeshObject::CreatePipelineState()
 		__debugbreak();
 	}
 
-	// Stencil 에 1로 표기해주는 State.
+	// Stencil 에 1로 표기 된 곳을 랜더링.
+	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pBasicVS->GetBufferPointer(), pBasicVS->GetBufferSize());
+	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pBasicPS->GetBufferPointer(), pBasicPS->GetBufferSize());
+	tPsoDesc.NumRenderTargets = 1;
+	tPsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
+	tPsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	tPsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
+	tPsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
+	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	tPsoDesc.RasterizerState.FrontCounterClockwise = TRUE;
 	tPsoDesc.DepthStencilState.StencilEnable = TRUE;
-	tPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	tPsoDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	const D3D12_DEPTH_STENCILOP_DESC tDefaultStencilOp = 
-	{ D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_REPLACE, D3D12_COMPARISON_FUNC_ALWAYS };
+	{ D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_STENCIL_OP_KEEP, D3D12_COMPARISON_FUNC_EQUAL };
 	tPsoDesc.DepthStencilState.FrontFace = tDefaultStencilOp;
-	tPsoDesc.DepthStencilState.BackFace = tDefaultStencilOp;
-	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pStencilMaskPSO))))
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pDrawMaskedSolidPSO))))
 	{
 		__debugbreak();
 	}
@@ -1509,10 +1524,10 @@ void FBasicMeshObject::DestroyRootSignature()
 
 void FBasicMeshObject::DestroyPipelineState()
 {
-	if (sm_pStencilMaskPSO)
+	if (sm_pDrawMaskedSolidPSO)
 	{
-		sm_pStencilMaskPSO->Release();
-		sm_pStencilMaskPSO = nullptr;
+		sm_pDrawMaskedSolidPSO->Release();
+		sm_pDrawMaskedSolidPSO = nullptr;
 	}
 	if (sm_pDepthOnlyPSO)
 	{

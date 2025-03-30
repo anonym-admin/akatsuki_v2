@@ -35,6 +35,9 @@ void SkinnedModel::Render()
 	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetBoneTransforms() : _pIdentity;
 
 	GRenderer->RenderSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
+
+
+	GRenderer->RenderReflectionOfSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
 }
 
 void SkinnedModel::RenderNormals()

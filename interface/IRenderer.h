@@ -133,6 +133,8 @@ interface IRenderer : public IUnknown
 	virtual void RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime) = 0;
 	virtual void RenderParticleSprite(IParticle* pParticle, void* pDBHandle, const Vector2* pMaxFrame, const Vector2* pCurFrame) = 0;
 	virtual void RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matrix* pWorldMat) = 0;
+	virtual void RenderReflectionOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
+	virtual void RenderReflectionOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBoneTransform) = 0;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) = 0;
 	virtual void RotateXCamera(AkF32 fRadian) = 0;
 	virtual void RotateYCamera(AkF32 fRadian) = 0;

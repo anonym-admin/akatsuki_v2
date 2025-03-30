@@ -134,7 +134,7 @@ AkBool FSpriteObject::CreateRootSignature()
 
 AkBool FSpriteObject::CreatePipelineState()
 {
-	ID3D12Device* pDeivce = _pRenderer->GetDevice();
+	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
 	ID3DBlob* pVertexShader = nullptr;
 	ID3DBlob* pPixelShader = nullptr;
@@ -197,7 +197,7 @@ AkBool FSpriteObject::CreatePipelineState()
 	tOpaquePsoDesc.RTVFormats[0] = _pRenderer->GetBackBufferRTVFormat();
 	tOpaquePsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	tOpaquePsoDesc.SampleDesc.Count = 1;
-	if (FAILED(pDeivce->CreateGraphicsPipelineState(&tOpaquePsoDesc, IID_PPV_ARGS(&sm_pDefaultPSO))))
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tOpaquePsoDesc, IID_PPV_ARGS(&sm_pDefaultPSO))))
 	{
 		__debugbreak();
 	}
@@ -219,7 +219,7 @@ AkBool FSpriteObject::CreatePipelineState()
 	tAccumulatePSODesc.BlendState.AlphaToCoverageEnable = AK_TRUE;
 	tAccumulatePSODesc.BlendState.RenderTarget[0] = tTransparencyBlendDesc;
 
-	if (FAILED(pDeivce->CreateGraphicsPipelineState(&tAccumulatePSODesc, IID_PPV_ARGS(&sm_pAccumulatePSO))))
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tAccumulatePSODesc, IID_PPV_ARGS(&sm_pAccumulatePSO))))
 	{
 		__debugbreak();
 	}
