@@ -89,6 +89,11 @@ void BRS_74::RenderShadowMaps()
 	_pModel->RenderShadowMaps();
 }
 
+void BRS_74::RenderDepthMap()
+{
+	_pModel->RenderDepthMap();
+}
+
 void BRS_74::OnCollisionEnter(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();

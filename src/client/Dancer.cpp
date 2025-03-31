@@ -82,6 +82,10 @@ void Dancer::RenderShadowMaps()
 	//_pModel->RenderShadow();
 }
 
+void Dancer::RenderDepthMap()
+{
+}
+
 void Dancer::OnCollision(Collider* pOther)
 {
 

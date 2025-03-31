@@ -55,6 +55,10 @@ void Billboard::RenderShadowMaps()
 	_pModel->RenderShadowMaps();
 }
 
+void Billboard::RenderDepthMap()
+{
+}
+
 void Billboard::Render()
 {
 	_pModel->Render();

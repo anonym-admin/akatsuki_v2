@@ -37,8 +37,10 @@ public:
 	virtual AkBool Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnableGBV) override;
 	virtual void BeginRender() override;
 	virtual void EndRender() override;
-	virtual void BeginShadowMapsRenderPreparation() override;
-	virtual void EndShadowMapsRenderPreparation() override;
+	virtual void BeginRenderDepthMap() override;
+	virtual void EndRenderDepthMap() override;
+	virtual void BeginRenderShadowMaps() override;
+	virtual void EndRenderShadowMaps() override;
 	virtual void Present() override;
 	virtual IMeshObject* CreateBasicMeshObject() override;
 	virtual IMeshObject* CreateSkinnedMeshObject() override;
@@ -68,9 +70,11 @@ public:
 	virtual void DestroyDynamicVertex(void* pDVHandle) override;
 	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
+	virtual void RenderDepthMapOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) override;
 	virtual void RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) override;
+	virtual void RenderDepthMapOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) override;
 	virtual void RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) override;
 	virtual void RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, AkBool bUseBlend) override;
 	virtual void RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ, AkBool bUseBlend) override;
@@ -80,6 +84,8 @@ public:
 	virtual void RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) override;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
+	virtual void RenderDepthMapOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat) override;
+	virtual void RenderShadowOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat) override;
 	virtual void RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime) override;
 	virtual void RenderParticleSprite(IParticle* pParticle, void* pDBHandle, const Vector2* pMaxFrame, const Vector2* pCurFrame) override;
 	virtual void RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matrix* pWorldMat) override;
@@ -214,11 +220,12 @@ private:
 	ID3D12Resource* _ppBackBuffer[SWAP_CHAIN_FRAME_COUNT];
 	ID3D12Resource* _pMainDSwithMSAA = nullptr;
 	ID3D12Resource* _pMainDS = nullptr;
+	ID3D12Resource* _pDepthOnlyDS = nullptr;
 	ID3D12Resource* _pShadowDS[CASCADE_SHADOW_MAP_LEVEL] = {};
 	ID3D12Fence* _pFence = nullptr;
-	D3D12_VIEWPORT _tViewport = {};
+	D3D12_VIEWPORT _tMainViewport = {};
 	D3D12_VIEWPORT _tShadowViewport = {};
-	D3D12_RECT _tScissorRect = {};
+	D3D12_RECT _tMainScissorRect = {};
 	D3D12_RECT _tShadowScissorRect = {};
 	DXGI_ADAPTER_DESC1 _tAdapterDesc = {};
 	HANDLE _hFenceEvent = nullptr;
@@ -271,6 +278,7 @@ private:
 	AkU32 _uPointLightsNum = 0;
 	AkU32 _uSpotLightsNum = 0;
 	Vector3 _vLightPos = Vector3(0.0f, 2.5f, 1025.0f);
+	D3D12_CPU_DESCRIPTOR_HANDLE _pDepthMapSrvCpu = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE _pShadowMapSrvCpu[CASCADE_SHADOW_MAP_LEVEL] = {};
 
 	// For PBR Variable

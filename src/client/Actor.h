@@ -25,6 +25,7 @@ public:
 	AkBool Initialize(const wchar_t* wcScriptFile);
 	virtual void Update() = 0;
 	virtual void FinalUpdate() = 0;
+	virtual void RenderDepthMap() = 0;
 	virtual void RenderShadowMaps() = 0;
 	virtual void Render() = 0;
 

@@ -17,6 +17,7 @@ public:
 	SkinnedModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	~SkinnedModel();
 
+	virtual void RenderDepthMap() override;
 	virtual void RenderShadowMaps() override;
 	virtual void Render() override;
 	virtual void RenderNormals() override;

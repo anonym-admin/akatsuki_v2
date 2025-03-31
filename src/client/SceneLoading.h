@@ -17,8 +17,9 @@ public:
 	virtual AkBool EndScene() override;
 	virtual void Update() override {};
 	virtual void FinalUpdate() override {};
+	virtual void RenderDepthMap() override {};
+	virtual void RenderShadowMaps() override {};
 	virtual void Render() override {};
-	virtual void RenderShadow() override {};
 	virtual void Load(const wchar_t* wcSceneFile) override {};
 
 	void RenderLoadingScreenCallBack(const wchar_t* wcText);

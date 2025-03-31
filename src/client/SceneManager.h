@@ -16,8 +16,9 @@ public:
 
 	void Update();
 	void FinalUpdate();
-	void Render();
 	void RenderShadowMaps();
+	void RenderDepthMap();
+	void Render();
 
 	void ChangeScene(SCENE_TYPE eType);
 	Scene* GetCurrentScene() { return _pCurScene; }

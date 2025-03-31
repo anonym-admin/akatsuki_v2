@@ -77,6 +77,10 @@ void Bullet::RenderShadowMaps()
 	_pModel->RenderShadowMaps();
 }
 
+void Bullet::RenderDepthMap()
+{
+}
+
 void Bullet::OnCollisionEnter(Collider* pOther)
 {
 }

@@ -57,11 +57,32 @@ void Scene::FinalUpdate()
 	}
 }
 
-void Scene::RenderShadow()
+void Scene::RenderDepthMap()
 {
 	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
 
-	// Render game obj.
+	// Render Game Obj Depth Map.
+	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
+	{
+		if (pGameObjContainerList[i])
+		{
+			List_t* pCur = pGameObjContainerList[i]->pGameObjHead;
+			while (pCur != nullptr)
+			{
+				Actor* pActor = reinterpret_cast<Actor*>(pCur->pData);
+				pActor->RenderDepthMap();
+
+				pCur = pCur->pNext;
+			}
+		}
+	}
+}
+
+void Scene::RenderShadowMaps()
+{
+	GameObjContainer_t** pGameObjContainerList = GetAllGameObject();
+
+	// Render Game Obj Shadow Maps
 	for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 	{
 		if (pGameObjContainerList[i])

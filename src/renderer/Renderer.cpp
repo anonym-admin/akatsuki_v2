@@ -226,7 +226,7 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 		__debugbreak();
 		return AK_FALSE;
 	}
-	
+
 	if (!CreateRenderUI())
 	{
 		__debugbreak();
@@ -257,8 +257,47 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 	return AK_TRUE;
 }
 
-// Multi thread rendering 적용.
-void FRenderer::BeginShadowMapsRenderPreparation()
+void FRenderer::BeginRenderDepthMap()
+{
+	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pDepthOnlyDS, D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart(), 2 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
+	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	pCmdList->RSSetViewports(1, &_tMainViewport);
+	pCmdList->RSSetScissorRects(1, &_tMainScissorRect);
+
+	pCmdList->OMSetRenderTargets(0, nullptr, AK_FALSE, &hDSVHeap);
+}
+
+void FRenderer::EndRenderDepthMap()
+{
+	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pDepthOnlyDS, D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ));
+
+	pCmdListPool->CloseAndExecute(_pCmdQueue);
+
+	Fence();
+
+	AkU32 uNextContextIndex = (_uCurContextIndex + 1) % PENDING_FRAME_COUNT;
+	WaitForFenceValue(_u64FenceValue[uNextContextIndex]);
+
+	for (AkU32 i = 0; i < _uRenderThreadCount; i++)
+	{
+		_ppConstantBufferManger[uNextContextIndex][i]->Reset();
+		_ppDescriptorPool[uNextContextIndex][i]->Reset();
+		_ppCommandListPool[uNextContextIndex][i]->Reset();
+	}
+
+	_uCurContextIndex = uNextContextIndex;
+}
+
+void FRenderer::BeginRenderShadowMaps()
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
@@ -274,7 +313,7 @@ void FRenderer::BeginShadowMapsRenderPreparation()
 	pCmdList->OMSetRenderTargets(0, nullptr, AK_FALSE, &hDSVHeap);
 }
 
-void FRenderer::EndShadowMapsRenderPreparation()
+void FRenderer::EndRenderShadowMaps()
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
@@ -344,12 +383,12 @@ void FRenderer::EndRender()
 #endif
 
 	// Render Particle.
-	_pRenderParticle->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
-	
+	_pRenderParticle->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
+
 	// Render Mirror.
-	_pRenderMirror->BeginMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
-	_pRenderMirror->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
-	_pRenderMirror->EndMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+	_pRenderMirror->BeginMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
+	_pRenderMirror->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
+	_pRenderMirror->EndMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
 
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hBackBufferRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize);
@@ -364,20 +403,20 @@ void FRenderer::EndRender()
 
 	// Copy To Resolved Buffer.
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
-	
+
 	// Post Process.
-	_pPostProcess->Process(0, pCmdListPool, _pCmdQueue, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
+	_pPostProcess->Process(0, pCmdListPool, _pCmdQueue, hBackBufferRTVHeap, &_tMainViewport, &_tMainScissorRect);
 
 	// MSAA 를 사용하지 않는 DSV Heap 영역에 접근
 	hDSVHeap.Offset(1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 
 	// Render UI
 	// Post Process의 Descriptor 유일설 보장을 위해 1번 쓰레드 인덱스로 실행.
-	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
 	pCmdList = pCmdListPool->GetCurrentCmdList();
-	pCmdList->RSSetViewports(1, &_tViewport);
-	pCmdList->RSSetScissorRects(1, &_tScissorRect);
+	pCmdList->RSSetViewports(1, &_tMainViewport);
+	pCmdList->RSSetScissorRects(1, &_tMainScissorRect);
 	pCmdList->OMSetRenderTargets(1, &hBackBufferRTVHeap, AK_FALSE, &hDSVHeap);
 
 	// Render ImGui
@@ -751,13 +790,22 @@ void FRenderer::RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matri
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
+void FRenderer::RenderDepthMapOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
+{
+	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	FBasicMeshObject* pBasicMeshObj = reinterpret_cast<FBasicMeshObject*>(pMeshObj);
+	pBasicMeshObj->DrawDepthMap(0, pCmdList, pWorldMat);
+}
+
 void FRenderer::RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 
 	FBasicMeshObject* pBasicMeshObj = reinterpret_cast<FBasicMeshObject*>(pMeshObj);
-	pBasicMeshObj->DrawShadowMaps(pCmdList, pWorldMat);
+	pBasicMeshObj->DrawShadowMaps(0, pCmdList, pWorldMat);
 }
 
 void FRenderer::RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
@@ -795,13 +843,22 @@ void FRenderer::RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Mat
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
+void FRenderer::RenderDepthMapOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
+{
+	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	FSkinnedMeshObject* pSkinnedMeshObj = reinterpret_cast<FSkinnedMeshObject*>(pMeshObj);
+	pSkinnedMeshObj->DrawDepthMap(0, pCmdList, pWorldMat, pBonesTransform);
+}
+
 void FRenderer::RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 
 	FSkinnedMeshObject* pSkinnedMeshObj = reinterpret_cast<FSkinnedMeshObject*>(pMeshObj);
-	pSkinnedMeshObj->DrawShadowMaps(pCmdList, pWorldMat, pBonesTransform);
+	pSkinnedMeshObj->DrawShadowMaps(0, pCmdList, pWorldMat, pBonesTransform);
 }
 
 void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, AkBool bUseBlend)
@@ -931,6 +988,24 @@ void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void*
 
 	_uCurThreadIndex++;
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+}
+
+void FRenderer::RenderDepthMapOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat)
+{
+	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	FTerrainObject* pTerrainObj = reinterpret_cast<FTerrainObject*>(pTerrain);
+	pTerrainObj->DrawDepthMap(0, pCmdList, pWorldMat);
+}
+
+void FRenderer::RenderShadowOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat)
+{
+	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	FTerrainObject* pTerrainObj = reinterpret_cast<FTerrainObject*>(pTerrain);
+	pTerrainObj->DrawShadowMaps(0, pCmdList, pWorldMat);
 }
 
 void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -1618,7 +1693,7 @@ void FRenderer::ProcessByThread(AkU32 uThreadIndex)
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT, _uRTVDesciptorSize); // Float RTV.
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart());
 
-	_ppRenderQueue[uThreadIndex]->Process(uThreadIndex, pCmdListPool, _pCmdQueue, 400, hRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+	_ppRenderQueue[uThreadIndex]->Process(uThreadIndex, pCmdListPool, _pCmdQueue, 400, hRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
 
 	LONG lCurCount = _InterlockedDecrement(&_uActiveThreadCount);
 	if (0 == lCurCount)
@@ -1709,7 +1784,7 @@ AkBool FRenderer::CreateDescriptorForRTV()
 AkBool FRenderer::CreateDescriptorForDSV()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC tDsvHeapDesc = {};
-	tDsvHeapDesc.NumDescriptors = 2 + CASCADE_SHADOW_MAP_LEVEL; // Main MSAA + Main Not MSAA + Shadow Map.
+	tDsvHeapDesc.NumDescriptors = 3 + CASCADE_SHADOW_MAP_LEVEL; // Main MSAA + Main Not MSAA + Depth Map + Shadow Map.
 	tDsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 	tDsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	if (FAILED(_pDevice->CreateDescriptorHeap(&tDsvHeapDesc, IID_PPV_ARGS(&_pDSVHeap))))
@@ -1775,7 +1850,7 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 {
 	// 멀티 샘플링 체크
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS tQualityLevels = {};
-	tQualityLevels.Format = DXGI_FORMAT_R16G16B16A16_FLOAT; 
+	tQualityLevels.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	tQualityLevels.SampleCount = 4;
 	tQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
 
@@ -1783,7 +1858,7 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 
 	if (SUCCEEDED(hr))
 	{
-		if (tQualityLevels.NumQualityLevels > 0) 
+		if (tQualityLevels.NumQualityLevels > 0)
 		{
 			// 멀티샘플링 지원
 			printf("Num Quality Levels: %u\n", tQualityLevels.NumQualityLevels);
@@ -1793,7 +1868,7 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 			printf("Multisampling is supported.\n");
 		}
 	}
-	else 
+	else
 	{
 		printf("CheckFeatureSupport Failed.\n");
 	}
@@ -1922,6 +1997,60 @@ AkBool FRenderer::CreateDSVs(AkU32 uWidth, AkU32 uHeight)
 
 			CD3DX12_CPU_DESCRIPTOR_HANDLE hDsvHandle(_pDSVHeap->GetCPUDescriptorHandleForHeapStart(), 1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 			_pDevice->CreateDepthStencilView(_pMainDS, &tDepthStencilDesc, hDsvHandle);
+		}
+	}
+
+	// Create Depth Map DSV.
+	{
+		// DSV
+		D3D12_DEPTH_STENCIL_VIEW_DESC tDepthStencilDesc = {};
+		tDepthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+		tDepthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		tDepthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+		D3D12_CLEAR_VALUE tDepthOptimizedClearValue = {};
+		tDepthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+		tDepthOptimizedClearValue.DepthStencil.Depth = 1.0f;
+		tDepthOptimizedClearValue.DepthStencil.Stencil = 0;
+
+		CD3DX12_RESOURCE_DESC tDepthDesc(
+			D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+			0,
+			uWidth,
+			uHeight,
+			1,
+			1,
+			DXGI_FORMAT_R32_TYPELESS,
+			1,
+			0,
+			D3D12_TEXTURE_LAYOUT_UNKNOWN,
+			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+		if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tDepthDesc, D3D12_RESOURCE_STATE_GENERIC_READ, &tDepthOptimizedClearValue, IID_PPV_ARGS(&_pDepthOnlyDS))))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hDsvHandle(_pDSVHeap->GetCPUDescriptorHandleForHeapStart(), 2 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
+		_pDevice->CreateDepthStencilView(_pDepthOnlyDS, &tDepthStencilDesc, hDsvHandle);
+
+		// SRV
+		D3D12_SHADER_RESOURCE_VIEW_DESC tSrvDesc = {};
+		tSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		tSrvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		tSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		tSrvDesc.Texture2D.MostDetailedMip = 0;
+		tSrvDesc.Texture2D.MipLevels = 1;
+		tSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+		tSrvDesc.Texture2D.PlaneSlice = 0;
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hSrvCpu = {};
+		if (_pDescriptorAllocator->AllocDescriptorHandle(&hSrvCpu))
+		{
+			_pDevice->CreateShaderResourceView(_pDepthOnlyDS, &tSrvDesc, hSrvCpu);
+
+			_pDepthMapSrvCpu = hSrvCpu;
 		}
 	}
 
@@ -2098,10 +2227,10 @@ AkBool FRenderer::CreateRenderMirror()
 
 void FRenderer::InitViewports(AkF32 fWidth, AkF32 fHeight)
 {
-	_tViewport.Width = fWidth;
-	_tViewport.Height = fHeight;
-	_tViewport.MinDepth = 0.0f;
-	_tViewport.MaxDepth = 1.0f;
+	_tMainViewport.Width = fWidth;
+	_tMainViewport.Height = fHeight;
+	_tMainViewport.MinDepth = 0.0f;
+	_tMainViewport.MaxDepth = 1.0f;
 
 	_tShadowViewport.Width = (AkF32)_uShadowWidth;
 	_tShadowViewport.Height = (AkF32)_uShadowHeight;
@@ -2111,10 +2240,10 @@ void FRenderer::InitViewports(AkF32 fWidth, AkF32 fHeight)
 
 void FRenderer::InitScissorRect(AkU32 uWidth, AkU32 uHeight)
 {
-	_tScissorRect.left = 0;
-	_tScissorRect.top = 0;
-	_tScissorRect.right = uWidth;
-	_tScissorRect.bottom = uHeight;
+	_tMainScissorRect.left = 0;
+	_tMainScissorRect.top = 0;
+	_tMainScissorRect.right = uWidth;
+	_tMainScissorRect.bottom = uHeight;
 
 	_tShadowScissorRect.left = 0;
 	_tShadowScissorRect.top = 0;
@@ -2311,6 +2440,11 @@ void FRenderer::DestroyRTVsAndSRVsForPBR()
 
 void FRenderer::DestroyDSVs()
 {
+	if(_pDepthOnlyDS)
+	{
+		_pDepthOnlyDS->Release();
+		_pDepthOnlyDS = nullptr;
+	}
 	if (_pMainDS)
 	{
 		_pMainDS->Release();

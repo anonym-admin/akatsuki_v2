@@ -150,9 +150,14 @@ void SceneInGame::FinalUpdate()
 	Scene::FinalUpdate();
 }
 
-void SceneInGame::RenderShadow()
+void SceneInGame::RenderDepthMap()
 {
-	Scene::RenderShadow();
+	Scene::RenderDepthMap();
+}
+
+void SceneInGame::RenderShadowMaps()
+{
+	Scene::RenderShadowMaps();
 }
 
 void SceneInGame::Render()

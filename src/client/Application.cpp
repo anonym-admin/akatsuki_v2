@@ -83,6 +83,12 @@ AkBool Application::InitApplication(AkBool bEnableDebugLayer, AkBool bEnableGBV)
 
 void Application::RunApplication()
 {
+	/*
+	========================
+	Update
+	========================
+	*/
+
 	GTimer->Tick();
 
 	// Start the Dear ImGui frame
@@ -100,15 +106,28 @@ void Application::RunApplication()
 	// Update Shadow Map Matrix
 	GRenderer->UpdateCascadeOrthoProjMatrix();
 
-	// Shadow Pass.
+	/*
+	========================
+	RENDER
+	========================
+	*/
+
+	// Render Depth Map.
+	GRenderer->BeginRenderDepthMap();
+
+	GSceneManager->RenderDepthMap();
+
+	GRenderer->EndRenderDepthMap();
+
+	// Render Shadow Map.
 	for (AkU32 i = 0; i < 5; i++)
 	{
-		GRenderer->BeginShadowMapsRenderPreparation();
+		GRenderer->BeginRenderShadowMaps();
 
 		GEditorManager->RenderShadowMaps();
 		GSceneManager->RenderShadowMaps();
 
-		GRenderer->EndShadowMapsRenderPreparation();
+		GRenderer->EndRenderShadowMaps();
 	}
 
 	// Begin render.

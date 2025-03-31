@@ -19,8 +19,9 @@ public:
 
 	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, const Matrix* pBonesTransform);
 	void DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, const Matrix* pBonesTransform);
-	void DrawShadowMaps(ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, const Matrix* pBonesTransform);
+	void DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, const Matrix* pBonesTransform);
 	void DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, const Matrix* pBonesTransform);
+	void DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat, const Matrix* pBonesTransform);
 
 	// virtual AkBool CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDataNum) override;
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;

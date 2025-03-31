@@ -17,6 +17,7 @@ public:
 	virtual AkBool Initialize(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	virtual AkBool Initialize(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	virtual void RenderShadowMaps();
+	virtual void RenderDepthMap();
 	virtual void Render();
 	virtual void RenderNormals();
 	virtual void RenderGUI();

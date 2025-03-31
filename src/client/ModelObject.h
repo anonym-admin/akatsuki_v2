@@ -24,8 +24,9 @@ public:
 	AkBool Initialize(const wchar_t* wcFilename, AkBool bIsAnim);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
-	virtual void Render() override;
+	virtual void RenderDepthMap() override;
 	virtual void RenderShadowMaps() override;
+	virtual void Render() override;
 
 	void RenderGUI();
 	void SetEditMode(AkBool bIsEditMode) { _bEditMode = bIsEditMode; }

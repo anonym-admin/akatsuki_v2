@@ -20,6 +20,7 @@ public:
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
 	virtual void RenderShadowMaps() override;
+	virtual void RenderDepthMap() override;
 	virtual void Render() override;
 
 	virtual void OnCollision(class Collider* pOther) override;

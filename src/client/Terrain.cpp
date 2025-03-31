@@ -78,6 +78,12 @@ void Terrain::FinalUpdate()
 
 void Terrain::RenderShadowMaps()
 {
+	GRenderer->RenderShadowOfTerrain(_pTerrain, &_pTransform->GetWorldTransform());
+}
+
+void Terrain::RenderDepthMap()
+{
+	GRenderer->RenderDepthMapOfTerrain(_pTerrain, &_pTransform->GetWorldTransform());
 }
 
 void Terrain::Render()

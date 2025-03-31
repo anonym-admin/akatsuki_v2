@@ -26,6 +26,7 @@ public:
 	AkBool Initialize(const wchar_t* wcFile);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
+	virtual void RenderDepthMap() override;
 	virtual void RenderShadowMaps() override;
 	virtual void Render() override;
 

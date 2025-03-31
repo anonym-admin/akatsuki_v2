@@ -35,7 +35,15 @@ void SceneManager::RenderShadowMaps()
 {
     if (_pCurScene)
     {
-        _pCurScene->RenderShadow();
+        _pCurScene->RenderShadowMaps();
+    }
+}
+
+void SceneManager::RenderDepthMap()
+{
+    if (_pCurScene)
+    {
+        _pCurScene->RenderDepthMap();
     }
 }
 

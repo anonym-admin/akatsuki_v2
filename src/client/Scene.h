@@ -23,7 +23,8 @@ public:
 	virtual AkBool EndScene() = 0;
 	virtual void Update() = 0;
 	virtual void FinalUpdate() = 0;
-	virtual void RenderShadow() = 0;
+	virtual void RenderDepthMap() = 0;
+	virtual void RenderShadowMaps() = 0;
 	virtual void Render() = 0;
 	virtual void Load(const wchar_t* wcSceneFile) = 0;
 

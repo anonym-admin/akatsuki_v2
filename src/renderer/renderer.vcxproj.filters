@@ -163,6 +163,9 @@
     <ClCompile Include="RenderMirror.cpp">
       <Filter>src\body</Filter>
     </ClCompile>
+    <ClCompile Include="PostEffect.cpp">
+      <Filter>src\post</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\interface\IRenderer.h">
@@ -281,6 +284,9 @@
     </ClInclude>
     <ClInclude Include="RenderMirror.h">
       <Filter>src\body</Filter>
+    </ClInclude>
+    <ClInclude Include="PostEffect.h">
+      <Filter>src\post</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -73,6 +73,11 @@ void Model::RenderShadowMaps()
 	GRenderer->RenderShadowOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
+void Model::RenderDepthMap()
+{
+	GRenderer->RenderDepthMapOfBasicMeshObject(_pMeshObj, &_mWorldRow);
+}
+
 void Model::RenderGUI()
 {
 	std::wstring ModelName = Name;

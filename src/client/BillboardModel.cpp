@@ -32,14 +32,19 @@ AkBool BillboardModels::Initialize(BillboardData_t* pBillboardData)
     return AK_TRUE;
 }
 
-void BillboardModels::Render()
+void BillboardModels::RenderDepthMap()
 {
-    GRenderer->RenderBillboard(_pBillboard, &_mWorldRow);
+
 }
 
 void BillboardModels::RenderShadowMaps()
 {
     GRenderer->RenderShadowOfBillboard(_pBillboard, &_mWorldRow);
+}
+
+void BillboardModels::Render()
+{
+    GRenderer->RenderBillboard(_pBillboard, &_mWorldRow);
 }
 
 void BillboardModels::CleanUp()

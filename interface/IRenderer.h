@@ -89,8 +89,10 @@ interface IRenderer : public IUnknown
 	virtual AkBool Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnableGBV) = 0;
 	virtual void BeginRender() = 0;
 	virtual void EndRender() = 0;
-	virtual void BeginShadowMapsRenderPreparation() = 0;
-	virtual void EndShadowMapsRenderPreparation() = 0;
+	virtual void BeginRenderDepthMap() = 0;
+	virtual void EndRenderDepthMap() = 0;
+	virtual void BeginRenderShadowMaps() = 0;
+	virtual void EndRenderShadowMaps() = 0;
 	virtual void Present() = 0;
 	virtual IMeshObject* CreateBasicMeshObject() = 0;
 	virtual IMeshObject* CreateSkinnedMeshObject() = 0;
@@ -120,9 +122,11 @@ interface IRenderer : public IUnknown
 	virtual void DestroyDynamicVertex(void* pDVHandle) = 0;
 	virtual void RenderBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
+	virtual void RenderDepthMapOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) = 0;
 	virtual void RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) = 0;
+	virtual void RenderDepthMapOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) = 0;
 	virtual void RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform) = 0;
 	virtual void RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, AkBool bUseBlend) = 0;
 	virtual void RenderSprite(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, AkF32 fZ, AkBool bUseBlend) = 0;
@@ -132,6 +136,8 @@ interface IRenderer : public IUnknown
 	virtual void RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
+	virtual void RenderDepthMapOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat) = 0;
+	virtual void RenderShadowOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat) = 0;
 	virtual void RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime) = 0;
 	virtual void RenderParticleSprite(IParticle* pParticle, void* pDBHandle, const Vector2* pMaxFrame, const Vector2* pCurFrame) = 0;
 	virtual void RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matrix* pWorldMat) = 0;

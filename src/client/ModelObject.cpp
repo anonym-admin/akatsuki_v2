@@ -138,6 +138,11 @@ void ModelObject::FinalUpdate()
 	}
 }
 
+void ModelObject::RenderDepthMap()
+{
+	_pModel->RenderDepthMap();
+}
+
 void ModelObject::Render()
 {
 	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());

@@ -158,6 +158,11 @@ void Soldier::FinalUpdate()
 	FinalUpdateWeapon();
 }
 
+void Soldier::RenderDepthMap()
+{
+	_pModel->RenderDepthMap();
+}
+
 void Soldier::Render()
 {
 	// _pSprite->Render();
