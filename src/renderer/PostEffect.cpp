@@ -81,6 +81,10 @@ void FPostEffect::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
 	pGlobalConstantBuffer->mInvProj = pGlobalConstantBuffer->mProj.Invert();
 
+	AkU32 uLightNum = 0;
+	Light_t* pLights = _pRenderer->GetLights(&uLightNum);
+	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
+
 	// Per Obj (b0).
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
 	pDevice->CopyDescriptorsSimple(1, hDest, pGlobalCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -94,9 +98,9 @@ void FPostEffect::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID
 	}
 
 	PostEffectConstantBuffer_t* pPostEffectConstantBuffer = reinterpret_cast<PostEffectConstantBuffer_t*>(pPostEffectCBContainer->pSystemMemAddr);
-	pPostEffectConstantBuffer->iMode = 1;
-	pPostEffectConstantBuffer->fFogStrength = 1.0f;
-	pPostEffectConstantBuffer->fDepthScale = 0.1f;
+	pPostEffectConstantBuffer->iMode = _iEffectMode;
+	pPostEffectConstantBuffer->fFogStrength =_fFogStrength;
+	pPostEffectConstantBuffer->fDepthScale = _fDepthScale;
 
 	// Per Obj (b1).
 	pDevice->CopyDescriptorsSimple(1, hDest, pPostEffectCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);

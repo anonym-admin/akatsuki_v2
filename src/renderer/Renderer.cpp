@@ -716,9 +716,9 @@ void FRenderer::UpdateTextureWidthImage(void* pTexHandle, const AkU8* pSrcImage,
 	}
 
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT tFootprint;
-	AkU32	uRows = 0;
-	AkU64	u64RowSize = 0;
-	AkU64	u64TotalBytes = 0;
+	AkU32 uRows = 0;
+	AkU64 u64RowSize = 0;
+	AkU64 u64TotalBytes = 0;
 
 	_pDevice->GetCopyableFootprints(&tDesc, 0, 1, 0, &tFootprint, &uRows, &u64RowSize, &u64TotalBytes);
 
@@ -974,13 +974,22 @@ void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
+void FRenderer::RenderDepthMapOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
+{
+	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
+	FBillboardObjects* pBillboardObj = reinterpret_cast<FBillboardObjects*>(pBillboard);
+	pBillboardObj->DrawDepthMap(0, pCmdList, pWorldMat);
+}
+
 void FRenderer::RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 
 	FBillboardObjects* pBillboardObj = reinterpret_cast<FBillboardObjects*>(pBillboard);
-	pBillboardObj->DrawShadowMaps(pCmdList, pWorldMat);
+	pBillboardObj->DrawShadowMaps(0, pCmdList, pWorldMat);
 }
 
 void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -1250,7 +1259,7 @@ void FRenderer::AddPointLight(const Vector3* pPos, const Vector3* pDir, AkF32 fR
 		__debugbreak();
 	}
 
-	_pPointLights[_uPointLightsNum].vRadiance = Vector3(5.0f);
+	_pPointLights[_uPointLightsNum].vRadiance = Vector3(1.0f);
 	_pPointLights[_uPointLightsNum].vPosition = *pPos;
 	_pPointLights[_uPointLightsNum].vDirection = *pDir;
 	_pPointLights[_uPointLightsNum].fSpotPower = fSpotPower;
@@ -1258,6 +1267,8 @@ void FRenderer::AddPointLight(const Vector3* pPos, const Vector3* pDir, AkF32 fR
 	_pPointLights[_uPointLightsNum].uType = LIGHT_POINT;
 	_pPointLights[_uPointLightsNum].fFallOffStart = fFallOffStart;
 	_pPointLights[_uPointLightsNum].fFallOffEnd = fFallOffEnd;
+	_pPointLights[_uPointLightsNum].fHaloStrength = 0.25f;
+	_pPointLights[_uPointLightsNum].fHaloRadius = 0.5f;
 
 	if (bShadow)
 	{
@@ -1270,6 +1281,21 @@ void FRenderer::AddPointLight(const Vector3* pPos, const Vector3* pDir, AkF32 fR
 void FRenderer::SetIBLStrength(AkF32 fIBLStrength)
 {
 	_fIBLStrength = fIBLStrength;
+}
+
+void FRenderer::SetFogStrength(AkF32 fFogStrength)
+{
+	_pPostEffect->SetFogStrength(fFogStrength);
+}
+
+void FRenderer::SetDepthScale(AkF32 fDepthScale)
+{
+	_pPostEffect->SetDepthScale(fDepthScale);
+}
+
+void FRenderer::SetPostEffectMode(AkI32 iMode)
+{
+	_pPostEffect->SetPostEffectMode(iMode);
 }
 
 AkBool FRenderer::MousePickingToPlane(DirectX::SimpleMath::Plane* pPlane, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio)
@@ -1499,9 +1525,18 @@ void FRenderer::GetIBLTexture(TextureHandle_t** ppOutIrradianceTexHandle, Textur
 
 Light_t* FRenderer::GetLights(AkU32* pOutLightNum)
 {
-	*pOutLightNum = _uPointLightsNum;
+	*pOutLightNum = DIRECTIONAL_LIGHTS_NUM + _uPointLightsNum + _uSpotLightsNum;
 
-	return _pPointLights;
+	// Global
+	_pLightList[0] = _tGlobalLight;
+	
+	// Point
+	memcpy(_pLightList + DIRECTIONAL_LIGHTS_NUM, _pPointLights, sizeof(Light_t) * _uPointLightsNum);
+
+	// Spot
+	memcpy(_pLightList + DIRECTIONAL_LIGHTS_NUM + _uPointLightsNum, _pSpotLights, sizeof(Light_t) * _uSpotLightsNum);
+
+	return _pLightList;
 }
 
 void FRenderer::GetGlobalLight(Light_t* pOutLight)

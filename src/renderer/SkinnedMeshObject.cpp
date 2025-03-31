@@ -61,15 +61,15 @@ void FSkinnedMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
 	_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
-	pGlobalConstantBuffer->fStrengthIBL = _pRenderer->GetIBLStrength();
+	pGlobalConstantBuffer->fStrengthIBL = 0.1f;
 
-	//AkU32 uLightNum = 0;
-	//Light_t* pLights = _pRenderer->GetLights(&uLightNum);
-	//memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
+	AkU32 uLightNum = 0;
+	Light_t* pLights = _pRenderer->GetLights(&uLightNum);
+	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
 
-	Light_t tLight;
-	_pRenderer->GetGlobalLight(&tLight);
-	memcpy(pGlobalConstantBuffer->tLights, &tLight, sizeof(Light_t));
+	//Light_t tLight;
+	//_pRenderer->GetGlobalLight(&tLight);
+	//memcpy(pGlobalConstantBuffer->tLights, &tLight, sizeof(Light_t));
 	
 	Matrix mLightView = Matrix();
 	Matrix mLightProj = Matrix();

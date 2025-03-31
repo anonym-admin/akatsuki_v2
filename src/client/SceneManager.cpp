@@ -67,9 +67,8 @@ void SceneManager::ChangeScene(SCENE_TYPE eSceneType)
 
     _pCurScene = _pSceneList[(AkU32)eSceneType];
 
-    _pCurScene->BeginScene();
-
     _eType = eSceneType;
+    _pCurScene->BeginScene();
 }
 
 Scene* SceneManager::AddScene(SCENE_TYPE eType, Scene* pScene)

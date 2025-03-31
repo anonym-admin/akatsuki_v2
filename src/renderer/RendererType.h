@@ -2,9 +2,10 @@
 
 const AkU32 SWAP_CHAIN_FRAME_COUNT = 3;
 const AkU32 PENDING_FRAME_COUNT = SWAP_CHAIN_FRAME_COUNT - 1;
+const AkU32 DIRECTIONAL_LIGHTS_NUM = 1; // Global
 const AkU32 POINT_LIGHTS_NUM = 1;
 const AkU32 SPOT_LIGHTS_NUM = 1;
-const AkU32 MAX_LIGHTS_COUNT = 3;
+const AkU32 MAX_LIGHTS_COUNT = DIRECTIONAL_LIGHTS_NUM + POINT_LIGHTS_NUM + SPOT_LIGHTS_NUM;
 
 enum class CONSTANT_BUFFER_TYPE
 {
@@ -39,8 +40,8 @@ struct Light_t
 	AkF32 fSpotPower = 6.0f;
 	AkU32 uType = LIGHT_OFF;
 	AkF32 fRadius = 0.0f;
-	AkF32 fDummy0 = 0.0f;
-	AkF32 fDummy1 = 0.0f;
+	AkF32 fHaloRadius = 0.0f;
+	AkF32 fHaloStrength = 0.0f;
 	Matrix mViewProj[5] = {};
 };
 

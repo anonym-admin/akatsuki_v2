@@ -76,7 +76,11 @@ AkBool Actor::Initialize(const wchar_t* wcScriptFile)
 	// Collider °¹¼ö ÆÄ½Ì ÇÊ¿ä!!
 	AkI32 iColliderNum = 0;
 	fwscanf_s(fp, L"%d\n", &iColliderNum);
-	_uEventColliderNum = (AkU32)iColliderNum - 1;
+	_iEventColliderNum = iColliderNum - 1;
+	if (_iEventColliderNum < 0)
+	{
+		_iEventColliderNum = 0;
+	}
 
 	for (AkI32 i = 0; i < iColliderNum; i++)
 	{
@@ -200,7 +204,7 @@ void Actor::DestroyCollider()
 		_pCollider = nullptr;
 	}
 
-	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	for (AkI32 i = 0; i < _iEventColliderNum; i++)
 	{
 		if (_pEventCollider[i])
 		{

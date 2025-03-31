@@ -34,7 +34,7 @@ AkBool BillboardModels::Initialize(BillboardData_t* pBillboardData)
 
 void BillboardModels::RenderDepthMap()
 {
-
+    GRenderer->RenderDepthMapOfBillboard(_pBillboard, &_mWorldRow);
 }
 
 void BillboardModels::RenderShadowMaps()

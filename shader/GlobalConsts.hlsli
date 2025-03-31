@@ -13,8 +13,8 @@ struct LightConsts
     float spotPower;
     uint type;
     float radius;
-    float dummy0;
-    float dummy1;
+    float haloRadius;
+    float haloStrength;
     Matrix viewProj[5];
 };
 

@@ -23,5 +23,24 @@ void PostRenderControl::RendeGUI()
 	GRenderer->SetBloomLevels(_iBloomLevel);
 	GRenderer->SetBloomStrength(_fBloomStrength);
 
+	ImGui::Checkbox("Effect", &_bUseEffect);
+	ImGui::SameLine();
+	ImGui::Checkbox("Depth Map", &_bUseDepthMap);
+
+	if (_bUseEffect)
+	{
+		GRenderer->SetPostEffectMode(1);
+	}
+	if (_bUseDepthMap)
+	{
+		GRenderer->SetPostEffectMode(2);
+	}
+
+	ImGui::SliderFloat("Depth Scale", &_fDepthScale, 0.0f, 1.0f);
+	ImGui::SliderFloat("Fog Strength", &_fFogStrength, 0.0f, 1.0f);
+
+	GRenderer->SetFogStrength(_fFogStrength);
+	GRenderer->SetDepthScale(_fDepthScale);
+
 	ImGui::End();
 }

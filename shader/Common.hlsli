@@ -243,7 +243,7 @@ float3 LightRadiance(LightConsts light, float3 representativePoint, float3 posWo
     float spotFator = light.type & LIGHT_SPOT ? pow(max(-dot(lightVec, light.direction), 0.0f), light.spotPower)
                                               : 1.0f;
     // Distance attenuation
-    float att = 1.0; //saturate((light.fallOffEnd - lightDist) / (light.fallOffEnd - light.fallOffStart));
+    float att = saturate((light.fallOffEnd - lightDist) / (light.fallOffEnd - light.fallOffStart));
     
     // Shadow map
     float shadowFactor = 1.0;

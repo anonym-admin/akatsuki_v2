@@ -133,6 +133,7 @@ interface IRenderer : public IUnknown
 	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) = 0;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) = 0;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
+	virtual void RenderDepthMapOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
 	virtual void RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) = 0;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) = 0;
@@ -155,6 +156,9 @@ interface IRenderer : public IUnknown
 	virtual void AddGlobalLight(const Vector3* pRadiance, const Vector3* pDir, AkBool bShadow) = 0;
 	virtual void AddPointLight(const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow) = 0;
 	virtual void SetIBLStrength(AkF32 fIBLStrength) = 0;
+	virtual void SetFogStrength(AkF32 fFogStrength) = 0;
+	virtual void SetDepthScale(AkF32 fDepthScale) = 0;
+	virtual void SetPostEffectMode(AkI32 iMode) = 0;
 	virtual void SetToneMappingType(AkI32 iType) = 0;
 	virtual void SetBloomLevels(AkU32 uLevel) = 0;
 	virtual void SetBloomStrength(AkF32 uStrength) = 0;

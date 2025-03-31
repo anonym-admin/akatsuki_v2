@@ -58,6 +58,10 @@ AkBool EditorMap::BeginEditor()
 
 	Collider::DRAW_COLLIDER = AK_TRUE;
 
+	Vector3 vPos = Vector3(0.0f, 1.25f, -25.0f);
+	Vector3 vDir = Vector3(0.0f);
+	GRenderer->AddPointLight(&vPos, &vDir, 0.1f, 0.0f, 1000.0f, 0.0f, AK_FALSE);
+
 	return AK_TRUE;
 }
 

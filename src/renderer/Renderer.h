@@ -86,6 +86,7 @@ public:
 	virtual void RenderSkybox(ISkybox* pSkyboxObj, const Matrix* pWorldMat, void* pEnvHDR, void* pDiffuseHDR, void* pSpecularHDR) override;
 	virtual void RenderLineObject(ILineObject* pLineObj, const Matrix* pWorldMat) override;
 	virtual void RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) override;
+	virtual void RenderDepthMapOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) override;
 	virtual void RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat) override;
 	virtual void RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
 	virtual void RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush) override;
@@ -107,6 +108,9 @@ public:
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) override;
 	virtual void SetCamera(const Vector3* pCamPos, const Vector3* pCamDir, Vector3* pCamUp) override;
 	virtual void SetIBLStrength(AkF32 fIBLStrength) override;
+	virtual void SetFogStrength(AkF32 fFogStrength) override;
+	virtual void SetDepthScale(AkF32 fDepthScale) override;
+	virtual void SetPostEffectMode(AkI32 iMode) override;
 	virtual void SetVSync(AkBool bUseVSync) override;
 	virtual void SetToneMappingType(AkI32 iType) override { _iToneMappingType = iType; }
 	virtual void SetBloomLevels(AkU32 uLevel) override { _uBloomLevels = uLevel; }
@@ -286,7 +290,8 @@ private:
 	AkU32 _uCascadeIndex = 1;
 	Light_t _tGlobalLight = {};
 	Light_t _pPointLights[POINT_LIGHTS_NUM] = {};
-	Light_t _pSpotLights[MAX_LIGHTS_COUNT] = {};
+	Light_t _pSpotLights[SPOT_LIGHTS_NUM] = {};
+	Light_t _pLightList[MAX_LIGHTS_COUNT] = {};
 	AkU32 _uPointLightsNum = 0;
 	AkU32 _uSpotLightsNum = 0;
 	Vector3 _vLightPos = Vector3(0.0f, 2.5f, 1025.0f);

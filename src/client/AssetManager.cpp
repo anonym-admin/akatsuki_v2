@@ -16,7 +16,13 @@ AssetManager::~AssetManager()
 
 void AssetManager::AddMeshData(const wchar_t* wcBasePath, const wchar_t* wcModelFilename, AkF32 fScaleLength, AkBool bForAnim)
 {
-	SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
+	SceneLoading* pSceneLoading = nullptr;
+	SCENE_TYPE eType = GSceneManager->GetCurrentSceneType();
+	if (eType == SCENE_TYPE::LOADING)
+	{
+		pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
+	}
+
 	AssetMeshDataContainer_t* pAssetMeshDataContainer = nullptr;
 
 	pAssetMeshDataContainer = AllocMeshDataContainer();
@@ -34,12 +40,20 @@ void AssetManager::AddMeshData(const wchar_t* wcBasePath, const wchar_t* wcModel
 
 	wcscat_s(wcFullPath, L"\n");
 
-	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	if(pSceneLoading)
+	{
+		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	}
 }
 
 void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* wcEnvFilename, const wchar_t* wcIrradianceFilename, const wchar_t* wcSpecularFilename, const wchar_t* wcBrdfFilaename)
 {
-	SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
+	SceneLoading* pSceneLoading = nullptr;
+	if (GSceneManager->GetCurrentSceneType() == SCENE_TYPE::LOADING)
+	{
+		pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
+	}
+
 	AssetTextureContainer_t* pAssetTexContainer = nullptr;
 	void* pTexHandle = nullptr;
 
@@ -58,7 +72,10 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	}
 
 	wcscat_s(wcFullPath, L"\n");
-	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	if (pSceneLoading)
+	{
+		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	}
 
 	memset(wcFullPath, 0, sizeof(wchar_t) * MAX_PATH);
 	wcscpy_s(wcFullPath, wcBasePath);
@@ -75,7 +92,10 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	}
 
 	wcscat_s(wcFullPath, L"\n");
-	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	if (pSceneLoading)
+	{
+		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	}
 
 	memset(wcFullPath, 0, sizeof(wchar_t) * MAX_PATH);
 	wcscpy_s(wcFullPath, wcBasePath);
@@ -106,7 +126,10 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	}
 
 	wcscat_s(wcFullPath, L"\n");
-	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	if (pSceneLoading)
+	{
+		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	}
 }
 
 void AssetManager::AddDynamicTexture()
@@ -302,18 +325,33 @@ void AssetManager::DeleteAllAnimation()
 
 AssetMeshDataContainer_t* AssetManager::GetMeshData(const wchar_t* wcKey)
 {
+	if (!_mapMeshDataList.count(wcKey))
+	{
+		return nullptr;
+	}
+
 	AssetMeshDataContainer_t* pResult = _mapMeshDataList[wcKey];
 	return pResult;
 }
 
 AssetTextureContainer_t* AssetManager::GetTexture(const wchar_t* wcKey)
 {
+	if (!_mapTextures.count(wcKey))
+	{
+		return nullptr;
+	}
+
 	AssetTextureContainer_t* pResult = _mapTextures[wcKey];
 	return pResult;
 }
 
 AssetAnimationContainer_t* AssetManager::GetAnimation(const wchar_t* wcKey)
 {
+	if (!_mapAnimation.count(wcKey))
+	{
+		return nullptr;
+	}
+
 	AssetAnimationContainer_t* pResult = _mapAnimation[wcKey];
 	return pResult;
 }
@@ -343,7 +381,11 @@ MeshData_t* AssetManager::ReadFromFile(AssetMeshDataContainer_t* pAssetMeshDataC
 
 void AssetManager::ReadClip(const wchar_t* wcModel, const wchar_t* wcAnim)
 {
-	SceneLoading* pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
+	SceneLoading* pSceneLoading = nullptr;
+	if (GSceneManager->GetCurrentSceneType() == SCENE_TYPE::LOADING)
+	{
+		pSceneLoading = (SceneLoading*)GSceneManager->GetCurrentScene();
+	}
 
 	wchar_t wcFullPath[MAX_PATH] = {};
 	wcscpy_s(wcFullPath, CLIP_FILE_PATH);
@@ -377,7 +419,10 @@ void AssetManager::ReadClip(const wchar_t* wcModel, const wchar_t* wcAnim)
 	wcscat_s(wcFullPath, wcAnim);
 
 	wcscat_s(wcFullPath, L"\n");
-	pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	if(pSceneLoading)
+	{
+		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+	}
 }
 
 void AssetManager::CleanUp()

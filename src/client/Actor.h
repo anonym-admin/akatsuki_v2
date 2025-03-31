@@ -70,7 +70,7 @@ protected:
 	// 中宜端
 	Collider* _pCollider = nullptr;
 	Collider* _pEventCollider[MAX_EVENT_COLLIDER_NUM] = {};
-	AkU32 _uEventColliderNum = 0;
+	AkI32 _iEventColliderNum = 0;
 
 	// 悪端
 	RigidBody* _pRigidBody = nullptr;

@@ -16,26 +16,29 @@ ModelObject::ModelObject(const ModelObject& rOrigin)
 {
 	// Copy Model.
 	_pModel = rOrigin._pModel;
-	
+
 	// Create Transform.
 	_pTransform = CreateTransform();
 
 	// Create Collider.
-	switch (rOrigin._pCollider->GetType())
+	if (rOrigin._pCollider)
 	{
-	case COLLIDER_TYPE::BOX:
-		_pCollider = CreateBoxCollider();
-		break;
-	case COLLIDER_TYPE::SPHERE:
-		_pCollider = CreateSphereCollider();
-		break;
-	case COLLIDER_TYPE::CAPSULE:
-		_pCollider = CreateCapsuleCollider();
-		break;
+		switch (rOrigin._pCollider->GetType())
+		{
+		case COLLIDER_TYPE::BOX:
+			_pCollider = CreateBoxCollider();
+			break;
+		case COLLIDER_TYPE::SPHERE:
+			_pCollider = CreateSphereCollider();
+			break;
+		case COLLIDER_TYPE::CAPSULE:
+			_pCollider = CreateCapsuleCollider();
+			break;
+		}
 	}
 
-	_uEventColliderNum = rOrigin._uEventColliderNum;
-	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	_iEventColliderNum = rOrigin._iEventColliderNum;
+	for (AkI32 i = 0; i < _iEventColliderNum; i++)
 	{
 		switch (rOrigin._pEventCollider[i]->GetType())
 		{
@@ -131,8 +134,12 @@ void ModelObject::FinalUpdate()
 		_pTransform->Update();
 	}
 	
-	_pCollider->Update();
-	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	if(_pCollider)
+	{
+		_pCollider->Update();
+	}
+
+	for (AkI32 i = 0; i < _iEventColliderNum; i++)
 	{
 		_pEventCollider[i]->Update();
 	}
@@ -148,8 +155,12 @@ void ModelObject::Render()
 	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());
 	_pModel->Render();
 
-	_pCollider->Render();
-	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	if (_pCollider)
+	{
+		_pCollider->Render();
+	}
+
+	for (AkI32 i = 0; i < _iEventColliderNum; i++)
 	{
 		_pEventCollider[i]->Render();
 	}
@@ -264,7 +275,7 @@ void ModelObject::RenderGUI()
 	ImGuizmo::DecomposeMatrixToComponents((float*)&mWorldRow._11, matrixTranslation, matrixRotation, matrixScale);
 
 	_pTransform->SetScale((Vector3*)matrixScale);
-	_pTransform->SetRotation(DirectX::XMConvertToRadians(matrixRotation[1]), 0.0f, 0.0f);
+	_pTransform->SetRotation(DirectX::XMConvertToRadians(matrixRotation[1]), DirectX::XMConvertToRadians(matrixRotation[0]), 0.0f);
 	_pTransform->SetPosition((Vector3*)matrixTranslation);
 
 	_pTransform->Update();
@@ -314,7 +325,7 @@ void ModelObject::CleanUp()
 		_pCollider = nullptr;
 	}
 
-	for (AkU32 i = 0; i < _uEventColliderNum; i++)
+	for (AkI32 i = 0; i < _iEventColliderNum; i++)
 	{
 		if (_pEventCollider[i])
 		{
