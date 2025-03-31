@@ -17,6 +17,7 @@ class FResourceManager;
 class FTextureManager;
 class FFontManager;
 class FRenderQueue;
+class FPostEffect;
 class FPostProcess;
 class FRenderParticle;
 class FRenderMirror;
@@ -29,6 +30,10 @@ public:
 	static const AkU32 MAX_DESCRIPTOR_COUNT = 4096;
 	static const AkU32 MAX_RENDER_THREAD_COUNT = 8;
 	static const AkU32 CASCADE_SHADOW_MAP_LEVEL = 5;
+	static const AkU32 FLOAT16_BUFFER_COUNT = 1;
+	static const AkU32 RESOLVED_BUFFER_COUNT = 1;
+	static const AkU32 POST_EFFECT_BUFFER_COUNT = 1;
+	static const AkU32 MAX_FRAME_BUFFER_COUNT = FLOAT16_BUFFER_COUNT + RESOLVED_BUFFER_COUNT + POST_EFFECT_BUFFER_COUNT;
 
 	FRenderer();
 	~FRenderer();
@@ -147,8 +152,12 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetBackBufferRtvCpu() { return CD3DX12_CPU_DESCRIPTOR_HANDLE(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetFloatBufferSrvCpu() { return _hFloatBufferSrvCpu; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetResolvedBufferSrvCpu() { return _hResolvedBufferSrvCpu; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetPostEffectBufferrSrvCpu() { return _hPostEffectBufferSrvCpu; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthMapBufferSrvCpu() { return _hDepthMapSrvCpu; }
 	ID3D12Resource* GetResolvedBuffer() { return _pResolvedBuffer; }
+	ID3D12Resource* GetPostEffectBuffer() { return _pPostEffectBuffer; }
 	ID3D12Resource* GetBackBuffer() { return _ppBackBuffer[_uRTIndex]; }
+	ID3D12Resource* GetDepthMapBuffer() { return _pDepthOnlyDS; }
 	ID3D12DescriptorHeap* GetRtvHeap() { return _pRTVHeap; }
 	AkU32 GetRtvDescriptorSize() { return _uRTVDesciptorSize; }
 	AkU32 GetDsvDescriptorSize() { return _uDSVDescriptorSize; }
@@ -172,16 +181,18 @@ private:
 	AkBool CreateDescriptorForDSV();
 	AkBool CreateSwapChain(IDXGIFactory4* pFactory, AkU32 uScreenWidth, AkU32 uScreenHeight);
 	AkBool CreateRTVs();
-	AkBool CreateRTVsAndSRVsForPBR();
+	AkBool CreateAdditionalRTVsAndSRVs();
 	AkBool CreateDSVs(AkU32 uWidth, AkU32 uHeight);
 	AkBool CreateShadowDSVs(AkU32 uWidth, AkU32 uHeight);
 	AkBool CreateFence();
 	AkBool CreateRenderThreadPool(AkU32 uThreadCount);
+	AkBool CrreatePostEffect();
 	AkBool CreatePostProcess();
 	AkBool CreateImGuiInitResource();
 	AkBool CreateRenderUI();
 	AkBool CreateRenderParticle();
 	AkBool CreateRenderMirror();
+
 	void InitViewports(AkF32 fWidth, AkF32 fHeight);
 	void InitScissorRect(AkU32 uWidth, AkU32 uHeight);
 	void InitCamera();
@@ -191,12 +202,13 @@ private:
 	void DestroyDescriptorForDSV();
 	void DestroySwapChain();
 	void DestroyRTVs();
-	void DestroyRTVsAndSRVsForPBR();
+	void DestroyAdditionalRTVsAndSRVs();
 	void DestroyDSVs();
 	void DestroyShadowDSVs();
 	void DestroyFence();
 	void DestroyRenderThreadPool(AkU32 uThreadCount);
 	void DestroyPostProcess();
+	void DestroyPostEffect();
 	void DestroyImGuiInitResource();
 	void DestroyRenderUI();
 	void DestroyRenderParticle();
@@ -278,25 +290,31 @@ private:
 	AkU32 _uPointLightsNum = 0;
 	AkU32 _uSpotLightsNum = 0;
 	Vector3 _vLightPos = Vector3(0.0f, 2.5f, 1025.0f);
-	D3D12_CPU_DESCRIPTOR_HANDLE _pDepthMapSrvCpu = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE _hDepthMapSrvCpu = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE _pShadowMapSrvCpu[CASCADE_SHADOW_MAP_LEVEL] = {};
 
-	// For PBR Variable
 	ID3D12Resource* _pFloatBuffer = nullptr;
 	ID3D12Resource* _pResolvedBuffer = nullptr;
+	ID3D12Resource* _pPostEffectBuffer = nullptr;
 	D3D12_CPU_DESCRIPTOR_HANDLE _hFloatBufferSrvCpu = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE _hResolvedBufferSrvCpu = {};
-	FPostProcess* _pPostProcess = nullptr;
+	D3D12_CPU_DESCRIPTOR_HANDLE _hPostEffectBufferSrvCpu = {};
 	DXGI_FORMAT _tBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	DXGI_FORMAT _tFloatBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	AkF32 _fIBLStrength = 1.0f;
 	AkBool _bUseMSAA = AK_TRUE;
 	AkU32 _uNumQualityLevels = 0;
 
+	// Post Effect.
+	FPostEffect* _pPostEffect = nullptr;
+
 	// Post Process Parameter
 	AkI32 _iToneMappingType = 0; // 0 : Linear, 1 : Uncharted, 2: Filmic
 	AkU32 _uBloomLevels = 4;
 	AkF32 _fBloomStrength = 0.05f;
+
+	// Post Process.
+	FPostProcess* _pPostProcess = nullptr;
 
 	// For Rendering UI.
 	FRenderUI* _pRenderUI = nullptr;

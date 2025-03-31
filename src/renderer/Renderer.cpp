@@ -17,6 +17,7 @@
 #include "LineObject.h"
 #include "BillboardObject.h"
 #include "TerrainObject.h"
+#include "PostEffect.h"
 #include "PostProcess.h"
 #include "RenderUI.h"
 #include "RenderParticle.h"
@@ -185,7 +186,7 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 		return AK_FALSE;
 	}
 
-	if (!CreateRTVsAndSRVsForPBR())
+	if (!CreateAdditionalRTVsAndSRVs())
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -204,6 +205,12 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 	}
 
 	if (!CreateFence())
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+
+	if (!CrreatePostEffect())
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -404,15 +411,18 @@ void FRenderer::EndRender()
 	// Copy To Resolved Buffer.
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
+	// Post Effect.
+	_pPostEffect->Process(0, pCmdListPool, _pCmdQueue, &_tMainViewport, &_tMainScissorRect);
+
 	// Post Process.
-	_pPostProcess->Process(0, pCmdListPool, _pCmdQueue, hBackBufferRTVHeap, &_tMainViewport, &_tMainScissorRect);
+	_pPostProcess->Process(1, pCmdListPool, _pCmdQueue, hBackBufferRTVHeap, &_tMainViewport, &_tMainScissorRect);
 
 	// MSAA 를 사용하지 않는 DSV Heap 영역에 접근
 	hDSVHeap.Offset(1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 
 	// Render UI
 	// Post Process의 Descriptor 유일설 보장을 위해 1번 쓰레드 인덱스로 실행.
-	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	_pRenderUI->Process(2, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
 	pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->RSSetViewports(1, &_tMainViewport);
@@ -540,7 +550,7 @@ AkBool FRenderer::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 	_uRTIndex = _pSwapChain->GetCurrentBackBufferIndex();
 
 	CreateRTVs();
-	CreateRTVsAndSRVsForPBR();
+	CreateAdditionalRTVsAndSRVs();
 	CreateDSVs(uScreenWidth, uScreenHeight);
 
 	_pPostProcess->CreateBuffers(uScreenWidth, uScreenHeight);
@@ -1608,6 +1618,8 @@ void FRenderer::CleanUp()
 
 	DestroyPostProcess();
 
+	DestroyPostEffect();
+
 	DestroyRenderThreadPool(_uRenderThreadCount);
 
 	DestroyFence();
@@ -1616,7 +1628,7 @@ void FRenderer::CleanUp()
 
 	DestroyDSVs();
 
-	DestroyRTVsAndSRVsForPBR();
+	DestroyAdditionalRTVsAndSRVs();
 
 	DestroyRTVs();
 
@@ -1767,7 +1779,7 @@ AkBool FRenderer::CreateCmdQueue()
 AkBool FRenderer::CreateDescriptorForRTV()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC tRtvHeapDesc = {};
-	tRtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT + 2 + _uBloomLevels; // Float Rtv + Resolved Rtv.
+	tRtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT + MAX_FRAME_BUFFER_COUNT + _uBloomLevels; // Float Rtv + Resolved Rtv + Post Effect Rtv.
 	tRtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	tRtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	if (FAILED(_pDevice->CreateDescriptorHeap(&tRtvHeapDesc, IID_PPV_ARGS(&_pRTVHeap))))
@@ -1846,7 +1858,7 @@ AkBool FRenderer::CreateRTVs()
 	return AK_TRUE;
 }
 
-AkBool FRenderer::CreateRTVsAndSRVsForPBR()
+AkBool FRenderer::CreateAdditionalRTVsAndSRVs()
 {
 	// 멀티 샘플링 체크
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS tQualityLevels = {};
@@ -1902,7 +1914,7 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 			return AK_FALSE;
 		}
 
-		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), 3, _uRTVDesciptorSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT, _uRTVDesciptorSize);
 
 		_pDevice->CreateRenderTargetView(_pFloatBuffer, nullptr, hRtvCpu);
 
@@ -1915,7 +1927,7 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 		_hFloatBufferSrvCpu = hSrvCpu;
 	}
 
-	// MSAA 를 끈 Resolved Buffer 생성 => Shader 에서 블룸 계산을 위해.
+	// MSAA 를 끈 Resolved Buffer 생성 => Post Effect SRV 로 전달.
 	{
 		tRtvDesc.SampleDesc.Count = 1;
 		tRtvDesc.SampleDesc.Quality = 0;
@@ -1925,7 +1937,7 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 			return AK_FALSE;
 		}
 
-		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), 4, _uRTVDesciptorSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT + FLOAT16_BUFFER_COUNT, _uRTVDesciptorSize);
 
 		_pDevice->CreateRenderTargetView(_pResolvedBuffer, nullptr, hRtvCpu);
 
@@ -1936,6 +1948,29 @@ AkBool FRenderer::CreateRTVsAndSRVsForPBR()
 		}
 
 		_hResolvedBufferSrvCpu = hSrvCpu;
+	}
+
+	// MSAA 를 끈 Post Effect Buffer 생성 => Post Process 의 SRV 로 전달.
+	{
+		tRtvDesc.SampleDesc.Count = 1;
+		tRtvDesc.SampleDesc.Quality = 0;
+		if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tRtvDesc, D3D12_RESOURCE_STATE_RENDER_TARGET, &tClearValue, IID_PPV_ARGS(&_pPostEffectBuffer))))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT + FLOAT16_BUFFER_COUNT + RESOLVED_BUFFER_COUNT, _uRTVDesciptorSize);
+
+		_pDevice->CreateRenderTargetView(_pPostEffectBuffer, nullptr, hRtvCpu);
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hSrvCpu = {};
+		if (_pDescriptorAllocator->AllocDescriptorHandle(&hSrvCpu))
+		{
+			_pDevice->CreateShaderResourceView(_pPostEffectBuffer, nullptr, hSrvCpu);
+		}
+
+		_hPostEffectBufferSrvCpu = hSrvCpu;
 	}
 
 	return AK_TRUE;
@@ -2050,7 +2085,7 @@ AkBool FRenderer::CreateDSVs(AkU32 uWidth, AkU32 uHeight)
 		{
 			_pDevice->CreateShaderResourceView(_pDepthOnlyDS, &tSrvDesc, hSrvCpu);
 
-			_pDepthMapSrvCpu = hSrvCpu;
+			_hDepthMapSrvCpu = hSrvCpu;
 		}
 	}
 
@@ -2160,6 +2195,18 @@ AkBool FRenderer::CreateRenderThreadPool(AkU32 uThreadCount)
 		_pRenderThreadDescList[i].uThreadIndex = i;
 		AkU32 uThreadID = 0;
 		_pRenderThreadDescList[i].hThread = reinterpret_cast<HANDLE>(_beginthreadex(nullptr, 0, RenderThreadByProcess, _pRenderThreadDescList + i, 0, &uThreadID));
+	}
+
+	return AK_TRUE;
+}
+
+AkBool FRenderer::CrreatePostEffect()
+{
+	_pPostEffect = new FPostEffect;
+	if (!_pPostEffect->Initialize(this))
+	{
+		__debugbreak();
+		return AK_FALSE;
 	}
 
 	return AK_TRUE;
@@ -2424,8 +2471,13 @@ void FRenderer::DestroyRTVs()
 	}
 }
 
-void FRenderer::DestroyRTVsAndSRVsForPBR()
+void FRenderer::DestroyAdditionalRTVsAndSRVs()
 {
+	if (_pPostEffectBuffer)
+	{
+		_pPostEffectBuffer->Release();
+		_pPostEffectBuffer = nullptr;
+	}
 	if (_pFloatBuffer)
 	{
 		_pFloatBuffer->Release();
@@ -2521,6 +2573,15 @@ void FRenderer::DestroyPostProcess()
 	{
 		delete _pPostProcess;
 		_pPostProcess = nullptr;
+	}
+}
+
+void FRenderer::DestroyPostEffect()
+{
+	if (_pPostEffect)
+	{
+		delete _pPostEffect;
+		_pPostEffect = nullptr;
 	}
 }
 

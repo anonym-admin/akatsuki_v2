@@ -79,7 +79,7 @@ void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, I
 	{
 		if (0 == i)
 		{
-			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetResolvedBuffer(), D3D12_RESOURCE_STATE_RESOLVE_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetPostEffectBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 		}
 		else
 		{
@@ -106,7 +106,7 @@ void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, I
 
 	RenderImageFilter(uThreadIndex, pCmdListPool, pCmdList, pCmdQueue, _pCombineFilter, &hCPU, &hGPU); // 2
 
-	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetResolvedBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RESOLVE_DEST));
+	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetPostEffectBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
 	pCmdListPool->Close();
 	pCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList**)&pCmdList);
@@ -148,6 +148,8 @@ void FPostProcess::RenderImageFilter(AkU32 uThreadIndex, FCommandListPool* pCmdL
 
 void FPostProcess::CleanUp()
 {
+	_pRenderer->EnsureCompleted();
+
 	DestroyImageFilters();
 
 	DestroyBuffer();
@@ -437,7 +439,7 @@ AkBool FPostProcess::CreateImageFilters(AkU32 uWidth, AkU32 uHeight)
 		_ppBloomDownFilters[i]->Initialize(_pRenderer, uWidth / uDiv, uHeight / uDiv, _pUpDownFilterRootSignature, _pBloomDownPSO);
 		if (0 == i)
 		{
-			_ppBloomDownFilters[i]->SetSrvCpu(&_pRenderer->GetResolvedBufferSrvCpu());
+			_ppBloomDownFilters[i]->SetSrvCpu(&_pRenderer->GetPostEffectBufferrSrvCpu());
 		}
 		else
 		{
@@ -460,7 +462,7 @@ AkBool FPostProcess::CreateImageFilters(AkU32 uWidth, AkU32 uHeight)
 	// Combine + ToneMApping
 	D3D12_CPU_DESCRIPTOR_HANDLE pSrvCpus[] =
 	{
-		_pRenderer->GetResolvedBufferSrvCpu(),
+		_pRenderer->GetPostEffectBufferrSrvCpu(),
 		_hSrvCpu[0],
 	};
 	_pCombineFilter = new FImageFilter;
@@ -468,7 +470,7 @@ AkBool FPostProcess::CreateImageFilters(AkU32 uWidth, AkU32 uHeight)
 	_pCombineFilter->SetSrvCpu(pSrvCpus, _countof(pSrvCpus));
 	_pCombineFilter->SetRtvCpu(&_pRenderer->GetBackBufferRtvCpu());
 
-	return AkBool();
+	return AK_TRUE;
 }
 
 void FPostProcess::DestroyRootSignature()
@@ -596,7 +598,7 @@ void FPostProcess::CreateBuffer(AkU32 uWidth, AkU32 uHeight, ID3D12Resource** pp
 		__debugbreak();
 	}
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRenderer->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart(), 5 + uIndex, _pRenderer->GetRtvDescriptorSize());
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRenderer->GetRtvHeap()->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT + FRenderer::MAX_FRAME_BUFFER_COUNT + uIndex, _pRenderer->GetRtvDescriptorSize());
 
 	pDevice->CreateRenderTargetView(pResource, nullptr, hRtvCpu);
 

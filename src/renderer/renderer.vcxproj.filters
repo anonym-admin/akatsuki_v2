@@ -335,5 +335,8 @@
     <CustomBuild Include="..\..\shader\Ocean.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\shader\PostEffect.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

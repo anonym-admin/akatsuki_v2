@@ -15,6 +15,7 @@ enum class CONSTANT_BUFFER_TYPE
 	CONSTANT_BUFFER_TYPE_MATERIAL,
 	CONSTANT_BUFFER_TYPE_SPRITE,
 	CONSTANT_BUFFER_TYPE_TERRAIN_BRUSH,
+	CONSTANT_BUFFER_TYPE_POSTEFFECT,
 	CONSTANT_BUFFER_TYPE_POSTPROCESS,
 	CONSTANT_BUFFER_TYPE_PARTICLE_COLOR,
 	CONSTANT_BUFFER_TYPE_PARTICLE_SPARK,
@@ -119,6 +120,13 @@ struct BrushConstantBuffer_t // Terrain.h
 	Vector3 vPos = Vector3(0.0f);
 	AkF32 fRange = 10.0f;
 	Vector3 vColor = Vector3(0.0f, 0.5f, 0.0f);
+};
+
+struct PostEffectConstantBuffer_t
+{
+	AkI32 iMode;
+	AkF32 fDepthScale;
+	AkF32 fFogStrength;
 };
 
 struct PostProcessConstantBuffer_t

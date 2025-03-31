@@ -11,6 +11,7 @@ ConstantBufferProperty_t g_pConstantbufferProperties[] =
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_MATERIAL, sizeof(MaterialConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_SPRITE, sizeof(SpriteConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_TERRAIN_BRUSH, sizeof(BrushConstantBuffer_t),
+	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_POSTEFFECT, sizeof(PostEffectConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_POSTPROCESS, sizeof(PostProcessConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_PARTICLE_COLOR, sizeof(ParticleColorConstantBuffer_t),
 	CONSTANT_BUFFER_TYPE::CONSTANT_BUFFER_TYPE_PARTICLE_SPARK, sizeof(ParticleSparkConstantBuffer_t),
