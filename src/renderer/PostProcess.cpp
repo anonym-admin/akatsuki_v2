@@ -8,6 +8,7 @@
 #include "ImageFiler.h"
 #include "ConstantBufferManager.h"
 #include "ConstantBufferPool.h"
+#include "CommandListPool.h"
 
 /*
 ===================
@@ -53,8 +54,10 @@ AkBool FPostProcess::Initialize(FRenderer* pRenderer, AkU32 uBloomLevels, AkU32 
 	return AK_TRUE;
 }
 
-void FPostProcess::Process(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, D3D12_CPU_DESCRIPTOR_HANDLE hBackBufferRTV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
+void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, D3D12_CPU_DESCRIPTOR_HANDLE hBackBufferRTV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
 {
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
 	ID3D12DescriptorHeap* pDescriptorHeap = pDescriptorPool->GetDescriptorHeap();
@@ -85,7 +88,7 @@ void FPostProcess::Process(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdLi
 
 		pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_ppBloomBuffers[i + 1], D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-		RenderImageFilter(uThreadIndex, pCmdList, _ppBloomDownFilters[i], &hCPU, &hGPU); // 1 x(_uBloomLevel - 1)
+		RenderImageFilter(uThreadIndex, pCmdListPool, pCmdList, pCmdQueue, _ppBloomDownFilters[i], &hCPU, &hGPU); // 1 x(_uBloomLevel - 1)
 	}
 	for (AkU32 i = 0; i < _uBloomLevel - 1; i++)
 	{
@@ -94,16 +97,19 @@ void FPostProcess::Process(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdLi
 		pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_ppBloomBuffers[uLevel + 1], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 		pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_ppBloomBuffers[uLevel], D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-		RenderImageFilter(uThreadIndex, pCmdList, _ppBloomUpFilters[i], &hCPU, &hGPU); // 1 x (_uBloomLevel - 1)
+		RenderImageFilter(uThreadIndex, pCmdListPool, pCmdList, pCmdQueue, _ppBloomUpFilters[i], &hCPU, &hGPU); // 1 x (_uBloomLevel - 1)
 	}
 
 	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_ppBloomBuffers[0], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 
 	_pCombineFilter->SetRtvCpu(&_pRenderer->GetBackBufferRtvCpu()); // Combine shader 의 경우 Backbuffer 의 내용을 쓰기때문에 매 프레임 업데이트 필요!!
 
-	RenderImageFilter(uThreadIndex, pCmdList, _pCombineFilter, &hCPU, &hGPU); // 2
+	RenderImageFilter(uThreadIndex, pCmdListPool, pCmdList, pCmdQueue, _pCombineFilter, &hCPU, &hGPU); // 2
 
 	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetResolvedBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RESOLVE_DEST));
+
+	pCmdListPool->Close();
+	pCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList**)&pCmdList);
 }
 
 AkBool FPostProcess::CreateBuffers(AkU32 uWidth, AkU32 uHeight)
@@ -130,7 +136,7 @@ AkBool FPostProcess::CreateBuffers(AkU32 uWidth, AkU32 uHeight)
 	return AK_TRUE;
 }
 
-void FPostProcess::RenderImageFilter(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, FImageFilter* pImageFilter, CD3DX12_CPU_DESCRIPTOR_HANDLE* pCPU, CD3DX12_GPU_DESCRIPTOR_HANDLE* pGPU)
+void FPostProcess::RenderImageFilter(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID3D12GraphicsCommandList* pCmdList, ID3D12CommandQueue* pCmdQueue, FImageFilter* pImageFilter, CD3DX12_CPU_DESCRIPTOR_HANDLE* pCPU, CD3DX12_GPU_DESCRIPTOR_HANDLE* pGPU)
 {
 	pImageFilter->Draw(uThreadIndex, pCmdList, pCPU, pGPU);
 	

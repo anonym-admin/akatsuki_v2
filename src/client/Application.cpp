@@ -459,7 +459,7 @@ void Application::UpdateEnviroment()
 	}
 	if (_bUseDebugMode)
 	{
-		if (KEY_DOWN(KEY_INPUT_P))
+		if (KEY_DOWN(KEY_INPUT_O))
 		{
 			_bUsePostProcessController = !_bUsePostProcessController;
 			Camera::UPDATE_CAMERA = !Camera::UPDATE_CAMERA;

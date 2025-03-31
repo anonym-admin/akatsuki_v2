@@ -344,22 +344,14 @@ void FRenderer::EndRender()
 #endif
 
 	// Render Particle.
-	_pRenderParticle->Process(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	_pRenderParticle->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
 	
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
-	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
 	// Render Mirror.
-	_pRenderMirror->BeginMirrorRender(1, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
-	
-	pCmdList = pCmdListPool->GetCurrentCmdList();
-	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	_pRenderMirror->BeginMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+	_pRenderMirror->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
+	_pRenderMirror->EndMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
 
-	_pRenderMirror->Process(2, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
-
-	_pRenderMirror->EndMirrorRender(3, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect);
-
-	pCmdList = pCmdListPool->GetCurrentCmdList();
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hBackBufferRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize);
 
 	D3D12_RESOURCE_BARRIER pBarriers0[] =
@@ -374,14 +366,14 @@ void FRenderer::EndRender()
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	
 	// Post Process.
-	_pPostProcess->Process(0, pCmdList, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
+	_pPostProcess->Process(0, pCmdListPool, _pCmdQueue, hBackBufferRTVHeap, &_tViewport, &_tScissorRect);
 
 	// MSAA 를 사용하지 않는 DSV Heap 영역에 접근
 	hDSVHeap.Offset(1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 
 	// Render UI
 	// Post Process의 Descriptor 유일설 보장을 위해 1번 쓰레드 인덱스로 실행.
-	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, & _tViewport, & _tScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tViewport, &_tScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
 	pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->RSSetViewports(1, &_tViewport);

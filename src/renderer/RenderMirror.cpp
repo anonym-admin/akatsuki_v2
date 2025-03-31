@@ -76,6 +76,7 @@ void FRenderMirror::BeginMirrorRender(DWORD uThreadIndex, FCommandListPool* pCmd
 	ID3D12GraphicsCommandList* pCmdList = nullptr;
 
 	pCmdList = pCmdListPool->GetCurrentCmdList();
+	pCmdList->ClearDepthStencilView(hDSV, D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	pCmdList->OMSetStencilRef(1);
 	pCmdList->RSSetViewports(1, pViewport);
 	pCmdList->RSSetScissorRects(1, pScissorRect);
@@ -812,12 +813,18 @@ DWORD FRenderMirror::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool,
 	DWORD dwProcessedCount = 0;
 	DWORD dwProcessedCountPerCommandList = 0;
 	const RenderItem_t* pItem = nullptr;
+	AkBool bFirst = AK_TRUE;
 	while (pItem = Dispatch())
 	{
 		pCmdList = pCmdListPool->GetCurrentCmdList();
 		pCmdList->RSSetViewports(1, pViewport);
 		pCmdList->RSSetScissorRects(1, pScissorRect);
 		pCmdList->OMSetRenderTargets(1, &hRTV, AK_FALSE, &hDSV);
+		if (bFirst)
+		{
+			pCmdList->ClearDepthStencilView(hDSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+			bFirst = AK_FALSE;
+		}
 
 		switch (pItem->eItemType)
 		{
