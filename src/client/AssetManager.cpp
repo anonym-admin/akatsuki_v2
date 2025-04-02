@@ -42,7 +42,7 @@ void AssetManager::AddMeshData(const wchar_t* wcBasePath, const wchar_t* wcModel
 
 	if(pSceneLoading)
 	{
-		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+		// pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 	}
 }
 
@@ -74,7 +74,7 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, L"\n");
 	if (pSceneLoading)
 	{
-		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+		// pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 	}
 
 	memset(wcFullPath, 0, sizeof(wchar_t) * MAX_PATH);
@@ -94,7 +94,7 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, L"\n");
 	if (pSceneLoading)
 	{
-		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+		// pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 	}
 
 	memset(wcFullPath, 0, sizeof(wchar_t) * MAX_PATH);
@@ -128,7 +128,7 @@ void AssetManager::AddCubeMapTexture(const wchar_t* wcBasePath, const wchar_t* w
 	wcscat_s(wcFullPath, L"\n");
 	if (pSceneLoading)
 	{
-		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+		// pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 	}
 }
 
@@ -421,7 +421,7 @@ void AssetManager::ReadClip(const wchar_t* wcModel, const wchar_t* wcAnim)
 	wcscat_s(wcFullPath, L"\n");
 	if(pSceneLoading)
 	{
-		pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
+		// pSceneLoading->RenderLoadingScreenCallBack(wcFullPath);
 	}
 }
 

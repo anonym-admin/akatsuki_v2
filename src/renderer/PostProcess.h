@@ -22,7 +22,7 @@ public:
 	~FPostProcess();
 
 	AkBool Initialize(FRenderer* pRenderer, AkU32 uBloomLevels, AkU32 uWidth, AkU32 uHeight);
-	void Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, D3D12_CPU_DESCRIPTOR_HANDLE hBackBufferRTV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect);
+	void Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, D3D12_CPU_DESCRIPTOR_HANDLE hBackBufferRTV);
 	AkBool CreateBuffers(AkU32 uWidth, AkU32 uHeight);
 	void RenderImageFilter(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID3D12GraphicsCommandList* pCmdList, ID3D12CommandQueue* pCmdQueue, FImageFilter* pImageFilter, CD3DX12_CPU_DESCRIPTOR_HANDLE* pCPU, CD3DX12_GPU_DESCRIPTOR_HANDLE* pGPU);
 

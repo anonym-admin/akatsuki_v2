@@ -54,7 +54,7 @@ AkBool FPostProcess::Initialize(FRenderer* pRenderer, AkU32 uBloomLevels, AkU32 
 	return AK_TRUE;
 }
 
-void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, D3D12_CPU_DESCRIPTOR_HANDLE hBackBufferRTV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
+void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, D3D12_CPU_DESCRIPTOR_HANDLE hBackBufferRTV)
 {
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 

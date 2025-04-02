@@ -3,27 +3,31 @@
 #include "RenderQueue.h"
 #include "Renderer.h"
 #include "CommandListPool.h"
+#include "BasicMeshObject.h"
+#include "SkinnedMeshObject.h"
+#include "BillboardObject.h"
+#include "TerrainObject.h"
 
-RenderDepthMap::RenderDepthMap()
+FRenderDepthMap::FRenderDepthMap()
 {
 }
 
-RenderDepthMap::~RenderDepthMap()
+FRenderDepthMap::~FRenderDepthMap()
 {
 	CleanUp();
 }
 
-AkBool RenderDepthMap::Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum)
+AkBool FRenderDepthMap::Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum)
 {
-    _pRenderer = pRenderer;
-    _uMaxBufferSize = sizeof(RenderItem_t) * dwMaxItemNum;
-    _pBuffer = (AkU8*)malloc(_uMaxBufferSize);
-    memset(_pBuffer, 0, _uMaxBufferSize);
+	_pRenderer = pRenderer;
+	_uMaxBufferSize = sizeof(RenderItem_t) * dwMaxItemNum;
+	_pBuffer = (AkU8*)malloc(_uMaxBufferSize);
+	memset(_pBuffer, 0, _uMaxBufferSize);
 
-    return AK_TRUE;
+	return AK_TRUE;
 }
 
-AkBool RenderDepthMap::Add(const RenderItem_t* pItem)
+AkBool FRenderDepthMap::Add(const RenderItem_t* pItem)
 {
 	AkBool bResult = AK_FALSE;
 	if (_uAllocatedSize + sizeof(RenderItem_t) > _uMaxBufferSize)
@@ -42,7 +46,7 @@ AkBool RenderDepthMap::Add(const RenderItem_t* pItem)
 	return bResult;
 }
 
-DWORD RenderDepthMap::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
+DWORD FRenderDepthMap::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
@@ -58,23 +62,32 @@ DWORD RenderDepthMap::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool
 		pCmdList = pCmdListPool->GetCurrentCmdList();
 		pCmdList->RSSetViewports(1, pViewport);
 		pCmdList->RSSetScissorRects(1, pScissorRect);
-		pCmdList->OMSetRenderTargets(1, &hRTV, AK_FALSE, &hDSV);
+		pCmdList->OMSetRenderTargets(0, nullptr, AK_FALSE, &hDSV);
 
 		switch (pItem->eItemType)
 		{
 		case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ_DEPTH_MAP:
 		{
-			
-			if (pItem->tParticleParam.uParticleNum)
-			{
-				// Draw Spark
-				pParticle->Draw(uThreadIndex, pCmdList, &pItem->tParticleParam.mWorld, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.uParticleNum, pItem->tParticleParam.fTime, pItem->tParticleParam.fDuration, pItem->tParticleParam.pStartSize, pItem->tParticleParam.pStartDirection, pItem->tParticleParam.fSizeOverLifeTime, pItem->tParticleParam.pRotOverLifeTime, pItem->tParticleParam.pTotalColor, pItem->tParticleParam.pColorOverLifeTime);
-			}
-			else
-			{
-				// Draw Sprite
-				pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.pMaxFrame, pItem->tParticleParam.pCurFrame);
-			}
+			FBasicMeshObject* pMeshObj = (FBasicMeshObject*)pItem->pObjHandle;
+			pMeshObj->DrawDepthMap(uThreadIndex, pCmdList, &pItem->tMeshObjParam.mWorld);
+		}
+		break;
+		case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ_DEPTH_MAP:
+		{
+			FSkinnedMeshObject* pMeshObj = (FSkinnedMeshObject*)pItem->pObjHandle;
+			pMeshObj->DrawDepthMap(uThreadIndex, pCmdList, &pItem->tSkinnedMeshObjParam.mWorld, pItem->tSkinnedMeshObjParam.pBonesTransform);
+		}
+		break;
+		case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD_DEPTH_MAP:
+		{
+			FBillboardObjects* pBillboard = (FBillboardObjects*)pItem->pObjHandle;
+			pBillboard->DrawDepthMap(uThreadIndex, pCmdList, &pItem->tBillboardParam.mWorld);
+		}
+		break;
+		case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ_DEPTH_MAP:
+		{
+			FTerrainObject* pTerrain = (FTerrainObject*)pItem->pObjHandle;
+			// pTerrain->DrawDepthMap(uThreadIndex, pCmdList, &pItem->tTerrianParam.mWorld);
 		}
 		break;
 		default:
@@ -109,17 +122,19 @@ DWORD RenderDepthMap::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool
 	{
 		pCmdQueue->ExecuteCommandLists(uCommandListCount, (ID3D12CommandList**)ppCmdLists);
 	}
+
 	_uItemCount = 0;
+
 	return dwProcessedCount;
 }
 
-void RenderDepthMap::Reset()
+void FRenderDepthMap::Reset()
 {
 	_uAllocatedSize = 0;
 	_uReadBufferPos = 0;
 }
 
-void RenderDepthMap::CleanUp()
+void FRenderDepthMap::CleanUp()
 {
 	if (_pBuffer)
 	{
@@ -128,7 +143,7 @@ void RenderDepthMap::CleanUp()
 	}
 }
 
-const RenderItem_t* RenderDepthMap::Dispatch()
+const RenderItem_t* FRenderDepthMap::Dispatch()
 {
 	const RenderItem_t* pItem = nullptr;
 	if (_uReadBufferPos + sizeof(RenderItem_t) > _uAllocatedSize)
@@ -139,5 +154,5 @@ const RenderItem_t* RenderDepthMap::Dispatch()
 	pItem = (const RenderItem_t*)(_pBuffer + _uReadBufferPos);
 	_uReadBufferPos += sizeof(RenderItem_t);
 
-	return pItem
+	return pItem;
 }

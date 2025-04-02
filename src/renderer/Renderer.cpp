@@ -22,6 +22,8 @@
 #include "RenderUI.h"
 #include "RenderParticle.h"
 #include "RenderMirror.h"
+#include "RenderDepthMap.h"
+#include "RenderShadowMap.h"
 #include "Particle.h"
 #include "Environment.h"
 
@@ -240,6 +242,12 @@ AkBool FRenderer::Initialize(HWND hWnd, AkBool bEnableDebugLayer, AkBool bEnable
 		return AK_TRUE;
 	}
 
+	_pRenderDepthMap = new FRenderDepthMap;
+	_pRenderDepthMap->Initialize(this, 8192);
+
+	_pRenderShadowMap = new FRenderShadowMap;
+	_pRenderShadowMap->Initialize(this, 8192);
+
 	// TODO!!
 	Vector3 vRadiance = Vector3(0.5f);
 	Vector3 vLightDir = Vector3(-20.0f, 50.0f, 20.0f);
@@ -274,20 +282,25 @@ void FRenderer::BeginRenderDepthMap()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart(), 2 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-	pCmdList->RSSetViewports(1, &_tMainViewport);
-	pCmdList->RSSetScissorRects(1, &_tMainScissorRect);
+	pCmdListPool->CloseAndExecute(_pCmdQueue);
 
-	pCmdList->OMSetRenderTargets(0, nullptr, AK_FALSE, &hDSVHeap);
+	Fence();
 }
 
 void FRenderer::EndRenderDepthMap()
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart(), 2 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
+
+	_pRenderDepthMap->Process(0, pCmdListPool, _pCmdQueue, 400, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
+
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pDepthOnlyDS, D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ));
 
 	pCmdListPool->CloseAndExecute(_pCmdQueue);
+
+	_pRenderDepthMap->Reset();
 
 	Fence();
 
@@ -314,20 +327,25 @@ void FRenderer::BeginRenderShadowMaps()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart(), _uCascadeIndex, _uDSVDescriptorSize);
 	pCmdList->ClearDepthStencilView(hDSVHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-	pCmdList->RSSetViewports(1, &_tShadowViewport);
-	pCmdList->RSSetScissorRects(1, &_tShadowScissorRect);
+	pCmdListPool->CloseAndExecute(_pCmdQueue);
 
-	pCmdList->OMSetRenderTargets(0, nullptr, AK_FALSE, &hDSVHeap);
+	Fence();
 }
 
 void FRenderer::EndRenderShadowMaps()
 {
 	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDSVHeap(_pDSVHeap->GetCPUDescriptorHandleForHeapStart(), _uCascadeIndex, _uDSVDescriptorSize);
+
+	_pRenderShadowMap->Process(0, pCmdListPool, _pCmdQueue, 400, hDSVHeap, &_tShadowViewport, &_tShadowScissorRect);
+
+	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pShadowDS[_uCascadeIndex - 1], D3D12_RESOURCE_STATE_DEPTH_WRITE, D3D12_RESOURCE_STATE_GENERIC_READ));
 
 	pCmdListPool->CloseAndExecute(_pCmdQueue);
+
+	_pRenderShadowMap->Reset();
 
 	Fence();
 
@@ -415,14 +433,14 @@ void FRenderer::EndRender()
 	_pPostEffect->Process(0, pCmdListPool, _pCmdQueue, &_tMainViewport, &_tMainScissorRect);
 
 	// Post Process.
-	_pPostProcess->Process(1, pCmdListPool, _pCmdQueue, hBackBufferRTVHeap, &_tMainViewport, &_tMainScissorRect);
+	_pPostProcess->Process(0, pCmdListPool, _pCmdQueue, hBackBufferRTVHeap);
 
 	// MSAA 를 사용하지 않는 DSV Heap 영역에 접근
 	hDSVHeap.Offset(1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 
 	// Render UI
 	// Post Process의 Descriptor 유일설 보장을 위해 1번 쓰레드 인덱스로 실행.
-	_pRenderUI->Process(2, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
 	pCmdList = pCmdListPool->GetCurrentCmdList();
 	pCmdList->RSSetViewports(1, &_tMainViewport);
@@ -802,20 +820,28 @@ void FRenderer::RenderNormalOfBasicMeshObject(IMeshObject* pMeshObj, const Matri
 
 void FRenderer::RenderDepthMapOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
 {
-	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ_DEPTH_MAP;
+	tItem.pObjHandle = pMeshObj;
+	tItem.tMeshObjParam.mWorld = *pWorldMat;
 
-	FBasicMeshObject* pBasicMeshObj = reinterpret_cast<FBasicMeshObject*>(pMeshObj);
-	pBasicMeshObj->DrawDepthMap(0, pCmdList, pWorldMat);
+	if (!_pRenderDepthMap->Add(&tItem))
+	{
+		__debugbreak();
+	}
 }
 
 void FRenderer::RenderShadowOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
 {
-	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_MESH_OBJ_SHADOW_MAP;
+	tItem.pObjHandle = pMeshObj;
+	tItem.tMeshObjParam.mWorld = *pWorldMat;
 
-	FBasicMeshObject* pBasicMeshObj = reinterpret_cast<FBasicMeshObject*>(pMeshObj);
-	pBasicMeshObj->DrawShadowMaps(0, pCmdList, pWorldMat);
+	if (!_pRenderShadowMap->Add(&tItem))
+	{
+		__debugbreak();
+	}
 }
 
 void FRenderer::RenderSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
@@ -855,20 +881,32 @@ void FRenderer::RenderNormalOfSkinnedMeshObject(IMeshObject* pMeshObj, const Mat
 
 void FRenderer::RenderDepthMapOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
 {
-	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ_DEPTH_MAP;
+	tItem.pObjHandle = pMeshObj;
+	tItem.tSkinnedMeshObjParam.mWorld = *pWorldMat;
+	tItem.tSkinnedMeshObjParam.pBonesTransform = pBonesTransform;
+	tItem.tSkinnedMeshObjParam.bDrawNormal = AK_TRUE;
 
-	FSkinnedMeshObject* pSkinnedMeshObj = reinterpret_cast<FSkinnedMeshObject*>(pMeshObj);
-	pSkinnedMeshObj->DrawDepthMap(0, pCmdList, pWorldMat, pBonesTransform);
+	if (!_pRenderDepthMap->Add(&tItem))
+	{
+		__debugbreak();
+	}
 }
 
 void FRenderer::RenderShadowOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBonesTransform)
 {
-	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_SKINNED_MESH_OBJ_SHADOW_MAP;
+	tItem.pObjHandle = pMeshObj;
+	tItem.tSkinnedMeshObjParam.mWorld = *pWorldMat;
+	tItem.tSkinnedMeshObjParam.pBonesTransform = pBonesTransform;
+	tItem.tSkinnedMeshObjParam.bDrawNormal = AK_TRUE;
 
-	FSkinnedMeshObject* pSkinnedMeshObj = reinterpret_cast<FSkinnedMeshObject*>(pMeshObj);
-	pSkinnedMeshObj->DrawShadowMaps(0, pCmdList, pWorldMat, pBonesTransform);
+	if (!_pRenderShadowMap->Add(&tItem))
+	{
+		__debugbreak();
+	}
 }
 
 void FRenderer::RenderSpriteWithTex(void* pSpriteObjHandle, AkI32 iPosX, AkI32 iPosY, AkF32 fScaleX, AkF32 fScaleY, const RECT* pRect, AkF32 fZ, void* pTexHandle, AkBool bUseBlend)
@@ -976,20 +1014,28 @@ void FRenderer::RenderBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 
 void FRenderer::RenderDepthMapOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 {
-	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD_DEPTH_MAP;
+	tItem.pObjHandle = pBillboard;
+	tItem.tBillboardParam.mWorld = *pWorldMat;
 
-	FBillboardObjects* pBillboardObj = reinterpret_cast<FBillboardObjects*>(pBillboard);
-	pBillboardObj->DrawDepthMap(0, pCmdList, pWorldMat);
+	if (!_pRenderDepthMap->Add(&tItem))
+	{
+		__debugbreak();
+	}
 }
 
 void FRenderer::RenderShadowOfBillboard(IBillboard* pBillboard, const Matrix* pWorldMat)
 {
-	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_BILLBOARD_SHADOW_MAP;
+	tItem.pObjHandle = pBillboard;
+	tItem.tBillboardParam.mWorld = *pWorldMat;
 
-	FBillboardObjects* pBillboardObj = reinterpret_cast<FBillboardObjects*>(pBillboard);
-	pBillboardObj->DrawShadowMaps(0, pCmdList, pWorldMat);
+	if (!_pRenderShadowMap->Add(&tItem))
+	{
+		__debugbreak();
+	}
 }
 
 void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -1011,20 +1057,28 @@ void FRenderer::RenderTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void*
 
 void FRenderer::RenderDepthMapOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat)
 {
-	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ_DEPTH_MAP;
+	tItem.pObjHandle = pTerrain;
+	tItem.tTerrianParam.mWorld = *pWorldMat;
 
-	FTerrainObject* pTerrainObj = reinterpret_cast<FTerrainObject*>(pTerrain);
-	pTerrainObj->DrawDepthMap(0, pCmdList, pWorldMat);
+	if (!_pRenderDepthMap->Add(&tItem))
+	{
+		__debugbreak();
+	}
 }
 
 void FRenderer::RenderShadowOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat)
 {
-	FCommandListPool* pCmdListPool = _ppCommandListPool[_uCurContextIndex][0];
-	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_TERRAIN_OBJ_SHADOW_MAP;
+	tItem.pObjHandle = pTerrain;
+	tItem.tTerrianParam.mWorld = *pWorldMat;
 
-	FTerrainObject* pTerrainObj = reinterpret_cast<FTerrainObject*>(pTerrain);
-	pTerrainObj->DrawShadowMaps(0, pCmdList, pWorldMat);
+	if (!_pRenderShadowMap->Add(&tItem))
+	{
+		__debugbreak();
+	}
 }
 
 void FRenderer::RenderNormalOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat, void* pBrush)
@@ -1677,6 +1731,18 @@ void FRenderer::CleanUp()
 				_ppCommandListPool[i][j] = nullptr;
 			}
 		}
+	}
+
+	if (_pRenderShadowMap)
+	{
+		delete _pRenderShadowMap;
+		_pRenderShadowMap = nullptr;
+	}
+
+	if (_pRenderDepthMap)
+	{
+		delete _pRenderDepthMap;
+		_pRenderDepthMap = nullptr;
 	}
 
 	DestroyRenderParticle();

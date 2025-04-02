@@ -4,15 +4,15 @@ class FRenderer;
 class FCommandListPool;
 struct RenderItem_t;
 
-class RenderDepthMap
+class FRenderDepthMap
 {
 public:
-	RenderDepthMap();
-	~RenderDepthMap();
+	FRenderDepthMap();
+	~FRenderDepthMap();
 
 	AkBool Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum);
 	AkBool Add(const RenderItem_t* pItem);
-	DWORD Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect);
+	DWORD Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect);
 	void Reset();
 
 private:
@@ -27,6 +27,5 @@ private:
 	AkU32 _uAllocatedSize = 0;
 	AkU32 _uReadBufferPos = 0;
 	AkU32 _uItemCount = 0;
-
 };
 

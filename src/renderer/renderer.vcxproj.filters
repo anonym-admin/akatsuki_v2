@@ -166,6 +166,12 @@
     <ClCompile Include="PostEffect.cpp">
       <Filter>src\post</Filter>
     </ClCompile>
+    <ClCompile Include="RenderShadowMap.cpp">
+      <Filter>src\body</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderDepthMap.cpp">
+      <Filter>src\body</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\interface\IRenderer.h">
@@ -287,6 +293,12 @@
     </ClInclude>
     <ClInclude Include="PostEffect.h">
       <Filter>src\post</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderShadowMap.h">
+      <Filter>src\body</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderDepthMap.h">
+      <Filter>src\body</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

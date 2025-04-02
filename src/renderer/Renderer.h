@@ -23,6 +23,9 @@ class FRenderParticle;
 class FRenderMirror;
 class FRenderUI;
 
+class FRenderDepthMap;
+class FRenderShadowMap;
+
 class FRenderer : public IRenderer
 {
 public:
@@ -331,5 +334,11 @@ private:
 	// For Mirror.
 	DirectX::SimpleMath::Plane _tMirrorPlane = {};
 	FRenderMirror* _pRenderMirror = nullptr;
+
+
+
+
+	FRenderDepthMap* _pRenderDepthMap = nullptr;
+	FRenderShadowMap* _pRenderShadowMap = nullptr;
 };
 

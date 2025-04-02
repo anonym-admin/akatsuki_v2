@@ -541,21 +541,9 @@ void FTerrainObject::DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandList*
 			__debugbreak();
 		}
 		hDest.Offset(1, uDescriptorSize);
-
-		// Second
-		pTexHandle = _pSecondTexHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Third
-		pTexHandle = _pThirdTexHandle;
+		
+		// Height
+		pTexHandle = _pMeshes[i].pHeightTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -789,20 +777,8 @@ void FTerrainObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsCommandLis
 		}
 		hDest.Offset(1, uDescriptorSize);
 
-		// Second
-		pTexHandle = _pSecondTexHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Third
-		pTexHandle = _pThirdTexHandle;
+		// Height
+		pTexHandle = _pMeshes[i].pHeightTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
