@@ -108,9 +108,7 @@ void FPostEffect::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID
 	hDest.Offset(1, uDescriptorSize);
 
 	// Per Obj (t0). => Resolved Buffer
-	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetResolvedBuffer(), D3D12_RESOURCE_STATE_RESOLVE_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 	pDevice->CopyDescriptorsSimple(1, hDest, _pRenderer->GetResolvedBufferSrvCpu(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetResolvedBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RESOLVE_DEST));
 	hDest.Offset(1, uDescriptorSize);
 
 	// Per Obj (t1). => Depth Only Buffer.
@@ -122,11 +120,15 @@ void FPostEffect::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID
 	pCmdList->SetPipelineState(_pPostEffectPSO);
 
 	// Obj (root param 0)
+	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetResolvedBuffer(), D3D12_RESOURCE_STATE_RESOLVE_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
 	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	pCmdList->IASetVertexBuffers(0, 1, &_tVertexBufferView);
 	pCmdList->IASetIndexBuffer(&_tIndexBufferView);
 	pCmdList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetResolvedBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RESOLVE_DEST));
 
 	pCmdListPool->Close();
 	pCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList**)&pCmdList);
@@ -255,7 +257,7 @@ AkBool FPostEffect::CreatePipelineState()
 	tPostProcessPsoDesc.SampleMask = UINT_MAX;
 	tPostProcessPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	tPostProcessPsoDesc.NumRenderTargets = 1;
-	tPostProcessPsoDesc.RTVFormats[0] = _pRenderer->GetBackBufferRTVFormat();
+	tPostProcessPsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
 	tPostProcessPsoDesc.DepthStencilState.DepthEnable = FALSE;
 	tPostProcessPsoDesc.DepthStencilState.StencilEnable = FALSE;
 	tPostProcessPsoDesc.SampleDesc.Count = 1;

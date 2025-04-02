@@ -290,6 +290,9 @@ void FSkinnedMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
 	for (AkU32 i = 0; i < _uMeshNum; i++)
 	{
+		if (_pMeshes[i].pHeightTextureHandle->pTextureResource)
+			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pMeshes[i].pHeightTextureHandle->pTextureResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE));
+
 		// Draw Mesh(root param 1)
 		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
 		hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
@@ -297,6 +300,10 @@ void FSkinnedMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 		pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
 		pCmdList->IASetIndexBuffer(&_pMeshes[i].tIBView);
 		pCmdList->DrawIndexedInstanced(_pMeshes[i].uIndexCountPerInstance, 1, 0, 0, 0);
+
+		if (_pMeshes[i].pHeightTextureHandle->pTextureResource)
+			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pMeshes[i].pHeightTextureHandle->pTextureResource, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+
 	}
 }
 
@@ -625,6 +632,9 @@ void FSkinnedMeshObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsComman
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
 	for (AkU32 i = 0; i < _uMeshNum; i++)
 	{
+		if (_pMeshes[i].pHeightTextureHandle->pTextureResource)
+			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pMeshes[i].pHeightTextureHandle->pTextureResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE));
+
 		// Draw Mesh(root param 1)
 		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
 		hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
@@ -632,6 +642,9 @@ void FSkinnedMeshObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsComman
 		pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
 		pCmdList->IASetIndexBuffer(&_pMeshes[i].tIBView);
 		pCmdList->DrawIndexedInstanced(_pMeshes[i].uIndexCountPerInstance, 1, 0, 0, 0);
+
+		if (_pMeshes[i].pHeightTextureHandle->pTextureResource)
+			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pMeshes[i].pHeightTextureHandle->pTextureResource, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 	}
 }
 
@@ -823,13 +836,7 @@ void FSkinnedMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsComman
 		pTexHandle = _pMeshes[i].pHeightTextureHandle;
 		if (pTexHandle)
 		{
-			if (pTexHandle->pTextureResource)
-				pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pTexHandle->pTextureResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE));
-
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-			if (pTexHandle->pTextureResource)
-				pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pTexHandle->pTextureResource, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 		}
 		else
 		{
@@ -899,6 +906,9 @@ void FSkinnedMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsComman
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPUforMeshes(hGPU, DESCRIPTOR_COUNT_PER_OBJ, uDescriptorSize);
 	for (AkU32 i = 0; i < _uMeshNum; i++)
 	{
+		if (_pMeshes[i].pHeightTextureHandle->pTextureResource)
+			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pMeshes[i].pHeightTextureHandle->pTextureResource, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE));
+
 		// Draw Mesh(root param 1)
 		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
 		hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
@@ -906,6 +916,9 @@ void FSkinnedMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsComman
 		pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
 		pCmdList->IASetIndexBuffer(&_pMeshes[i].tIBView);
 		pCmdList->DrawIndexedInstanced(_pMeshes[i].uIndexCountPerInstance, 1, 0, 0, 0);
+
+		if (_pMeshes[i].pHeightTextureHandle->pTextureResource)
+			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pMeshes[i].pHeightTextureHandle->pTextureResource, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 	}
 }
 
