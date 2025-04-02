@@ -75,13 +75,10 @@ void FTerrainObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdLis
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
 	pGlobalConstantBuffer->fStrengthIBL = _pRenderer->GetIBLStrength();
 
-	//AkU32 uLightNum = 0;
-	//Light_t* pLights = _pRenderer->GetLights(&uLightNum);
-	//memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
-
-	Light_t tLight;
-	_pRenderer->GetGlobalLight(&tLight);
-	memcpy(pGlobalConstantBuffer->tLights, &tLight, sizeof(Light_t));
+	AkU32 uPointLightNum = 0;
+	AkU32 uSpotLightNum = 0;
+	Light_t* pLights = _pRenderer->GetLights(&uPointLightNum, &uSpotLightNum);
+	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * MAX_LIGHTS_COUNT);
 
 	Matrix mLightView = Matrix();
 	Matrix mLightProj = Matrix();
@@ -924,13 +921,10 @@ void FTerrainObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandLis
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
 	pGlobalConstantBuffer->fStrengthIBL = _pRenderer->GetIBLStrength();
 
-	//AkU32 uLightNum = 0;
-	//Light_t* pLights = _pRenderer->GetLights(&uLightNum);
-	//memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
-
-	Light_t tLight;
-	_pRenderer->GetGlobalLight(&tLight);
-	memcpy(pGlobalConstantBuffer->tLights, &tLight, sizeof(Light_t));
+	AkU32 uPointLightNum = 0;
+	AkU32 uSpotLightNum = 0;
+	Light_t* pLights = _pRenderer->GetLights(&uPointLightNum, &uSpotLightNum);
+	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * MAX_LIGHTS_COUNT);
 
 	Matrix mLightView = Matrix();
 	Matrix mLightProj = Matrix();

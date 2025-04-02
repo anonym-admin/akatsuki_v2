@@ -5,6 +5,7 @@
 #include "ModelObject.h"
 #include "Scene.h"
 #include "TreeBillboards.h"
+#include "Light.h"
 
 /*
 =============
@@ -58,10 +59,6 @@ AkBool EditorMap::BeginEditor()
 
 	Collider::DRAW_COLLIDER = AK_TRUE;
 
-	Vector3 vPos = Vector3(0.0f, 1.25f, -25.0f);
-	Vector3 vDir = Vector3(0.0f);
-	GRenderer->AddPointLight(&vPos, &vDir, 0.1f, 0.0f, 1000.0f, 0.0f, AK_FALSE);
-
 	return AK_TRUE;
 }
 
@@ -82,6 +79,12 @@ void EditorMap::Update()
 	}
 
 	_pTerrainEdit->Update();
+
+	// Update Lights
+	for (auto& e : _vecLights)
+	{
+		e->Update();
+	}
 
 	// Update
 	for (auto& e : _vecGameObj)
@@ -119,6 +122,11 @@ void EditorMap::Update()
 void EditorMap::Render()
 {
 	UpdateGizmo();
+
+	for (auto& e : _vecLights)
+	{
+		e->Render();
+	}
 
 	_pTerrainEdit->Render();
 
@@ -244,6 +252,13 @@ void EditorMap::RenderGUI()
 	}
 	ImGui::End();
 
+	ImGui::Begin("Light");
+	if (ImGui::Button("Add Light"))
+	{
+		CreateLight();
+	}
+	ImGui::End();
+
 	UpdateFileDialog();
 }
 
@@ -290,6 +305,8 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 			{
 				pObj = ((ModelObject*)_vecGameObj[uIndex])->Clone();
 				bIsInstance = AK_TRUE;
+
+				_vecGameObj.push_back(pObj);
 			}
 
 			uIndex++;
@@ -298,6 +315,8 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		if(!bIsInstance)
 		{
 			pObj = new ModelObject(wcName);
+
+			_vecGameObj.push_back(pObj);
 		}
 
 		pObj->SetEditMode(AK_TRUE);
@@ -315,7 +334,6 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 
 		pObj->GetTransform()->Update();
 	
-		_vecGameObj.push_back(pObj);
 		_vecActFileNameList.push_back(wcName);
 	}
 
@@ -430,6 +448,13 @@ void EditorMap::CleanUp()
 		_pOcean = nullptr;
 	}
 
+	for (auto& e : _vecLights)
+	{
+		delete e;
+		e = nullptr;
+	}
+	_vecLights.clear();
+
 	for (auto& e : _mapBillboard)
 	{
 		if (e.second)
@@ -462,6 +487,16 @@ Billboard* EditorMap::CreateBillboards(const std::wstring& wcFilePath, VertexSiz
 {
 	Billboard* pTreeBilloards = new Billboard(wcFilePath.c_str(), pVertices, uNum);
 	return pTreeBilloards;
+}
+
+Light* EditorMap::CreateLight()
+{
+	Vector3 vRadiance = Vector3(1.0f);
+	Vector3 vPosition = Vector3(0.0f, 2.5f, -25.0f);
+	Light* pPointLight = new Light(LIGHT_TYPE::POINT, &vRadiance, &vPosition, 0.0f, AK_FALSE);
+	_vecLights.push_back(pPointLight);
+
+	return nullptr;
 }
 
 void EditorMap::ExportMap(const std::wstring& wcFilePath)
@@ -773,6 +808,11 @@ void EditorMap::UpdateGizmo()
 	for (auto& e : _vecGameObj)
 	{
 		((ModelObject*)e)->RenderGUI();
+	}
+
+	for (auto& e : _vecLights)
+	{
+		e->RenderGUI();
 	}
 }
 

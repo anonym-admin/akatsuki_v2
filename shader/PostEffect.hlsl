@@ -116,9 +116,12 @@ float4 PSMain(PostProcessPSInput input) : SV_TARGET
         float4 posView = TexcoordToView(input.texCoord);
         
         // Halo
-        float3 haloColor = float3(0.96, 0.94, 0.82);
-        float radius = lights[1].haloRadius;
-        color += HaloEmission(posView.xyz, radius) * haloColor * lights[1].haloStrength;
+        if (lights[1].type)
+        {
+            float3 haloColor = float3(0.96, 0.94, 0.82);
+            float radius = lights[1].haloRadius;
+            color += HaloEmission(posView.xyz, radius) * haloColor * lights[1].haloStrength;
+        }
         
         // Fog
         float dist = length(posView.xyz); // 눈의 위치가 원점인 좌표계

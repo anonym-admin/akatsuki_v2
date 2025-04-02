@@ -63,9 +63,10 @@ void FSkinnedMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
 	pGlobalConstantBuffer->fStrengthIBL = 0.1f;
 
-	AkU32 uLightNum = 0;
-	Light_t* pLights = _pRenderer->GetLights(&uLightNum);
-	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
+	AkU32 uPointLightNum = 0;
+	AkU32 uSpotLightNum = 0;
+	Light_t* pLights = _pRenderer->GetLights(&uPointLightNum, &uSpotLightNum);
+	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * MAX_LIGHTS_COUNT);
 
 	//Light_t tLight;
 	//_pRenderer->GetGlobalLight(&tLight);
@@ -329,12 +330,7 @@ void FSkinnedMeshObject::DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandLis
 	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
 	_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
-
 	pGlobalConstantBuffer->fStrengthIBL = 1.0f;
-
-	AkU32 uLightNum = 0;
-	Light_t* pLights = _pRenderer->GetLights(&uLightNum);
-	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
 
 	// Per Obj (b0).
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
@@ -674,13 +670,10 @@ void FSkinnedMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsComman
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
 	pGlobalConstantBuffer->fStrengthIBL = _pRenderer->GetIBLStrength();
 
-	//AkU32 uLightNum = 0;
-	//Light_t* pLights = _pRenderer->GetLights(&uLightNum);
-	//memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
-
-	Light_t tLight;
-	_pRenderer->GetGlobalLight(&tLight);
-	memcpy(pGlobalConstantBuffer->tLights, &tLight, sizeof(Light_t));
+	AkU32 uPointLightNum = 0;
+	AkU32 uSpotLightNum = 0;
+	Light_t* pLights = _pRenderer->GetLights(&uPointLightNum, &uSpotLightNum);
+	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * MAX_LIGHTS_COUNT);
 
 	Matrix mLightView = Matrix();
 	Matrix mLightProj = Matrix();

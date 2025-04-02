@@ -10,6 +10,7 @@ Editor Map
 
 class TerrainEdit;
 class Billboard;
+class Light;
 
 class EditorMap : public Editor
 {
@@ -33,6 +34,7 @@ private:
 	void CleanUp();
 
 	Billboard* CreateBillboards(const std::wstring& wcFilePath, VertexSize_t* pVertices, AkU32 uNum);
+	Light* CreateLight();
 
 	void ImportMap(const std::wstring& wcFilePath);
 	void ImportActor(const std::wstring& wcFilePath);
@@ -99,5 +101,8 @@ private:
 
 	Vector3 vMin = Vector3(-0.25f);
 	Vector3 vMax = Vector3(0.25f);
+
+	// Light
+	std::vector<Light*> _vecLights = {};
 };
 

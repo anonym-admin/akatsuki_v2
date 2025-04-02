@@ -81,9 +81,10 @@ void FPostEffect::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, ID
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
 	pGlobalConstantBuffer->mInvProj = pGlobalConstantBuffer->mProj.Invert();
 
-	AkU32 uLightNum = 0;
-	Light_t* pLights = _pRenderer->GetLights(&uLightNum);
-	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * uLightNum);
+	AkU32 uPointLightNum = 0;
+	AkU32 uSpotLightNum = 0;
+	Light_t* pLights = _pRenderer->GetLights(&uPointLightNum, &uSpotLightNum);
+	memcpy(pGlobalConstantBuffer->tLights, pLights, sizeof(Light_t) * MAX_LIGHTS_COUNT);
 
 	// Per Obj (b0).
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);

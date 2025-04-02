@@ -91,6 +91,9 @@
     <Filter Include="src\comp\animation">
       <UniqueIdentifier>{faf9db47-cc97-42e2-b9ea-5e290c83bce4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\light">
+      <UniqueIdentifier>{29353c38-7643-41ae-8a6e-d3ac4509052e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\HashTable.h">
@@ -335,6 +338,9 @@
     <ClInclude Include="ModelExporter.h">
       <Filter>src\model</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>src\light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -551,6 +557,9 @@
     </ClCompile>
     <ClCompile Include="ModelExporter.cpp">
       <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>src\light</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

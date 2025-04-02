@@ -5,12 +5,6 @@
 #include "SamplerState.hlsli"
 #include "GlobalConsts.hlsli"
 
-#define LIGHT_OFF 0x00
-#define LIGHT_DIRECTIONAL 0x01
-#define LIGHT_POINT 0x02
-#define LIGHT_SPOT 0x04
-#define LIGHT_SHADOW 0x10
-
 Texture2D albedoTex : register(t0);
 Texture2D normalTex : register(t1);
 Texture2D emissiveTex : register(t2);

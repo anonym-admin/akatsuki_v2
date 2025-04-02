@@ -38,6 +38,7 @@ private:
 
 protected:
 	AkU32 _uInstanceCount = 0;
+
 	Model* _pModel = nullptr;
 	Transform* _pTransform = nullptr;
 

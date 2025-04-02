@@ -104,7 +104,10 @@ public:
 	virtual void RotateYawPitchRollCamera(AkF32 fYaw, AkF32 fPitch, AkF32 fRoll) override;
 	virtual void MoveCamera(AkF32 fX, AkF32 fY, AkF32 fZ) override;
 	virtual void AddGlobalLight(const Vector3* pRadiance, const Vector3* pDir, AkBool bShadow) override;
-	virtual void AddPointLight(const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow) override;
+	virtual void AddPointLight(const Vector3* pRadiance, const Vector3* pPos, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkBool bShadow) override;
+	virtual void AddSpotLight(const Vector3* pRadiance, const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow) override;
+	virtual void UpdatePointLight(AkU32 uIndex, const Vector3* pRadiance, const Vector3* pPos, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkBool bShadow) override;
+	virtual void UpdateSpotLight(AkU32 uIndex, const Vector3* pRadiance, const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow) override;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) override;
 	virtual void SetCamera(const Vector3* pCamPos, const Vector3* pCamDir, Vector3* pCamUp) override;
 	virtual void SetIBLStrength(AkF32 fIBLStrength) override;
@@ -144,11 +147,9 @@ public:
 	AkU32 GetSreenHeight() { return _uScreenHeight; }
 	AkF32 GetDpi() { return _fDpi; }
 	void GetShadowViewProjMatrix(Matrix* pViewMat, Matrix* pProjMat, AkU32 uCascadeIndex);
-	void GetLightPosition(AkF32* fX, AkF32* fY, AkF32* fZ);
 	void GetIBLTexture(TextureHandle_t** ppOutIrradianceTexHandle, TextureHandle_t** ppOutSpecularTexHandle, TextureHandle_t** ppOutBrdfTexHandle);
-	Light_t* GetLights(AkU32* pOutLightNum);
+	Light_t* GetLights(AkU32* pOutPointLightNum, AkU32* pOutSpotLightNum);
 	AkF32 GetIBLStrength() { return _fIBLStrength; }
-	void GetGlobalLight(Light_t* pOutLight);
 	void GetShadowMapSrv(D3D12_CPU_DESCRIPTOR_HANDLE* pOutHandle, AkU32 uCascadeIndex);
 	AkU32 GetCascadeIndex() { return _uCascadeIndex; }
 	DXGI_FORMAT GetBackBufferRTVFormat() { return _tBackBufferFormat; }

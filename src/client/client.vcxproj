@@ -190,6 +190,7 @@
     <ClInclude Include="CapsuleCollider.h" />
     <ClInclude Include="Casing.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="ModelExporter.h" />
     <ClInclude Include="ModelObject.h" />
     <ClInclude Include="Controller.h" />
@@ -274,6 +275,7 @@
     <ClCompile Include="Casing.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="ModelExporter.cpp" />
     <ClCompile Include="ModelObject.cpp" />
     <ClCompile Include="Controller.cpp" />

@@ -154,7 +154,10 @@ interface IRenderer : public IUnknown
 	virtual void GetCameraPosition(AkF32* pX, AkF32* pY, AkF32* pZ) = 0;
 	virtual void SetCamera(const Vector3* pCamPos, const Vector3* pCamDir, Vector3* pCamUp) = 0;
 	virtual void AddGlobalLight(const Vector3* pRadiance, const Vector3* pDir, AkBool bShadow) = 0;
-	virtual void AddPointLight(const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow) = 0;
+	virtual void AddPointLight(const Vector3* pRadiance, const Vector3* pPos, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkBool bShadow) = 0;
+	virtual void AddSpotLight(const Vector3* pRadiance, const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow) = 0;
+	virtual void UpdatePointLight(AkU32 uIndex, const Vector3* pRadiance, const Vector3* pPos, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkBool bShadow) = 0;
+	virtual void UpdateSpotLight(AkU32 uIndex, const Vector3* pRadiance, const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow) = 0;
 	virtual void SetIBLStrength(AkF32 fIBLStrength) = 0;
 	virtual void SetFogStrength(AkF32 fFogStrength) = 0;
 	virtual void SetDepthScale(AkF32 fDepthScale) = 0;

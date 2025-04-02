@@ -1241,30 +1241,30 @@ void FRenderer::SetCamera(const Vector3* pCamPos, const Vector3* pCamDir, Vector
 
 void FRenderer::AddGlobalLight(const Vector3* pRadiance, const Vector3* pDir, AkBool bShadow)
 {
+	_tGlobalLight.uType = LIGHT_DIRECTIONAL;
 	_tGlobalLight.vRadiance = *pRadiance;
 	_tGlobalLight.vDirection = *pDir;
 	_tGlobalLight.vDirection.Normalize();
-	_tGlobalLight.uType = LIGHT_DIRECTIONAL;
 
 	if (bShadow)
 	{
 		_tGlobalLight.uType |= LIGHT_SHADOW;
 	}
+
+	_pLightList[0] = _tGlobalLight;
 }
 
-void FRenderer::AddPointLight(const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow)
+void FRenderer::AddPointLight(const Vector3* pRadiance, const Vector3* pPos, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkBool bShadow)
 {
 	if (_uPointLightsNum >= POINT_LIGHTS_NUM)
 	{
 		__debugbreak();
 	}
 
-	_pPointLights[_uPointLightsNum].vRadiance = Vector3(1.0f);
-	_pPointLights[_uPointLightsNum].vPosition = *pPos;
-	_pPointLights[_uPointLightsNum].vDirection = *pDir;
-	_pPointLights[_uPointLightsNum].fSpotPower = fSpotPower;
-	_pPointLights[_uPointLightsNum].fRadius = fRadius;
 	_pPointLights[_uPointLightsNum].uType = LIGHT_POINT;
+	_pPointLights[_uPointLightsNum].vRadiance = *pRadiance;
+	_pPointLights[_uPointLightsNum].vPosition = *pPos;
+	_pPointLights[_uPointLightsNum].fRadius = fRadius;
 	_pPointLights[_uPointLightsNum].fFallOffStart = fFallOffStart;
 	_pPointLights[_uPointLightsNum].fFallOffEnd = fFallOffEnd;
 	_pPointLights[_uPointLightsNum].fHaloStrength = 0.25f;
@@ -1275,7 +1275,60 @@ void FRenderer::AddPointLight(const Vector3* pPos, const Vector3* pDir, AkF32 fR
 		_pPointLights[_uPointLightsNum].uType |= LIGHT_SHADOW;
 	}
 
+	_pLightList[DIRECTIONAL_LIGHTS_NUM + _uPointLightsNum] = _pPointLights[_uPointLightsNum];
+
 	_uPointLightsNum++;
+}
+
+void FRenderer::AddSpotLight(const Vector3* pRadiance, const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow)
+{
+	if (_uSpotLightsNum >= SPOT_LIGHTS_NUM)
+	{
+		__debugbreak();
+	}
+
+	_pSpotLights[_uSpotLightsNum].uType = LIGHT_SPOT;
+	_pSpotLights[_uSpotLightsNum].vRadiance = *pRadiance;
+	_pSpotLights[_uSpotLightsNum].vPosition = *pPos;
+	_pSpotLights[_uSpotLightsNum].vDirection = *pDir;
+	_pSpotLights[_uSpotLightsNum].fRadius = fRadius;
+	_pSpotLights[_uSpotLightsNum].fFallOffStart = fFallOffStart;
+	_pSpotLights[_uSpotLightsNum].fFallOffEnd = fFallOffEnd;
+	_pSpotLights[_uSpotLightsNum].fSpotPower = fSpotPower;
+	_pSpotLights[_uSpotLightsNum].fHaloStrength = 0.25f;
+	_pSpotLights[_uSpotLightsNum].fHaloRadius = 0.5f;
+
+	if (bShadow)
+	{
+		_pPointLights[_uSpotLightsNum].uType |= LIGHT_SHADOW;
+	}
+
+	_pLightList[DIRECTIONAL_LIGHTS_NUM + POINT_LIGHTS_NUM + _uSpotLightsNum] = _pSpotLights[_uSpotLightsNum];
+
+	_uSpotLightsNum++;
+}
+
+void FRenderer::UpdatePointLight(AkU32 uIndex, const Vector3* pRadiance, const Vector3* pPos, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkBool bShadow)
+{
+	_pPointLights[uIndex].uType = LIGHT_POINT;
+	_pPointLights[uIndex].vRadiance = *pRadiance;
+	_pPointLights[uIndex].vPosition = *pPos;
+	_pPointLights[uIndex].fRadius = fRadius;
+	_pPointLights[uIndex].fFallOffStart = fFallOffStart;
+	_pPointLights[uIndex].fFallOffEnd = fFallOffEnd;
+	_pPointLights[uIndex].fHaloStrength = 0.25f;
+	_pPointLights[uIndex].fHaloRadius = 0.5f;
+
+	if (bShadow)
+	{
+		_pPointLights[uIndex].uType |= LIGHT_SHADOW;
+	}
+
+	_pLightList[DIRECTIONAL_LIGHTS_NUM + uIndex] = _pPointLights[uIndex];
+}
+
+void FRenderer::UpdateSpotLight(AkU32 uIndex, const Vector3* pRadiance, const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow)
+{
 }
 
 void FRenderer::SetIBLStrength(AkF32 fIBLStrength)
@@ -1507,13 +1560,6 @@ void FRenderer::GetShadowViewProjMatrix(Matrix* pViewMat, Matrix* pProjMat, AkU3
 	*pProjMat = _pShadowOrthoProj[uCascadeIndex];
 }
 
-void FRenderer::GetLightPosition(AkF32* fX, AkF32* fY, AkF32* fZ)
-{
-	*fX = _vLightPos.x;
-	*fY = _vLightPos.y;
-	*fZ = _vLightPos.z;
-}
-
 void FRenderer::GetIBLTexture(TextureHandle_t** ppOutIrradianceTexHandle, TextureHandle_t** ppOutSpecularTexHandle, TextureHandle_t** ppOutBrdfTexHandle)
 {
 	*ppOutIrradianceTexHandle = _pIrradianceIBLTexHandle;
@@ -1523,25 +1569,11 @@ void FRenderer::GetIBLTexture(TextureHandle_t** ppOutIrradianceTexHandle, Textur
 	*ppOutBrdfTexHandle = _pBrdfTexHandle;
 }
 
-Light_t* FRenderer::GetLights(AkU32* pOutLightNum)
+Light_t* FRenderer::GetLights(AkU32* pOutPointLightNum, AkU32* pOutSpotLightNum)
 {
-	*pOutLightNum = DIRECTIONAL_LIGHTS_NUM + _uPointLightsNum + _uSpotLightsNum;
-
-	// Global
-	_pLightList[0] = _tGlobalLight;
-	
-	// Point
-	memcpy(_pLightList + DIRECTIONAL_LIGHTS_NUM, _pPointLights, sizeof(Light_t) * _uPointLightsNum);
-
-	// Spot
-	memcpy(_pLightList + DIRECTIONAL_LIGHTS_NUM + _uPointLightsNum, _pSpotLights, sizeof(Light_t) * _uSpotLightsNum);
-
+	*pOutPointLightNum = _uPointLightsNum;
+	*pOutSpotLightNum = _uSpotLightsNum;
 	return _pLightList;
-}
-
-void FRenderer::GetGlobalLight(Light_t* pOutLight)
-{
-	*pOutLight = _tGlobalLight;
 }
 
 void FRenderer::GetShadowMapSrv(D3D12_CPU_DESCRIPTOR_HANDLE* pOutHandle, AkU32 uCascadeIndex)
