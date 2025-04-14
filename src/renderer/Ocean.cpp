@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Environment.h"
+#include "Ocean.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "DescriptorPool.h"
@@ -11,20 +11,20 @@ Ocean
 ================
 */
 
-ID3D12RootSignature* FEnvironmentObject::sm_pRootSignature;
-ID3D12PipelineState* FEnvironmentObject::sm_pOceanPSO;
-AkU32 FEnvironmentObject::sm_uInitRefCount;
+ID3D12RootSignature* FOceanObject::sm_pRootSignature;
+ID3D12PipelineState* FOceanObject::sm_pOceanPSO;
+AkU32 FOceanObject::sm_uInitRefCount;
 
-FEnvironmentObject::FEnvironmentObject()
+FOceanObject::FOceanObject()
 {
 }
 
-FEnvironmentObject::~FEnvironmentObject()
+FOceanObject::~FOceanObject()
 {
 	CleanUp();
 }
 
-AkBool FEnvironmentObject::Initialize(FRenderer* pRenderer)
+AkBool FOceanObject::Initialize(FRenderer* pRenderer)
 {
 	AkBool bResult = AK_TRUE;
 
@@ -35,7 +35,7 @@ AkBool FEnvironmentObject::Initialize(FRenderer* pRenderer)
 	return bResult;
 }
 
-void FEnvironmentObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, AkF32 fTime, const Matrix* pWorldMat)
+void FOceanObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, AkF32 fTime, const Matrix* pWorldMat)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	FDescriptorPool* pDescriptorPool = _pRenderer->GetDescriptorPool(uThreadIndex);
@@ -102,18 +102,18 @@ void FEnvironmentObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 	pCmdList->DrawIndexedInstanced(_pMesh->uIndexCountPerInstance, 1, 0, 0, 0);
 }
 
-HRESULT __stdcall FEnvironmentObject::QueryInterface(REFIID riid, void** ppvObject)
+HRESULT __stdcall FOceanObject::QueryInterface(REFIID riid, void** ppvObject)
 {
 	return E_NOTIMPL;
 }
 
-ULONG __stdcall FEnvironmentObject::AddRef(void)
+ULONG __stdcall FOceanObject::AddRef(void)
 {
 	AkU32 uRefCount = ++_uRefCount;
 	return uRefCount;
 }
 
-ULONG __stdcall FEnvironmentObject::Release(void)
+ULONG __stdcall FOceanObject::Release(void)
 {
 	AkU32 uRefCount = --_uRefCount;
 	if (!uRefCount)
@@ -123,14 +123,14 @@ ULONG __stdcall FEnvironmentObject::Release(void)
 	return uRefCount;
 }
 
-void FEnvironmentObject::CleanUp()
+void FOceanObject::CleanUp()
 {
 	_pRenderer->EnsureCompleted();
 
 	DestroyCommonResources();
 }
 
-AkBool FEnvironmentObject::CreateCommonResources()
+AkBool FOceanObject::CreateCommonResources()
 {
 	if (sm_uInitRefCount)
 	{
@@ -159,7 +159,7 @@ AkBool FEnvironmentObject::CreateCommonResources()
 	return AK_TRUE;
 }
 
-AkBool FEnvironmentObject::CreateRootSignature()
+AkBool FOceanObject::CreateRootSignature()
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 	ID3DBlob* pSignature = nullptr;
@@ -214,7 +214,7 @@ AkBool FEnvironmentObject::CreateRootSignature()
 	return AK_TRUE;
 }
 
-AkBool FEnvironmentObject::CreatePipelineState()
+AkBool FOceanObject::CreatePipelineState()
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
@@ -296,7 +296,7 @@ AkBool FEnvironmentObject::CreatePipelineState()
 	return AK_TRUE;
 }
 
-AkBool FEnvironmentObject::CreateMeshBuffers()
+AkBool FOceanObject::CreateMeshBuffers()
 {
 	_pMesh = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
 
@@ -341,7 +341,7 @@ AkBool FEnvironmentObject::CreateMeshBuffers()
 	return AK_TRUE;
 }
 
-void FEnvironmentObject::DestroyCommonResources()
+void FOceanObject::DestroyCommonResources()
 {
 	if (!sm_uInitRefCount)
 	{
@@ -357,7 +357,7 @@ void FEnvironmentObject::DestroyCommonResources()
 	}
 }
 
-void FEnvironmentObject::DestroyRootSignature()
+void FOceanObject::DestroyRootSignature()
 {
 	if (sm_pRootSignature)
 	{
@@ -366,7 +366,7 @@ void FEnvironmentObject::DestroyRootSignature()
 	}
 }
 
-void FEnvironmentObject::DestroyPipelineState()
+void FOceanObject::DestroyPipelineState()
 {
 	if (sm_pOceanPSO)
 	{
@@ -375,7 +375,7 @@ void FEnvironmentObject::DestroyPipelineState()
 	}
 }
 
-void FEnvironmentObject::DestroyMeshBuffers()
+void FOceanObject::DestroyMeshBuffers()
 {
 	if (_pMesh)
 	{

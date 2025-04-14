@@ -91,6 +91,7 @@ private:
 
 	// ocean
 	IEnvironmentObject* _pOcean = nullptr;
+	IEnvironmentObject* _pCloud = nullptr;
 
 	// csg
 	IMeshObject* _pCSGCube = nullptr;

@@ -36,9 +36,13 @@ AkBool EditorMap::Initialize()
 	// Editor 에서는 Scene에 Obj 를 등록하지 않는다.
 	_pTerrainEdit = new TerrainEdit;
 
+	// Create ocean.
+	_pOcean = GRenderer->CreateOceanObject();
 
-	_pOcean = GRenderer->CreateEnvironmentObject();
+	// Create cloud.
+	_pCloud = GRenderer->CreateCloudObject();
 
+	// Clipper.
 	_pCSGCube = GRenderer->CreateBasicMeshObject();
 
 	Vector3 vMin = Vector3(-0.5f);
@@ -145,8 +149,13 @@ void EditorMap::Render()
 
 	Matrix world = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
 
+	// Render Ocean.
 	GRenderer->RenderOcean(_pOcean, GTimer->GetTotalTime(), &world);
 
+	// Render Cloud.
+	GRenderer->RenderCloud(_pCloud);
+
+	// CSG
 	_mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
 
 	GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
@@ -441,6 +450,11 @@ void EditorMap::CleanUp()
 	{
 		_pCSGCube->Release();
 		_pCSGCube = nullptr;
+	}
+	if (_pCloud)
+	{
+		_pCloud->Release();
+		_pCloud = nullptr;
 	}
 	if (_pOcean)
 	{

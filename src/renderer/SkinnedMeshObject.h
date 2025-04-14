@@ -41,7 +41,8 @@ private:
 
 private:
 	static AkU32 sm_uSkinnedInitRefCount;
-	static ID3D12RootSignature* sm_pRootSignature;
+	static ID3D12RootSignature* sm_pSkinnedRS;
+	static ID3D12RootSignature* sm_pSkinnedDepthOnlyRS;
 	static ID3D12PipelineState* sm_pSkinnedSolidPSO;
 	static ID3D12PipelineState* sm_pSkinnedWirePSO;
 	static ID3D12PipelineState* sm_pSkinnedNormalPSO;

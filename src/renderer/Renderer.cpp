@@ -25,7 +25,8 @@
 #include "RenderDepthMap.h"
 #include "RenderShadowMap.h"
 #include "Particle.h"
-#include "Environment.h"
+#include "Ocean.h"
+#include "Cloud.h"
 
 // For ImGui;
 extern ImGuiContext* GImGui;
@@ -660,11 +661,18 @@ IParticle* FRenderer::CreateParticle()
 	return pParticle;
 }
 
-IEnvironmentObject* FRenderer::CreateEnvironmentObject()
+IEnvironmentObject* FRenderer::CreateOceanObject()
 {
-	FEnvironmentObject* pEnvObj = new FEnvironmentObject;
-	pEnvObj->Initialize(this);
-	return pEnvObj;
+	FOceanObject* pOcean = new FOceanObject;
+	pOcean->Initialize(this);
+	return pOcean;
+}
+
+IEnvironmentObject* FRenderer::CreateCloudObject()
+{
+	FCloudObject* pCloud = new FCloudObject;
+	pCloud->Initialize(this);
+	return pCloud;
 }
 
 void* FRenderer::CreateTextureFromFile(const wchar_t* wcFilename, AkBool bUseSRGB, AkBool bIsArray)
@@ -1144,6 +1152,21 @@ void FRenderer::RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matri
 	tItem.pObjHandle = pOcean;
 	tItem.tOceanParam.fTime = fTime;
 	tItem.tOceanParam.mWorld = *pWorldMat;
+
+	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	{
+		__debugbreak();
+	}
+
+	_uCurThreadIndex++;
+	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
+}
+
+void FRenderer::RenderCloud(IEnvironmentObject* pCloud)
+{
+	RenderItem_t tItem = {};
+	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_CLOUD;
+	tItem.pObjHandle = pCloud;
 
 	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
 	{

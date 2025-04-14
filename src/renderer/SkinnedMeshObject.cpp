@@ -14,7 +14,8 @@ SkinnedMeshObject
 */
 
 AkU32 FSkinnedMeshObject::sm_uSkinnedInitRefCount;
-ID3D12RootSignature* FSkinnedMeshObject::sm_pRootSignature;
+ID3D12RootSignature* FSkinnedMeshObject::sm_pSkinnedRS;
+ID3D12RootSignature* FSkinnedMeshObject::sm_pSkinnedDepthOnlyRS;
 ID3D12PipelineState* FSkinnedMeshObject::sm_pSkinnedSolidPSO;
 ID3D12PipelineState* FSkinnedMeshObject::sm_pSkinnedWirePSO;
 ID3D12PipelineState* FSkinnedMeshObject::sm_pSkinnedNormalPSO;
@@ -279,7 +280,7 @@ void FSkinnedMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 	}
 
 	// Set RootSignature.
-	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+	pCmdList->SetGraphicsRootSignature(sm_pSkinnedRS);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
 	pCmdList->SetPipelineState(_bIsWire ? sm_pSkinnedWirePSO : sm_pSkinnedSolidPSO);
 
@@ -377,7 +378,7 @@ void FSkinnedMeshObject::DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandLis
 	hDest.Offset(1, uDescriptorSize);
 
 	// Set RootSignature.
-	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+	pCmdList->SetGraphicsRootSignature(sm_pSkinnedRS);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
 	pCmdList->SetPipelineState(sm_pSkinnedNormalPSO);
 
@@ -405,7 +406,7 @@ void FSkinnedMeshObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsComman
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
-	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + (_uMeshNum * DESCRIPTOR_COUNT_PER_MESH);
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + (_uMeshNum * 2);
 
 	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
 	{
@@ -466,10 +467,6 @@ void FSkinnedMeshObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsComman
 	hDest.Offset(1, uDescriptorSize);
 
 	// Per Mesh
-	TextureHandle_t* pIrradianceTexHandle = nullptr;
-	TextureHandle_t* pSpecularTexHandle = nullptr;
-	TextureHandle_t* pBrdfTexHandle = nullptr;
-	_pRenderer->GetIBLTexture(&pIrradianceTexHandle, &pSpecularTexHandle, &pBrdfTexHandle);
 	for (AkU32 i = 0; i < _uMeshNum; i++)
 	{
 		CBContainer_t* pMaterialCBContainer = pMaterialCBPool->Alloc();
@@ -486,80 +483,8 @@ void FSkinnedMeshObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsComman
 		pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
 
-		// Albedo
-		TextureHandle_t* pTexHandle = _pMeshes[i].pAldedoTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Normal
-		pTexHandle = _pMeshes[i].pNormalTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Emissive
-		pTexHandle = _pMeshes[i].pEmissiveTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Metallic
-		pTexHandle = _pMeshes[i].pMetallicTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Roughness
-		pTexHandle = _pMeshes[i].pRoughnessTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// AO
-		pTexHandle = _pMeshes[i].pAoTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
 		// Height
-		pTexHandle = _pMeshes[i].pHeightTextureHandle;
+		TextureHandle_t* pTexHandle = _pMeshes[i].pHeightTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -569,59 +494,10 @@ void FSkinnedMeshObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsComman
 			__debugbreak();
 		}
 		hDest.Offset(1, uDescriptorSize);
-
-		// Irradiance IBL.
-		if (pIrradianceTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pIrradianceTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Specular IBL
-		if (pSpecularTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pSpecularTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Brdf Tex
-		if (pBrdfTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pBrdfTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Shadow Map
-		for (AkU32 uCascadeIndex = 0; uCascadeIndex < FRenderer::CASCADE_SHADOW_MAP_LEVEL; uCascadeIndex++)
-		{
-			D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
-			_pRenderer->GetShadowMapSrv(&hSRV, uCascadeIndex);
-			if (hSRV.ptr)
-			{
-				pDevice->CopyDescriptorsSimple(1, hDest, hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			}
-			else
-			{
-				AkI32 a = 3;
-			}
-			hDest.Offset(1, uDescriptorSize);
-		}
 	}
 
 	// Set RootSignature.
-	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+	pCmdList->SetGraphicsRootSignature(sm_pSkinnedDepthOnlyRS);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
 	pCmdList->SetPipelineState(sm_pSkinnedDepthOnlyPSO);
 
@@ -637,7 +513,7 @@ void FSkinnedMeshObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsComman
 
 		// Draw Mesh(root param 1)
 		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
-		hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
+		hGPUforMeshes.Offset(2, uDescriptorSize);
 
 		pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
 		pCmdList->IASetIndexBuffer(&_pMeshes[i].tIBView);
@@ -895,7 +771,7 @@ void FSkinnedMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsComman
 	}
 
 	// Set RootSignature.
-	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+	pCmdList->SetGraphicsRootSignature(sm_pSkinnedRS);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
 	pCmdList->SetPipelineState(sm_pSkinnedDrawMaskedSolidPSO);
 
@@ -935,7 +811,7 @@ void FSkinnedMeshObject::DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
-	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + (_uMeshNum * DESCRIPTOR_COUNT_PER_MESH);
+	AkU32 uRequiredDescriptorNum = DESCRIPTOR_COUNT_PER_OBJ + (_uMeshNum * 2);
 
 	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uRequiredDescriptorNum))
 	{
@@ -992,10 +868,6 @@ void FSkinnedMeshObject::DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 	hDest.Offset(1, uDescriptorSize);
 
 	// Per Mesh
-	TextureHandle_t* pIrradianceTexHandle = nullptr;
-	TextureHandle_t* pSpecularTexHandle = nullptr;
-	TextureHandle_t* pBrdfTexHandle = nullptr;
-	_pRenderer->GetIBLTexture(&pIrradianceTexHandle, &pSpecularTexHandle, &pBrdfTexHandle);
 	for (AkU32 i = 0; i < _uMeshNum; i++)
 	{
 		CBContainer_t* pMaterialCBContainer = pMaterialCBPool->Alloc();
@@ -1012,80 +884,8 @@ void FSkinnedMeshObject::DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 		pDevice->CopyDescriptorsSimple(1, hDest, pMaterialCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
 
-		// Albedo
-		TextureHandle_t* pTexHandle = _pMeshes[i].pAldedoTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Normal
-		pTexHandle = _pMeshes[i].pNormalTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Emissive
-		pTexHandle = _pMeshes[i].pEmissiveTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Metallic
-		pTexHandle = _pMeshes[i].pMetallicTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Roughness
-		pTexHandle = _pMeshes[i].pRoughnessTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// AO
-		pTexHandle = _pMeshes[i].pAoTextureHandle;
-		if (pTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
 		// Height
-		pTexHandle = _pMeshes[i].pHeightTextureHandle;
+		TextureHandle_t* pTexHandle = _pMeshes[i].pHeightTextureHandle;
 		if (pTexHandle)
 		{
 			pDevice->CopyDescriptorsSimple(1, hDest, pTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -1095,59 +895,10 @@ void FSkinnedMeshObject::DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 			__debugbreak();
 		}
 		hDest.Offset(1, uDescriptorSize);
-
-		// Irradiance IBL.
-		if (pIrradianceTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pIrradianceTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Specular IBL
-		if (pSpecularTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pSpecularTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Brdf Tex
-		if (pBrdfTexHandle)
-		{
-			pDevice->CopyDescriptorsSimple(1, hDest, pBrdfTexHandle->hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		}
-		else
-		{
-			__debugbreak();
-		}
-		hDest.Offset(1, uDescriptorSize);
-
-		// Shadow Map
-		for (AkU32 uCascadeIndex = 0; uCascadeIndex < FRenderer::CASCADE_SHADOW_MAP_LEVEL; uCascadeIndex++)
-		{
-			D3D12_CPU_DESCRIPTOR_HANDLE hSRV = {};
-			_pRenderer->GetShadowMapSrv(&hSRV, uCascadeIndex);
-			if (hSRV.ptr)
-			{
-				pDevice->CopyDescriptorsSimple(1, hDest, hSRV, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-			}
-			else
-			{
-				AkI32 a = 3;
-			}
-			hDest.Offset(1, uDescriptorSize);
-		}
 	}
 
 	// Set RootSignature.
-	pCmdList->SetGraphicsRootSignature(sm_pRootSignature);
+	pCmdList->SetGraphicsRootSignature(sm_pSkinnedDepthOnlyRS);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
 	pCmdList->SetPipelineState(sm_pSkinnedDepthOnlyPSO);
 
@@ -1160,7 +911,7 @@ void FSkinnedMeshObject::DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 	{
 		// Draw Mesh(root param 1)
 		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
-		hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
+		hGPUforMeshes.Offset(2, uDescriptorSize);
 
 		pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
 		pCmdList->IASetIndexBuffer(&_pMeshes[i].tIBView);
@@ -1254,68 +1005,116 @@ AkBool FSkinnedMeshObject::CreateRootSignature()
 	ID3DBlob* pSignature = nullptr;
 	ID3DBlob* pError = nullptr;
 
-	// Object - CBV - RootParam(0)
-	// {
-	//   Mesh 0 - SRV[0] - RootParam(1) - Draw()
-	//   Mesh 1 - SRV[1] - RootParam(1) - Draw()
-	//   Mesh 2 - SRV[2] - RootParam(1) - Draw()
-	//   Mesh 3 - SRV[3] - RootParam(1) - Draw()
-	//   Mesh 4 - SRV[4] - RootParam(1) - Draw()
-	//   Mesh 5 - SRV[5] - RootParam(1) - Draw()
-	// }
-
-	CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[2] = {};
-	tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0, b1 : Constant Buffer View per Object.
-	tRangesPerObj[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 3);	// b3 : Constant Buffer View per Object. (Bone transform)
-
-	CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[4] = {};
-	tRangesPerTriGroup[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2 : Constant Buffer View per Mesh.
-	tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0);	// t0 ~ t6 : Shader Resource View(Tex) per Mesh.
-	tRangesPerTriGroup[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 11);	// t11, t12, t13 : Shader Resource View(Tex) per Mesh. (IBL Texture)
-	tRangesPerTriGroup[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 15);	// t15, t16, t17, t18, t19 : Shadow Map
-
-	CD3DX12_ROOT_PARAMETER tRootParameters[2] = {};
-	tRootParameters[0].InitAsDescriptorTable(_countof(tRangesPerObj), tRangesPerObj, D3D12_SHADER_VISIBILITY_ALL);
-	tRootParameters[1].InitAsDescriptorTable(_countof(tRangesPerTriGroup), tRangesPerTriGroup, D3D12_SHADER_VISIBILITY_ALL);
-
-	// sampler
-	CD3DX12_STATIC_SAMPLER_DESC pSamplerDesc[7] = {};
-	FD3DUtils::GetStaticSamplers(pSamplerDesc);
-
-	// Allow input layout and deny uneccessary access to certain pipeline stages.
-	D3D12_ROOT_SIGNATURE_FLAGS tRootSignatureFlags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-		D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
-
-	// Create an empty root signature.
-	CD3DX12_ROOT_SIGNATURE_DESC tRootSignatureDesc;
-	//rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-	tRootSignatureDesc.Init(_countof(tRootParameters), tRootParameters, _countof(pSamplerDesc), pSamplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-	if (FAILED(D3D12SerializeRootSignature(&tRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &pSignature, &pError)))
+	// Create Skinned Root Signature.
 	{
-		__debugbreak();
-		return AK_FALSE;
+		CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[2] = {};
+		tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0, b1 : Constant Buffer View per Object.
+		tRangesPerObj[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 3);	// b3 : Constant Buffer View per Object. (Bone transform)
+
+		CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[4] = {};
+		tRangesPerTriGroup[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2 : Constant Buffer View per Mesh.
+		tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0);	// t0 ~ t6 : Shader Resource View(Tex) per Mesh.
+		tRangesPerTriGroup[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 11);	// t11, t12, t13 : Shader Resource View(Tex) per Mesh. (IBL Texture)
+		tRangesPerTriGroup[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 15);	// t15, t16, t17, t18, t19 : Shadow Map
+
+		CD3DX12_ROOT_PARAMETER tRootParameters[2] = {};
+		tRootParameters[0].InitAsDescriptorTable(_countof(tRangesPerObj), tRangesPerObj, D3D12_SHADER_VISIBILITY_ALL);
+		tRootParameters[1].InitAsDescriptorTable(_countof(tRangesPerTriGroup), tRangesPerTriGroup, D3D12_SHADER_VISIBILITY_ALL);
+
+		// sampler
+		CD3DX12_STATIC_SAMPLER_DESC pSamplerDesc[7] = {};
+		FD3DUtils::GetStaticSamplers(pSamplerDesc);
+
+		// Allow input layout and deny uneccessary access to certain pipeline stages.
+		D3D12_ROOT_SIGNATURE_FLAGS tRootSignatureFlags =
+			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+
+		// Create an empty root signature.
+		CD3DX12_ROOT_SIGNATURE_DESC tRootSignatureDesc;
+		//rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+		tRootSignatureDesc.Init(_countof(tRootParameters), tRootParameters, _countof(pSamplerDesc), pSamplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+		if (FAILED(D3D12SerializeRootSignature(&tRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &pSignature, &pError)))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		if (FAILED(pDevice->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&sm_pSkinnedRS))))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		if (pSignature)
+		{
+			pSignature->Release();
+			pSignature = nullptr;
+		}
+		if (pError)
+		{
+			pError->Release();
+			pError = nullptr;
+		}
 	}
 
-	if (FAILED(pDevice->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&sm_pRootSignature))))
+	// Create Skinned Depth Only Root Sigature.
 	{
-		__debugbreak();
-		return AK_FALSE;
-	}
+		CD3DX12_DESCRIPTOR_RANGE tRangesPerObj[2] = {};
+		tRangesPerObj[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 2, 0);	// b0, b1: Constant Buffer View per Object.
+		tRangesPerObj[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 3);	// b3: Constant Buffer View per Object. (Bone transform)
 
-	if (pSignature)
-	{
-		pSignature->Release();
-		pSignature = nullptr;
-	}
-	if (pError)
-	{
-		pError->Release();
-		pError = nullptr;
+		CD3DX12_DESCRIPTOR_RANGE tRangesPerTriGroup[2] = {};
+		tRangesPerTriGroup[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);	// b2: Constant Buffer View per Mesh.
+		tRangesPerTriGroup[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);	// t0: Height Map
+
+		CD3DX12_ROOT_PARAMETER tRootParameters[2] = {};
+		tRootParameters[0].InitAsDescriptorTable(_countof(tRangesPerObj), tRangesPerObj, D3D12_SHADER_VISIBILITY_ALL);
+		tRootParameters[1].InitAsDescriptorTable(_countof(tRangesPerTriGroup), tRangesPerTriGroup, D3D12_SHADER_VISIBILITY_ALL);
+
+		// sampler
+		CD3DX12_STATIC_SAMPLER_DESC pSamplerDesc[7] = {};
+		FD3DUtils::GetStaticSamplers(pSamplerDesc);
+
+		// Allow input layout and deny uneccessary access to certain pipeline stages.
+		D3D12_ROOT_SIGNATURE_FLAGS tRootSignatureFlags =
+			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+
+		// Create an empty root signature.
+		CD3DX12_ROOT_SIGNATURE_DESC tRootSignatureDesc;
+		//rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+		tRootSignatureDesc.Init(_countof(tRootParameters), tRootParameters, _countof(pSamplerDesc), pSamplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+		if (FAILED(D3D12SerializeRootSignature(&tRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &pSignature, &pError)))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		if (FAILED(pDevice->CreateRootSignature(0, pSignature->GetBufferPointer(), pSignature->GetBufferSize(), IID_PPV_ARGS(&sm_pSkinnedDepthOnlyRS))))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+
+		if (pSignature)
+		{
+			pSignature->Release();
+			pSignature = nullptr;
+		}
+		if (pError)
+		{
+			pError->Release();
+			pError = nullptr;
+		}
 	}
 
 	return AK_TRUE;
@@ -1427,7 +1226,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC tPsoDesc = {};
 	tPsoDesc.InputLayout = { tInputElementDescs, _countof(tInputElementDescs) };
-	tPsoDesc.pRootSignature = sm_pRootSignature;
+	tPsoDesc.pRootSignature = sm_pSkinnedRS;
 	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pSkinnedBasicVS->GetBufferPointer(), pSkinnedBasicVS->GetBufferSize());
 	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pSkinnedBasicPS->GetBufferPointer(), pSkinnedBasicPS->GetBufferSize());
 	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
@@ -1465,6 +1264,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 		__debugbreak();
 	}
 
+	tPsoDesc.pRootSignature = sm_pSkinnedDepthOnlyRS;
 	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pSkinnedDepthOnlyVS->GetBufferPointer(), pSkinnedDepthOnlyVS->GetBufferSize());
 	tPsoDesc.GS = {};
 	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pSkinnedDepthOnlyPS->GetBufferPointer(), pSkinnedDepthOnlyPS->GetBufferSize());
@@ -1483,6 +1283,7 @@ AkBool FSkinnedMeshObject::CreatePipelineState()
 	}
 
 	// Stencil 에 1로 표기 된 곳을 랜더링.
+	tPsoDesc.pRootSignature = sm_pSkinnedRS;
 	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pSkinnedBasicVS->GetBufferPointer(), pSkinnedBasicVS->GetBufferSize());
 	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pSkinnedBasicPS->GetBufferPointer(), pSkinnedBasicPS->GetBufferSize());
 	tPsoDesc.NumRenderTargets = 1;
@@ -1561,10 +1362,15 @@ void FSkinnedMeshObject::DestroyCommonResources()
 
 void FSkinnedMeshObject::DestroyRootSignature()
 {
-	if (sm_pRootSignature)
+	if (sm_pSkinnedDepthOnlyRS)
 	{
-		sm_pRootSignature->Release();
-		sm_pRootSignature = nullptr;
+		sm_pSkinnedDepthOnlyRS->Release();
+		sm_pSkinnedDepthOnlyRS = nullptr;
+	}
+	if (sm_pSkinnedRS)
+	{
+		sm_pSkinnedRS->Release();
+		sm_pSkinnedRS = nullptr;
 	}
 }
 

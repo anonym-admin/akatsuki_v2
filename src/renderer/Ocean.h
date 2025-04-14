@@ -8,13 +8,13 @@ Ocean
 
 class FRenderer;
 
-class FEnvironmentObject : public IEnvironmentObject
+class FOceanObject : public IEnvironmentObject
 {
 public:
     static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 2;
 
-	FEnvironmentObject();
-	~FEnvironmentObject();
+	FOceanObject();
+	~FOceanObject();
 
 	AkBool Initialize(FRenderer* pRenderer);
 	void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, AkF32 fTime, const Matrix* pWorldMat);
@@ -43,4 +43,6 @@ private:
     FRenderer* _pRenderer = nullptr;
     Mesh_t* _pMesh = nullptr;
 };
+
+
 

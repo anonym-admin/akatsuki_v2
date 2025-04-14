@@ -178,6 +178,7 @@
     <None Include="..\..\shader\IBLTexture.hlsli" />
     <None Include="..\..\shader\Common.hlsli" />
     <None Include="..\..\shader\SamplerState.hlsli" />
+    <None Include="..\..\shader\TileableNoise.hlsli" />
     <None Include="packages.config" />
     <None Include="Renderer.def" />
   </ItemGroup>
@@ -190,6 +191,7 @@
     <ClCompile Include="..\..\utils\Stack.cpp" />
     <ClCompile Include="BasicMeshObject.cpp" />
     <ClCompile Include="BillboardObject.cpp" />
+    <ClCompile Include="Cloud.cpp" />
     <ClCompile Include="CommandListPool.cpp" />
     <ClCompile Include="ConstantBufferManager.cpp" />
     <ClCompile Include="ConstantBufferPool.cpp" />
@@ -197,7 +199,7 @@
     <ClCompile Include="DescriptorAllocator.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3DUtils.cpp" />
-    <ClCompile Include="Environment.cpp" />
+    <ClCompile Include="Ocean.cpp" />
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="RenderDepthMap.cpp" />
     <ClCompile Include="RenderMirror.cpp" />
@@ -239,13 +241,14 @@
     <ClInclude Include="..\..\utils\Stack.h" />
     <ClInclude Include="BasicMeshObject.h" />
     <ClInclude Include="BillboardObject.h" />
+    <ClInclude Include="Cloud.h" />
     <ClInclude Include="CommandListPool.h" />
     <ClInclude Include="ConstantBufferManager.h" />
     <ClInclude Include="ConstantBufferPool.h" />
     <ClInclude Include="D3DUtils.h" />
     <ClInclude Include="DescriptorPool.h" />
     <ClInclude Include="DescriptorAllocator.h" />
-    <ClInclude Include="Environment.h" />
+    <ClInclude Include="Ocean.h" />
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="RenderDepthMap.h" />
     <ClInclude Include="RenderMirror.h" />
@@ -344,6 +347,11 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\shader\PostEffect.hlsl">
+      <FileType>Document</FileType>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\shader\CloudDensity.hlsl">
       <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>

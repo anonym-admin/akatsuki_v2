@@ -49,7 +49,8 @@ protected:
     virtual void DestroyPipelineState();
 
 private:
-    static ID3D12RootSignature* sm_pRootSignature;
+    static ID3D12RootSignature* sm_pBasicRS;
+    static ID3D12RootSignature* sm_pDepthOnlyRS;
     static ID3D12PipelineState* sm_pBasicSolidPSO;
     static ID3D12PipelineState* sm_pBasicWirePSO;
     static ID3D12PipelineState* sm_pNormalPSO;

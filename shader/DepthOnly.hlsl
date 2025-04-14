@@ -1,4 +1,57 @@
-#include "Common.hlsli"
+#include "GlobalConsts.hlsli"
+#include "SamplerState.hlsli"
+
+Texture2D heightTex : register(t0);
+
+cbuffer MeshConsts : register(b1)
+{
+    matrix world;
+    matrix worldIT;
+    
+    float heightScale;
+    float3 clipMin;
+    float reserve0;
+    float3 clipMax;
+};
+
+cbuffer MaterialConsts : register(b2)
+{
+    float3 albedoFactor;
+    float roughnessFactor;
+    float3 emissionFactor;
+    float metallicFactor;
+
+    uint useAlbedoMap;
+    uint useNormalMap;
+    uint useEimissiveMap;
+    uint useAOMap;
+    uint invertNormalMapY;
+    uint useMetallicMap;
+    uint useRoughnessMap;
+    uint useHeightMap;
+};
+
+#ifdef SKINNED
+cbuffer SkinnedConsts : register(b3)
+{
+    matrix boneTransform[96];
+}
+#endif
+
+struct DepthOnlyVSInput
+{
+    float3 posModel : POSITION;
+    float3 normalModel : NORMAL;
+    float2 texCoord : TEXCOORD;
+    float3 tangentModel : TANGENT;
+    
+#ifdef SKINNED
+    float4 blendWeight0 : BLENDWEIGHT0;
+    float4 blendWieght1 : BLENDWEIGHT1;
+    uint4 boneIndices0 : BLENDINDICES0;
+    uint4 boneIndices1 : BLENDINDICES1;
+#endif
+};
 
 struct DepthOnlyPSInput
 {
@@ -6,7 +59,7 @@ struct DepthOnlyPSInput
 };
 
 // Vertex Shader
-DepthOnlyPSInput VSMain(VSInput input)
+DepthOnlyPSInput VSMain(DepthOnlyVSInput input)
 {
 #ifdef SKINNED
     

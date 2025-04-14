@@ -59,6 +59,9 @@
     <None Include="..\..\shader\DiskSample.hlsli">
       <Filter>shader</Filter>
     </None>
+    <None Include="..\..\shader\TileableNoise.hlsli">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConstantBufferPool.cpp">
@@ -157,7 +160,7 @@
     <ClCompile Include="RenderParticle.cpp">
       <Filter>src\body</Filter>
     </ClCompile>
-    <ClCompile Include="Environment.cpp">
+    <ClCompile Include="Ocean.cpp">
       <Filter>src\env</Filter>
     </ClCompile>
     <ClCompile Include="RenderMirror.cpp">
@@ -171,6 +174,9 @@
     </ClCompile>
     <ClCompile Include="RenderDepthMap.cpp">
       <Filter>src\body</Filter>
+    </ClCompile>
+    <ClCompile Include="Cloud.cpp">
+      <Filter>src\env</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -285,7 +291,7 @@
     <ClInclude Include="RenderParticle.h">
       <Filter>src\body</Filter>
     </ClInclude>
-    <ClInclude Include="Environment.h">
+    <ClInclude Include="Ocean.h">
       <Filter>src\env</Filter>
     </ClInclude>
     <ClInclude Include="RenderMirror.h">
@@ -299,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="RenderDepthMap.h">
       <Filter>src\body</Filter>
+    </ClInclude>
+    <ClInclude Include="Cloud.h">
+      <Filter>src\env</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -348,6 +357,9 @@
       <Filter>shader</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\shader\PostEffect.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\CloudDensity.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
   </ItemGroup>

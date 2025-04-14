@@ -21,6 +21,7 @@ enum class CONSTANT_BUFFER_TYPE
 	CONSTANT_BUFFER_TYPE_PARTICLE_COLOR,
 	CONSTANT_BUFFER_TYPE_PARTICLE_SPARK,
 	CONSTANT_BUFFER_TYPE_PARTICLE_SPRITE,
+	CONSTANT_BUFFER_TYPE_VOLUME_CLOUD,
 	CONSTANT_BUFFER_TYPE_COUNT
 };
 
@@ -163,6 +164,16 @@ struct ParticleSpriteConstantBuffer_t
 {
 	Vector2 vMaxFrame = Vector2(0.0f);
 	Vector2 vCurFrame = Vector2(0.0f);
+};
+
+struct VolumeCloudConstantBuffer_t
+{
+	Vector3 vUVWoffset = Vector3(0.0f);
+	AkF32 fLightAbsorptionCoeff = 5.0f;
+	Vector3 vLightDir = Vector3(0.0f, 1.0f, 0.0f);
+	AkF32 fDensityAbsorption = 10.0f;
+	Vector3 vLightColor = Vector3(1.0f, 1.0f, 1.0f) * 40.0f;
+	AkF32 fAniso = 0.3f;
 };
 
 struct TextureHandle_t

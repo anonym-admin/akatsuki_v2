@@ -8,7 +8,8 @@
 #include "LineObject.h"
 #include "BillboardObject.h"
 #include "TerrainObject.h"
-#include "Environment.h"
+#include "Ocean.h"
+#include "Cloud.h"
 
 /*
 ==============
@@ -141,9 +142,14 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_OCEAN:
 			{
-				FEnvironmentObject* pEnvObj = (FEnvironmentObject*)pItem->pObjHandle;
-			
-				pEnvObj->Draw(uThreadIndex, pCmdList, pItem->tOceanParam.fTime, &pItem->tOceanParam.mWorld);
+				FOceanObject* pOceanObj = (FOceanObject*)pItem->pObjHandle;
+				pOceanObj->Draw(uThreadIndex, pCmdList, pItem->tOceanParam.fTime, &pItem->tOceanParam.mWorld);
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_CLOUD:
+			{
+				FCloudObject* pCloudObj = (FCloudObject*)pItem->pObjHandle;
+				pCloudObj->Draw(uThreadIndex, pCmdList);
 			}
 			break;
 			default:
