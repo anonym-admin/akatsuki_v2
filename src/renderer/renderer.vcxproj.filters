@@ -178,6 +178,12 @@
     <ClCompile Include="Cloud.cpp">
       <Filter>src\env</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\utils\UtilFunc.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\client\StringUtils.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\interface\IRenderer.h">
@@ -308,6 +314,12 @@
     </ClInclude>
     <ClInclude Include="Cloud.h">
       <Filter>src\env</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\utils\UtilFunc.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\client\StringUtils.h">
+      <Filter>src\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

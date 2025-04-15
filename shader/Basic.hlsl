@@ -42,6 +42,8 @@ PSInput VSMain(VSInput input)
     
 #endif
     
+    
+    
     PSInput output;
    
     output.posModel = input.posModel;
@@ -78,6 +80,10 @@ float4 PSMain(PSInput input) : SV_TARGET
     float3 normalWorld = GetNormal(input.normalWorld, input.texCoord, input.tangentWorld);
     
     float4 albedo = useAlbedoMap ? albedoTex.Sample(linearWrapSS, input.texCoord) * float4(albedoFactor, 1.0) : float4(albedoFactor, 1.0);
+    
+    // tree의 투명도 clip
+    clip(albedo.a - 0.5);
+    
     float ao = useAOMap ? aoTex.Sample(linearWrapSS, input.texCoord).r : 1.0;
     float metallic = useMetallicMap ? metallicTex.Sample(linearWrapSS, input.texCoord).r : metallicFactor;
     float roughness = useRoughnessMap ? roughnessTex.Sample(linearWrapSS, input.texCoord).r : roughnessFactor;

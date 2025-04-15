@@ -41,6 +41,9 @@ using namespace DirectX;
 #include "utils/HashTable.h"
 #include "utils/IndexGenerator.h"
 #include "utils/ProcessInfo.h"
+#include "utils/UtilFunc.h"
+
+#include "src/client/StringUtils.h"
 
 #include "RendererType.h"
 #include "D3DUtils.h"

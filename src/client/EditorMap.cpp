@@ -141,12 +141,10 @@ void EditorMap::Render()
 		}
 	}
 
-	// CSG
-	Matrix world = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
-	
-	 _mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
-
-	 GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
+	//// CSG
+	//Matrix world = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
+	// _mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
+	// GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
 }
 
 void EditorMap::RenderShadowMaps()
@@ -311,14 +309,18 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		ModelObject* pObj = nullptr;
 		AkU32 uIndex = 0;
 		AkBool bIsInstance = AK_FALSE;
+		std::wstring wcTempName = wcName;
 		for (auto& v : _vecActFileNameList)
 		{
-			if (v == wcName)
+			// 재구현 필요한지 생각.
+			if (v == wcTempName)
 			{
 				pObj = ((ModelObject*)_vecGameObj[uIndex])->Clone();
 				bIsInstance = AK_TRUE;
 
 				_vecGameObj.push_back(pObj);
+
+				break;
 			}
 
 			uIndex++;
@@ -326,8 +328,18 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 
 		if(!bIsInstance)
 		{
-			pObj = new ModelObject(wcName);
-
+			if (wcTempName.find(L"Ocean") != std::wstring::npos)
+			{
+				pObj = CreateOcean();
+			}
+			else if(wcTempName.find(L"Cloud") != std::wstring::npos)
+			{
+				pObj = CreateCloud();
+			}
+			else
+			{
+				pObj = new ModelObject(wcTempName.c_str());
+			}
 			_vecGameObj.push_back(pObj);
 		}
 
@@ -346,7 +358,7 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 
 		pObj->GetTransform()->Update();
 	
-		_vecActFileNameList.push_back(wcName);
+		_vecActFileNameList.push_back(wcTempName);
 	}
 
 	// 03. billboard.

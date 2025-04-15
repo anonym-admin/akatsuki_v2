@@ -94,6 +94,9 @@
     <Filter Include="src\light">
       <UniqueIdentifier>{29353c38-7643-41ae-8a6e-d3ac4509052e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\culling">
+      <UniqueIdentifier>{6b3fc106-98b6-4789-ba8a-474dbd9a4ca2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\utils\HashTable.h">

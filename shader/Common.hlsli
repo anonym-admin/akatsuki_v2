@@ -22,8 +22,10 @@ cbuffer MeshConsts : register(b1)
     
     float heightScale;
     float3 clipMin;
-    float reserve0;
+    float windTrunk;
     float3 clipMax;
+    float windLeaves;
+    float3 reserved0;
 };
 
 #ifdef SKINNED

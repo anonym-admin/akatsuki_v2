@@ -2526,12 +2526,12 @@ void FRenderer::UpdateCascadeOrthoProjMatrix()
 		{
 			Vector4 vTrf = Vector4::Transform(_pFrustumPoints[j], _pShadowView[i]);
 
-			fMinX = min(fMinX, vTrf.x);
-			fMaxX = max(fMaxX, vTrf.x);
-			fMinY = min(fMinY, vTrf.y);
-			fMaxY = max(fMaxY, vTrf.y);
-			fMinZ = min(fMinZ, vTrf.z);
-			fMaxZ = max(fMaxZ, vTrf.z);
+			fMinX = std::min(fMinX, vTrf.x);
+			fMaxX = std::max(fMaxX, vTrf.x);
+			fMinY = std::min(fMinY, vTrf.y);
+			fMaxY = std::max(fMaxY, vTrf.y);
+			fMinZ = std::min(fMinZ, vTrf.z);
+			fMaxZ = std::max(fMaxZ, vTrf.z);
 		}
 
 		// Projection Matrix.

@@ -11,6 +11,8 @@
 #include "ModelObject.h"
 #include "TreeBillboards.h"
 #include "Terrain.h"
+#include "Ocean.h"
+#include "Cloud.h"
 
 /*
 =============
@@ -220,15 +222,25 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 			}
 		}
 
-		if (GetFileNmaeExcludeExt(GetFileName(wcName)) == L"soldier")
+		std::wstring wcTempName = wcName;
+
+		if (GetFileNmaeExcludeExt(GetFileName(wcTempName)) == L"soldier")
 		{
-			pActor = new Soldier(wcName);
+			pActor = new Soldier(wcTempName.c_str());
+		}
+		else if (wcTempName.find(L"Ocean") != std::wstring::npos)
+		{
+			pActor = new Ocean;
+		}
+		else if (wcTempName.find(L"Cloud") != std::wstring::npos)
+		{
+			pActor = new Cloud;
 		}
 		else
 		{
 			if (!bInst)
 			{
-				pActor = new ModelObject(wcName);
+				pActor = new ModelObject(wcTempName.c_str());
 			}
 		}
 

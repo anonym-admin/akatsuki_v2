@@ -13,6 +13,7 @@ class Animation;
 class SkinnedModel : public Model
 {
 public:
+	SkinnedModel(const SkinnedModel& Other);
 	SkinnedModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	SkinnedModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive);
 	~SkinnedModel();
@@ -25,6 +26,8 @@ public:
 	void BindAnimation(Animation* pAnim) { _pAnim = pAnim; }
 	void UnBindAnimation() { _pAnim = nullptr; }
 	Animation* GetAnimation() { return _pAnim; }
+
+	void operator=(const SkinnedModel& Other);
 
 private:
 	virtual void CreateMeshObject(MeshData_t* pMeshData, AkU32 uMeshDataNum);

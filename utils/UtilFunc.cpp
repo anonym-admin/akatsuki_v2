@@ -60,7 +60,7 @@ AkBool ReadBitmapFile(const wchar_t* wcFilename, AkU8** pDestImage, AkU32* pWidt
 	return true;
 }
 
-void ReadImage(const wchar_t* pFilename, AkU8** ppOutImage, AkU32* pOutWidth, AkU32* pOutHeight)
+void ReadImage(const wchar_t* pFilename, AkU8** ppOutImage, AkU32* pOutWidth, AkU32* pOutHeight, DXGI_FORMAT* pOutFormat)
 {
 	HRESULT hResult = S_OK;
 
@@ -102,6 +102,10 @@ void ReadImage(const wchar_t* pFilename, AkU8** ppOutImage, AkU32* pOutWidth, Ak
 	*ppOutImage = dest;
 	*pOutWidth = (unsigned int)image.GetMetadata().width;
 	*pOutHeight = (unsigned int)image.GetMetadata().height;
+	if(pOutFormat)
+	{
+		*pOutFormat = image.GetMetadata().format;
+	}
 }
 
 void SaveDDS(const wchar_t* pFilename, AkBool bGenerateMipMap)
@@ -144,6 +148,27 @@ void SaveDDS(const wchar_t* pFilename, AkBool bGenerateMipMap)
 	// DDS 파일로 저장
 	hr = SaveToDDSFile(*image.GetImages(), DDS_FLAGS_NONE, filePath.c_str());
 	if (FAILED(hr)) 
+	{
+		__debugbreak();
+	}
+}
+
+void SaveDDS(const wchar_t* pFilename, AkU8* pImage, AkU32 uWidth, AkU32 uHeight, DXGI_FORMAT Format)
+{
+	using namespace DirectX;
+
+	HRESULT hr;
+
+	DirectX::Image image;
+	image.pixels = pImage;
+	image.width = uWidth;
+	image.height = uHeight;
+	image.rowPitch = uWidth * 4;
+	image.slicePitch = image.rowPitch * uHeight;
+	image.format = Format;
+
+	hr = SaveToDDSFile(image, DDS_FLAGS_NONE, pFilename);
+	if (FAILED(hr))
 	{
 		__debugbreak();
 	}

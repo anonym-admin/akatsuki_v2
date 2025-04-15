@@ -20,6 +20,11 @@ Model
 ========
 */
 
+Model::Model(const Model& Other)
+{
+	_uRefCount++;
+}
+
 Model::Model(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 {
 	if (!Initialize(pMeshDataContainer, pAlbedo, fMetallic, fRoughness, pEmissive))
@@ -83,7 +88,7 @@ void Model::RenderGUI()
 	std::wstring ModelName = Name;
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
-	
+
 	ImGuizmo::BeginFrame();
 	ImGui::Begin(Title);
 	ImGui::Checkbox("Use Gizmo", &_bUseGizmo);
@@ -191,6 +196,21 @@ void Model::SetWireFrame(AkBool bDrawWire)
 void Model::SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO)
 {
 	_pMeshObj->SetTextures(pAlbedo, pEmissve, pHeight, pNormal, pMetallic, pRoughness, pAO);
+}
+
+void Model::operator=(const Model& Other)
+{
+	_uRefCount++;
+}
+
+AkU32 Model::Release()
+{
+	AkU32 uRefCount = --_uRefCount;
+	if (!uRefCount)
+	{
+		delete this;
+	}
+	return uRefCount;
 }
 
 void Model::CleanUp()

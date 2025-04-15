@@ -1,5 +1,5 @@
 ../../assets/map/main_new_new.map
-11
+13
 C:\Users\skdfw\My\akatsuki\assets\data\act\soldier.act
 0.999993 1.000000 0.999993
 1.385271 0.000000 0.000000
@@ -44,6 +44,14 @@ C:\Users\skdfw\My\akatsuki\assets\data\act\celling.act
 9.999740 2.499938 0.149996
 1.570795 0.000000 0.000000
 -4.922717 1.307657 -24.737309
+Ocean_0
+0.998925 0.998925 0.998925
+-0.000000 1.570796 0.000000
+69.862213 -0.329948 0.000000
+Cloud_0
+10.000000 10.000000 10.000000
+-0.000000 0.000000 0.000000
+0.000000 50.000000 0.000000
 2
 C:\Users\skdfw\My\akatsuki\assets\treeArray2.dds
 20

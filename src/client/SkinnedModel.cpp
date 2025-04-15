@@ -9,6 +9,11 @@ SkinnedModel
 =============
 */
 
+SkinnedModel::SkinnedModel(const SkinnedModel& Other)
+	: Model(Other)
+{
+}
+
 SkinnedModel::SkinnedModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 {
 	if (!Initialize(pMeshDataContainer, pAlbedo, fMetallic, fRoughness, pEmissive))
@@ -59,6 +64,11 @@ void SkinnedModel::RenderShadowMaps()
 	const Matrix* pBoneTransform = _pAnim ? _pAnim->GetBoneTransforms() : _pIdentity;
 
 	GRenderer->RenderShadowOfSkinnedMeshObject(_pMeshObj, &_mWorldRow, pBoneTransform);
+}
+
+void SkinnedModel::operator=(const SkinnedModel& Other)
+{
+	Model::operator=(Other);
 }
 
 void SkinnedModel::CreateMeshObject(MeshData_t* pMeshData, AkU32 uMeshDataNum)

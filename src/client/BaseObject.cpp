@@ -76,7 +76,7 @@ void BaseObject::CleanUp()
 	}
 	if (_pModel)
 	{
-		delete _pModel;
+		_pModel->Release();
 		_pModel = nullptr;
 	}
 }

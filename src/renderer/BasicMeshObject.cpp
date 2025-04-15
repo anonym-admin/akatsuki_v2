@@ -893,8 +893,68 @@ AkBool FBasicMeshObject::CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDat
 		}
 		else
 		{
-			_pMeshes[i].pAldedoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcAlbedoTextureFilename, AK_TRUE));
-			_pMaterials[i].uUseAlbedoMap = AK_TRUE;
+			if (!wcscmp(pMeshData[i].wcOpacityTextureFilename, L""))
+			{
+				_pMeshes[i].pAldedoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcAlbedoTextureFilename, AK_TRUE));
+				_pMaterials[i].uUseAlbedoMap = AK_TRUE;
+			}
+			else
+			{
+				wchar_t wcFileName[MAX_PATH] = {};
+
+				AkU8* pAlbedoImage = nullptr;
+				AkU8* pOpacityImage = nullptr;
+				AkU32 uWidth0 = 0;
+				AkU32 uHeight0 = 0;
+				AkU32 uWidth1 = 0;
+				AkU32 uHeight1 = 0;
+
+				DXGI_FORMAT Format = {};
+
+				// Albedo
+				ReadImage(pMeshData[i].wcAlbedoTextureFilename, &pAlbedoImage, &uWidth0, &uHeight0, &Format);
+
+				// Opacity
+				ReadImage(pMeshData[i].wcOpacityTextureFilename, &pOpacityImage, &uWidth1, &uHeight1);
+
+				if (uWidth0 != uWidth1 || uHeight0 != uHeight1)
+				{
+					__debugbreak();
+				}
+
+				std::wstring wcBasePath = GetFilePath(pMeshData[i].wcAlbedoTextureFilename);
+				std::wstring wcAlbedoFileName = GetFileNmaeExcludeExt(GetFileName(pMeshData[i].wcAlbedoTextureFilename));
+				wcscpy_s(wcFileName, wcBasePath.c_str());
+				wcscat_s(wcFileName, wcAlbedoFileName.c_str());
+				wcscat_s(wcFileName, L"_opacity.dds");
+
+				for (AkU32 h = 0; h < uHeight0; h++)
+				{
+					for (AkU32 w = 0; w < uWidth0; w++)
+					{
+						AkU32 uIdx = h * uWidth0 + w;
+
+						pAlbedoImage[4 * uIdx + 3] = pOpacityImage[4 * uIdx + 0];
+					}
+				}
+
+				// Write AlbedoOpacityImage	
+				SaveDDS(wcFileName, pAlbedoImage, uWidth0, uHeight0, Format);
+
+				if (pAlbedoImage)
+				{
+					delete[] pAlbedoImage;
+					pAlbedoImage = nullptr;
+				}
+				if (pOpacityImage)
+				{
+					delete[] pOpacityImage;
+					pOpacityImage = nullptr;
+				}
+
+				_pMeshes[i].pAldedoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(wcFileName, AK_TRUE));
+				_pMaterials[i].uUseAlbedoMap = AK_TRUE;
+			}
 		}
 		// Normal
 		if (!wcscmp(pMeshData[i].wcNormalTextureFilename, L""))
@@ -958,17 +1018,6 @@ AkBool FBasicMeshObject::CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDat
 			_pMeshes[i].pAoTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcAoTextureFilename, AK_FALSE));
 			_pMaterials[i].uUseAOMap = AK_TRUE;
 		}
-
-		//// Opacity
-		//if (!wcscmp(pMeshData[i].wcOpacityTextureFilename, L""))
-		//{
-		//	_pMeshes[i].pEmissiveTextureHandle = pTextureManager->CreateNullTexture();
-		//}
-		//else
-		//{
-		//	_pMeshes[i].pEmissiveTextureHandle = reinterpret_cast<TextureHandle_t*>(_pRenderer->CreateTextureFromFile(pMeshData[i].wcRoughnessTextureFilename, AK_FALSE));
-		//	_pMaterials[i].uUseEimissiveMap = AK_TRUE;
-		//}
 	}
 
 	return AK_TRUE;

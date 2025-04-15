@@ -136,7 +136,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;RENDERER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;_DEBUG;RENDERER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -156,7 +156,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;RENDERER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;NDEBUG;RENDERER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -189,6 +189,8 @@
     <ClCompile Include="..\..\utils\ProcessInfo.cpp" />
     <ClCompile Include="..\..\utils\Queue.cpp" />
     <ClCompile Include="..\..\utils\Stack.cpp" />
+    <ClCompile Include="..\..\utils\UtilFunc.cpp" />
+    <ClCompile Include="..\client\StringUtils.cpp" />
     <ClCompile Include="BasicMeshObject.cpp" />
     <ClCompile Include="BillboardObject.cpp" />
     <ClCompile Include="Cloud.cpp" />
@@ -239,6 +241,8 @@
     <ClInclude Include="..\..\utils\ProcessInfo.h" />
     <ClInclude Include="..\..\utils\Queue.h" />
     <ClInclude Include="..\..\utils\Stack.h" />
+    <ClInclude Include="..\..\utils\UtilFunc.h" />
+    <ClInclude Include="..\client\StringUtils.h" />
     <ClInclude Include="BasicMeshObject.h" />
     <ClInclude Include="BillboardObject.h" />
     <ClInclude Include="Cloud.h" />
