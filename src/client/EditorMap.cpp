@@ -38,16 +38,6 @@ AkBool EditorMap::Initialize()
 	// Editor 에서는 Scene에 Obj 를 등록하지 않는다.
 	_pTerrainEdit = new TerrainEdit;
 
-	// Create ocean.
-	_pOcean = new Ocean;
-	_pOcean->SetEditMode(AK_TRUE);
-	wcscpy_s(_pOcean->Name, L"Ocean");
-
-	// Create cloud.
-	_pCloud = new Cloud;
-	_pCloud->SetEditMode(AK_TRUE);
-	wcscpy_s(_pCloud->Name, L"Cloud");
-
 	// Clipper.
 	_pCSGCube = GRenderer->CreateBasicMeshObject();
 	_pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
@@ -108,12 +98,6 @@ void EditorMap::Update()
 		}
 	}
 
-	// Update Ocean
-	_pOcean->Update();
-
-	// Update Cloud
-	_pCloud->Update();
-
 	// Final Update
 	for (auto& e : _vecGameObj)
 	{
@@ -128,12 +112,6 @@ void EditorMap::Update()
 			e.second->FinalUpdate();
 		}
 	}
-
-	// Final Update Ocean
-	_pOcean->FinalUpdate();
-
-	// Final Update Cloud
-	_pCloud->FinalUpdate();
 
 	// Update CSG
 	GRenderer->UpdateDynamicVertexBuffer(_pCSGDBHandle, _pCube->pVertices);
@@ -163,18 +141,12 @@ void EditorMap::Render()
 		}
 	}
 
+	// CSG
 	Matrix world = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
+	
+	 _mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
 
-	// Render Ocean.
-	_pOcean->Render();
-
-	// Render Cloud.
-	_pCloud->Render();
-
-	//// CSG
-	// _mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
-
-	// GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
+	 GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
 }
 
 void EditorMap::RenderShadowMaps()
@@ -269,11 +241,26 @@ void EditorMap::RenderGUI()
 	}
 	ImGui::End();
 
-	ImGui::Begin("Billboard");
-	const char* pBillboardItems[] = { "Tree", "Grass" };
-	if (ImGui::Combo("Billboard Type", &_iBillboardType, pBillboardItems, IM_ARRAYSIZE(pBillboardItems)))
+	// Create Map Object.
+	ImGui::Begin("Map Object");
 	{
-		ImGuiFileDialog::Instance()->OpenDialog("LoadBillboard", "Choose File", ".dds", tConfig);
+		const char* pBillboardItems[] = { "Tree", "Grass" };
+		if (ImGui::Combo("Billboard Type", &_iBillboardType, pBillboardItems, IM_ARRAYSIZE(pBillboardItems)))
+		{
+			ImGuiFileDialog::Instance()->OpenDialog("LoadBillboard", "Choose File", ".dds", tConfig);
+		}
+		// Create Ocean.
+		if (ImGui::Button("Create Ocean"))
+		{
+			Ocean* pOcean = CreateOcean();
+			_vecGameObj.push_back(pOcean);
+		}
+		// Create Cloud.
+		if (ImGui::Button("Create Cloud"))
+		{
+			Cloud* pCloud = CreateCloud();
+			_vecGameObj.push_back(pCloud);
+		}
 	}
 	ImGui::End();
 
@@ -302,11 +289,11 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		_pTerrainEdit = nullptr;
 	}
 
-	for (auto& e : _vecGameObj)
-	{
-		delete e;
-		e = nullptr;
-	}
+	//for (auto& e : _vecGameObj)
+	//{
+	//	delete e;
+	//	e = nullptr;
+	//}
 
 	// 01. map files.
 	wchar_t wcName[_MAX_PATH] = {};
@@ -467,16 +454,6 @@ void EditorMap::CleanUp()
 		_pCSGCube->Release();
 		_pCSGCube = nullptr;
 	}
-	if (_pCloud)
-	{
-		delete _pCloud;
-		_pCloud = nullptr;
-	}
-	if (_pOcean)
-	{
-		delete _pOcean;
-		_pOcean = nullptr;
-	}
 
 	for (auto& e : _vecLights)
 	{
@@ -517,6 +494,34 @@ Billboard* EditorMap::CreateBillboards(const std::wstring& wcFilePath, VertexSiz
 {
 	Billboard* pTreeBilloards = new Billboard(wcFilePath.c_str(), pVertices, uNum);
 	return pTreeBilloards;
+}
+
+Ocean* EditorMap::CreateOcean()
+{
+	static AkI32 id = 0;
+	Ocean* pOcean = new Ocean;
+	pOcean->SetEditMode(AK_TRUE); // For GUI Control
+	wcscpy_s(pOcean->Name, L"Ocean_");
+	wchar_t wcBuf[32] = {};
+	_itow_s(id, wcBuf, 10);
+	wcscat_s(pOcean->Name, wcBuf);
+	_vecActFileNameList.push_back(pOcean->Name);
+	id++;
+	return pOcean;
+}
+
+Cloud* EditorMap::CreateCloud()
+{
+	static AkI32 id = 0;
+	Cloud* pCloud = new Cloud;
+	pCloud->SetEditMode(AK_TRUE); // For GUI Control
+	wcscpy_s(pCloud->Name, L"Cloud_");
+	wchar_t wcBuf[32] = {};
+	_itow_s(id, wcBuf, 10);
+	wcscat_s(pCloud->Name, wcBuf);
+	_vecActFileNameList.push_back(pCloud->Name);
+	id++;
+	return pCloud;
 }
 
 Light* EditorMap::CreateLight()
@@ -804,7 +809,7 @@ void EditorMap::UpdateFileDialog()
 
 		ImGuiFileDialog::Instance()->Close();
 	}
-	// Save Scene File.
+	// Create Billboard Object.
 	if (ImGuiFileDialog::Instance()->Display("LoadBillboard"))
 	{
 		if (ImGuiFileDialog::Instance()->IsOk() == true)
@@ -835,20 +840,16 @@ void EditorMap::UpdateFileDialog()
 
 void EditorMap::UpdateGizmo()
 {
+	// Update game obj gizmo.
 	for (auto& e : _vecGameObj)
 	{
 		((ModelObject*)e)->RenderGUI();
 	}
 
+	// Update light gizmo.
 	for (auto& e : _vecLights)
 	{
 		e->RenderGUI();
 	}
-
-	// Update oceam gizmo.
-	_pOcean->RenderGUI();
-
-	// Update cloud gizmo.
-	_pCloud->RenderGUI();
 }
 

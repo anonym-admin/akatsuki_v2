@@ -14,6 +14,7 @@ Ocean
 ID3D12RootSignature* FOceanObject::sm_pRootSignature;
 ID3D12PipelineState* FOceanObject::sm_pOceanPSO;
 AkU32 FOceanObject::sm_uInitRefCount;
+Mesh_t* FOceanObject::sm_pMesh;
 
 FOceanObject::FOceanObject()
 {
@@ -97,9 +98,9 @@ void FOceanObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList,
 	// Obj (root param 0)
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
 	pCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pCmdList->IASetVertexBuffers(0, 1, &_pMesh->tVBView);
-	pCmdList->IASetIndexBuffer(&_pMesh->tIBView);
-	pCmdList->DrawIndexedInstanced(_pMesh->uIndexCountPerInstance, 1, 0, 0, 0);
+	pCmdList->IASetVertexBuffers(0, 1, &sm_pMesh->tVBView);
+	pCmdList->IASetIndexBuffer(&sm_pMesh->tIBView);
+	pCmdList->DrawIndexedInstanced(sm_pMesh->uIndexCountPerInstance, 1, 0, 0, 0);
 }
 
 HRESULT __stdcall FOceanObject::QueryInterface(REFIID riid, void** ppvObject)
@@ -298,9 +299,9 @@ AkBool FOceanObject::CreatePipelineState()
 
 AkBool FOceanObject::CreateDefaultMeshBuffers()
 {
-	_pMesh = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
+	sm_pMesh = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
 
-	memset(_pMesh, 0, sizeof(Mesh_t));
+	memset(sm_pMesh, 0, sizeof(Mesh_t));
 
 	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
 	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
@@ -326,16 +327,16 @@ AkBool FOceanObject::CreateDefaultMeshBuffers()
 
 	if (pResourceManager->CreateVertexBuffer(sizeof(Vertex_t), 4, &tVBView, &pVertexBuffer, pVertices))
 	{
-		_pMesh->pVB = pVertexBuffer;
-		_pMesh->tVBView = tVBView;
+		sm_pMesh->pVB = pVertexBuffer;
+		sm_pMesh->tVBView = tVBView;
 	}
 
 	if (pResourceManager->CreateIndexBuffer(6, &tIBView, &pIndexBuffer, pIndices))
 	{
-		_pMesh->pIB = pIndexBuffer;
-		_pMesh->tIBView = tIBView;
-		_pMesh->uVertexCountPerInstance = 4;
-		_pMesh->uIndexCountPerInstance = 6;
+		sm_pMesh->pIB = pIndexBuffer;
+		sm_pMesh->tIBView = tIBView;
+		sm_pMesh->uVertexCountPerInstance = 4;
+		sm_pMesh->uIndexCountPerInstance = 6;
 	}
 
 	return AK_TRUE;
@@ -377,20 +378,20 @@ void FOceanObject::DestroyPipelineState()
 
 void FOceanObject::DestroyDefaultMeshBuffers()
 {
-	if (_pMesh)
+	if (sm_pMesh)
 	{
-		if(_pMesh->pVB)
+		if(sm_pMesh->pVB)
 		{
-			_pMesh->pVB->Release();
-			_pMesh->pVB = nullptr;
+			sm_pMesh->pVB->Release();
+			sm_pMesh->pVB = nullptr;
 		}
-		if (_pMesh->pIB)
+		if (sm_pMesh->pIB)
 		{
-			_pMesh->pIB->Release();
-			_pMesh->pIB = nullptr;
+			sm_pMesh->pIB->Release();
+			sm_pMesh->pIB = nullptr;
 		}
 
-		free(_pMesh);
-		_pMesh = nullptr;
+		free(sm_pMesh);
+		sm_pMesh = nullptr;
 	}
 }

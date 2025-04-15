@@ -29,6 +29,8 @@ AkBool FCloudObject::Initialize(FRenderer* pRenderer)
 
 	_pRenderer = pRenderer;
 
+	CreateDensityAndLightMap();
+
 	bResult = CreateCommonResources();
 
 	return bResult;
@@ -305,11 +307,6 @@ AkBool FCloudObject::CreateCommonResources()
 		return AK_FALSE;
 	}
 	if (!CreatePipelineState())
-	{
-		__debugbreak();
-		return AK_FALSE;
-	}
-	if (!CreateDensityAndLightMap())
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -781,7 +778,6 @@ void FCloudObject::DestroyCommonResources()
 	{
 		DestroyPipelineState();
 		DestroyRootSignature();
-		DestroyDensityAndLightMap();
 	}
 }
 
@@ -870,6 +866,8 @@ void FCloudObject::CleanUp()
 	_pRenderer->EnsureCompleted();
 
 	DestroyCommonResources();
+
+	DestroyDensityAndLightMap();
 
 	if (_pMeshes)
 	{

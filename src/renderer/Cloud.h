@@ -22,14 +22,15 @@ public:
 private:
     void CleanUp();
 
+    AkBool CreateDensityAndLightMap();
+    void DestroyDensityAndLightMap();
+
     AkBool CreateCommonResources();
     AkBool CreateRootSignature();
     AkBool CreatePipelineState();
-    AkBool CreateDensityAndLightMap();
     void DestroyCommonResources();
     void DestroyRootSignature();
     void DestroyPipelineState();
-    void DestroyDensityAndLightMap();
 
 private:
     static ID3D12RootSignature* sm_pCloudDensityRS;
@@ -39,7 +40,7 @@ private:
     static ID3D12PipelineState* sm_pCloudLightPSO;
     static ID3D12PipelineState* sm_pVolumePSO;
     static AkU32 sm_uInitRefCount;
-
+    
     AkU32 _uRefCount = 1;
     FRenderer* _pRenderer = nullptr;
     Mesh_t* _pMeshes = nullptr;

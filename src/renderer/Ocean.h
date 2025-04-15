@@ -39,10 +39,9 @@ private:
 	static ID3D12RootSignature* sm_pRootSignature;
 	static ID3D12PipelineState* sm_pOceanPSO;
 	static AkU32 sm_uInitRefCount;
-
+	static Mesh_t* sm_pMesh;
 	AkU32 _uRefCount = 1;
 	FRenderer* _pRenderer = nullptr;
-	Mesh_t* _pMesh = nullptr;
 };
 
 
