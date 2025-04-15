@@ -28,7 +28,7 @@
 #include "Ocean.h"
 #include "Cloud.h"
 
-// For ImGui;
+// For ImGui
 extern ImGuiContext* GImGui;
 
 /*
@@ -1165,11 +1165,18 @@ void FRenderer::RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matri
 	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
-void FRenderer::RenderCloud(IEnvironmentObject* pCloud)
+void FRenderer::RenderCloud(IEnvironmentObject* pCloud, AkF32 fTime, const Matrix* pWorldRow, AkF32 fLightAbsorptionCoeff, const Vector3* pLightDir, AkF32 fDensityAbsorption, const Vector3* pLightColor, AkF32 fAniso)
 {
 	RenderItem_t tItem = {};
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_CLOUD;
 	tItem.pObjHandle = pCloud;
+	tItem.tCloudParam.fTime = fTime;
+	tItem.tCloudParam.mWorld = *pWorldRow;
+	tItem.tCloudParam.fLightAbsorptionCoeff = fLightAbsorptionCoeff;
+	tItem.tCloudParam.vLightDir = *pLightDir;
+	tItem.tCloudParam.fDensityAbsorption = fDensityAbsorption;
+	tItem.tCloudParam.vLightColor = *pLightColor;
+	tItem.tCloudParam.fAniso = fAniso;
 
 	if (!_pRenderTransparent->Add(&tItem))
 	{

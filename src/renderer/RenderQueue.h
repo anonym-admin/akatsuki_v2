@@ -103,6 +103,17 @@ struct RenderOceanParam_t
 	AkF32 fTime = 0.0f;
 };
 
+struct RenderCloudParam_t
+{
+	Matrix mWorld = Matrix();
+	AkF32 fTime = 0.0f;
+	AkF32 fLightAbsorptionCoeff = 5.0f;
+	Vector3 vLightDir = Vector3(0.0f, 1.0f, 0.0f);
+	AkF32 fDensityAbsorption = 10.0f;
+	Vector3 vLightColor = Vector3(1.0f, 1.0f, 1.0f) * 40.0f;
+	AkF32 fAniso = 0.3f;
+};
+
 struct RenderItem_t
 {
 	RENDER_ITEM_TYPE eItemType = {};
@@ -118,6 +129,7 @@ struct RenderItem_t
 		RenderTerrainParam_t tTerrianParam;
 		ParticleParam_t tParticleParam;
 		RenderOceanParam_t tOceanParam;
+		RenderCloudParam_t tCloudParam;
 	};
 };
 

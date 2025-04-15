@@ -89,7 +89,7 @@ DWORD FRenderTransparent::Process(DWORD uThreadIndex, FCommandListPool* pCmdList
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_CLOUD:
 			{
 				FCloudObject* pCloudObj = (FCloudObject*)pItem->pObjHandle;
-				pCloudObj->Draw(uThreadIndex, pCmdList);
+				pCloudObj->Draw(uThreadIndex, pCmdList, pItem->tCloudParam.fTime, &pItem->tCloudParam.mWorld, pItem->tCloudParam.fLightAbsorptionCoeff, &pItem->tCloudParam.vLightDir, pItem->tCloudParam.fDensityAbsorption, &pItem->tCloudParam.vLightColor, pItem->tCloudParam.fAniso);
 			}
 			break;
 			default:

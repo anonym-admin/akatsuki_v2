@@ -11,6 +11,8 @@ Editor Map
 class TerrainEdit;
 class Billboard;
 class Light;
+class Ocean;
+class Cloud;
 
 class EditorMap : public Editor
 {
@@ -90,8 +92,8 @@ private:
 	std::unordered_map<std::wstring, std::array<VertexSize_t, 20>> _mapVertices = {};
 
 	// ocean
-	IEnvironmentObject* _pOcean = nullptr;
-	IEnvironmentObject* _pCloud = nullptr;
+	Ocean* _pOcean = nullptr;
+	Cloud* _pCloud = nullptr;
 
 	// csg
 	IMeshObject* _pCSGCube = nullptr;

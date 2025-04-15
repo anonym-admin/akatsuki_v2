@@ -99,7 +99,7 @@ public:
 	virtual void RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRow, void* pDBHandle, AkU32 uParticleNum, AkF32 fTime, AkF32 fDuration, const Vector2* pStartSize, const Vector3* pStartDirection, AkF32 fSizeOverLifeTime, const Vector3* pRotOverLifeTime, const Vector4* pTotalColor, const Vector4* pColorOverLifeTime) override;
 	virtual void RenderParticleSprite(IParticle* pParticle, void* pDBHandle, const Vector2* pMaxFrame, const Vector2* pCurFrame) override;
 	virtual void RenderOcean(IEnvironmentObject* pOcean, AkF32 fTime, const Matrix* pWorldMat) override;
-	virtual void RenderCloud(IEnvironmentObject* pCloud) override;
+	virtual void RenderCloud(IEnvironmentObject* pCloud, AkF32 fTime, const Matrix* pWorldRow, AkF32 fLightAbsorptionCoeff, const Vector3* pLightDir, AkF32 fDensityAbsorption, const Vector3* pLightColor, AkF32 fAniso) override;
 	virtual void RenderReflectionOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat) override;
 	virtual void RenderReflectionOfSkinnedMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat, const Matrix* pBoneTransform) override;
 	virtual void RenderReflectionOfTerrain(ITerrain* pTerrain, const Matrix* pWorldMat) override;

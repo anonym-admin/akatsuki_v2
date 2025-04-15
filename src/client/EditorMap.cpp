@@ -6,6 +6,8 @@
 #include "Scene.h"
 #include "TreeBillboards.h"
 #include "Light.h"
+#include "Ocean.h"
+#include "Cloud.h"
 
 /*
 =============
@@ -37,15 +39,14 @@ AkBool EditorMap::Initialize()
 	_pTerrainEdit = new TerrainEdit;
 
 	// Create ocean.
-	_pOcean = GRenderer->CreateOceanObject();
+	_pOcean = new Ocean;
+	_pOcean->SetEditMode(AK_TRUE);
+	wcscpy_s(_pOcean->Name, L"Ocean");
 
 	// Create cloud.
-	Vector3 vMin = Vector3(-1.0f);
-	Vector3 vMax = Vector3(1.0f);
-	MeshData_t* pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
-	_pCloud = GRenderer->CreateCloudObject();
-	_pCloud->CreateMeshBuffers(pCube, 1);
-	GeometryGenerator::DestroyGeometry(pCube, 1);
+	_pCloud = new Cloud;
+	_pCloud->SetEditMode(AK_TRUE);
+	wcscpy_s(_pCloud->Name, L"Cloud");
 
 	// Clipper.
 	_pCSGCube = GRenderer->CreateBasicMeshObject();
@@ -107,6 +108,12 @@ void EditorMap::Update()
 		}
 	}
 
+	// Update Ocean
+	_pOcean->Update();
+
+	// Update Cloud
+	_pCloud->Update();
+
 	// Final Update
 	for (auto& e : _vecGameObj)
 	{
@@ -122,6 +129,13 @@ void EditorMap::Update()
 		}
 	}
 
+	// Final Update Ocean
+	_pOcean->FinalUpdate();
+
+	// Final Update Cloud
+	_pCloud->FinalUpdate();
+
+	// Update CSG
 	GRenderer->UpdateDynamicVertexBuffer(_pCSGDBHandle, _pCube->pVertices);
 }
 
@@ -152,10 +166,10 @@ void EditorMap::Render()
 	Matrix world = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
 
 	// Render Ocean.
-	GRenderer->RenderOcean(_pOcean, GTimer->GetTotalTime(), &world);
+	_pOcean->Render();
 
 	// Render Cloud.
-	GRenderer->RenderCloud(_pCloud);
+	_pCloud->Render();
 
 	//// CSG
 	// _mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
@@ -455,12 +469,12 @@ void EditorMap::CleanUp()
 	}
 	if (_pCloud)
 	{
-		_pCloud->Release();
+		delete _pCloud;
 		_pCloud = nullptr;
 	}
 	if (_pOcean)
 	{
-		_pOcean->Release();
+		delete _pOcean;
 		_pOcean = nullptr;
 	}
 
@@ -830,5 +844,11 @@ void EditorMap::UpdateGizmo()
 	{
 		e->RenderGUI();
 	}
+
+	// Update oceam gizmo.
+	_pOcean->RenderGUI();
+
+	// Update cloud gizmo.
+	_pCloud->RenderGUI();
 }
 

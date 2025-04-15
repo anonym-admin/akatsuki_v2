@@ -333,6 +333,4 @@ void ModelObject::CleanUp()
 			_pEventCollider[i] = nullptr;
 		}
 	}
-
-	AkU32 uInstanceCount = _uInstanceCount - 1;
 }

@@ -34,7 +34,7 @@ AkBool FCloudObject::Initialize(FRenderer* pRenderer)
 	return bResult;
 }
 
-void FCloudObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList)
+void FCloudObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, AkF32 fTime, const Matrix* pWorldRow, AkF32 fLightAbsorptionCoeff, const Vector3* pLightDir, AkF32 fDensityAbsorption, const Vector3* pLightColor, AkF32 fAniso)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
@@ -69,16 +69,15 @@ void FCloudObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList)
 		}
 
 		static AkF32 fOffset = 0.0f;
-
-		// fOffset += 0.001f;
+		fOffset += fTime;
 
 		VolumeCloudConstantBuffer_t* pVolumeCloudConstantBuffer = reinterpret_cast<VolumeCloudConstantBuffer_t*>(pVolumeCloudCBContainer->pSystemMemAddr);
 		pVolumeCloudConstantBuffer->vUVWoffset.z = fOffset;
-		pVolumeCloudConstantBuffer->fLightAbsorptionCoeff = 5.0f;
-		pVolumeCloudConstantBuffer->vLightDir = Vector3(0.0f, 1.0f, 0.0f);
-		pVolumeCloudConstantBuffer->fDensityAbsorption = 10.0f;
-		pVolumeCloudConstantBuffer->vLightColor = Vector3(1.0f, 1.0f, 1.0f) * 40.0f;
-		pVolumeCloudConstantBuffer->fAniso = 0.3f;
+		pVolumeCloudConstantBuffer->fLightAbsorptionCoeff = fLightAbsorptionCoeff;
+		pVolumeCloudConstantBuffer->vLightDir = *pLightDir;
+		pVolumeCloudConstantBuffer->fDensityAbsorption = fDensityAbsorption;
+		pVolumeCloudConstantBuffer->vLightColor = *pLightColor;
+		pVolumeCloudConstantBuffer->fAniso = fAniso;
 
 		pDevice->CopyDescriptorsSimple(1, hDest, pVolumeCloudCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
@@ -126,11 +125,11 @@ void FCloudObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList)
 
 		VolumeCloudConstantBuffer_t* pVolumeCloudConstantBuffer = reinterpret_cast<VolumeCloudConstantBuffer_t*>(pVolumeCloudCBContainer->pSystemMemAddr);
 		pVolumeCloudConstantBuffer->vUVWoffset = Vector3(0.0f);
-		pVolumeCloudConstantBuffer->fLightAbsorptionCoeff = 5.0f;
-		pVolumeCloudConstantBuffer->vLightDir = Vector3(0.0f, 1.0f, 0.0f);
-		pVolumeCloudConstantBuffer->fDensityAbsorption = 10.0f;
-		pVolumeCloudConstantBuffer->vLightColor = Vector3(1.0f, 1.0f, 1.0f) * 40.0f;
-		pVolumeCloudConstantBuffer->fAniso = 0.3f;
+		pVolumeCloudConstantBuffer->fLightAbsorptionCoeff = fLightAbsorptionCoeff;
+		pVolumeCloudConstantBuffer->vLightDir = *pLightDir;
+		pVolumeCloudConstantBuffer->fDensityAbsorption = fDensityAbsorption;
+		pVolumeCloudConstantBuffer->vLightColor = *pLightColor;
+		pVolumeCloudConstantBuffer->fAniso = fAniso;
 
 		pDevice->CopyDescriptorsSimple(1, hDest, pVolumeCloudCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
@@ -198,8 +197,8 @@ void FCloudObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList)
 		}
 
 		MeshConstantBuffer_t* pMeshConstantBuffer = reinterpret_cast<MeshConstantBuffer_t*>(pMeshCBContainer->pSystemMemAddr);
-		pMeshConstantBuffer->mWorld = (Matrix::CreateScale(1.5f) * Matrix::CreateTranslation(Vector3(0.0f, 5.0f, 0.0f))).Transpose(); // Temp
-		pMeshConstantBuffer->mWorldInv = pMeshConstantBuffer->mWorld.Invert(); // Temp
+		pMeshConstantBuffer->mWorld = (*pWorldRow).Transpose();
+		pMeshConstantBuffer->mWorldInv = pMeshConstantBuffer->mWorld.Invert();
 		
 		pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);
@@ -213,11 +212,11 @@ void FCloudObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList)
 		}
 
 		VolumeCloudConstantBuffer_t* pVolumeCloudConstantBuffer = reinterpret_cast<VolumeCloudConstantBuffer_t*>(pVolumeCloudCBContainer->pSystemMemAddr);
-		pVolumeCloudConstantBuffer->fLightAbsorptionCoeff = 5.0f;
-		pVolumeCloudConstantBuffer->vLightDir = Vector3(0.0f, 1.0f, 0.0f);
-		pVolumeCloudConstantBuffer->fDensityAbsorption = 10.0f;
-		pVolumeCloudConstantBuffer->vLightColor = Vector3(1.0f, 1.0f, 1.0f) * 40.0f;
-		pVolumeCloudConstantBuffer->fAniso = 0.3f;
+		pVolumeCloudConstantBuffer->fLightAbsorptionCoeff = fLightAbsorptionCoeff;
+		pVolumeCloudConstantBuffer->vLightDir = *pLightDir;
+		pVolumeCloudConstantBuffer->fDensityAbsorption = fDensityAbsorption;
+		pVolumeCloudConstantBuffer->vLightColor = *pLightColor;
+		pVolumeCloudConstantBuffer->fAniso = fAniso;
 
 		pDevice->CopyDescriptorsSimple(1, hDest, pVolumeCloudCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 		hDest.Offset(1, uDescriptorSize);

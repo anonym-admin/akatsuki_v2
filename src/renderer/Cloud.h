@@ -13,7 +13,7 @@ public:
     ~FCloudObject();
 
     AkBool Initialize(FRenderer* pRenderer);
-    void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList);
+    void Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, AkF32 fTime, const Matrix* pWorldRow, AkF32 fLightAbsorptionCoeff, const Vector3* pLightDir, AkF32 fDensityAbsorption, const Vector3* pLightColor, AkF32 fAniso);
     virtual AkBool CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDataNum) override;
     virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
     virtual ULONG STDMETHODCALLTYPE AddRef(void) override;
