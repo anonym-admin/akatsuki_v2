@@ -66,7 +66,7 @@ void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, I
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCPU = {};
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGPU = {};
 	
-	AkU32 uDecriptorCount = DESCRIPTOR_COUNT_PER_BLOOM * _uBloomLevel + DESCCIPTOR_COUNT_COMBINE;
+	AkU32 uDecriptorCount = DESCRIPTOR_COUNT_PER_BLOOM * 2 * (_uBloomLevel - 1) + DESCCIPTOR_COUNT_COMBINE;
 	if (!pDescriptorPool->AllocDescriptorTable(&hCPU, &hGPU, uDecriptorCount))
 	{
 		__debugbreak();
@@ -75,6 +75,7 @@ void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, I
 
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
 
+	// Bloom Down
 	for (AkU32 i = 0; i < _uBloomLevel - 1; i++)
 	{
 		if (0 == i)
@@ -90,6 +91,8 @@ void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, I
 
 		RenderImageFilter(uThreadIndex, pCmdListPool, pCmdList, pCmdQueue, _ppBloomDownFilters[i], &hCPU, &hGPU); // 1 x(_uBloomLevel - 1)
 	}
+
+	// Bloom Up
 	for (AkU32 i = 0; i < _uBloomLevel - 1; i++)
 	{
 		AkU32 uLevel = _uBloomLevel - 2 - i;
@@ -104,6 +107,7 @@ void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, I
 
 	_pCombineFilter->SetRtvCpu(&_pRenderer->GetBackBufferRtvCpu()); // Combine shader 의 경우 Backbuffer 의 내용을 쓰기때문에 매 프레임 업데이트 필요!!
 
+	// Combine
 	RenderImageFilter(uThreadIndex, pCmdListPool, pCmdList, pCmdQueue, _pCombineFilter, &hCPU, &hGPU); // 2
 
 	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetPostEffectBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));

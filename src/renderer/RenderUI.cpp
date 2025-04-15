@@ -61,7 +61,6 @@ DWORD FRenderUI::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3
 	DWORD dwProcessedCount = 0;
 	DWORD dwProcessedCountPerCommandList = 0;
 	const RenderItem_t* pItem = nullptr;
-
 	while (pItem = Dispatch())
 	{
 		pCmdList = pCmdListPool->GetCurrentCmdList();

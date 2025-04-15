@@ -411,10 +411,10 @@ void FRenderer::EndRender()
 	// Render Particle.
 	_pRenderTransparent->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
-	// Render Mirror.
-	_pRenderMirror->BeginMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
-	_pRenderMirror->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
-	_pRenderMirror->EndMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
+	//// Render Mirror.
+	//_pRenderMirror->BeginMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
+	//_pRenderMirror->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
+	//_pRenderMirror->EndMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
 
 	ID3D12GraphicsCommandList* pCmdList = pCmdListPool->GetCurrentCmdList();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hBackBufferRTVHeap(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), _uRTIndex, _uRTVDesciptorSize);
@@ -428,6 +428,8 @@ void FRenderer::EndRender()
 	pCmdList->ResourceBarrier(_countof(pBarriers0), pBarriers0);
 
 	// Copy To Resolved Buffer.
+	// Post Process 의 연산시 멀티샘플링이 적용된 버퍼로의 계산이 까다롭기때문에
+	// 멀티샘플링이 적용되지 않은 Resolved Buffer를 사용해 연산을 진행한다.
 	pCmdList->ResolveSubresource(_pResolvedBuffer, 0, _pFloatBuffer, 0, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
 	// Post Effect.
@@ -437,21 +439,22 @@ void FRenderer::EndRender()
 	_pPostProcess->Process(0, pCmdListPool, _pCmdQueue, hBackBufferRTVHeap);
 
 	// MSAA 를 사용하지 않는 DSV Heap 영역에 접근
+	// UI Rendering 시 멀티샘플링을 사용하지 않기 때문에, 해당 heap 에 접근한다.
 	hDSVHeap.Offset(1 + CASCADE_SHADOW_MAP_LEVEL, _uDSVDescriptorSize);
 
 	// Render UI
 	// Post Process의 Descriptor 유일설 보장을 위해 1번 쓰레드 인덱스로 실행.
-	_pRenderUI->Process(1, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
-
-	pCmdList = pCmdListPool->GetCurrentCmdList();
-	pCmdList->RSSetViewports(1, &_tMainViewport);
-	pCmdList->RSSetScissorRects(1, &_tMainScissorRect);
-	pCmdList->OMSetRenderTargets(1, &hBackBufferRTVHeap, AK_FALSE, &hDSVHeap);
+	_pRenderUI->Process(0, pCmdListPool, _pCmdQueue, 400, hBackBufferRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
 	// Render ImGui
 	if (_bUseImgui)
 	{
+		pCmdList = pCmdListPool->GetCurrentCmdList();
+		pCmdList->RSSetViewports(1, &_tMainViewport);
+		pCmdList->RSSetScissorRects(1, &_tMainScissorRect);
+		pCmdList->OMSetRenderTargets(1, &hBackBufferRTVHeap, AK_FALSE, &hDSVHeap);
 		pCmdList->SetDescriptorHeaps(1, &_pImGuiHeap);
+
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), pCmdList);
 	}
 
@@ -2645,7 +2648,7 @@ void FRenderer::DestroyAdditionalRTVsAndSRVs()
 
 void FRenderer::DestroyDSVs()
 {
-	if(_pDepthOnlyDS)
+	if (_pDepthOnlyDS)
 	{
 		_pDepthOnlyDS->Release();
 		_pDepthOnlyDS = nullptr;
