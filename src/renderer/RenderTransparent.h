@@ -10,11 +10,11 @@ class FRenderer;
 class FCommandListPool;
 struct RenderItem_t;
 
-class FRenderParticle
+class FRenderTransparent
 {
 public:
-	FRenderParticle();
-	~FRenderParticle();
+	FRenderTransparent();
+	~FRenderTransparent();
 
 	AkBool Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum);
 	AkBool Add(const RenderItem_t* pItem);

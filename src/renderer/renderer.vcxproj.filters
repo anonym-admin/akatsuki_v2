@@ -157,7 +157,7 @@
     <ClCompile Include="Particle.cpp">
       <Filter>src\particle</Filter>
     </ClCompile>
-    <ClCompile Include="RenderParticle.cpp">
+    <ClCompile Include="RenderTransparent.cpp">
       <Filter>src\body</Filter>
     </ClCompile>
     <ClCompile Include="Ocean.cpp">
@@ -288,7 +288,7 @@
     <ClInclude Include="Particle.h">
       <Filter>src\particle</Filter>
     </ClInclude>
-    <ClInclude Include="RenderParticle.h">
+    <ClInclude Include="RenderTransparent.h">
       <Filter>src\body</Filter>
     </ClInclude>
     <ClInclude Include="Ocean.h">

@@ -34,12 +34,11 @@ float LightRay(float3 posModel, float3 lightDir)
 
     float alpha = 1.0; // visibility 1.0으로 시작
 
-    [loop] // [unroll] 사용 시 쉐이더 생성이 너무 느림
+    [loop]
     for (int i = 0; i < numSteps; i++)
     {
         float prevAlpha = alpha;
-        float density = densityTex.SampleLevel(linearClampSampler, GetUVW(posModel), 0).
-        r;
+        float density = densityTex.SampleLevel(linearClampSampler, GetUVW(posModel), 0).r;
         
         if (density > 1e-3)
             alpha *= BeerLambert(lightAbsorptionCoeff * density, stepSize);
@@ -60,8 +59,6 @@ float LightRay(float3 posModel, float3 lightDir)
 [numthreads(16, 16, 4)]
 void CSMain(uint3 dtID : SV_DispatchThreadID)
 {
-    // float3 lightDir = float3(0, 1, 0);
-    
     uint width, height, depth;
     lightingTex.GetDimensions(width, height, depth);
     

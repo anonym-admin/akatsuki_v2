@@ -21,7 +21,7 @@ struct PSInput
 
 #define PI 3.141592
 
-Texture3D<float> densityTex : register(t0); // t5 부터 시작
+Texture3D<float> densityTex : register(t0); 
 Texture3D<float> lightingTex : register(t1);
 Texture3D<float> temperatureTex : register(t2);
 
@@ -39,7 +39,7 @@ cbuffer MeshConsts : register(b1)
 
 cbuffer Consts : register(b2)
 {
-    float3 uvwOffset; // 미사용
+    float3 uvwOffset; // 현재 shader 에서 미사용
     float lightAbsorptionCoeff = 5.0;
     float3 lightDir = float3(0, 1, 0);
     float densityAbsorption = 10.0;
@@ -139,8 +139,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     float3 posModel = input.posModel + dirModel * 1e-6; // 살짝 들어간 상태에서 시작
 
     // 주의: color.a에 "투명도"로 사용하다가 마지막에 "불투명도"로 바꿔줌
-    
-    [loop] // [unroll] 사용 시 쉐이더 생성이 너무 느림
+    [loop]
     for (int i = 0; i < numSteps; i++)
     {
         float3 uvw = GetUVW(posModel); // +uvwOffset; 미사용 
@@ -163,8 +162,26 @@ float4 PSMain(PSInput input) : SV_TARGET
         }*/
         
         float density = densityTex.SampleLevel(linearClampSS, uvw, 0).r;
+        
+        // SDF
+        float3 center1 = float3(-0.3, 0, 0);
+        float3 center2 = float3(0.3, 0, 0);
+        float sdf1 = length(posModel - center1) - 0.5;
+        float sdf2 = length(posModel - center2) - 0.5;
+        
+        float sdf = min(sdf1, sdf2);
+        
+        if(sdf <= 0.0)
+        {
+            // do nothing
+        }
+        else
+        {
+            density *= saturate(1.0 - sdf * 5.0);
+        }
+        
         float lighting = lightingTex.SampleLevel(linearClampSS, uvw, 0).r;
-        // float lighting = 1.0; // 라이트맵이 없는 예제
+        // float lighting = 1.0; // 라이트맵이 없는 경우
 
         if (density.r > 1e-3)
         {
@@ -184,7 +201,6 @@ float4 PSMain(PSInput input) : SV_TARGET
         
         if (color.a < 1e-3)
             break;
-
     }
 
     color = saturate(color);

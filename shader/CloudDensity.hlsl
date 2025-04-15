@@ -12,7 +12,7 @@ cbuffer Consts : register(b0)
     float aniso = 0.3;
 }
 
-float cloudDensity(float3 uvw)
+float CloudDensity(float3 uvw)
 {
     float freq = 4.0f;
     
@@ -42,5 +42,5 @@ void CSMain(uint3 dtID : SV_DispatchThreadID)
     
     float3 uvw = dtID / float3(width, height, depth) + uvwOffset; // 노이즈 생성을 위해 uvwOffset 사용
 
-    densityTex[dtID] = cloudDensity(uvw);
+    densityTex[dtID] = CloudDensity(uvw);
 }

@@ -1,9 +1,10 @@
 #include "pch.h"
-#include "RenderParticle.h"
+#include "RenderTransparent.h"
 #include "RenderQueue.h"
 #include "Renderer.h"
 #include "CommandListPool.h"
 #include "Particle.h"
+#include "Cloud.h"
 
 /*
 ===================
@@ -11,16 +12,16 @@ Render Particle
 ===================
 */
 
-FRenderParticle::FRenderParticle()
+FRenderTransparent::FRenderTransparent()
 {
 }
 
-FRenderParticle::~FRenderParticle()
+FRenderTransparent::~FRenderTransparent()
 {
     CleanUp();
 }
 
-AkBool FRenderParticle::Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum)
+AkBool FRenderTransparent::Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum)
 {
     _pRenderer = pRenderer;
     _uMaxBufferSize = sizeof(RenderItem_t) * dwMaxItemNum;
@@ -30,7 +31,7 @@ AkBool FRenderParticle::Initialize(FRenderer* pRenderer, DWORD dwMaxItemNum)
     return AK_TRUE;
 }
 
-AkBool FRenderParticle::Add(const RenderItem_t* pItem)
+AkBool FRenderTransparent::Add(const RenderItem_t* pItem)
 {
 	AkBool bResult = AK_FALSE;
 	if (_uAllocatedSize + sizeof(RenderItem_t) > _uMaxBufferSize)
@@ -49,7 +50,7 @@ AkBool FRenderParticle::Add(const RenderItem_t* pItem)
 	return bResult;
 }
 
-DWORD FRenderParticle::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
+DWORD FRenderTransparent::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, ID3D12CommandQueue* pCmdQueue, DWORD dwProcessCountPerCommandList, D3D12_CPU_DESCRIPTOR_HANDLE hRTV, D3D12_CPU_DESCRIPTOR_HANDLE hDSV, const D3D12_VIEWPORT* pViewport, const D3D12_RECT* pScissorRect)
 {
 	ID3D12Device* pDevice = _pRenderer->GetDevice();
 
@@ -83,6 +84,12 @@ DWORD FRenderParticle::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPoo
 					// Draw Sprite
 					pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.pMaxFrame, pItem->tParticleParam.pCurFrame);
 				}
+			}
+			break;
+			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_CLOUD:
+			{
+				FCloudObject* pCloudObj = (FCloudObject*)pItem->pObjHandle;
+				pCloudObj->Draw(uThreadIndex, pCmdList);
 			}
 			break;
 			default:
@@ -121,13 +128,13 @@ DWORD FRenderParticle::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPoo
 	return dwProcessedCount;
 }
 
-void FRenderParticle::Reset()
+void FRenderTransparent::Reset()
 {
 	_uAllocatedSize = 0;
 	_uReadBufferPos = 0;
 }
 
-void FRenderParticle::CleanUp()
+void FRenderTransparent::CleanUp()
 {
 	if (_pBuffer)
 	{
@@ -136,7 +143,7 @@ void FRenderParticle::CleanUp()
 	}
 }
 
-const RenderItem_t* FRenderParticle::Dispatch()
+const RenderItem_t* FRenderTransparent::Dispatch()
 {
 	const RenderItem_t* pItem = nullptr;
 	if (_uReadBufferPos + sizeof(RenderItem_t) > _uAllocatedSize)

@@ -70,7 +70,7 @@ void FCloudObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList)
 
 		static AkF32 fOffset = 0.0f;
 
-		fOffset += 0.001f;
+		// fOffset += 0.001f;
 
 		VolumeCloudConstantBuffer_t* pVolumeCloudConstantBuffer = reinterpret_cast<VolumeCloudConstantBuffer_t*>(pVolumeCloudCBContainer->pSystemMemAddr);
 		pVolumeCloudConstantBuffer->vUVWoffset.z = fOffset;
@@ -576,7 +576,7 @@ AkBool FCloudObject::CreatePipelineState()
 	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
-	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	tPsoDesc.SampleMask = UINT_MAX;
 	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	tPsoDesc.NumRenderTargets = 1;
@@ -584,6 +584,22 @@ AkBool FCloudObject::CreatePipelineState()
 	tPsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	tPsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
 	tPsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
+
+	D3D12_RENDER_TARGET_BLEND_DESC tAlphaDesc = {};
+	tAlphaDesc.BlendEnable = AK_TRUE;
+	tAlphaDesc.LogicOpEnable = AK_FALSE;
+	tAlphaDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	tAlphaDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	tAlphaDesc.BlendOp = D3D12_BLEND_OP_ADD;
+	tAlphaDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+	tAlphaDesc.DestBlendAlpha = D3D12_BLEND_ONE;
+	tAlphaDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	tAlphaDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
+	tAlphaDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	tPsoDesc.BlendState.AlphaToCoverageEnable = AK_FALSE;
+	tPsoDesc.BlendState.RenderTarget[0] = tAlphaDesc;
+
 	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pVolumePSO))))
 	{
 		__debugbreak();

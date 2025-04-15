@@ -20,7 +20,7 @@
 #include "PostEffect.h"
 #include "PostProcess.h"
 #include "RenderUI.h"
-#include "RenderParticle.h"
+#include "RenderTransparent.h"
 #include "RenderMirror.h"
 #include "RenderDepthMap.h"
 #include "RenderShadowMap.h"
@@ -409,7 +409,7 @@ void FRenderer::EndRender()
 #endif
 
 	// Render Particle.
-	_pRenderParticle->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
+	_pRenderTransparent->Process(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect); // Depth Stencil Buffer Format 변경 필요.
 
 	// Render Mirror.
 	_pRenderMirror->BeginMirrorRender(0, pCmdListPool, _pCmdQueue, 400, hFloatRTVHeap, hDSVHeap, &_tMainViewport, &_tMainScissorRect);
@@ -470,7 +470,7 @@ void FRenderer::EndRender()
 		_ppRenderQueue[i]->Reset();
 	}
 
-	_pRenderParticle->Reset();
+	_pRenderTransparent->Reset();
 	_pRenderMirror->Reset();
 	_pRenderUI->Reset();
 }
@@ -1124,7 +1124,7 @@ void FRenderer::RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRo
 	tItem.tParticleParam.pTotalColor = pTotalColor;
 	tItem.tParticleParam.pColorOverLifeTime = pColorOverLifeTime;
 
-	if (!_pRenderParticle->Add(&tItem))
+	if (!_pRenderTransparent->Add(&tItem))
 	{
 		__debugbreak();
 	}
@@ -1139,7 +1139,7 @@ void FRenderer::RenderParticleSprite(IParticle* pParticle, void* pDBHandle, cons
 	tItem.tParticleParam.pMaxFrame = pMaxFrame;
 	tItem.tParticleParam.pCurFrame = pCurFrame;
 
-	if (!_pRenderParticle->Add(&tItem))
+	if (!_pRenderTransparent->Add(&tItem))
 	{
 		__debugbreak();
 	}
@@ -1168,13 +1168,10 @@ void FRenderer::RenderCloud(IEnvironmentObject* pCloud)
 	tItem.eItemType = RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_CLOUD;
 	tItem.pObjHandle = pCloud;
 
-	if (!_ppRenderQueue[_uCurThreadIndex]->Add(&tItem))
+	if (!_pRenderTransparent->Add(&tItem))
 	{
 		__debugbreak();
 	}
-
-	_uCurThreadIndex++;
-	_uCurThreadIndex = _uCurThreadIndex % _uRenderThreadCount;
 }
 
 void FRenderer::RenderReflectionOfBasicMeshObject(IMeshObject* pMeshObj, const Matrix* pWorldMat)
@@ -2418,8 +2415,8 @@ AkBool FRenderer::CreateRenderUI()
 
 AkBool FRenderer::CreateRenderParticle()
 {
-	_pRenderParticle = new FRenderParticle;
-	return _pRenderParticle->Initialize(this, 256);
+	_pRenderTransparent = new FRenderTransparent;
+	return _pRenderTransparent->Initialize(this, 256);
 }
 
 AkBool FRenderer::CreateRenderMirror()
@@ -2773,10 +2770,10 @@ void FRenderer::DestroyRenderUI()
 
 void FRenderer::DestroyRenderParticle()
 {
-	if (_pRenderParticle)
+	if (_pRenderTransparent)
 	{
-		delete _pRenderParticle;
-		_pRenderParticle = nullptr;
+		delete _pRenderTransparent;
+		_pRenderTransparent = nullptr;
 	}
 }
 

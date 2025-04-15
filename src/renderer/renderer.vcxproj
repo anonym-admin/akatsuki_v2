@@ -206,7 +206,7 @@
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ImageFiler.cpp" />
     <ClCompile Include="FontManager.cpp" />
-    <ClCompile Include="RenderParticle.cpp" />
+    <ClCompile Include="RenderTransparent.cpp" />
     <ClCompile Include="RenderShadowMap.cpp" />
     <ClCompile Include="RenderUI.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
@@ -255,7 +255,7 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ImageFiler.h" />
     <ClInclude Include="FontManager.h" />
-    <ClInclude Include="RenderParticle.h" />
+    <ClInclude Include="RenderTransparent.h" />
     <ClInclude Include="RenderShadowMap.h" />
     <ClInclude Include="RenderUI.h" />
     <ClInclude Include="TerrainObject.h" />

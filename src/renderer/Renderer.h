@@ -19,7 +19,7 @@ class FFontManager;
 class FRenderQueue;
 class FPostEffect;
 class FPostProcess;
-class FRenderParticle;
+class FRenderTransparent;
 class FRenderMirror;
 class FRenderUI;
 
@@ -324,7 +324,7 @@ private:
 	// Rendering Pass
 	FRenderDepthMap* _pRenderDepthMap = nullptr;
 	FRenderShadowMap* _pRenderShadowMap = nullptr;
-	FRenderParticle* _pRenderParticle = nullptr;
+	FRenderTransparent* _pRenderTransparent = nullptr;
 	FPostEffect* _pPostEffect = nullptr;
 	FPostProcess* _pPostProcess = nullptr;
 	FRenderUI* _pRenderUI = nullptr;

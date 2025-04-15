@@ -146,12 +146,6 @@ DWORD FRenderQueue::Process(DWORD uThreadIndex, FCommandListPool* pCmdListPool, 
 				pOceanObj->Draw(uThreadIndex, pCmdList, pItem->tOceanParam.fTime, &pItem->tOceanParam.mWorld);
 			}
 			break;
-			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_CLOUD:
-			{
-				FCloudObject* pCloudObj = (FCloudObject*)pItem->pObjHandle;
-				pCloudObj->Draw(uThreadIndex, pCmdList);
-			}
-			break;
 			default:
 			{
 				__debugbreak();

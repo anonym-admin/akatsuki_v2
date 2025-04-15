@@ -40,8 +40,8 @@ AkBool EditorMap::Initialize()
 	_pOcean = GRenderer->CreateOceanObject();
 
 	// Create cloud.
-	Vector3 vMin = Vector3(-0.5f);
-	Vector3 vMax = Vector3(0.5f);
+	Vector3 vMin = Vector3(-1.0f);
+	Vector3 vMax = Vector3(1.0f);
 	MeshData_t* pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
 	_pCloud = GRenderer->CreateCloudObject();
 	_pCloud->CreateMeshBuffers(pCube, 1);
