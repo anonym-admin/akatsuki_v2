@@ -362,5 +362,11 @@
     <CustomBuild Include="..\..\shader\CloudDensity.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\shader\VolumeSmoke.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\shader\CloudLight.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

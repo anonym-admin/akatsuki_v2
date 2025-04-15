@@ -68,7 +68,7 @@ interface ITerrain : public IUnknown
 
 interface IParticle : public IUnknown
 {
-	virtual void* CreateParticleSpark(VertexParticle_t* pVertices, AkU32 uNum) = 0;
+	virtual void* CreateParticleSpark(VertexParticle_t * pVertices, AkU32 uNum) = 0;
 	virtual void* CreateParticleSprite(VertexSize_t* pVerices) = 0;
 	virtual void SetTexture(void* pTexHandle) = 0;
 	virtual void DestroyBasicParticleBuffer(void* pDBHandle) = 0;
@@ -86,7 +86,8 @@ enum ENVIRONMENT_TYPE
 
 interface IEnvironmentObject : public IUnknown
 {
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR * __RPC_FAR * ppvObject) = 0;
+	virtual AkBool CreateMeshBuffers(MeshData_t * pMeshData, AkU32 uMeshDataNum) = 0;
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) = 0;
 	virtual ULONG STDMETHODCALLTYPE AddRef(void) = 0;
 	virtual ULONG STDMETHODCALLTYPE Release(void) = 0;
 };

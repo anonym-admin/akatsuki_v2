@@ -40,13 +40,15 @@ AkBool EditorMap::Initialize()
 	_pOcean = GRenderer->CreateOceanObject();
 
 	// Create cloud.
+	Vector3 vMin = Vector3(-0.5f);
+	Vector3 vMax = Vector3(0.5f);
+	MeshData_t* pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
 	_pCloud = GRenderer->CreateCloudObject();
+	_pCloud->CreateMeshBuffers(pCube, 1);
+	GeometryGenerator::DestroyGeometry(pCube, 1);
 
 	// Clipper.
 	_pCSGCube = GRenderer->CreateBasicMeshObject();
-
-	Vector3 vMin = Vector3(-0.5f);
-	Vector3 vMax = Vector3(0.5f);
 	_pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
 	_pCSGDBHandle = _pCSGCube->CreateDynamicMeshBuffers(_pCube->pVertices, _pCube->uVerticeNum, _pCube->pIndices, _pCube->uIndicesNum);
 
@@ -155,10 +157,10 @@ void EditorMap::Render()
 	// Render Cloud.
 	GRenderer->RenderCloud(_pCloud);
 
-	// CSG
-	_mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
+	//// CSG
+	// _mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
 
-	GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
+	// GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
 }
 
 void EditorMap::RenderShadowMaps()

@@ -65,6 +65,7 @@ struct MeshConstantBuffer_t
 {
 	Matrix mWorld = Matrix();
 	Matrix mWorldIT = Matrix();
+	Matrix mWorldInv = Matrix();
 
 	AkF32 fHeightScale = 1.0f;
 	Vector3 vClipMin = Vector3(0.0f);

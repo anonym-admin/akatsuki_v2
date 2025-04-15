@@ -148,7 +148,7 @@ AkBool FOceanObject::CreateCommonResources()
 		__debugbreak();
 		return AK_FALSE;
 	}
-	if (!CreateMeshBuffers())
+	if (!CreateDefaultMeshBuffers())
 	{
 		__debugbreak();
 		return AK_FALSE;
@@ -296,7 +296,7 @@ AkBool FOceanObject::CreatePipelineState()
 	return AK_TRUE;
 }
 
-AkBool FOceanObject::CreateMeshBuffers()
+AkBool FOceanObject::CreateDefaultMeshBuffers()
 {
 	_pMesh = reinterpret_cast<Mesh_t*>(malloc(sizeof(Mesh_t)));
 
@@ -353,7 +353,7 @@ void FOceanObject::DestroyCommonResources()
 	{
 		DestroyPipelineState();
 		DestroyRootSignature();
-		DestroyMeshBuffers();
+		DestroyDefaultMeshBuffers();
 	}
 }
 
@@ -375,7 +375,7 @@ void FOceanObject::DestroyPipelineState()
 	}
 }
 
-void FOceanObject::DestroyMeshBuffers()
+void FOceanObject::DestroyDefaultMeshBuffers()
 {
 	if (_pMesh)
 	{

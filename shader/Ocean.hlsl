@@ -4,8 +4,12 @@ cbuffer MeshConsts : register(b1)
 {
     matrix world;
     matrix worldIT;
+    matrix worldInv;
     
     float heightScale;
+    float3 clipMin;
+    float reserve0;
+    float3 clipMax;
 };
 
 struct VSInput
