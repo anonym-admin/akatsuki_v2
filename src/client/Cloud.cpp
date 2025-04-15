@@ -48,7 +48,25 @@ void Cloud::FinalUpdate()
 
 void Cloud::Render()
 {
-    GRenderer->RenderCloud(_pCloudObj, 0.0005f, &_pTransform->GetWorldTransform(), fLightAbsorptionCoeff, &vLightDir, fDensityAbsorption, &vLightColor, fAniso);
+    GRenderer->RenderCloud(_pCloudObj, fAnimSpeed, &_pTransform->GetWorldTransform(), fLightAbsorptionCoeff, &vLightDir, fDensityAbsorption, &vLightColor, fAniso);
+}
+
+void Cloud::RenderGUI()
+{
+    ModelObject::RenderGUI();
+
+    std::wstring ModelName = Name + std::wstring(L"_" + std::to_wstring(_uInstanceCount));
+    char Title[_MAX_PATH] = {};
+    strcpy_s(Title, ToString(ModelName + L" edit").c_str());
+
+    ImGui::Begin(Title);
+    ImGui::SliderFloat("Anim Speed", &fAnimSpeed, 0.0f, 0.001f, "%.6f");
+    ImGui::SliderFloat("Light Absorption", &fLightAbsorptionCoeff, 0.0f, 10.0f);
+    ImGui::SliderFloat3("Light Dir", &vLightDir.x, 0.0f, 1.0f);
+    ImGui::SliderFloat("Density Absorption", &fDensityAbsorption, 0.0f, 50.0f);
+    ImGui::SliderFloat3("Light Color", &vLightColor.x, 0.0f, 50.0f);
+    ImGui::SliderFloat("Aniso", &fAniso, 0.0f, 1.0f);
+    ImGui::End();
 }
 
 void Cloud::CleanUp()

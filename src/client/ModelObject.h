@@ -28,7 +28,7 @@ public:
 	virtual void RenderShadowMaps() override;
 	virtual void Render() override;
 
-	void RenderGUI();
+	virtual void RenderGUI();
 	void SetEditMode(AkBool bIsEditMode) { _bEditMode = bIsEditMode; }
 
 	virtual void OnCollisionEnter(Collider* pOther) override;
