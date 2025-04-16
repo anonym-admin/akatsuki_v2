@@ -534,13 +534,13 @@ void EditorModel::Load(const std::wstring& wcFilePath)
 	_wfopen_s(&fp, wcFilePath.c_str(), L"rt");
 	if (!fp) { __debugbreak(); }
 
+	// 01. Model 积己.
 	AkI32 iIsSkinned = 0;
 	Model* pModel = nullptr;
 	fwscanf_s(fp, L"%d\n", &iIsSkinned);
+	wchar_t wcFileName[_MAX_PATH] = {};
 	if (!iIsSkinned)
 	{
-		wchar_t wcFileName[_MAX_PATH] = {};
-
 		fwscanf_s(fp, L"%s\n", wcFileName, _MAX_PATH);
 		wcscat_s(wcFileName, L".mesh");
 
@@ -549,8 +549,6 @@ void EditorModel::Load(const std::wstring& wcFilePath)
 	}
 	else
 	{
-		wchar_t wcFileName[_MAX_PATH] = {};
-
 		fwscanf_s(fp, L"%s\n", wcFileName, _MAX_PATH);
 		wcscat_s(wcFileName, L".mesh");
 
@@ -558,10 +556,56 @@ void EditorModel::Load(const std::wstring& wcFilePath)
 		pModel = CreateModel(MESH_FILE_PATH, wcFileName); // 郴何利栏肺 葛胆阑 积己.
 	}
 
-	// IBL Strength 颇教.
+	// 02. IBL Strength 颇教.
 	AkF32 fIBLStrength = 0.0f;
 	fwscanf_s(fp, L"%f\n", &fIBLStrength);
 	pModel->SetIBLStrength(fIBLStrength);
+
+	// 03. Collider 积己.
+	AkI32 iColliderSize = 0;
+	std::wstring wcModelName = GetFileNmaeExcludeExt(wcFileName);
+	fwscanf_s(fp, L"%d\n", &iColliderSize);
+	for (AkI32 i = 0; i < iColliderSize; i++)
+	{
+		Collider* pCollider = nullptr;
+		AkI32 iColliderType = 0;
+		fwscanf_s(fp, L"%d", &iColliderType);
+		switch (iColliderType)
+		{
+		case 0:
+		{
+			Vector3 vMin = Vector3(-0.5f);
+			Vector3 vMax = Vector3(0.5f);
+			pCollider = new BoxCollider(nullptr, &vMin, &vMax);
+		}
+		break;
+		case 1:
+		{
+			pCollider = new SphereCollider(nullptr);
+		}
+		break;
+		case 2:
+		{
+			pCollider = new CapsuleCollider(nullptr);
+		}
+		break;
+		}
+
+		_mapColliders[wcModelName].push_back(pCollider);
+		_vecColliders.push_back(pCollider);
+
+		Vector3 vScale = Vector3(0.0f);
+		Vector3 vRotation = Vector3(0.0f);
+		Vector3 vPosition = Vector3(0.0f);
+
+		fwscanf_s(fp, L"%f %f %f", &vScale.x, &vScale.y, &vScale.z);
+		fwscanf_s(fp, L"%f %f %f", &vRotation.x, &vRotation.y, &vRotation.z);
+		fwscanf_s(fp, L"%f %f %f", &vPosition.x, &vPosition.y, &vPosition.z);
+
+		pCollider->GetTransform()->SetScale(&vScale);
+		pCollider->GetTransform()->SetRotation(&vRotation);
+		pCollider->GetTransform()->SetPosition(&vPosition);
+	}
 
 	if (fp) { fclose(fp); }
 }

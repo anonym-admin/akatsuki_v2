@@ -229,6 +229,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 						}
 						else if (wcTempName.find(L"stone") != std::wstring::npos)
 						{
+							pActor->GetModel()->DrawShadow(AK_FALSE); // self shadow 발생으로 인해 어색한 느낌이 생김. shaodw off
 							bIsStone = AK_TRUE;
 						}
 
@@ -262,6 +263,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 			else if (wcTempName.find(L"stone") != std::wstring::npos)
 			{
 				pActor = new Stone(wcTempName.c_str());
+				pActor->GetModel()->DrawShadow(AK_FALSE); // self shadow 발생으로 인해 어색한 느낌이 생김. shaodw off
 				bIsStone = AK_TRUE;
 			}
 			else

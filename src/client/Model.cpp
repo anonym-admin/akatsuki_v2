@@ -74,7 +74,8 @@ void Model::RenderNormals()
 
 void Model::RenderShadowMaps()
 {
-	GRenderer->RenderShadowOfBasicMeshObject(_pMeshObj, &_mWorldRow);
+	if(_bDrawShadow)
+		GRenderer->RenderShadowOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
 void Model::RenderDepthMap()

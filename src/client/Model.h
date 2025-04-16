@@ -38,6 +38,7 @@ public:
 	void SetIBLStrength(AkF32 fIBLStrength);
 
 	AkBool IsPick() { return _bUseGizmo; }
+	void DrawShadow(AkBool bDrawShadow) { _bDrawShadow = bDrawShadow; }
 	void ReleasePick() { _bUseGizmo = AK_FALSE; }
 
 	void operator=(const Model& Other);
@@ -58,6 +59,7 @@ protected:
 	Matrix _mWorldRow = Matrix();
 	AkBool _bUseGizmo = AK_FALSE;
 	AkF32 _fIBLStrength = 0.0f;
+	AkBool _bDrawShadow = AK_TRUE;
 
 public:
 	wchar_t Name[_MAX_PATH] = {};

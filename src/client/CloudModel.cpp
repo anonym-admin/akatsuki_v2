@@ -39,6 +39,8 @@ void CloudModel::Render()
 
 void CloudModel::RenderGUI()
 {
+	// 해당 함수가 한번만 호출될 수 있도록 수정필요!
+	// TODO:
 	std::wstring ModelName = Name + std::wstring(L"_" + std::to_wstring(_uRefCount));
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" edit").c_str());
