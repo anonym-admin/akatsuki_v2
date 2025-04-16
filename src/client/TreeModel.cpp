@@ -13,6 +13,10 @@ TreeModel::TreeModel(AssetMeshDataContainer_t* pMeshDataContainer, const Vector3
 TreeModel::TreeModel(MeshData_t* pMeshData, AkU32 uMeshDataNum, const Vector3* pAlbedo, AkF32 fMetallic, AkF32 fRoughness, const Vector3* pEmissive)
 	: Model(pMeshData, uMeshDataNum, pAlbedo, fMetallic, fRoughness, pEmissive)
 {
+	if (!Initialize())
+	{
+		__debugbreak();
+	}
 }
 
 TreeModel::~TreeModel()
@@ -30,7 +34,6 @@ void TreeModel::Render()
 {
 	if(_fWindTrunk != 0.0f)
 		_pMeshObj->SetWindTrunk(_fWindTrunk);
-
 
 	Model::Render();
 }

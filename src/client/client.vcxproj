@@ -241,6 +241,8 @@
     <ClInclude Include="SphereColiider.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SquareCollider.h" />
+    <ClInclude Include="Stone.h" />
+    <ClInclude Include="StoneModel.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Soldier.h" />
     <ClInclude Include="Terrain.h" />
@@ -333,6 +335,8 @@
     <ClCompile Include="SphereColiider.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SquareCollider.cpp" />
+    <ClCompile Include="Stone.cpp" />
+    <ClCompile Include="StoneModel.cpp" />
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Soldier.cpp" />
     <ClCompile Include="Terrain.cpp" />

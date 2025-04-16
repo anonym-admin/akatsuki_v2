@@ -15,6 +15,8 @@
 #include "Cloud.h"
 #include "Tree.h"
 #include "TreeModel.h"
+#include "Stone.h"
+#include "StoneModel.h"
 
 /*
 =============
@@ -205,8 +207,10 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
 
 		AkBool bIsTree = AK_FALSE;
+		AkBool bIsStone = AK_FALSE;
 		AkBool bInst = AK_FALSE;
 		GameObjContainer_t** ppGameObjectContainer = GetAllGameObject();
+		std::wstring wcTempName = wcName;
 		for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 		{
 			if (ppGameObjectContainer[i])
@@ -218,6 +222,16 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 					{
 						pActor = ((ModelObject*)pCur->pData)->Clone();
 						bInst = AK_TRUE;
+
+						if (wcTempName.find(L"tree") != std::wstring::npos)
+						{
+							bIsTree = AK_TRUE;
+						}
+						else if (wcTempName.find(L"stone") != std::wstring::npos)
+						{
+							bIsStone = AK_TRUE;
+						}
+
 						break;
 					}
 
@@ -226,28 +240,31 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 			}
 		}
 
-		std::wstring wcTempName = wcName;
-
-		if (GetFileNmaeExcludeExt(GetFileName(wcTempName)) == L"soldier")
+		if (!bInst)
 		{
-			pActor = new Soldier(wcTempName.c_str());
-		}
-		else if (wcTempName.find(L"Ocean") != std::wstring::npos)
-		{
-			pActor = new Ocean;
-		}
-		else if (wcTempName.find(L"Cloud") != std::wstring::npos)
-		{
-			pActor = new Cloud;
-		}
-		else if (wcTempName.find(L"tree") != std::wstring::npos)
-		{
-			pActor = new Tree(wcTempName.c_str());
-			bIsTree = AK_TRUE;
-		}
-		else
-		{
-			if (!bInst)
+			if (GetFileNmaeExcludeExt(GetFileName(wcTempName)) == L"soldier")
+			{
+				pActor = new Soldier(wcTempName.c_str());
+			}
+			else if (wcTempName.find(L"Ocean") != std::wstring::npos)
+			{
+				pActor = new Ocean;
+			}
+			else if (wcTempName.find(L"Cloud") != std::wstring::npos)
+			{
+				pActor = new Cloud;
+			}
+			else if (wcTempName.find(L"tree") != std::wstring::npos)
+			{
+				pActor = new Tree(wcTempName.c_str());
+				bIsTree = AK_TRUE;
+			}
+			else if (wcTempName.find(L"stone") != std::wstring::npos)
+			{
+				pActor = new Stone(wcTempName.c_str());
+				bIsStone = AK_TRUE;
+			}
+			else
 			{
 				pActor = new ModelObject(wcTempName.c_str());
 			}
@@ -258,6 +275,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		Vector3 vPos = Vector3(0.0f);
 		AkF32 fWindTrunk = 0.0f;
 		AkF32 fWindLeaves = 0.0f;
+		AkF32 fHeightScale = 0.0f;
 
 		fwscanf_s(fp, L"%f %f %f", &vScale.x, &vScale.y, &vScale.z);
 		fwscanf_s(fp, L"%f %f %f", &vYawPitchRoll.x, &vYawPitchRoll.y, &vYawPitchRoll.z);
@@ -266,10 +284,17 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		{
 			fwscanf_s(fp, L"%f", &fWindTrunk);
 			fwscanf_s(fp, L"%f", &fWindLeaves);
-			
+
 			TreeModel* pTemp = (TreeModel*)pActor->GetModel();
 			pTemp->SetWindTrunk(fWindTrunk);
 			pTemp->SetWindLeaves(fWindLeaves);
+		}
+		if (bIsStone)
+		{
+			fwscanf_s(fp, L"%f", &fHeightScale);
+
+			StoneModel* pTemp = (StoneModel*)pActor->GetModel();
+			pTemp->SetHeightScale(fHeightScale);
 		}
 
 		pActor->GetTransform()->SetScale(&vScale);
@@ -306,7 +331,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		pBillboard->tLink.pData = pBillboard;
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::BILLBOARD, pBillboard);
 
-		if(pVertices)
+		if (pVertices)
 		{
 			delete[] pVertices;
 			pVertices = nullptr;

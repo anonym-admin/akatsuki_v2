@@ -342,12 +342,6 @@
     <ClInclude Include="Light.h">
       <Filter>src\light</Filter>
     </ClInclude>
-    <ClInclude Include="Ocean.h">
-      <Filter>src\obj</Filter>
-    </ClInclude>
-    <ClInclude Include="Cloud.h">
-      <Filter>src\obj</Filter>
-    </ClInclude>
     <ClInclude Include="OceanModel.h">
       <Filter>src\model</Filter>
     </ClInclude>
@@ -364,6 +358,18 @@
       <Filter>src\model</Filter>
     </ClInclude>
     <ClInclude Include="Tree.h">
+      <Filter>src\obj\landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="StoneModel.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="Stone.h">
+      <Filter>src\obj\landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Cloud.h">
+      <Filter>src\obj\landscape</Filter>
+    </ClInclude>
+    <ClInclude Include="Ocean.h">
       <Filter>src\obj\landscape</Filter>
     </ClInclude>
   </ItemGroup>
@@ -584,12 +590,6 @@
     <ClCompile Include="Light.cpp">
       <Filter>src\light</Filter>
     </ClCompile>
-    <ClCompile Include="Ocean.cpp">
-      <Filter>src\obj</Filter>
-    </ClCompile>
-    <ClCompile Include="Cloud.cpp">
-      <Filter>src\obj</Filter>
-    </ClCompile>
     <ClCompile Include="OceanModel.cpp">
       <Filter>src\model</Filter>
     </ClCompile>
@@ -606,6 +606,18 @@
       <Filter>src\model</Filter>
     </ClCompile>
     <ClCompile Include="Tree.cpp">
+      <Filter>src\obj\landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="StoneModel.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Stone.cpp">
+      <Filter>src\obj\landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Cloud.cpp">
+      <Filter>src\obj\landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="Ocean.cpp">
       <Filter>src\obj\landscape</Filter>
     </ClCompile>
   </ItemGroup>

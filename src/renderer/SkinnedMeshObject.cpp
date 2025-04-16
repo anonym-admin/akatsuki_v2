@@ -104,6 +104,9 @@ void FSkinnedMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 	mWorldRow.Translation(Vector3(0.0f));
 	mWorldRow.Invert().Transpose();
 	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
+	pMeshConstantBuffer->fHeightScale = 0.0f;
+	pMeshConstantBuffer->fWindTrunk = 0.0f;
+	pMeshConstantBuffer->fWindLeaves = 0.0f;
 
 	// Per Obj. (b1)
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);

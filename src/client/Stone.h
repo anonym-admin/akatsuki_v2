@@ -2,12 +2,12 @@
 
 #include "ModelObject.h"
 
-class Tree : public ModelObject
+class Stone : public ModelObject
 {
 public:
-	Tree(const wchar_t* wcScriptFile);
-	Tree(const Tree& Other);
-	~Tree();
+	Stone(const wchar_t* wcScriptFile);
+	Stone(const Stone& Other);
+	~Stone();
 
 	AkBool Initialize(const wchar_t* wcScriptFile);
 	virtual void RenderGUI() override;

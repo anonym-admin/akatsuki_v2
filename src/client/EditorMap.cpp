@@ -10,6 +10,8 @@
 #include "Cloud.h"
 #include "TreeModel.h"
 #include "Tree.h"
+#include "StoneModel.h"
+#include "Stone.h"
 
 /*
 =============
@@ -326,6 +328,7 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 
 		ModelObject* pObj = nullptr;
 		AkBool bIsTree = AK_FALSE;
+		AkBool bIsStone = AK_FALSE;
 
 		// 이미 같은 이름으로 생성된 오브젝트가 있다면 인스턴스화를 시킨다.
 		std::wstring wcTempName = wcName;
@@ -335,6 +338,17 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 				__debugbreak();
 
 			pObj = ((ModelObject*)_mapGameObj[wcTempName][0].first)->Clone();
+			
+			// 나무 일 경우 플래그 체크
+			if (wcTempName.find(L"tree") != std::wstring::npos)
+			{
+				bIsTree = AK_TRUE;
+			}
+			// 스톤 일 경우 플래그 체크
+			else if (wcTempName.find(L"stone") != std::wstring::npos)
+			{
+				bIsStone = AK_TRUE;
+			}
 
 			_mapGameObj[wcTempName].push_back(std::make_pair(pObj, false));
 		}
@@ -356,6 +370,12 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 				pObj = new Tree(wcTempName.c_str());
 				bIsTree = AK_TRUE;
 			}
+			// 스톤 생성
+			else if (wcTempName.find(L"stone") != std::wstring::npos)
+			{
+				pObj = new Stone(wcTempName.c_str());
+				bIsStone = AK_TRUE;
+			}
 			// 그 외에 모델 오브젝트 생성 
 			else
 			{
@@ -374,6 +394,7 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		Vector3 vPos = Vector3(0.0f);
 		AkF32 fWindTrunk = 0.0f;
 		AkF32 fWindLeaves = 0.0f;
+		AkF32 fHeightScale = 0.0f;
 
 		fwscanf_s(fp, L"%f %f %f", &vScale.x, &vScale.y, &vScale.z);
 		fwscanf_s(fp, L"%f %f %f", &vYawPitchRoll.x, &vYawPitchRoll.y, &vYawPitchRoll.z);
@@ -386,6 +407,13 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 			TreeModel* pTemp = (TreeModel*)pObj->GetModel();
 			pTemp->SetWindTrunk(fWindTrunk);
 			pTemp->SetWindLeaves(fWindLeaves);
+		}
+		if (bIsStone)
+		{
+			fwscanf_s(fp, L"%f", &fHeightScale);
+
+			StoneModel* pTemp = (StoneModel*)pObj->GetModel();
+			pTemp->SetHeightScale(fHeightScale);
 		}
 
 		pObj->GetTransform()->SetScale(&vScale);
@@ -478,6 +506,12 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 			}
 
 			// 스톤 오브젝트의 경우 height map scale 을 저장한다.
+			if (e.first.find(L"stone") != std::wstring::npos)
+			{
+				StoneModel* pTemp = (StoneModel*)v.first->GetModel();
+				AkF32 fHeightScale = pTemp->GetHeightScale();
+				fwprintf_s(fp, L"%lf \n", fHeightScale);
+			}
 		}
 	}
 

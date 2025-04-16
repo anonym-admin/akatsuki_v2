@@ -1,8 +1,8 @@
 #include "pch.h"
-#include "Tree.h"
-#include "TreeModel.h"
+#include "Stone.h"
+#include "StoneModel.h"
 
-Tree::Tree(const wchar_t* wcScriptFile)
+Stone::Stone(const wchar_t* wcScriptFile)
 {
 	if (!Initialize(wcScriptFile))
 	{
@@ -10,16 +10,16 @@ Tree::Tree(const wchar_t* wcScriptFile)
 	}
 }
 
-Tree::Tree(const Tree& Other)
+Stone::Stone(const Stone& Other)
 	: ModelObject(Other)
 {
 }
 
-Tree::~Tree()
+Stone::~Stone()
 {
 }
 
-AkBool Tree::Initialize(const wchar_t* wcScriptFile)
+AkBool Stone::Initialize(const wchar_t* wcScriptFile)
 {
 	FILE* fp = nullptr;
 	_wfopen_s(&fp, wcScriptFile, L"rt");
@@ -45,7 +45,7 @@ AkBool Tree::Initialize(const wchar_t* wcScriptFile)
 		AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshData(wcFilePath);
 		if (pMeshDataContainer)
 		{
-			_pModel = new TreeModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive);
+			_pModel = new StoneModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive);
 		}
 		else
 		{
@@ -53,7 +53,7 @@ AkBool Tree::Initialize(const wchar_t* wcScriptFile)
 
 			pMeshDataContainer = GAssetManager->GetMeshData(wcFilePath);
 
-			_pModel = new TreeModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive);
+			_pModel = new StoneModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive);
 		}
 	}
 
@@ -65,9 +65,10 @@ AkBool Tree::Initialize(const wchar_t* wcScriptFile)
 	return AK_TRUE;
 }
 
-void Tree::RenderGUI()
+void Stone::RenderGUI()
 {
 	ModelObject::RenderGUI();
 
 	_pModel->RenderGUI();
 }
+
