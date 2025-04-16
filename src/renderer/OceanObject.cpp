@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Ocean.h"
+#include "OceanObject.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "DescriptorPool.h"

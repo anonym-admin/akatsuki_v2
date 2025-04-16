@@ -25,8 +25,8 @@
 #include "RenderDepthMap.h"
 #include "RenderShadowMap.h"
 #include "Particle.h"
-#include "Ocean.h"
-#include "Cloud.h"
+#include "OceanObject.h"
+#include "CloudObject.h"
 
 // For ImGui
 extern ImGuiContext* GImGui;

@@ -37,9 +37,6 @@
     <Filter Include="src\particle">
       <UniqueIdentifier>{9d2fef40-00b3-43a8-bb67-499660c72b35}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\env">
-      <UniqueIdentifier>{492f2a95-2823-4a31-86e0-f75b64e7f30b}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -160,9 +157,6 @@
     <ClCompile Include="RenderTransparent.cpp">
       <Filter>src\body</Filter>
     </ClCompile>
-    <ClCompile Include="Ocean.cpp">
-      <Filter>src\env</Filter>
-    </ClCompile>
     <ClCompile Include="RenderMirror.cpp">
       <Filter>src\body</Filter>
     </ClCompile>
@@ -175,14 +169,17 @@
     <ClCompile Include="RenderDepthMap.cpp">
       <Filter>src\body</Filter>
     </ClCompile>
-    <ClCompile Include="Cloud.cpp">
-      <Filter>src\env</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\utils\UtilFunc.cpp">
       <Filter>src\utils</Filter>
     </ClCompile>
     <ClCompile Include="..\client\StringUtils.cpp">
       <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="CloudObject.cpp">
+      <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="OceanObject.cpp">
+      <Filter>src\obj</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -297,9 +294,6 @@
     <ClInclude Include="RenderTransparent.h">
       <Filter>src\body</Filter>
     </ClInclude>
-    <ClInclude Include="Ocean.h">
-      <Filter>src\env</Filter>
-    </ClInclude>
     <ClInclude Include="RenderMirror.h">
       <Filter>src\body</Filter>
     </ClInclude>
@@ -312,14 +306,17 @@
     <ClInclude Include="RenderDepthMap.h">
       <Filter>src\body</Filter>
     </ClInclude>
-    <ClInclude Include="Cloud.h">
-      <Filter>src\env</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\utils\UtilFunc.h">
       <Filter>src\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\client\StringUtils.h">
       <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="OceanObject.h">
+      <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="CloudObject.h">
+      <Filter>src\obj</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

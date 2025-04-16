@@ -4,7 +4,7 @@
 #include "Renderer.h"
 #include "CommandListPool.h"
 #include "Particle.h"
-#include "Cloud.h"
+#include "CloudObject.h"
 
 /*
 ===================

@@ -8,8 +8,8 @@
 #include "LineObject.h"
 #include "BillboardObject.h"
 #include "TerrainObject.h"
-#include "Ocean.h"
-#include "Cloud.h"
+#include "OceanObject.h"
+#include "CloudObject.h"
 
 /*
 ==============

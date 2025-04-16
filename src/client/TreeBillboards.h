@@ -27,7 +27,5 @@ public:
 
 private:
 	void CleanUp();
-
-private:
 };
 

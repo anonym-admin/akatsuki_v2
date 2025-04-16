@@ -306,8 +306,6 @@
     <ClInclude Include="PostRenderControl.h">
       <Filter>src\framework</Filter>
     </ClInclude>
-    <ClInclude Include="FileSystem.h" />
-    <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Particle.h">
       <Filter>src\particle</Filter>
     </ClInclude>
@@ -355,6 +353,12 @@
     </ClInclude>
     <ClInclude Include="CloudModel.h">
       <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="FileSystem.h">
+      <Filter>src\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -538,8 +542,6 @@
     <ClCompile Include="PostRenderControl.cpp">
       <Filter>src\framework</Filter>
     </ClCompile>
-    <ClCompile Include="FileSystem.cpp" />
-    <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Particle.cpp">
       <Filter>src\particle</Filter>
     </ClCompile>
@@ -587,6 +589,12 @@
     </ClCompile>
     <ClCompile Include="CloudModel.cpp">
       <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="FileSystem.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>src\utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

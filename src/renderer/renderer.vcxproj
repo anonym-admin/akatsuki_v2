@@ -193,7 +193,7 @@
     <ClCompile Include="..\client\StringUtils.cpp" />
     <ClCompile Include="BasicMeshObject.cpp" />
     <ClCompile Include="BillboardObject.cpp" />
-    <ClCompile Include="Cloud.cpp" />
+    <ClCompile Include="CloudObject.cpp" />
     <ClCompile Include="CommandListPool.cpp" />
     <ClCompile Include="ConstantBufferManager.cpp" />
     <ClCompile Include="ConstantBufferPool.cpp" />
@@ -201,7 +201,7 @@
     <ClCompile Include="DescriptorAllocator.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="D3DUtils.cpp" />
-    <ClCompile Include="Ocean.cpp" />
+    <ClCompile Include="OceanObject.cpp" />
     <ClCompile Include="PostEffect.cpp" />
     <ClCompile Include="RenderDepthMap.cpp" />
     <ClCompile Include="RenderMirror.cpp" />
@@ -245,14 +245,14 @@
     <ClInclude Include="..\client\StringUtils.h" />
     <ClInclude Include="BasicMeshObject.h" />
     <ClInclude Include="BillboardObject.h" />
-    <ClInclude Include="Cloud.h" />
+    <ClInclude Include="CloudObject.h" />
     <ClInclude Include="CommandListPool.h" />
     <ClInclude Include="ConstantBufferManager.h" />
     <ClInclude Include="ConstantBufferPool.h" />
     <ClInclude Include="D3DUtils.h" />
     <ClInclude Include="DescriptorPool.h" />
     <ClInclude Include="DescriptorAllocator.h" />
-    <ClInclude Include="Ocean.h" />
+    <ClInclude Include="OceanObject.h" />
     <ClInclude Include="PostEffect.h" />
     <ClInclude Include="RenderDepthMap.h" />
     <ClInclude Include="RenderMirror.h" />
