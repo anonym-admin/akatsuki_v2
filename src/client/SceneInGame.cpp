@@ -9,7 +9,7 @@
 #include "Dancer.h"
 #include "BRS_74.h"
 #include "ModelObject.h"
-#include "TreeBillboards.h"
+#include "Billboards.h"
 #include "Terrain.h"
 #include "Ocean.h"
 #include "Cloud.h"

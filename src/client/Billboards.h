@@ -3,9 +3,9 @@
 #include "Actor.h"
 
 /*
-===============
-Tree Billboard
-===============
+=======================
+LandScape Billboard
+=======================
 */
 
 class Billboard : public Actor

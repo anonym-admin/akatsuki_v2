@@ -4,7 +4,7 @@
 #include "Terrain.h"
 #include "ModelObject.h"
 #include "Scene.h"
-#include "TreeBillboards.h"
+#include "Billboards.h"
 #include "Light.h"
 #include "Ocean.h"
 #include "Cloud.h"
@@ -266,16 +266,12 @@ void EditorMap::RenderGUI()
 		if (ImGui::Button("Create Ocean"))
 		{
 			Ocean* pOcean = CreateOcean();
-			// _vecGameObj.push_back(pOcean);
-
 			_mapGameObj[pOcean->Name].push_back(std::make_pair(pOcean, false));
 		}
 		// Create Cloud.
 		if (ImGui::Button("Create Cloud"))
 		{
 			Cloud* pCloud = CreateCloud();
-			// _vecGameObj.push_back(pCloud);
-
 			_mapGameObj[pCloud->Name].push_back(std::make_pair(pCloud, false));
 		}
 	}
@@ -572,13 +568,6 @@ void EditorMap::CleanUp()
 		}
 	}
 
-	//for (auto& e : _vecGameObj)
-	//{
-	//	delete e;
-	//	e = nullptr;
-	//}
-	//_vecGameObj.clear();
-
 	for (auto& e : _mapGameObj)
 	{
 		for (auto& v : e.second)
@@ -710,9 +699,6 @@ void EditorMap::ImportActor(const std::wstring& wcFilePath)
 {
 	ModelObject* pObj = new ModelObject(wcFilePath.c_str());
 	pObj->SetEditMode(AK_TRUE);
-	// _vecGameObj.push_back(pObj);
-	// _vecActFileNameList.push_back(wcFilePath);
-
 	_mapGameObj[wcFilePath].push_back(std::make_pair(pObj, false));
 }
 

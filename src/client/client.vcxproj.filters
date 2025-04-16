@@ -288,7 +288,7 @@
     <ClInclude Include="BillboardModel.h">
       <Filter>src\model</Filter>
     </ClInclude>
-    <ClInclude Include="TreeBillboards.h">
+    <ClInclude Include="Billboards.h">
       <Filter>src\obj\landscape</Filter>
     </ClInclude>
     <ClInclude Include="Terrain.h">
@@ -539,7 +539,7 @@
     <ClCompile Include="Terrain.cpp">
       <Filter>src\obj\landscape</Filter>
     </ClCompile>
-    <ClCompile Include="TreeBillboards.cpp">
+    <ClCompile Include="Billboards.cpp">
       <Filter>src\obj\landscape</Filter>
     </ClCompile>
     <ClCompile Include="Dancer.cpp">

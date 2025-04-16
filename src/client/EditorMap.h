@@ -89,9 +89,6 @@ private:
 	std::array<std::wstring, 2> _wcAlphaFilenames = {};
 
 	// 04. Game Objs
-	std::vector<Actor*> _vecGameObj = {};
-	std::vector<std::wstring> _vecActFileNameList = {};
-
 	std::unordered_map<std::wstring, std::vector<std::pair<Actor*, AkBool>>> _mapGameObj = {}; // Pair bool : dead flag
 
 	// 05. Tree Billboard

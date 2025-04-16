@@ -1,11 +1,11 @@
 #include "pch.h"
-#include "TreeBillboards.h"
+#include "Billboards.h"
 #include "BillboardModel.h"
 
 /*
-===============
-Tree Billboard
-===============
+=======================
+LandScape Billboard
+=======================
 */
 
 
