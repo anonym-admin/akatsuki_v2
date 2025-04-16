@@ -31,9 +31,11 @@ public:
 	virtual void RenderGUI();
 
 	Matrix GetWorldRow() { return _mWorldRow; }
+	AkF32 GetIBLStrength() { return _fIBLStrength; }
 	void UpdateWorldRow(Matrix* pWorldRow);
 	void SetWireFrame(AkBool bDrawWire);
 	void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO);
+	void SetIBLStrength(AkF32 fIBLStrength);
 
 	AkBool IsPick() { return _bUseGizmo; }
 	void ReleasePick() { _bUseGizmo = AK_FALSE; }
@@ -55,7 +57,8 @@ protected:
 	IMeshObject* _pMeshObj = nullptr;
 	Matrix _mWorldRow = Matrix();
 	AkBool _bUseGizmo = AK_FALSE;
-	
+	AkF32 _fIBLStrength = 0.0f;
+
 public:
 	wchar_t Name[_MAX_PATH] = {};
 };

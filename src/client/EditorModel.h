@@ -29,14 +29,14 @@ public:
 private:
 	void CleanUp();
 
-	virtual void Load(const std::wstring& wcFilePath) override {};
+	virtual void Load(const std::wstring& wcFilePath) override;
 	virtual void Save(const std::wstring& wcFilePath) override; // Save .act file.
 
 	void ExportMesh(const std::wstring& wcName, const std::wstring& wcExt);
 	void ExportAnimation(const std::wstring& wcName, const std::wstring& wcClip);
 	void ModifyAnimation(const std::wstring& wcName, const std::wstring& wcClip);
 
-	void CreateModel(const std::wstring& wcBasePath, const std::wstring& wcFilename);
+	Model* CreateModel(const std::wstring& wcBasePath, const std::wstring& wcFilename);
 	void CreateClip(const std::wstring& wcPath, const std::wstring& wcClip);
 	void CreateCollider(COLLIDER_TYPE eTyep);
 	void CreateMeshFile(const std::wstring& wcName);

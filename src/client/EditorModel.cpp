@@ -219,12 +219,22 @@ void EditorModel::RenderGUI()
 	// Save Actor Data
 	tConfig.filePathName = "../../assets/";
 	const char* pItems5[] = { "Actor Data" };
-	if (ImGui::Combo("Save Actor Data Type", &_iSaveActorDataType, pItems5, IM_ARRAYSIZE(pItems5)))
+	if (ImGui::Combo("Load Actor Data Type", &_iSaveActorDataType, pItems5, IM_ARRAYSIZE(pItems5)))
 	{
-		ImGuiFileDialog::Instance()->OpenDialog("SaveActorDataKey", "Choose File", ".mesh,.anim", tConfig);
+		ImGuiFileDialog::Instance()->OpenDialog("LoadActorDataKey", "Choose File", ".act", tConfig);
 	}
 
+	// Save Actor Data
+	tConfig.filePathName = "../../assets/";
+	const char* pItems6[] = { "Actor Data" };
+	if (ImGui::Combo("Save Actor Data Type", &_iSaveActorDataType, pItems6, IM_ARRAYSIZE(pItems6)))
+	{
+		ImGuiFileDialog::Instance()->OpenDialog("SaveActorDataKey", "Choose File", ".act", tConfig);
+	}
+
+	// Update File Dialog.
 	UpdateFileDialog();
+
 	ImGui::End();
 
 	// Clip list.
@@ -518,6 +528,43 @@ void EditorModel::CleanUp()
 	}
 }
 
+void EditorModel::Load(const std::wstring& wcFilePath)
+{
+	FILE* fp = nullptr;
+	_wfopen_s(&fp, wcFilePath.c_str(), L"rt");
+	if (!fp) { __debugbreak(); }
+
+	AkI32 iIsSkinned = 0;
+	Model* pModel = nullptr;
+	fwscanf_s(fp, L"%d\n", &iIsSkinned);
+	if (!iIsSkinned)
+	{
+		wchar_t wcFileName[_MAX_PATH] = {};
+
+		fwscanf_s(fp, L"%s\n", wcFileName, _MAX_PATH);
+		wcscat_s(wcFileName, L".mesh");
+
+		_iImportType = 1; // Skinned Model
+		pModel = CreateModel(MESH_FILE_PATH, wcFileName); // 내부적으로 모델을 생성.
+	}
+	else
+	{
+		wchar_t wcFileName[_MAX_PATH] = {};
+
+		fwscanf_s(fp, L"%s\n", wcFileName, _MAX_PATH);
+		wcscat_s(wcFileName, L".mesh");
+
+		_iImportType = 0; // Model
+		pModel = CreateModel(MESH_FILE_PATH, wcFileName); // 내부적으로 모델을 생성.
+	}
+
+	// IBL Strength 파싱.
+	AkF32 fIBLStrength = 0.0f;
+	fwscanf_s(fp, L"%f\n", &fIBLStrength);
+	pModel->SetIBLStrength(fIBLStrength);
+
+	if (fp) { fclose(fp); }
+}
 
 void EditorModel::Save(const std::wstring& wcFilePath)
 {
@@ -530,12 +577,14 @@ void EditorModel::Save(const std::wstring& wcFilePath)
 	_wfopen_s(&fp, wcFilePath.c_str(), L"wt");
 	if (!fp) { __debugbreak(); }
 
+	// 스킨드 모델일 경우
 	if (!_CurCharacter.empty() && _mapSkinnedModel[_CurCharacter]->IsPick())
 	{
 		wcPicked = _CurCharacter;
 
 		fwprintf_s(fp, L"%d\n", 0);
 	}
+	// 일반 모델일 경우
 	else
 	{
 		for (auto& e : _mapBasicModel)
@@ -549,7 +598,13 @@ void EditorModel::Save(const std::wstring& wcFilePath)
 		fwprintf_s(fp, L"%d\n", 1);
 	}
 
+	// Pick 된 모델 파일의 경로를 저장.
 	fwprintf_s(fp, L"%s\n", wcPicked.c_str());
+	// IBL Strength 값 저장.
+	if (_mapSkinnedModel.count(wcPicked))
+		fwprintf_s(fp, L"%f\n", _mapSkinnedModel[wcPicked]->GetIBLStrength());
+	else if (_mapBasicModel.count(wcPicked))
+		fwprintf_s(fp, L"%f\n", _mapBasicModel[wcPicked]->GetIBLStrength());
 
 	// Coliiders
 	fwprintf_s(fp, L"%d\n", (AkI32)_mapColliders[wcPicked].size());
@@ -680,7 +735,7 @@ void EditorModel::ModifyAnimation(const std::wstring& wcName, const std::wstring
 #endif
 }
 
-void EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstring& wcFilename)
+Model* EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstring& wcFilename)
 {
 	using namespace std;
 
@@ -743,6 +798,8 @@ void EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstring
 	GeometryGenerator::DestroyGeometry(pMeshData, uMeshDataNum);
 
 	delete _pImporter;
+
+	return pModel;
 }
 
 void EditorModel::CreateClip(const std::wstring& wcPath, const std::wstring& wcClip)
@@ -1090,6 +1147,19 @@ void EditorModel::UpdateFileDialog()
 			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
 
 			CreateMeshFile(ToWString(FileName));
+		}
+
+		ImGuiFileDialog::Instance()->Close();
+	}
+
+	if (ImGuiFileDialog::Instance()->Display("LoadActorDataKey"))
+	{
+		if (ImGuiFileDialog::Instance()->IsOk() == true)
+		{
+			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
+			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
+
+			Load(ToWString(FileName));
 		}
 
 		ImGuiFileDialog::Instance()->Close();

@@ -269,7 +269,7 @@ AkBool FOceanObject::CreatePipelineState()
 	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
-	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	//tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	tPsoDesc.SampleMask = UINT_MAX;
 	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;

@@ -12,7 +12,7 @@ class FCommandListPool;
 class FPostEffect
 {
 public:
-	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 3; // t0, t1, b0
+	static const AkU32 DESCRIPTOR_COUNT_PER_OBJ = 4; // t0, t1, b0, b1
 
 	FPostEffect();
 	~FPostEffect();

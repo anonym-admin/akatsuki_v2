@@ -14,6 +14,7 @@ interface IMeshObject : public IUnknown
 	virtual void SetWindTrunk(AkF32 fWindTrunk) = 0; // For tree render.
 	virtual void SetWindLeaves(AkF32 fWindLeaves) = 0;
 	virtual void SetHeightScale(AkF32 fHeightScale) = 0;
+	virtual void SetIBLStrength(AkF32 fIBLStrength) = 0;
 	virtual void EnableWireFrame() = 0;
 	virtual void DisableWireFrame() = 0;
 	virtual void DestoryDynamicVertexBuferHandle(void* pDVHandle) = 0;

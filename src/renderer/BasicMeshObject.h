@@ -33,6 +33,7 @@ public:
 	virtual void SetWindTrunk(AkF32 fWindTrunk) override;
 	virtual void SetWindLeaves(AkF32 fWindLeaves) override;
 	virtual void SetHeightScale(AkF32 fHeightScale) override;
+	virtual void SetIBLStrength(AkF32 fIBLStrength) override;
 	virtual void EnableWireFrame() override { _bIsWire = AK_TRUE; }
 	virtual void DisableWireFrame() override { _bIsWire = AK_FALSE; }
 	virtual void DestoryDynamicVertexBuferHandle(void* pDVHandle) override;
@@ -75,6 +76,7 @@ protected:
 	MaterialConstantBuffer_t* _pMaterials = nullptr;
 
 	AkF32 _fHeightScale = 0.0f;
+	AkF32 _fIBLStrength = 0.0f;
 
 	// For tree render.
 	AkF32 _fWindTrunk = 0.0f; 

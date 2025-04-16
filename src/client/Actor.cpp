@@ -73,6 +73,11 @@ AkBool Actor::Initialize(const wchar_t* wcScriptFile)
 		}
 	}
 
+	// IBL Strength ÆÄ½Ì.
+	AkF32 fIBLStrength = 0.0f;
+	fwscanf_s(fp, L"%f\n", &fIBLStrength);
+	_pModel->SetIBLStrength(fIBLStrength);
+
 	// Collider °¹¼ö ÆÄ½Ì ÇÊ¿ä!!
 	AkI32 iColliderNum = 0;
 	fwscanf_s(fp, L"%d\n", &iColliderNum);

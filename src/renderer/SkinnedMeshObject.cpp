@@ -62,7 +62,7 @@ void FSkinnedMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCm
 	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
 	_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
-	pGlobalConstantBuffer->fStrengthIBL = 0.1f;
+	pGlobalConstantBuffer->fStrengthIBL = _fIBLStrength;
 
 	AkU32 uPointLightNum = 0;
 	AkU32 uSpotLightNum = 0;
@@ -341,7 +341,6 @@ void FSkinnedMeshObject::DrawNormal(AkU32 uThreadIndex, ID3D12GraphicsCommandLis
 	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
 	_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
-	pGlobalConstantBuffer->fStrengthIBL = 1.0f;
 
 	// Per Obj (b0).
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(hCPU, 0, uDescriptorSize);
@@ -560,7 +559,7 @@ void FSkinnedMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsComman
 	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
 	_pRenderer->GetRelectionViewProjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
-	pGlobalConstantBuffer->fStrengthIBL = _pRenderer->GetIBLStrength();
+	pGlobalConstantBuffer->fStrengthIBL = _fIBLStrength;
 
 	AkU32 uPointLightNum = 0;
 	AkU32 uSpotLightNum = 0;

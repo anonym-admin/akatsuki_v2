@@ -64,7 +64,6 @@ void Model::Render()
 {
 	GRenderer->RenderBasicMeshObject(_pMeshObj, &_mWorldRow);
 
-	// TODO
 	GRenderer->RenderReflectionOfBasicMeshObject(_pMeshObj, &_mWorldRow);
 }
 
@@ -177,6 +176,9 @@ void Model::RenderGUI()
 
 	ImGuizmo::Manipulate((float*)&mView, (float*)&mProj, mCurrentGizmoOperation, mCurrentGizmoMode, (float*)&_mWorldRow._11, NULL, useSnap ? &snap[0] : NULL);
 
+	if (ImGui::SliderFloat("IBL Strength", &_fIBLStrength, 0.0f, 1.0f))
+		SetIBLStrength(_fIBLStrength);
+
 	ImGui::End();
 }
 
@@ -196,6 +198,13 @@ void Model::SetWireFrame(AkBool bDrawWire)
 void Model::SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO)
 {
 	_pMeshObj->SetTextures(pAlbedo, pEmissve, pHeight, pNormal, pMetallic, pRoughness, pAO);
+}
+
+void Model::SetIBLStrength(AkF32 fIBLStrength)
+{
+	_fIBLStrength = fIBLStrength;
+
+	_pMeshObj->SetIBLStrength(_fIBLStrength);
 }
 
 void Model::operator=(const Model& Other)
