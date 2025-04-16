@@ -72,6 +72,7 @@ void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdL
 	GlobalConstantBuffer_t* pGlobalConstantBuffer = reinterpret_cast<GlobalConstantBuffer_t*>(pGlobalCBContainer->pSystemMemAddr);
 	_pRenderer->GetViewPorjMatrix(&pGlobalConstantBuffer->mView, &pGlobalConstantBuffer->mProj);
 	_pRenderer->GetCameraPosition(&pGlobalConstantBuffer->vEyeWorld.x, &pGlobalConstantBuffer->vEyeWorld.y, &pGlobalConstantBuffer->vEyeWorld.z);
+	pGlobalConstantBuffer->fTime = _pRenderer->GetToltalTime();
 	pGlobalConstantBuffer->fStrengthIBL = 0.0f;//_pRenderer->GetIBLStrength();
 
 	AkU32 uPointLightNum = 0;

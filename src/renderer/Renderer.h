@@ -124,6 +124,7 @@ public:
 	virtual void SetBloomLevels(AkU32 uLevel) override { _uBloomLevels = uLevel; }
 	virtual void SetBloomStrength(AkF32 uStrength) override { _fBloomStrength = uStrength; }
 	virtual void SetFullScreen(AkBool bIsFullScreen) override;
+	virtual void SetTotalTime(AkF32 fTime) override;
 	virtual void GetCameraPosition(AkF32* pX, AkF32* pY, AkF32* pZ) override;
 	virtual Vector3 GetWorldNearPosition(AkF32 fNdcX, AkF32 fNdcY) override;
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) override;
@@ -177,6 +178,7 @@ public:
 	AkU32 GetBloomLevel() { return _uBloomLevels; }
 	AkI32 GetToneMappingType() { return _iToneMappingType; }
 	AkF32 GetBloomStrength() { return _fBloomStrength; }
+	AkF32 GetToltalTime() { return _fTotalTime; }
 
 	void EnsureCompleted();
 
@@ -233,6 +235,7 @@ private:
 	HWND _hWnd = nullptr;
 	AkU32 _uRefCount = 1;
 	AkF32 _fDpi = 0.0f;
+	AkF32 _fTotalTime = 0.0f;
 	ID3D12Device* _pDevice = nullptr;
 	ID3D12CommandQueue* _pCmdQueue = nullptr;
 	ID3D12DescriptorHeap* _pRTVHeap = nullptr;

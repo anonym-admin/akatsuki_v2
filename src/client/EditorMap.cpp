@@ -8,6 +8,8 @@
 #include "Light.h"
 #include "Ocean.h"
 #include "Cloud.h"
+#include "TreeModel.h"
+#include "Tree.h"
 
 /*
 =============
@@ -323,6 +325,7 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
 
 		ModelObject* pObj = nullptr;
+		AkBool bIsTree = AK_FALSE;
 
 		// 이미 같은 이름으로 생성된 오브젝트가 있다면 인스턴스화를 시킨다.
 		std::wstring wcTempName = wcName;
@@ -347,6 +350,12 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 			{
 				pObj = CreateCloud();
 			}
+			// Tree 생성
+			else if (wcTempName.find(L"tree") != std::wstring::npos)
+			{
+				pObj = new Tree(wcTempName.c_str());
+				bIsTree = AK_TRUE;
+			}
 			// 그 외에 모델 오브젝트 생성 
 			else
 			{
@@ -363,10 +372,21 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		Vector3 vScale = Vector3(1.0f);
 		Vector3 vYawPitchRoll = Vector3(0.0f);
 		Vector3 vPos = Vector3(0.0f);
+		AkF32 fWindTrunk = 0.0f;
+		AkF32 fWindLeaves = 0.0f;
 
 		fwscanf_s(fp, L"%f %f %f", &vScale.x, &vScale.y, &vScale.z);
 		fwscanf_s(fp, L"%f %f %f", &vYawPitchRoll.x, &vYawPitchRoll.y, &vYawPitchRoll.z);
 		fwscanf_s(fp, L"%f %f %f", &vPos.x, &vPos.y, &vPos.z);
+		if (bIsTree)
+		{
+			fwscanf_s(fp, L"%f", &fWindTrunk);
+			fwscanf_s(fp, L"%f", &fWindLeaves);
+
+			TreeModel* pTemp = (TreeModel*)pObj->GetModel();
+			pTemp->SetWindTrunk(fWindTrunk);
+			pTemp->SetWindLeaves(fWindLeaves);
+		}
 
 		pObj->GetTransform()->SetScale(&vScale);
 		pObj->GetTransform()->SetRotation(&vYawPitchRoll);
@@ -446,6 +466,18 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 			fwprintf_s(fp, L"%lf %lf %lf\n", vScale.x, vScale.y, vScale.z);
 			fwprintf_s(fp, L"%lf %lf %lf\n", vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z);
 			fwprintf_s(fp, L"%lf %lf %lf\n", vPos.x, vPos.y, vPos.z);
+
+			// 트리 오브젝트의 경우 바람의 세기를 저장한다.
+			if (e.first.find(L"tree") != std::wstring::npos)
+			{
+				TreeModel* pTemp = (TreeModel*)v.first->GetModel();
+				AkF32 fWindTrunk = pTemp->GetWindTrunk();
+				AkF32 fWindLeaves = pTemp->GetWindLeaves();
+				fwprintf_s(fp, L"%lf \n", fWindTrunk);
+				fwprintf_s(fp, L"%lf \n", fWindLeaves);
+			}
+
+			// 스톤 오브젝트의 경우 height map scale 을 저장한다.
 		}
 	}
 

@@ -246,7 +246,9 @@
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="Tree.h" />
     <ClInclude Include="TreeBillboards.h" />
+    <ClInclude Include="TreeModel.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="Dancer.h" />
     <ClInclude Include="Sound.h" />
@@ -338,7 +340,9 @@
     <ClCompile Include="Dancer.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="Tree.cpp" />
     <ClCompile Include="TreeBillboards.cpp" />
+    <ClCompile Include="TreeModel.cpp" />
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIImage.cpp" />
     <ClCompile Include="UIText.cpp" />

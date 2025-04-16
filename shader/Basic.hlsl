@@ -42,7 +42,17 @@ PSInput VSMain(VSInput input)
     
 #endif
     
-    
+    if(windTrunk != 0.0)
+    {
+        float2 rotCenter = float2(0.0, -0.5); // Model 좌표계 기준
+        float2 temp = input.posModel.xy - rotCenter;
+        float coeff = windTrunk * pow(max(0, temp.y), 2.0) * sin(globalTime); // 모델 좌표계의 y좌표가 -0.5 이상인 부분만 회전이 적용된다.
+        
+        float2x2 rot = float2x2(cos(coeff), sin(coeff), -sin(coeff), cos(coeff));
+        
+        input.posModel.xy = mul(temp, rot);
+        input.posModel.xy += rotCenter;
+    }
     
     PSInput output;
    

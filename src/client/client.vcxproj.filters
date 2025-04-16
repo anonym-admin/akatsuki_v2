@@ -360,6 +360,12 @@
     <ClInclude Include="FileSystem.h">
       <Filter>src\utils</Filter>
     </ClInclude>
+    <ClInclude Include="TreeModel.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree.h">
+      <Filter>src\obj\landscape</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -595,6 +601,12 @@
     </ClCompile>
     <ClCompile Include="StringUtils.cpp">
       <Filter>src\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeModel.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Tree.cpp">
+      <Filter>src\obj\landscape</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

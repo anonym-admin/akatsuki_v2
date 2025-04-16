@@ -179,6 +179,7 @@ interface IRenderer : public IUnknown
 	virtual void SetBloomLevels(AkU32 uLevel) = 0;
 	virtual void SetBloomStrength(AkF32 uStrength) = 0;
 	virtual void SetFullScreen(AkBool bIsFullScreen) = 0;
+	virtual void SetTotalTime(AkF32 fTime) = 0;
 	virtual Vector3 GetWorldNearPosition(AkF32 fNdcX, AkF32 fNdcY) = 0;
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) = 0;
 	virtual void GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat) = 0;

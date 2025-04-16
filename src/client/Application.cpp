@@ -103,6 +103,8 @@ void Application::RunApplication()
 	// Update Text.
 	UpdateText();
 
+	GRenderer->SetTotalTime(GTimer->GetTotalTime());
+
 	// Update Shadow Map Matrix
 	GRenderer->UpdateCascadeOrthoProjMatrix();
 

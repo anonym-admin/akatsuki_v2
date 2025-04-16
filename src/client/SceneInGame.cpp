@@ -13,6 +13,8 @@
 #include "Terrain.h"
 #include "Ocean.h"
 #include "Cloud.h"
+#include "Tree.h"
+#include "TreeModel.h"
 
 /*
 =============
@@ -202,6 +204,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 	{
 		fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
 
+		AkBool bIsTree = AK_FALSE;
 		AkBool bInst = AK_FALSE;
 		GameObjContainer_t** ppGameObjectContainer = GetAllGameObject();
 		for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
@@ -215,6 +218,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 					{
 						pActor = ((ModelObject*)pCur->pData)->Clone();
 						bInst = AK_TRUE;
+						break;
 					}
 
 					pCur = pCur->pNext;
@@ -236,6 +240,11 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		{
 			pActor = new Cloud;
 		}
+		else if (wcTempName.find(L"tree") != std::wstring::npos)
+		{
+			pActor = new Tree(wcTempName.c_str());
+			bIsTree = AK_TRUE;
+		}
 		else
 		{
 			if (!bInst)
@@ -247,10 +256,21 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		Vector3 vScale = Vector3(1.0f);
 		Vector3 vYawPitchRoll = Vector3(0.0f);
 		Vector3 vPos = Vector3(0.0f);
+		AkF32 fWindTrunk = 0.0f;
+		AkF32 fWindLeaves = 0.0f;
 
 		fwscanf_s(fp, L"%f %f %f", &vScale.x, &vScale.y, &vScale.z);
 		fwscanf_s(fp, L"%f %f %f", &vYawPitchRoll.x, &vYawPitchRoll.y, &vYawPitchRoll.z);
 		fwscanf_s(fp, L"%f %f %f", &vPos.x, &vPos.y, &vPos.z);
+		if (bIsTree)
+		{
+			fwscanf_s(fp, L"%f", &fWindTrunk);
+			fwscanf_s(fp, L"%f", &fWindLeaves);
+			
+			TreeModel* pTemp = (TreeModel*)pActor->GetModel();
+			pTemp->SetWindTrunk(fWindTrunk);
+			pTemp->SetWindLeaves(fWindLeaves);
+		}
 
 		pActor->GetTransform()->SetScale(&vScale);
 		pActor->GetTransform()->SetRotation(&vYawPitchRoll);
@@ -259,6 +279,9 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		pActor->GetTransform()->Update();
 
 		pActor->tLink.pData = pActor;
+
+		// TODO
+		// 현재는 모두 플레이어 오브젝트로 생성됨.
 		AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pActor);
 	}
 

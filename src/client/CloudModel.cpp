@@ -26,6 +26,9 @@ AkBool CloudModel::Initialize()
 
 	GeometryGenerator::DestroyGeometry(pCube, 1);
 
+	// Set Name
+	wcscpy_s(Name, L"Cloud");
+
 	return AK_TRUE;
 }
 
