@@ -95,7 +95,6 @@ void Bullet::OnCollisionExit(Collider* pOther)
 
 Bullet* Bullet::Clone()
 {
-	Spawn::Clone();
 	return new Bullet(*this);
 }
 

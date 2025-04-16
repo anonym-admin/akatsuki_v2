@@ -350,6 +350,12 @@
     <ClInclude Include="Cloud.h">
       <Filter>src\obj</Filter>
     </ClInclude>
+    <ClInclude Include="OceanModel.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="CloudModel.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -575,6 +581,12 @@
     </ClCompile>
     <ClCompile Include="Cloud.cpp">
       <Filter>src\obj</Filter>
+    </ClCompile>
+    <ClCompile Include="OceanModel.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="CloudModel.cpp">
+      <Filter>src\model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

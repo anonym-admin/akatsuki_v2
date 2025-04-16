@@ -102,7 +102,6 @@ void Dancer::OnCollisionExit(Collider* pOther)
 
 Dancer* Dancer::Clone()
 {
-	Spawn::Clone();
 	return new Dancer();
 }
 

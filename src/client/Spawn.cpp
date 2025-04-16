@@ -1,8 +1,11 @@
 #include "pch.h"
 #include "Spawn.h"
 
+AkI32 Spawn::sm_iID;
+
 Spawn::Spawn()
 {
+	ID = sm_iID++;
 }
 
 Spawn::~Spawn()
@@ -10,17 +13,6 @@ Spawn::~Spawn()
 	CleanUp();
 }
 
-Spawn* Spawn::Clone()
-{
-	_uInstanceCount++;
-	return nullptr;
-}
-
 void Spawn::CleanUp()
 {
-	AkU32 uRefCount = _uInstanceCount - 1;
-	if (uRefCount)
-	{
-		return;
-	}
 }

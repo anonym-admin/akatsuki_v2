@@ -272,11 +272,11 @@ void Actor::SetWeapon(Weapon* pWeapon)
 
 void Actor::CleanUp()
 {
-	AkU32 uRefCount = _uInstanceCount - 1;
-	if (uRefCount)
-	{
-		return;
-	}
+	//AkU32 uRefCount = _uInstanceCount - 1;
+	//if (uRefCount)
+	//{
+	//	return;
+	//}
 
 	DestroyCollider();
 	DesteoyRigidBody();

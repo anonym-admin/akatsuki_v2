@@ -22,6 +22,10 @@ public:
 
 private:
 	void CleanUp();
+
+protected:
+	static AkI32 sm_iID;
+	AkU32 ID = 0;
 };
 
 

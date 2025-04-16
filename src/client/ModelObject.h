@@ -37,6 +37,8 @@ public:
 
 	virtual ModelObject* Clone() override;
 
+	AkBool UseGizmo() { return _bUseGizmo; }
+
 private:
 	void CleanUp();
 

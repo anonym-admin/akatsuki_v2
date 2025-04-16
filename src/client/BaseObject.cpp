@@ -13,7 +13,6 @@ BaseObject
 
 BaseObject::BaseObject()
 {
-	_uInstanceCount = 1;
 }
 
 BaseObject::~BaseObject()
@@ -63,12 +62,6 @@ Transform* BaseObject::CreateTransform()
 
 void BaseObject::CleanUp()
 {
-	AkU32 uRefCount = --_uInstanceCount;
-	if (uRefCount)
-	{
-		return;
-	}
-
 	if (_pTransform)
 	{
 		delete _pTransform;

@@ -58,12 +58,6 @@ void Weapon::DeleteBullet(Bullet* pBullet)
 
 void Weapon::CleanUp()
 {
-	AkU32 uRefCount = _uInstanceCount - 1;
-	if (uRefCount)
-	{
-		// 총알은 각 총마다 고유하게 가지고 있는 데이터.
-
-	}
 }
 
 

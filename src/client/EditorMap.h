@@ -48,6 +48,9 @@ private:
 	void UpdateFileDialog();
 	void UpdateGizmo();
 
+	void UpdateObject();
+	void UpdateObjectDeleteState();
+
 private:
 	Camera* _pCamera = nullptr;
 	TerrainEdit* _pTerrainEdit = nullptr;
@@ -89,24 +92,23 @@ private:
 	std::vector<Actor*> _vecGameObj = {};
 	std::vector<std::wstring> _vecActFileNameList = {};
 
+	std::unordered_map<std::wstring, std::vector<std::pair<Actor*, AkBool>>> _mapGameObj = {}; // Pair bool : dead flag
+
 	// 05. Tree Billboard
 	std::unordered_map<std::wstring, Billboard*> _mapBillboard = {};
 	std::unordered_map<std::wstring, std::array<VertexSize_t, 20>> _mapVertices = {};
 
-	// csg
-	IMeshObject* _pCSGCube = nullptr;
-	void* _pCSGDBHandle = nullptr;
-	MeshData_t* _pCube = nullptr;
-	AkU32 _uMeshDataNum = 0;
-	Matrix _mCSGWorldRow = Matrix();
-
-	Vector3 vMin = Vector3(-0.25f);
-	Vector3 vMax = Vector3(0.25f);
-
 	// Light
 	std::vector<Light*> _vecLights = {};
 
-	//Ocean* _pOcean = nullptr;
-	//Cloud* _pCloud = nullptr;
+	//// csg
+	//IMeshObject* _pCSGCube = nullptr;
+	//void* _pCSGDBHandle = nullptr;
+	//MeshData_t* _pCube = nullptr;
+	//AkU32 _uMeshDataNum = 0;
+	//Matrix _mCSGWorldRow = Matrix();
+
+	//Vector3 vMin = Vector3(-0.25f);
+	//Vector3 vMax = Vector3(0.25f);
 };
 

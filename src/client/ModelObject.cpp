@@ -16,6 +16,7 @@ ModelObject::ModelObject(const ModelObject& rOrigin)
 {
 	// Copy Model.
 	_pModel = rOrigin._pModel;
+	_pModel->AddRef();
 
 	// Create Transform.
 	_pTransform = CreateTransform();
@@ -178,7 +179,7 @@ void ModelObject::RenderGUI()
 		return;
 	}
 
-	std::wstring ModelName = Name + std::wstring(L"_" + std::to_wstring(_uInstanceCount));
+	std::wstring ModelName = Name + std::wstring(L"_" + std::to_wstring(ID));
 	char Title[_MAX_PATH] = {};
 	strcpy_s(Title, ToString(ModelName + L" gizmo").c_str());
 
@@ -307,30 +308,9 @@ void ModelObject::OnCollisionExit(Collider* pOther)
 
 ModelObject* ModelObject::Clone()
 {
-	Spawn::Clone();
 	return new ModelObject(*this);
 }
 
 void ModelObject::CleanUp()
 {
-	if (_pTransform)
-	{
-		delete _pTransform;
-		_pTransform = nullptr;
-	}
-
-	if (_pCollider)
-	{
-		delete _pCollider;
-		_pCollider = nullptr;
-	}
-
-	for (AkI32 i = 0; i < _iEventColliderNum; i++)
-	{
-		if (_pEventCollider[i])
-		{
-			delete _pEventCollider[i];
-			_pEventCollider[i] = nullptr;
-		}
-	}
 }

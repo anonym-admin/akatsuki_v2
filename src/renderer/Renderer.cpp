@@ -553,6 +553,11 @@ AkBool FRenderer::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 		_pResolvedBuffer->Release();
 		_pResolvedBuffer = nullptr;
 	}
+	if (_pPostEffectBuffer)
+	{
+		_pPostEffectBuffer->Release();
+		_pPostEffectBuffer = nullptr;
+	}
 	if (_pMainDSwithMSAA)
 	{
 		_pMainDSwithMSAA->Release();
@@ -562,6 +567,11 @@ AkBool FRenderer::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 	{
 		_pMainDS->Release();
 		_pMainDS = nullptr;
+	}
+	if (_pDepthOnlyDS)
+	{
+		_pDepthOnlyDS->Release();
+		_pDepthOnlyDS = nullptr;
 	}
 	if (FAILED(_pSwapChain->ResizeBuffers(SWAP_CHAIN_FRAME_COUNT, uScreenWidth, uScreenHeight, DXGI_FORMAT_R8G8B8A8_UNORM, _uSwapChainFlag)))
 	{

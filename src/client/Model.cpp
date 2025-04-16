@@ -203,6 +203,12 @@ void Model::operator=(const Model& Other)
 	_uRefCount++;
 }
 
+AkU32 Model::AddRef() // 증가되기전의 RefCount를 반환한다.
+{
+	AkU32 uRefCount = _uRefCount++;
+	return uRefCount;
+}
+
 AkU32 Model::Release()
 {
 	AkU32 uRefCount = --_uRefCount;

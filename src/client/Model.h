@@ -40,6 +40,7 @@ public:
 
 	void operator=(const Model& Other);
 	
+	AkU32 AddRef();
 	AkU32 Release();
 
 private:

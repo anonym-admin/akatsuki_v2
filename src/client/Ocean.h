@@ -2,10 +2,13 @@
 
 #include "ModelObject.h"
 
+class OceanModel;
+
 class Ocean : public ModelObject
 {
 public:
 	Ocean();
+	Ocean(const Ocean& Other);
 	~Ocean();
 
 	AkBool Initialize();
@@ -15,10 +18,12 @@ public:
 	virtual void RenderDepthMap() override {};
 	virtual void RenderShadowMaps() override {};
 
+	virtual Ocean* Clone() override;
+
 private:
 	void CleanUp();
 
 private:
-	IEnvironmentObject* _pOceanObj = nullptr;
+	OceanModel* _pOceanModel = nullptr;
 };
 

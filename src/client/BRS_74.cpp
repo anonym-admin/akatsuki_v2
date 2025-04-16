@@ -146,7 +146,6 @@ void BRS_74::CleanUp()
 
 BRS_74* BRS_74::Clone()
 {
-	Spawn::Clone();
 	return new BRS_74();
 }
 

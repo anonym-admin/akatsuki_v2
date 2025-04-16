@@ -38,10 +38,10 @@ AkBool EditorMap::Initialize()
 	// Editor 에서는 Scene에 Obj 를 등록하지 않는다.
 	_pTerrainEdit = new TerrainEdit;
 
-	// Clipper.
-	_pCSGCube = GRenderer->CreateBasicMeshObject();
-	_pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
-	_pCSGDBHandle = _pCSGCube->CreateDynamicMeshBuffers(_pCube->pVertices, _pCube->uVerticeNum, _pCube->pIndices, _pCube->uIndicesNum);
+	//// CSG Clipper.
+	//_pCSGCube = GRenderer->CreateBasicMeshObject();
+	//_pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
+	//_pCSGDBHandle = _pCSGCube->CreateDynamicMeshBuffers(_pCube->pVertices, _pCube->uVerticeNum, _pCube->pIndices, _pCube->uIndicesNum);
 
 	return AK_TRUE;
 }
@@ -83,11 +83,8 @@ void EditorMap::Update()
 		e->Update();
 	}
 
-	// Update
-	for (auto& e : _vecGameObj)
-	{
-		e->Update();
-	}
+	// Update game object.
+	UpdateObject();
 
 	// Update Tree Billboard
 	for (auto& e : _mapBillboard)
@@ -97,11 +94,14 @@ void EditorMap::Update()
 			e.second->Update();
 		}
 	}
-
-	// Final Update
-	for (auto& e : _vecGameObj)
+	
+	// Final update game object.
+	for (auto& e : _mapGameObj)
 	{
-		e->FinalUpdate();
+		for (auto& v : e.second)
+		{
+			v.first->FinalUpdate();
+		}
 	}
 
 	// Final Update Tree Billboard
@@ -113,8 +113,11 @@ void EditorMap::Update()
 		}
 	}
 
-	// Update CSG
-	GRenderer->UpdateDynamicVertexBuffer(_pCSGDBHandle, _pCube->pVertices);
+	// Delete Process.
+	UpdateObjectDeleteState();
+
+	//// Update CSG
+	// GRenderer->UpdateDynamicVertexBuffer(_pCSGDBHandle, _pCube->pVertices);
 }
 
 void EditorMap::Render()
@@ -128,14 +131,19 @@ void EditorMap::Render()
 
 	_pTerrainEdit->Render();
 
-	for (auto& e : _vecGameObj)
+	// Render game obj.
+	for (auto& e : _mapGameObj)
 	{
-		e->Render();
+		for (auto& v : e.second)
+		{
+			v.first->Render();
+		}
 	}
 
-	for(auto& e : _mapBillboard)
+	// Render billboard obj.
+	for (auto& e : _mapBillboard)
 	{
-		if(e.second)
+		if (e.second)
 		{
 			e.second->Render();
 		}
@@ -149,9 +157,12 @@ void EditorMap::Render()
 
 void EditorMap::RenderShadowMaps()
 {
-	for (auto& e : _vecGameObj)
+	for (auto& e : _mapGameObj)
 	{
-		e->RenderShadowMaps();
+		for (auto& v : e.second)
+		{
+			v.first->RenderShadowMaps();
+		}
 	}
 
 	for (auto& e : _mapBillboard)
@@ -251,13 +262,17 @@ void EditorMap::RenderGUI()
 		if (ImGui::Button("Create Ocean"))
 		{
 			Ocean* pOcean = CreateOcean();
-			_vecGameObj.push_back(pOcean);
+			// _vecGameObj.push_back(pOcean);
+
+			_mapGameObj[pOcean->Name].push_back(std::make_pair(pOcean, false));
 		}
 		// Create Cloud.
 		if (ImGui::Button("Create Cloud"))
 		{
 			Cloud* pCloud = CreateCloud();
-			_vecGameObj.push_back(pCloud);
+			// _vecGameObj.push_back(pCloud);
+
+			_mapGameObj[pCloud->Name].push_back(std::make_pair(pCloud, false));
 		}
 	}
 	ImGui::End();
@@ -287,6 +302,7 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		_pTerrainEdit = nullptr;
 	}
 
+	//// TODO!!
 	//for (auto& e : _vecGameObj)
 	//{
 	//	delete e;
@@ -302,63 +318,61 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 	// 02. act files.
 	AkI32 iNumGameObj = 0;
 	fwscanf_s(fp, L"%d", &iNumGameObj);
-	for(AkI32 i = 0; i < iNumGameObj; i++)
+	for (AkI32 i = 0; i < iNumGameObj; i++)
 	{
 		fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
 
 		ModelObject* pObj = nullptr;
-		AkU32 uIndex = 0;
-		AkBool bIsInstance = AK_FALSE;
+
+		// 이미 같은 이름으로 생성된 오브젝트가 있다면 인스턴스화를 시킨다.
 		std::wstring wcTempName = wcName;
-		for (auto& v : _vecActFileNameList)
+		if (_mapGameObj.count(wcTempName))
 		{
-			// 재구현 필요한지 생각.
-			if (v == wcTempName)
-			{
-				pObj = ((ModelObject*)_vecGameObj[uIndex])->Clone();
-				bIsInstance = AK_TRUE;
+			if (_mapGameObj[wcTempName].empty())
+				__debugbreak();
 
-				_vecGameObj.push_back(pObj);
+			pObj = ((ModelObject*)_mapGameObj[wcTempName][0].first)->Clone();
 
-				break;
-			}
-
-			uIndex++;
+			_mapGameObj[wcTempName].push_back(std::make_pair(pObj, false));
 		}
-
-		if(!bIsInstance)
+		else
 		{
+			// Ocean 생성
 			if (wcTempName.find(L"Ocean") != std::wstring::npos)
 			{
 				pObj = CreateOcean();
 			}
-			else if(wcTempName.find(L"Cloud") != std::wstring::npos)
+			// Cloud 생성
+			else if (wcTempName.find(L"Cloud") != std::wstring::npos)
 			{
 				pObj = CreateCloud();
 			}
+			// 그 외에 모델 오브젝트 생성 
 			else
 			{
+				// 모델 파일 이름을 전달해서 생성시도.
 				pObj = new ModelObject(wcTempName.c_str());
 			}
-			_vecGameObj.push_back(pObj);
+
+			_mapGameObj[wcTempName].push_back(std::make_pair(pObj, false));
 		}
 
+		// 에디트 모드 플래그를 통해 ImGui 와 ImGizmo 컨트롤 가능.
 		pObj->SetEditMode(AK_TRUE);
+
 		Vector3 vScale = Vector3(1.0f);
 		Vector3 vYawPitchRoll = Vector3(0.0f);
 		Vector3 vPos = Vector3(0.0f);
 
-		fwscanf_s(fp, L"%f %f %f", &vScale.x, &vScale.y, &vScale.z);	
+		fwscanf_s(fp, L"%f %f %f", &vScale.x, &vScale.y, &vScale.z);
 		fwscanf_s(fp, L"%f %f %f", &vYawPitchRoll.x, &vYawPitchRoll.y, &vYawPitchRoll.z);
 		fwscanf_s(fp, L"%f %f %f", &vPos.x, &vPos.y, &vPos.z);
-	
+
 		pObj->GetTransform()->SetScale(&vScale);
 		pObj->GetTransform()->SetRotation(&vYawPitchRoll);
 		pObj->GetTransform()->SetPosition(&vPos);
 
 		pObj->GetTransform()->Update();
-	
-		_vecActFileNameList.push_back(wcTempName);
 	}
 
 	// 03. billboard.
@@ -410,20 +424,29 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 	fwprintf_s(fp, L"%s\n", wcFullPath.c_str());
 
 	// 02. act files.
-	fwprintf_s(fp, L"%d\n", (AkI32)_vecActFileNameList.size());
-	AkU32 uIndex = 0;
-	for (auto& e : _vecActFileNameList)
+	AkU32 uGameObjSize = 0;
+	for (auto& e : _mapGameObj)
 	{
-		Vector3 vScale = _vecGameObj[uIndex]->GetTransform()->GetScale();
-		Vector3 vYawPitchRoll = _vecGameObj[uIndex]->GetTransform()->GetRotation();
-		Vector3 vPos = _vecGameObj[uIndex]->GetTransform()->GetPosition();
+		for (auto& v : e.second)
+		{
+			uGameObjSize++;
+		}
+	}
+	
+	fwprintf_s(fp, L"%d\n", (AkI32)uGameObjSize);
+	for (auto& e : _mapGameObj)
+	{
+		for (auto& v : e.second)
+		{
+			Vector3 vScale = v.first->GetTransform()->GetScale();
+			Vector3 vYawPitchRoll = v.first->GetTransform()->GetRotation();
+			Vector3 vPos = v.first->GetTransform()->GetPosition();
 
-		fwprintf_s(fp, L"%s\n", e.c_str());
-		fwprintf_s(fp, L"%lf %lf %lf\n", vScale.x, vScale.y, vScale.z);
-		fwprintf_s(fp, L"%lf %lf %lf\n", vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z);
-		fwprintf_s(fp, L"%lf %lf %lf\n", vPos.x, vPos.y, vPos.z);
-
-		uIndex++;
+			fwprintf_s(fp, L"%s \n", e.first.c_str());
+			fwprintf_s(fp, L"%lf %lf %lf\n", vScale.x, vScale.y, vScale.z);
+			fwprintf_s(fp, L"%lf %lf %lf\n", vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z);
+			fwprintf_s(fp, L"%lf %lf %lf\n", vPos.x, vPos.y, vPos.z);
+		}
 	}
 
 	// 03. billboard.
@@ -451,21 +474,21 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 
 void EditorMap::CleanUp()
 {
-	if (_pCSGDBHandle)
-	{
-		_pCSGCube->DestoryDynamicVertexBuferHandle(_pCSGDBHandle);
-		_pCSGDBHandle = nullptr;
-	}
-	if (_pCube)
-	{
-		GeometryGenerator::DestroyGeometry(_pCube, 1);
-		_pCube = nullptr;
-	}
-	if (_pCSGCube)
-	{
-		_pCSGCube->Release();
-		_pCSGCube = nullptr;
-	}
+	//if (_pCSGDBHandle)
+	//{
+	//	_pCSGCube->DestoryDynamicVertexBuferHandle(_pCSGDBHandle);
+	//	_pCSGDBHandle = nullptr;
+	//}
+	//if (_pCube)
+	//{
+	//	GeometryGenerator::DestroyGeometry(_pCube, 1);
+	//	_pCube = nullptr;
+	//}
+	//if (_pCSGCube)
+	//{
+	//	_pCSGCube->Release();
+	//	_pCSGCube = nullptr;
+	//}
 
 	for (auto& e : _vecLights)
 	{
@@ -483,12 +506,23 @@ void EditorMap::CleanUp()
 		}
 	}
 
-	for (auto& e : _vecGameObj)
+	//for (auto& e : _vecGameObj)
+	//{
+	//	delete e;
+	//	e = nullptr;
+	//}
+	//_vecGameObj.clear();
+
+	for (auto& e : _mapGameObj)
 	{
-		delete e;
-		e = nullptr;
+		for (auto& v : e.second)
+		{
+			delete v.first;
+			v.first = nullptr;
+		}
+		e.second.clear();
 	}
-	_vecGameObj.clear();
+	_mapGameObj.clear();
 
 	if (_pTerrainEdit)
 	{
@@ -517,7 +551,7 @@ Ocean* EditorMap::CreateOcean()
 	wchar_t wcBuf[32] = {};
 	_itow_s(id, wcBuf, 10);
 	wcscat_s(pOcean->Name, wcBuf);
-	_vecActFileNameList.push_back(pOcean->Name);
+	// _vecActFileNameList.push_back(pOcean->Name);
 	id++;
 	return pOcean;
 }
@@ -531,7 +565,7 @@ Cloud* EditorMap::CreateCloud()
 	wchar_t wcBuf[32] = {};
 	_itow_s(id, wcBuf, 10);
 	wcscat_s(pCloud->Name, wcBuf);
-	_vecActFileNameList.push_back(pCloud->Name);
+	// _vecActFileNameList.push_back(pCloud->Name);
 	id++;
 	return pCloud;
 }
@@ -610,8 +644,10 @@ void EditorMap::ImportActor(const std::wstring& wcFilePath)
 {
 	ModelObject* pObj = new ModelObject(wcFilePath.c_str());
 	pObj->SetEditMode(AK_TRUE);
-	_vecGameObj.push_back(pObj);
-	_vecActFileNameList.push_back(wcFilePath);
+	// _vecGameObj.push_back(pObj);
+	// _vecActFileNameList.push_back(wcFilePath);
+
+	_mapGameObj[wcFilePath].push_back(std::make_pair(pObj, false));
 }
 
 void EditorMap::UpdateControl()
@@ -852,16 +888,86 @@ void EditorMap::UpdateFileDialog()
 
 void EditorMap::UpdateGizmo()
 {
-	// Update game obj gizmo.
-	for (auto& e : _vecGameObj)
+	for (auto& e : _mapGameObj)
 	{
-		((ModelObject*)e)->RenderGUI();
+		for (auto& v : e.second)
+		{
+			((ModelObject*)v.first)->RenderGUI();
+		}
 	}
 
 	// Update light gizmo.
 	for (auto& e : _vecLights)
 	{
 		e->RenderGUI();
+	}
+}
+
+void EditorMap::UpdateObject()
+{
+	// 01. 삭제될 오브젝트인지 확인한다.
+	for (auto iter0 = _mapGameObj.begin(); iter0 != _mapGameObj.end();)
+	{
+		for(auto iter1 = iter0->second.begin(); iter1 != iter0->second.end();)
+		{
+			// Delete 상태인지 확인.
+			if (iter1->second)
+			{
+				if (iter1->first)
+				{
+					delete iter1->first;
+					iter1->first = nullptr;
+
+					iter1 = iter0->second.erase(iter1);
+				}
+				else
+				{
+					__debugbreak();
+				}
+			}
+			else
+			{
+				iter1++;
+			}
+		}
+
+		// 게임 오브젝트 자료구조의 데이터가 없다면 해당 맵의 요소는 지운다.
+		if (iter0->second.empty())
+		{
+			iter0 = _mapGameObj.erase(iter0);
+		}
+		else
+		{
+			iter0++;
+		}
+	}
+
+	// 02. 오브젝트 업데이트.
+	for (auto& e : _mapGameObj)
+	{
+		for (auto& v : e.second)
+		{
+			v.first->Update();
+		}
+	}
+}
+
+void EditorMap::UpdateObjectDeleteState()
+{
+	for (auto& e : _mapGameObj)
+	{
+		for (auto& v : e.second)
+		{
+			AkBool bPicked = ((ModelObject*)v.first)->UseGizmo();
+			if (bPicked)
+			{
+				if (KEY_DOWN(KEY_INPUT_DELETE))
+				{
+					// 오브젝트의 상태를 Delete 로 변경한다.
+					v.second = true;
+				}
+			}
+		}	
 	}
 }
 
