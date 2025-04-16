@@ -11,6 +11,9 @@ interface IMeshObject : public IUnknown
 	virtual void* CreateDynamicMeshBuffers(Vertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) = 0;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;
 	virtual void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO) = 0;
+	virtual void SetWindTrunk(AkF32 fWindTrunk) = 0; // For tree render.
+	virtual void SetWindLeaves(AkF32 fWindLeaves) = 0;
+	virtual void SetHeightScale(AkF32 fHeightScale) = 0;
 	virtual void EnableWireFrame() = 0;
 	virtual void DisableWireFrame() = 0;
 	virtual void DestoryDynamicVertexBuferHandle(void* pDVHandle) = 0;

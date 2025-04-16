@@ -83,7 +83,6 @@ void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdL
 	//_pRenderer->GetGlobalLight(&tLight);
 	//memcpy(pGlobalConstantBuffer->tLights, &tLight, sizeof(Light_t));
 
-
 	Matrix mLightView = Matrix();
 	Matrix mLightProj = Matrix();
 	_pRenderer->GetShadowViewProjMatrix(&mLightView, &mLightProj, 0);
@@ -115,7 +114,9 @@ void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdL
 	mWorldRow.Translation(Vector3(0.0f));
 	mWorldRow.Invert().Transpose();
 	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
-	pMeshConstantBuffer->fHeightScale = 0.5f;
+	pMeshConstantBuffer->fHeightScale = _fHeightScale;
+	pMeshConstantBuffer->fWindTrunk = _fWindTrunk;
+	pMeshConstantBuffer->fWindLeaves = _fWindLeaves;
 
 	// Per Obj (b1).
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -427,7 +428,9 @@ void FBasicMeshObject::DrawShadowMaps(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 	mWorldRow.Translation(Vector3(0.0f));
 	mWorldRow.Invert().Transpose();
 	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
-	pMeshConstantBuffer->fHeightScale = 0.5f;
+	pMeshConstantBuffer->fHeightScale = _fHeightScale;
+	pMeshConstantBuffer->fWindTrunk = _fWindTrunk;
+	pMeshConstantBuffer->fWindLeaves = _fWindLeaves;
 
 	// Per Obj (b1).
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -561,7 +564,9 @@ void FBasicMeshObject::DrawReflection(AkU32 uThreadIndex, ID3D12GraphicsCommandL
 	mWorldRow.Translation(Vector3(0.0f));
 	mWorldRow.Invert().Transpose();
 	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
-	pMeshConstantBuffer->fHeightScale = 0.5f;
+	pMeshConstantBuffer->fHeightScale = _fHeightScale;
+	pMeshConstantBuffer->fWindTrunk = _fWindTrunk;
+	pMeshConstantBuffer->fWindLeaves = _fWindLeaves;
 
 	// Per Obj (b1).
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -800,7 +805,9 @@ void FBasicMeshObject::DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandLis
 	mWorldRow.Translation(Vector3(0.0f));
 	mWorldRow.Invert().Transpose();
 	pMeshConstantBuffer->mWorldIT = mWorldRow.Transpose();
-	pMeshConstantBuffer->fHeightScale = 0.5f;
+	pMeshConstantBuffer->fHeightScale = _fHeightScale;
+	pMeshConstantBuffer->fWindTrunk = _fWindTrunk;
+	pMeshConstantBuffer->fWindLeaves = _fWindLeaves;
 
 	// Per Obj (b1).
 	pDevice->CopyDescriptorsSimple(1, hDest, pMeshCBContainer->hCPU, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -1721,3 +1728,26 @@ void FBasicMeshObject::DestroyPipelineState()
 		sm_pBasicSolidPSO = nullptr;
 	}
 }
+
+void FBasicMeshObject::SetHeightScale(AkF32 fHeightScale)
+{
+	_fHeightScale = fHeightScale;
+}
+
+/*
+================================================
+트리를 따로 클래스로 분리할 수도 있지만,
+현재는 편의상 Basic Mesh 클래스에서 공통적으로 생성
+=================================================
+*/
+
+void FBasicMeshObject::SetWindTrunk(AkF32 fWindTrunk)
+{
+	_fWindTrunk = fWindTrunk;
+}
+
+void FBasicMeshObject::SetWindLeaves(AkF32 fWindLeaves)
+{
+	_fWindLeaves = fWindLeaves;
+}
+
