@@ -98,10 +98,9 @@ AkBool SceneInGame::BeginScene()
 		//_pRenderer->AddLight(&vPos, &vDir, 0.0f, 0.0f, 0.0f, LIGHT_OFF, 0.0f);
 	}
 
-	//// Collision check.
-	//GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::CONTAINER);
-	//GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::WEAPON);
-	//GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
+	// Collision check.
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::MAP);
+	// GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
 
 	return AK_TRUE;
 }
@@ -207,6 +206,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 	AddGameObject(GAME_OBJECT_GROUP_TYPE::TERRAIN, pTerrain);
 
 	// 02. obj
+	GAME_OBJECT_GROUP_TYPE eGameObjType = GAME_OBJECT_GROUP_TYPE::COUNT;
 	Actor* pActor = nullptr;
 	AkI32 iNumGameObj = 0;
 	fwscanf_s(fp, L"%d", &iNumGameObj);
@@ -219,6 +219,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		AkBool bInst = AK_FALSE;
 		GameObjContainer_t** ppGameObjectContainer = GetAllGameObject();
 		std::wstring wcTempName = wcName;
+
 		for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
 		{
 			if (ppGameObjectContainer[i])
@@ -226,7 +227,9 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 				List_t* pCur = ppGameObjectContainer[i]->pGameObjHead;
 				while (pCur != nullptr)
 				{
-					if (!wcscmp(wcName, ((Actor*)pCur->pData)->Name))
+					// if (!wcscmp(wcName, ((Actor*)pCur->pData)->Name))
+					std::wstring wcTemp = ((Actor*)pCur->pData)->Name;
+					if(!wcTemp.empty() && wcTempName.find(wcTemp) != std::wstring::npos)
 					{
 						pActor = ((ModelObject*)pCur->pData)->Clone();
 						bInst = AK_TRUE;
@@ -234,11 +237,13 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 						if (wcTempName.find(L"tree") != std::wstring::npos)
 						{
 							bIsTree = AK_TRUE;
+							eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
 						}
 						else if (wcTempName.find(L"stone") != std::wstring::npos)
 						{
 							pActor->GetModel()->DrawShadow(AK_FALSE); // self shadow 발생으로 인해 어색한 느낌이 생김. shaodw off
 							bIsStone = AK_TRUE;
+							eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
 						}
 
 						break;
@@ -254,29 +259,35 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 			if (GetFileNmaeExcludeExt(GetFileName(wcTempName)) == L"soldier")
 			{
 				pActor = new Soldier(wcTempName.c_str());
+				eGameObjType = GAME_OBJECT_GROUP_TYPE::PLAYER;
 			}
 			else if (wcTempName.find(L"Ocean") != std::wstring::npos)
 			{
 				pActor = new Ocean;
+				eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
 			}
 			else if (wcTempName.find(L"Cloud") != std::wstring::npos)
 			{
 				pActor = new Cloud;
+				eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
 			}
 			else if (wcTempName.find(L"tree") != std::wstring::npos)
 			{
 				pActor = new Tree(wcTempName.c_str());
 				bIsTree = AK_TRUE;
+				eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
 			}
 			else if (wcTempName.find(L"stone") != std::wstring::npos)
 			{
 				pActor = new Stone(wcTempName.c_str());
 				pActor->GetModel()->DrawShadow(AK_FALSE); // self shadow 발생으로 인해 어색한 느낌이 생김. shaodw off
 				bIsStone = AK_TRUE;
+				eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
 			}
 			else
 			{
 				pActor = new ModelObject(wcTempName.c_str());
+				eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
 			}
 		}
 
@@ -315,9 +326,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 
 		pActor->tLink.pData = pActor;
 
-		// TODO
-		// 현재는 모두 플레이어 오브젝트로 생성됨.
-		AddGameObject(GAME_OBJECT_GROUP_TYPE::PLAYER, pActor);
+		AddGameObject(eGameObjType, pActor);
 	}
 
 	// 03. billboard

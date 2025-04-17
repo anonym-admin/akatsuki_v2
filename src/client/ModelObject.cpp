@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ModelObject.h"
+#include "Soldier.h"
 
 static bool useSnap(false);
 static float snap[3] = { 1.f, 1.f, 1.f };
@@ -36,22 +37,42 @@ ModelObject::ModelObject(const ModelObject& rOrigin)
 			_pCollider = CreateCapsuleCollider();
 			break;
 		}
+
+		// Collider 의 Transform 정보를 복사한다.
+		Vector3 vColliderScale = rOrigin._pCollider->GetTransform()->GetScale();
+		Vector3 vColliderRotation = rOrigin._pCollider->GetTransform()->GetRotation();
+		Vector3 vColliderPosition = rOrigin._pCollider->GetTransform()->GetPosition();
+		_pCollider->GetTransform()->SetScale(&vColliderScale);
+		_pCollider->GetTransform()->SetRotation(&vColliderRotation);
+		_pCollider->GetTransform()->SetPosition(&vColliderPosition);
 	}
 
+	// Create Event Collider.
 	_iEventColliderNum = rOrigin._iEventColliderNum;
 	for (AkI32 i = 0; i < _iEventColliderNum; i++)
 	{
-		switch (rOrigin._pEventCollider[i]->GetType())
+		if(rOrigin._pEventCollider[i])
 		{
-		case COLLIDER_TYPE::BOX:
-			_pEventCollider[i] = CreateBoxCollider();
-			break;
-		case COLLIDER_TYPE::SPHERE:
-			_pCollider = CreateSphereCollider();
-			break;
-		case COLLIDER_TYPE::CAPSULE:
-			_pCollider = CreateCapsuleCollider();
-			break;
+			switch (rOrigin._pEventCollider[i]->GetType())
+			{
+			case COLLIDER_TYPE::BOX:
+				_pEventCollider[i] = CreateBoxCollider();
+				break;
+			case COLLIDER_TYPE::SPHERE:
+				_pCollider = CreateSphereCollider();
+				break;
+			case COLLIDER_TYPE::CAPSULE:
+				_pCollider = CreateCapsuleCollider();
+				break;
+			}
+
+			// Event Collider 의 Transform 정보를 복사한다.
+			Vector3 vColliderScale = rOrigin._pEventCollider[i]->GetTransform()->GetScale();
+			Vector3 vColliderRotation = rOrigin._pEventCollider[i]->GetTransform()->GetRotation();
+			Vector3 vColliderPosition = rOrigin._pEventCollider[i]->GetTransform()->GetPosition();
+			_pEventCollider[i]->GetTransform()->SetScale(&vColliderScale);
+			_pEventCollider[i]->GetTransform()->SetRotation(&vColliderRotation);
+			_pEventCollider[i]->GetTransform()->SetPosition(&vColliderPosition);
 		}
 	}
 
@@ -287,19 +308,19 @@ void ModelObject::RenderGUI()
 void ModelObject::OnCollisionEnter(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();
-	//if (!wcscmp(pOtherOwner->Name, L"Swat"))
-	//{
-	//	((Soldier*)pOtherOwner)->ActionReaction(_pCollider);
-	//}
+	if (!wcscmp(pOtherOwner->Name, L"soldier"))
+	{
+		((Soldier*)pOtherOwner)->ActionReaction(_pCollider);
+	}
 }
 
 void ModelObject::OnCollision(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();
-	//if (!wcscmp(pOtherOwner->Name, L"Swat"))
-	//{
-	//	((Soldier*)pOtherOwner)->ActionReaction(_pCollider);
-	//}
+	if (!wcscmp(pOtherOwner->Name, L"soldier"))
+	{
+		((Soldier*)pOtherOwner)->ActionReaction(_pCollider);
+	}
 }
 
 void ModelObject::OnCollisionExit(Collider* pOther)

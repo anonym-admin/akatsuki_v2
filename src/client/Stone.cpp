@@ -57,6 +57,61 @@ AkBool Stone::Initialize(const wchar_t* wcScriptFile)
 		}
 	}
 
+	// IBL Strength ÆÄ½Ì.
+	AkF32 fIBLStrength = 0.0f;
+	fwscanf_s(fp, L"%f\n", &fIBLStrength);
+	_pModel->SetIBLStrength(fIBLStrength);
+
+	// Collider °¹¼ö ÆÄ½Ì ÇÊ¿ä!!
+	AkI32 iColliderNum = 0;
+	fwscanf_s(fp, L"%d\n", &iColliderNum);
+	_iEventColliderNum = iColliderNum - 1;
+	if (_iEventColliderNum < 0)
+	{
+		_iEventColliderNum = 0;
+	}
+
+	for (AkI32 i = 0; i < iColliderNum; i++)
+	{
+		Collider* pCollider = nullptr;
+		AkI32 iColliderType = 0;
+		fwscanf_s(fp, L"%d\n", &iColliderType);
+
+		switch (iColliderType)
+		{
+		case (AkI32)COLLIDER_TYPE::BOX:
+			pCollider = CreateBoxCollider();
+			break;
+		case (AkI32)COLLIDER_TYPE::SPHERE:
+			pCollider = CreateSphereCollider();
+			break;
+		case (AkI32)COLLIDER_TYPE::CAPSULE:
+			pCollider = CreateCapsuleCollider();
+			break;
+		}
+
+		Vector3 vScale = Vector3(1.0f);
+		Vector3 vRotation = Vector3(0.0f);
+		Vector3 vPosition = Vector3(0.0f);
+
+		fwscanf_s(fp, L"%f %f %f\n", &vScale.x, &vScale.y, &vScale.z);
+		fwscanf_s(fp, L"%f %f %f\n", &vRotation.x, &vRotation.y, &vRotation.z);
+		fwscanf_s(fp, L"%f %f %f\n", &vPosition.x, &vPosition.y, &vPosition.z);
+
+		pCollider->GetTransform()->SetScale(&vScale);
+		pCollider->GetTransform()->SetRotation(&vRotation);
+		pCollider->GetTransform()->SetPosition(&vPosition);
+
+		if (0 == i)
+		{
+			_pCollider = pCollider;
+		}
+		else
+		{
+			_pEventCollider[i - 1] = pCollider;
+		}
+	}
+
 	if (fp) { fclose(fp); }
 
 	// Create Transform

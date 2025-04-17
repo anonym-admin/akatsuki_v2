@@ -337,6 +337,11 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 			if (_mapGameObj[wcTempName].empty())
 				__debugbreak();
 
+			if (wcTempName.find(L"yellow_container") != std::wstring::npos)
+			{
+				int a = 3;
+			}
+
 			pObj = ((ModelObject*)_mapGameObj[wcTempName][0].first)->Clone();
 			
 			// 나무 일 경우 플래그 체크

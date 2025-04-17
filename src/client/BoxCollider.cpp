@@ -80,8 +80,8 @@ AkBool BoxCollider::SphereIntersect(const Vector3* pCenter, AkF32 fRadius)
 
 	Vector3 vSpherePos = Vector3::Transform(*pCenter, mInvWorld); // To Model Coord.
 
-	Vector3 vMin = _vMin * _pTransform->GetScale();
-	Vector3 vMax = _vMax * _pTransform->GetScale();
+	Vector3 vMin = _vMin * _pTransform->GetGlobalScale();
+	Vector3 vMax = _vMax * _pTransform->GetGlobalScale();
 
 	Vector3 vPoint = Vector3(0.0f);
 	vPoint.x = max(vMin.x, min(vSpherePos.x, vMax.x));

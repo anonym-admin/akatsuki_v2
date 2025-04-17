@@ -210,12 +210,12 @@ void CapsuleCollider::RenderGUI()
 
 AkF32 CapsuleCollider::Radius()
 {
-	Vector3 vScale = _pTransform->GetScale();
+	Vector3 vScale = _pTransform->GetGlobalScale();
 	return _fRadius * max(vScale.x, max(vScale.y, vScale.z));
 }
 
 AkF32 CapsuleCollider::Height()
 {
-	Vector3 vScale = _pTransform->GetScale();
+	Vector3 vScale = _pTransform->GetGlobalScale();
 	return _fHeight * vScale.y;
 }

@@ -206,10 +206,11 @@ void Soldier::OnCollisionExit(Collider* pOther)
 void Soldier::ActionReaction(Collider* pOther)
 {
 	// 대상 충돌체가 육면체일 경우 대각선과 가로 세로의 반지름이 달라 진동하는 현상이 발생한다.
-
 	Vector3 vOtherPos = pOther->GetTransform()->GetGlobalPosition();
 	Vector3 vMyPos = _pCollider->GetTransform()->GetGlobalPosition();
 	Vector3 vDir = vOtherPos - vMyPos;
+
+	vDir.y = 0.0f;
 
 	AkF32 fRa = pOther->Radius();
 	AkF32 fRb = _pCollider->Radius();

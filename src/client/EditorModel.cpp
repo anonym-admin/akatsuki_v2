@@ -115,14 +115,14 @@ void EditorModel::Update()
 	{
 		for (auto& e : v.second)
 		{
-			if (_mapBasicModel[v.first])
+			if (_mapBasicModel.count(v.first))
 			{
 				Matrix mWorldRow = _mapBasicModel[v.first]->GetWorldRow();
 
 				e->GetTransform()->SetParent(&mWorldRow);
 			}
 
-			if (_mapSkinnedModel[v.first])
+			if (_mapSkinnedModel.count(v.first))
 			{
 				Matrix mWorldRow = _mapSkinnedModel[v.first]->GetWorldRow();
 
@@ -627,11 +627,14 @@ void EditorModel::Save(const std::wstring& wcFilePath)
 	if (!fp) { __debugbreak(); }
 
 	// 스킨드 모델일 경우
-	if (!_CurCharacter.empty() && _mapSkinnedModel[_CurCharacter]->IsPick())
+	if (!_CurCharacter.empty() && _mapSkinnedModel.count(_CurCharacter))
 	{
-		wcPicked = _CurCharacter;
+		if(_mapSkinnedModel[_CurCharacter]->IsPick())
+		{
+			wcPicked = _CurCharacter;
 
-		fwprintf_s(fp, L"%d\n", 0);
+			fwprintf_s(fp, L"%d\n", 0);
+		}
 	}
 	// 일반 모델일 경우
 	else
