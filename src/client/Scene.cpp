@@ -70,7 +70,9 @@ void Scene::RenderDepthMap()
 			while (pCur != nullptr)
 			{
 				Actor* pActor = reinterpret_cast<Actor*>(pCur->pData);
-				pActor->RenderDepthMap();
+
+				if (!pActor->Cull)
+					pActor->RenderDepthMap();
 
 				pCur = pCur->pNext;
 			}
@@ -91,7 +93,9 @@ void Scene::RenderShadowMaps()
 			while (pCur != nullptr)
 			{
 				Actor* pActor = reinterpret_cast<Actor*>(pCur->pData);
-				pActor->RenderShadowMaps();
+
+				if (!pActor->Cull)
+					pActor->RenderShadowMaps();
 
 				pCur = pCur->pNext;
 			}
@@ -112,7 +116,9 @@ void Scene::Render()
 			while (pCur != nullptr)
 			{
 				Actor* pActor = reinterpret_cast<Actor*>(pCur->pData);
-				pActor->Render();
+				
+				if(!pActor->Cull)
+					pActor->Render();
 
 				pCur = pCur->pNext;
 			}

@@ -13,6 +13,7 @@ struct GameObjContainer_t
 };
 
 class Actor;
+class FrustumCulling;
 
 class Scene
 {
@@ -33,6 +34,7 @@ public:
 	GameObjContainer_t* GetGroupObject(GAME_OBJECT_GROUP_TYPE eGameObjType) { return _pGameObjContainerList[(AkU32)eGameObjType]; }
 	GameObjContainer_t** GetAllGameObject() { return _pGameObjContainerList; }
 	AkU32 GetGameObjectNum() { return _uGameObjNum; }
+	FrustumCulling* GetFrustumCulling() { return _pFrustumCulling; }
 	void DeleteGameObject(GAME_OBJECT_GROUP_TYPE eGameObjType, Actor* pGameObj);
 	void DeleteAllGameObject();
 
@@ -46,6 +48,9 @@ private:
 	// Game obj.
 	GameObjContainer_t* _pGameObjContainerList[(AkU32)GAME_OBJECT_GROUP_TYPE::COUNT] = {};
 	AkU32 _uGameObjNum = 0;
+
+protected:
+	FrustumCulling* _pFrustumCulling = nullptr;
 
 public:
 	const wchar_t* Name = nullptr;

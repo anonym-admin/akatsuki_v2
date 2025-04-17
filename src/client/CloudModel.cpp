@@ -26,6 +26,9 @@ AkBool CloudModel::Initialize()
 
 	GeometryGenerator::DestroyGeometry(pCube, 1);
 
+	_vMin = vMin;
+	_vMax = vMax;
+
 	// Set Name
 	wcscpy_s(Name, L"Cloud");
 
@@ -53,6 +56,12 @@ void CloudModel::RenderGUI()
 	ImGui::SliderFloat3("Light Color", &vLightColor.x, 0.0f, 50.0f);
 	ImGui::SliderFloat("Aniso", &fAniso, 0.0f, 1.0f);
 	ImGui::End();
+}
+
+void CloudModel::GetMinMax(Vector3* pOutMin, Vector3* pOutMax)
+{
+	*pOutMin = _vMin;
+	*pOutMax = _vMax;
 }
 
 void CloudModel::CleanUp()

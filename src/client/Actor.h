@@ -51,6 +51,7 @@ public:
 	void DestroyAnimation();
 
 	Collider* GetCollider() { return _pCollider; }
+	Collider* GetCullingCollider() { return _pCullingCollider; }
 	RigidBody* GetRigidBody() { return _pRigidBody; }
 	Gravity* GetGravity() { return _pGravity; }
 	Camera* GetCamera() { return _pCamera; }
@@ -69,6 +70,7 @@ private:
 protected:
 	// �浹ü
 	Collider* _pCollider = nullptr;
+	Collider* _pCullingCollider = nullptr;
 	Collider* _pEventCollider[MAX_EVENT_COLLIDER_NUM] = {};
 	AkI32 _iEventColliderNum = 0;
 
@@ -97,4 +99,5 @@ public:
 	AkBool LeftHand = AK_FALSE;
 	AkBool Fire = AK_FALSE;
 	AkBool DrawNormal = AK_FALSE;
+	AkBool Cull = AK_FALSE;
 };

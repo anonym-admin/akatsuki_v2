@@ -1544,7 +1544,7 @@ AkBool FRenderer::MousePickingToBox(DirectX::BoundingBox* pBox, AkF32 fNdcX, AkF
 	return AK_FALSE;
 }
 
-void FRenderer::GetFrustum(Vector4* ppOutPlane)
+void FRenderer::GetFrustum(Vector4* pOutPlane)
 {
 	Vector4 tPlane[6] = {};
 
@@ -1586,12 +1586,12 @@ void FRenderer::GetFrustum(Vector4* ppOutPlane)
 	fW = (AkF32)(mViewProjRow._44 + mViewProjRow._42);
 	tPlane[5] = DirectX::XMPlaneNormalize(Vector4(fX, fY, fZ, fW));
 
-	ppOutPlane[0] = tPlane[0];
-	ppOutPlane[1] = tPlane[1];
-	ppOutPlane[2] = tPlane[2];
-	ppOutPlane[3] = tPlane[3];
-	ppOutPlane[4] = tPlane[4];
-	ppOutPlane[5] = tPlane[5];
+	pOutPlane[0] = tPlane[0];
+	pOutPlane[1] = tPlane[1];
+	pOutPlane[2] = tPlane[2];
+	pOutPlane[3] = tPlane[3];
+	pOutPlane[4] = tPlane[4];
+	pOutPlane[5] = tPlane[5];
 }
 
 void FRenderer::SetVSync(AkBool bUseVSync)

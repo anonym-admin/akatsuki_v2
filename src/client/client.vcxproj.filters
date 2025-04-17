@@ -372,6 +372,9 @@
     <ClInclude Include="Ocean.h">
       <Filter>src\obj\landscape</Filter>
     </ClInclude>
+    <ClInclude Include="FrustumCulling.h">
+      <Filter>src\culling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\utils\HashTable.cpp">
@@ -619,6 +622,9 @@
     </ClCompile>
     <ClCompile Include="Ocean.cpp">
       <Filter>src\obj\landscape</Filter>
+    </ClCompile>
+    <ClCompile Include="FrustumCulling.cpp">
+      <Filter>src\culling</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

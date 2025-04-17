@@ -17,6 +17,7 @@
 #include "TreeModel.h"
 #include "Stone.h"
 #include "StoneModel.h"
+#include "FrustumCulling.h"
 
 /*
 =============
@@ -102,6 +103,9 @@ AkBool SceneInGame::BeginScene()
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::MAP);
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
 
+	// Create Frustum Culling Class.
+	_pFrustumCulling = new FrustumCulling;
+
 	return AK_TRUE;
 }
 
@@ -109,6 +113,11 @@ AkBool SceneInGame::EndScene()
 {
 	GCollisionManager->Reset();
 
+	if (_pFrustumCulling)
+	{
+		delete _pFrustumCulling;
+		_pFrustumCulling = nullptr;
+	}
 	if (_pSkyboxObj)
 	{
 		_pSkyboxObj->Release();
@@ -157,6 +166,9 @@ void SceneInGame::Update()
 void SceneInGame::FinalUpdate()
 {
 	Scene::FinalUpdate();
+
+	// Game Object 의 모든 연산이 종료된 후 컬링 시도.
+	_pFrustumCulling->Process();
 }
 
 void SceneInGame::RenderDepthMap()

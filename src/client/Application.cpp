@@ -16,6 +16,8 @@
 #include "UIImage.h"
 #include "UIButton.h"
 
+#include "FrustumCulling.h"
+
 /*
 ===============
 Application
@@ -502,6 +504,8 @@ void Application::UpdateText()
 		SceneInGame* pSceneInGame = (SceneInGame*)GSceneManager->GetScene(SCENE_TYPE::INGANE);
 		Actor* pPlayer = nullptr;
 		Vector3 vPlayerPos = Vector3(0.0f);
+		AkU32 uRenderObj = 0;
+		AkU32 uTotalObj = 0;
 
 		if (pSceneInGame)
 		{
@@ -511,12 +515,19 @@ void Application::UpdateText()
 				pPlayer = (Actor*)pPlayerGroup->pGameObjHead->pData;
 				vPlayerPos = pPlayer->GetTransform()->GetPosition();
 			}
+			
+			FrustumCulling* pFrustumCulling = pSceneInGame->GetFrustumCulling();
+			if (pFrustumCulling)
+			{
+				uTotalObj = pFrustumCulling->GetTotalRenderObjCount();
+				uRenderObj = uTotalObj - pFrustumCulling->GetCullObjCount();
+			}
 		}
 
 		AkI32 iTextWidth = 0;
 		AkI32 iTextHeight = 0;
 		wchar_t wcText[256] = {};
-		AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf vsync:%s\npos:%lf %lf %lf \n", GFps, _bUseVSync ? L"on" : L"off", vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
+		AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf vsync:%s\npos:%lf %lf %lf\nrender:%u/%u\n", GFps, _bUseVSync ? L"on" : L"off", vPlayerPos.x, vPlayerPos.y, vPlayerPos.z, uRenderObj, uTotalObj);
 
 		if (wcscmp(_wcText, wcText))
 		{

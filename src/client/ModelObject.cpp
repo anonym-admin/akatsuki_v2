@@ -76,6 +76,14 @@ ModelObject::ModelObject(const ModelObject& rOrigin)
 		}
 	}
 
+	// Create Culling Collider.
+	if(rOrigin._pCullingCollider)
+	{
+		Vector3 vMin = ((BoxCollider*)rOrigin._pCullingCollider)->GetMinWorld();
+		Vector3 vMax = ((BoxCollider*)rOrigin._pCullingCollider)->GetMaxWorld();
+		_pCullingCollider = CreateBoxCollider(&vMin, &vMax);
+	}
+
 	wcscpy_s(Name, rOrigin.Name);
 }
 
@@ -159,6 +167,11 @@ void ModelObject::FinalUpdate()
 	if(_pCollider)
 	{
 		_pCollider->Update();
+	}
+
+	if (_pCullingCollider)
+	{
+		_pCullingCollider->Update();
 	}
 
 	for (AkI32 i = 0; i < _iEventColliderNum; i++)

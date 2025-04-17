@@ -25,7 +25,7 @@ void EventManager::Excute()
 		{
 			case EVENT_TYPE::CREATE_GAME_OBJECT:
 			{
-
+				
 			}
 			break;
 			case EVENT_TYPE::SCENE_CHANGE:

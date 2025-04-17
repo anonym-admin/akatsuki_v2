@@ -24,6 +24,11 @@ Cloud::Cloud(const Cloud& Other)
 
     // Create Transform.
     _pTransform = CreateTransform();
+
+    // Create Culling Collider.
+    Vector3 vMin = ((BoxCollider*)Other._pCullingCollider)->GetMinWorld();
+    Vector3 vMax = ((BoxCollider*)Other._pCullingCollider)->GetMaxWorld();
+    _pCullingCollider = CreateBoxCollider(&vMin, &vMax);
 }
 
 Cloud::~Cloud()
@@ -39,6 +44,12 @@ AkBool Cloud::Initialize()
     // Create Transform
     _pTransform = CreateTransform();
 
+    // Create Culling Collider.
+    Vector3 vMin = Vector3(0.0f);
+    Vector3 vMax = Vector3(0.0f);
+    _pCloudModel->GetMinMax(&vMin, &vMax);
+    _pCullingCollider = CreateBoxCollider(&vMin, &vMax);
+
     return AK_TRUE;
 }
 
@@ -50,6 +61,8 @@ void Cloud::Update()
 void Cloud::FinalUpdate()
 {
     _pTransform->Update();
+
+    _pCullingCollider->Update();
 }
 
 void Cloud::Render()

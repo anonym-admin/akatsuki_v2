@@ -130,7 +130,7 @@ public:
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) override;
 	virtual void GetViewPorjMatrix(Matrix* pViewMat, Matrix* pProjMat) override;
 	virtual void GetRelectionViewProjMatrix(Matrix* pViewMat, Matrix* pProjMat) override;
-	virtual void GetFrustum(Vector4* ppOutPlane) override;
+	virtual void GetFrustum(Vector4* pOutPlane) override;
 	virtual AkBool MousePickingToPlane(DirectX::SimpleMath::Plane* pPlane, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
 	virtual AkBool MousePickingToTriangle(Vector3* pV0, Vector3* pV1, Vector3* pV2, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;
 	virtual AkBool MousePickingToSqaure(Vector3* pV0, Vector3* pV1, Vector3* pV2, Vector3* pV3, AkF32 fNdcX, AkF32 fNdcY, Vector3* pHitPos, AkF32* pHitDist, AkF32* pRatio) override;

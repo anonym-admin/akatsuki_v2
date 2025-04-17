@@ -12,6 +12,8 @@ public:
 	virtual void Render() override;
 	virtual void RenderGUI() override;
 
+	void GetMinMax(Vector3* pOutMin, Vector3* pOutMax);
+
 private:
 	void CleanUp();
 
@@ -25,5 +27,8 @@ private:
 	AkF32 fAniso = 0.3f;
 
 	AkF32 fAnimSpeed = 0.0f;
+
+	Vector3 _vMin = Vector3(0.0f);
+	Vector3 _vMax = Vector3(0.0f);
 };
 

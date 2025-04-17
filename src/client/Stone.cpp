@@ -25,6 +25,7 @@ AkBool Stone::Initialize(const wchar_t* wcScriptFile)
 	_wfopen_s(&fp, wcScriptFile, L"rt");
 	if (!fp) { __debugbreak(); }
 
+	AssetMeshDataContainer_t* pMeshDataContainer = nullptr;
 	AkI32 iIsSkinned = 0;
 	fwscanf_s(fp, L"%d\n", &iIsSkinned);
 	if (!iIsSkinned)
@@ -42,7 +43,7 @@ AkBool Stone::Initialize(const wchar_t* wcScriptFile)
 		// Asset Manager 에서 검색.
 		Vector3 vAlbedo = Vector3(1.0f);
 		Vector3 vEmissive = Vector3(0.0f);
-		AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshData(wcFilePath);
+		pMeshDataContainer = GAssetManager->GetMeshData(wcFilePath);
 		if (pMeshDataContainer)
 		{
 			_pModel = new StoneModel(pMeshDataContainer, &vAlbedo, 0.0f, 1.0f, &vEmissive);
@@ -116,6 +117,12 @@ AkBool Stone::Initialize(const wchar_t* wcScriptFile)
 
 	// Create Transform
 	_pTransform = CreateTransform();
+
+	// Create Culling Collider.
+	Vector3 vMin = Vector3(AK_MAX_F32);
+	Vector3 vMax = Vector3(-AK_MAX_F32);
+	CalcColliderMinMax(pMeshDataContainer->pMeshData, pMeshDataContainer->uMeshDataNum, &vMin, &vMax);
+	_pCullingCollider = CreateBoxCollider(&vMin, &vMax);
 
 	return AK_TRUE;
 }

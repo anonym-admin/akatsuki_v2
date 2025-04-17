@@ -75,6 +75,12 @@ AkBool Soldier::Initialize()
 	// Create Collider.
 	_pCollider = CreateCapsuleCollider(0.25f, 0.5f);
 
+	// Create Culling Collider.
+	Vector3 vMin = Vector3(AK_MAX_F32);
+	Vector3 vMax = Vector3(-AK_MAX_F32);
+	CalcColliderMinMax(pMeshDataContainer->pMeshData, pMeshDataContainer->uMeshDataNum, &vMin, &vMax);
+	_pCullingCollider = CreateBoxCollider(&vMin, &vMax);
+
 	// Create Camera.
 	_pCamera = CreateCamera(2.0f, 0.5f);
 	_pCamera->SetOwner(this);
@@ -148,6 +154,8 @@ void Soldier::FinalUpdate()
 	_pTransform->Update();
 
 	_pCollider->Update();
+
+	_pCullingCollider->Update();
 
 	_pCamera->Update();
 
