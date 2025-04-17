@@ -41,28 +41,28 @@ AkBool SceneInGame::BeginScene()
 
 	// Create mini map sprite.
 	{
-		AkI32 iWidth = 128;
-		AkI32 iHeight = 128;
+		//AkI32 iWidth = 128;
+		//AkI32 iHeight = 128;
 
-		RECT tRect = {};
-		GetClientRect(GhWnd, &tRect);
-		AkU32 uScreenWidth = tRect.right - tRect.left;
-		AkU32 uScreenHeight = tRect.bottom - tRect.top;
+		//RECT tRect = {};
+		//GetClientRect(GhWnd, &tRect);
+		//AkU32 uScreenWidth = tRect.right - tRect.left;
+		//AkU32 uScreenHeight = tRect.bottom - tRect.top;
 
-		_iMiniMapPosX = uScreenWidth - iWidth - _iOffset;
-		_iMiniMapPosY = _iOffset;
+		//_iMiniMapPosX = uScreenWidth - iWidth - _iOffset;
+		//_iMiniMapPosY = _iOffset;
 
-		_pMiniMapOutlineSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/white.dds", 0, 0, 136, 136);
-		_pMiniMapOutlineSprite->SetDrawBackground(AK_TRUE);
+		//_pMiniMapOutlineSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/white.dds", 0, 0, 136, 136);
+		//_pMiniMapOutlineSprite->SetDrawBackground(AK_TRUE);
 
-		_pMiniMapSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/landscape/colormap.dds", 0, 0, iWidth, iHeight);
-		_pMiniMapSprite->SetDrawBackground(AK_TRUE);
+		//_pMiniMapSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/landscape/colormap.dds", 0, 0, iWidth, iHeight);
+		//_pMiniMapSprite->SetDrawBackground(AK_TRUE);
 	}
 
 	// Create location point.
 	{
-		_pLocationPointSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/light_green.dds", 0, 0, 3, 3);
-		_pLocationPointSprite->SetDrawBackground(AK_TRUE);
+		//_pLocationPointSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/light_green.dds", 0, 0, 3, 3);
+		//_pLocationPointSprite->SetDrawBackground(AK_TRUE);
 	}
 
 	// Create skybox.
