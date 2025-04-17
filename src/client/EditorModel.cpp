@@ -31,14 +31,19 @@ AkBool EditorModel::Initialize()
 	_pCamera->Mode = CAMERA_MODE::EDITOR;
 
 	// Bind IBL Texture For PBR.
-	GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
+	GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSky8KEnvHDR.dds", L"PureSky8KDiffuseHDR.dds", L"PureSky8KSpecularHDR.dds", L"PureSky8KBrdf.dds");
+	// GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
 
-	AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSkyDiffuseHDR.dds");
-	AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSkySpecularHDR.dds");
-	AssetTextureContainer_t* pBrdf = GAssetManager->GetTexture(L"PureSkyBrdf.dds");
+	AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSky8KDiffuseHDR.dds");
+	AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSky8KSpecularHDR.dds");
+	AssetTextureContainer_t* pBrdf = GAssetManager->GetTexture(L"PureSky8KBrdf.dds");
+
+	//AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSkyDiffuseHDR.dds");
+	//AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSkySpecularHDR.dds");
+	//AssetTextureContainer_t* pBrdf = GAssetManager->GetTexture(L"PureSkyBrdf.dds");
 
 	GRenderer->BindIBLTexture(pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle, pBrdf->pTexHandle);
-	GRenderer->SetIBLStrength(0.25f);
+	GRenderer->SetGlobalIBLStrength(0.25f);
 
 	// Create Ground.
 	AkU32 uMeshDataNum = 0;

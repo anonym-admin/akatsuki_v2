@@ -42,6 +42,10 @@ AkBool EditorMap::Initialize()
 	// Editor 에서는 Scene에 Obj 를 등록하지 않는다.
 	_pTerrainEdit = new TerrainEdit;
 
+	// Add Cube Map Texture.
+	GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSky8KEnvHDR.dds", L"PureSky8KDiffuseHDR.dds", L"PureSky8KSpecularHDR.dds", L"PureSky8KBrdf.dds");
+	// GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
+
 	//// CSG Clipper.
 	//_pCSGCube = GRenderer->CreateBasicMeshObject();
 	//_pCube = GeometryGenerator::MakeCube(&vMin, &vMax);

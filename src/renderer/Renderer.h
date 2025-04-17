@@ -115,7 +115,7 @@ public:
 	virtual void UpdateSpotLight(AkU32 uIndex, const Vector3* pRadiance, const Vector3* pPos, const Vector3* pDir, AkF32 fRadius, AkF32 fFallOffStart, AkF32 fFallOffEnd, AkF32 fSpotPower, AkBool bShadow) override;
 	virtual void SetCameraPosition(AkF32 fX, AkF32 fY, AkF32 fZ) override;
 	virtual void SetCamera(const Vector3* pCamPos, const Vector3* pCamDir, Vector3* pCamUp) override;
-	virtual void SetIBLStrength(AkF32 fIBLStrength) override;
+	virtual void SetGlobalIBLStrength(AkF32 fIBLStrength) override;
 	virtual void SetFogStrength(AkF32 fFogStrength) override;
 	virtual void SetDepthScale(AkF32 fDepthScale) override;
 	virtual void SetPostEffectMode(AkI32 iMode) override;

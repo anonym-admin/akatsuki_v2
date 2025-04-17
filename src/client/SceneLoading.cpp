@@ -45,7 +45,8 @@ AkBool SceneLoading::BeginScene()
 
 	// Image based lighting textures.
 	{
-		GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
+		GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSky8KEnvHDR.dds", L"PureSky8KDiffuseHDR.dds", L"PureSky8KSpecularHDR.dds", L"PureSky8KBrdf.dds");
+		// GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
 	}
 
 	// Add Change Scene Event.

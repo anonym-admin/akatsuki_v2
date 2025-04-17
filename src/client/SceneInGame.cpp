@@ -34,7 +34,7 @@ AkBool SceneInGame::BeginScene()
 	Collider::DRAW_COLLIDER = AK_FALSE;
 
 	// Set IBL Strength
-	GRenderer->SetIBLStrength(0.25f);
+	GRenderer->SetGlobalIBLStrength(0.25f);
 
 	// Load Scene file.
 	Load(L"../../assets/data/scene/main.scene");
@@ -72,9 +72,13 @@ AkBool SceneInGame::BeginScene()
 
 	// Bind IBL Texture For PBR.
 	{
-		AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSkyDiffuseHDR.dds");
-		AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSkySpecularHDR.dds");
-		AssetTextureContainer_t* pBrdf = GAssetManager->GetTexture(L"PureSkyBrdf.dds");
+		AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSky8KDiffuseHDR.dds");
+		AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSky8KSpecularHDR.dds");
+		AssetTextureContainer_t* pBrdf = GAssetManager->GetTexture(L"PureSky8KBrdf.dds");
+
+		//AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSkyDiffuseHDR.dds");
+		//AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSkySpecularHDR.dds");
+		//AssetTextureContainer_t* pBrdf = GAssetManager->GetTexture(L"PureSkyBrdf.dds");
 
 		GRenderer->BindIBLTexture(pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle, pBrdf->pTexHandle);
 	}
@@ -170,9 +174,13 @@ void SceneInGame::Render()
 {
 	Scene::Render();
 
-	AssetTextureContainer_t* pEnv = GAssetManager->GetTexture(L"PureSkyEnvHDR.dds");
-	AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSkyDiffuseHDR.dds");
-	AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSkySpecularHDR.dds");
+	AssetTextureContainer_t* pEnv = GAssetManager->GetTexture(L"PureSky8KEnvHDR.dds");
+	AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSky8KDiffuseHDR.dds");
+	AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSky8KSpecularHDR.dds");
+
+	//AssetTextureContainer_t* pEnv = GAssetManager->GetTexture(L"PureSkyEnvHDR.dds");
+	//AssetTextureContainer_t* pDiffuseHDR = GAssetManager->GetTexture(L"PureSkyDiffuseHDR.dds");
+	//AssetTextureContainer_t* pSpecularHDR = GAssetManager->GetTexture(L"PureSkySpecularHDR.dds");
 
 	// Render skybox.
 	GRenderer->RenderSkybox(_pSkyboxObj, &_mSkyboxTransform, pEnv->pTexHandle, pDiffuseHDR->pTexHandle, pSpecularHDR->pTexHandle);

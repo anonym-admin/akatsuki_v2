@@ -1430,7 +1430,7 @@ void FRenderer::UpdateSpotLight(AkU32 uIndex, const Vector3* pRadiance, const Ve
 {
 }
 
-void FRenderer::SetIBLStrength(AkF32 fIBLStrength)
+void FRenderer::SetGlobalIBLStrength(AkF32 fIBLStrength)
 {
 	_fIBLStrength = fIBLStrength;
 }
