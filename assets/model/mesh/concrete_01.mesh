@@ -1,0 +1,205 @@
+========MeshData========
+MeshCount: 6
+VertexCount: 4	IndexCount: 6
+VertexCount: 4	IndexCount: 6
+VertexCount: 4	IndexCount: 6
+VertexCount: 4	IndexCount: 6
+VertexCount: 4	IndexCount: 6
+VertexCount: 4	IndexCount: 6
+
+========Material========
+Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Emissive: Empty
+Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
+Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
+Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
+Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
+Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Opacity: Empty
+
+Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Emissive: Empty
+Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
+Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
+Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
+Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
+Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Opacity: Empty
+
+Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Emissive: Empty
+Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
+Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
+Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
+Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
+Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Opacity: Empty
+
+Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Emissive: Empty
+Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
+Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
+Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
+Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
+Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Opacity: Empty
+
+Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Emissive: Empty
+Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
+Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
+Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
+Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
+Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Opacity: Empty
+
+Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Emissive: Empty
+Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
+Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
+Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
+Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
+Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Opacity: Empty
+
+========Vertices========
+Position: -1 1 -1
+Normal: 0 1 0
+Texcoord: 0 1
+Tangent: 1 0 0
+
+Position: -1 1 1
+Normal: 0 1 0
+Texcoord: 0 0
+Tangent: 1 0 0
+
+Position: 1 1 1
+Normal: 0 1 0
+Texcoord: 1 0
+Tangent: 1 0 0
+
+Position: 1 1 -1
+Normal: 0 1 0
+Texcoord: 1 1
+Tangent: 1 0 0
+
+Position: -1 -1 -1
+Normal: 0 -1 0
+Texcoord: 0 1
+Tangent: 1 0 0
+
+Position: 1 -1 -1
+Normal: 0 -1 0
+Texcoord: 0 0
+Tangent: 1 0 0
+
+Position: 1 -1 1
+Normal: 0 -1 0
+Texcoord: 1 0
+Tangent: 1 0 0
+
+Position: -1 -1 1
+Normal: 0 -1 0
+Texcoord: 1 1
+Tangent: 1 0 0
+
+Position: -1 -1 -1
+Normal: 0 0 -1
+Texcoord: 0 1
+Tangent: 1 0 0
+
+Position: -1 1 -1
+Normal: 0 0 -1
+Texcoord: 0 0
+Tangent: 1 0 0
+
+Position: 1 1 -1
+Normal: 0 0 -1
+Texcoord: 1 0
+Tangent: 1 0 0
+
+Position: 1 -1 -1
+Normal: 0 0 -1
+Texcoord: 1 1
+Tangent: 1 0 0
+
+Position: -1 -1 1
+Normal: 0 0 1
+Texcoord: 0 1
+Tangent: 1 0 0
+
+Position: 1 -1 1
+Normal: 0 0 1
+Texcoord: 0 0
+Tangent: 1 0 0
+
+Position: 1 1 1
+Normal: 0 0 1
+Texcoord: 1 0
+Tangent: 1 0 0
+
+Position: -1 1 1
+Normal: 0 0 1
+Texcoord: 1 1
+Tangent: 1 0 0
+
+Position: -1 -1 1
+Normal: -1 0 0
+Texcoord: 0 1
+Tangent: 0 1 0
+
+Position: -1 1 1
+Normal: -1 0 0
+Texcoord: 0 0
+Tangent: 0 1 0
+
+Position: -1 1 -1
+Normal: -1 0 0
+Texcoord: 1 0
+Tangent: 0 1 0
+
+Position: -1 -1 -1
+Normal: -1 0 0
+Texcoord: 1 1
+Tangent: 0 1 0
+
+Position: 1 -1 1
+Normal: 1 0 0
+Texcoord: 0 1
+Tangent: 0 1 0
+
+Position: 1 -1 -1
+Normal: 1 0 0
+Texcoord: 0 0
+Tangent: 0 1 0
+
+Position: 1 1 -1
+Normal: 1 0 0
+Texcoord: 1 0
+Tangent: 0 1 0
+
+Position: 1 1 1
+Normal: 1 0 0
+Texcoord: 1 1
+Tangent: 0 1 0
+
+========Indices========
+0 1 2
+0 2 3
+0 1 2
+0 2 3
+0 1 2
+0 2 3
+0 1 2
+0 2 3
+0 1 2
+0 2 3
+0 1 2
+0 2 3
+
+========BoneOffsets========
+BoneCount: 0
+========BoneHierarchy========
+
+========BoneName========
+

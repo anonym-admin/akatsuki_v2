@@ -100,7 +100,7 @@ AkBool SceneInGame::BeginScene()
 
 	// Collision check.
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::MAP);
-	// GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
 
 	return AK_TRUE;
 }
@@ -202,6 +202,7 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 	wchar_t wcName[_MAX_PATH] = {};
 	fwscanf_s(fp, L"%s", wcName, (unsigned)_MAX_PATH);
 	pTerrain = new Terrain(wcName);
+	wcscpy_s(pTerrain->Name, L"Terrain");
 	pTerrain->tLink.pData = pTerrain;
 	AddGameObject(GAME_OBJECT_GROUP_TYPE::TERRAIN, pTerrain);
 

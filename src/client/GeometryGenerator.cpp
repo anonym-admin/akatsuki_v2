@@ -327,6 +327,10 @@ MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 	pMeshData[0].pVertices[1].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
 	pMeshData[0].pVertices[2].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
 	pMeshData[0].pVertices[3].vNormalModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData[0].pVertices[0].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[0].pVertices[1].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[0].pVertices[2].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[0].pVertices[3].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
 	pMeshData[0].pVertices[0].vTexCoord = Vector2(0.0f, 1.0f);
 	pMeshData[0].pVertices[1].vTexCoord = Vector2(0.0f, 0.0f);
 	pMeshData[0].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
@@ -340,6 +344,10 @@ MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 	pMeshData[1].pVertices[1].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
 	pMeshData[1].pVertices[2].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
 	pMeshData[1].pVertices[3].vNormalModel = Vector3(0.0f, -1.0f, 0.0f);
+	pMeshData[1].pVertices[0].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[1].pVertices[1].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[1].pVertices[2].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[1].pVertices[3].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
 	pMeshData[1].pVertices[0].vTexCoord = Vector2(0.0f, 1.0f);
 	pMeshData[1].pVertices[1].vTexCoord = Vector2(0.0f, 0.0f);
 	pMeshData[1].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
@@ -353,6 +361,10 @@ MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 	pMeshData[2].pVertices[1].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
 	pMeshData[2].pVertices[2].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
 	pMeshData[2].pVertices[3].vNormalModel = Vector3(0.0f, 0.0f, -1.0f);
+	pMeshData[2].pVertices[0].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[2].pVertices[1].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[2].pVertices[2].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[2].pVertices[3].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
 	pMeshData[2].pVertices[0].vTexCoord = Vector2(0.0f, 1.0f);
 	pMeshData[2].pVertices[1].vTexCoord = Vector2(0.0f, 0.0f);
 	pMeshData[2].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
@@ -366,6 +378,10 @@ MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 	pMeshData[3].pVertices[1].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
 	pMeshData[3].pVertices[2].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
 	pMeshData[3].pVertices[3].vNormalModel = Vector3(0.0f, 0.0f, 1.0f);
+	pMeshData[3].pVertices[0].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[3].pVertices[1].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[3].pVertices[2].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[3].pVertices[3].vTangentModel = Vector3(1.0f, 0.0f, 0.0f);
 	pMeshData[3].pVertices[0].vTexCoord = Vector2(0.0f, 1.0f);
 	pMeshData[3].pVertices[1].vTexCoord = Vector2(0.0f, 0.0f);
 	pMeshData[3].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
@@ -379,6 +395,10 @@ MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 	pMeshData[4].pVertices[1].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
 	pMeshData[4].pVertices[2].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
 	pMeshData[4].pVertices[3].vNormalModel = Vector3(-1.0f, 0.0f, 0.0f);
+	pMeshData[4].pVertices[0].vTangentModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData[4].pVertices[1].vTangentModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData[4].pVertices[2].vTangentModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData[4].pVertices[3].vTangentModel = Vector3(0.0f, 1.0f, 0.0f);
 	pMeshData[4].pVertices[0].vTexCoord = Vector2(0.0f, 1.0f);
 	pMeshData[4].pVertices[1].vTexCoord = Vector2(0.0f, 0.0f);
 	pMeshData[4].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);
@@ -392,6 +412,10 @@ MeshData_t* GeometryGenerator::MakeCube(AkU32* pMeshDataNum, const AkF32 fScale)
 	pMeshData[5].pVertices[1].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
 	pMeshData[5].pVertices[2].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
 	pMeshData[5].pVertices[3].vNormalModel = Vector3(1.0f, 0.0f, 0.0f);
+	pMeshData[5].pVertices[0].vTangentModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData[5].pVertices[1].vTangentModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData[5].pVertices[2].vTangentModel = Vector3(0.0f, 1.0f, 0.0f);
+	pMeshData[5].pVertices[3].vTangentModel = Vector3(0.0f, 1.0f, 0.0f);
 	pMeshData[5].pVertices[0].vTexCoord = Vector2(0.0f, 1.0f);
 	pMeshData[5].pVertices[1].vTexCoord = Vector2(0.0f, 0.0f);
 	pMeshData[5].pVertices[2].vTexCoord = Vector2(1.0f, 0.0f);

@@ -169,6 +169,8 @@ void ModelObject::FinalUpdate()
 
 void ModelObject::RenderDepthMap()
 {
+	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());
+
 	_pModel->RenderDepthMap();
 }
 
@@ -190,6 +192,8 @@ void ModelObject::Render()
 
 void ModelObject::RenderShadowMaps()
 {
+	_pModel->UpdateWorldRow(_pTransform->GetWorldTransformAddr());
+
 	_pModel->RenderShadowMaps();
 }
 
@@ -296,8 +300,14 @@ void ModelObject::RenderGUI()
 
 	ImGuizmo::DecomposeMatrixToComponents((float*)&mWorldRow._11, matrixTranslation, matrixRotation, matrixScale);
 
+	const AkF32 fYaw = DirectX::XMConvertToRadians(matrixRotation[1]);
+	const AkF32 fPitch = DirectX::XMConvertToRadians(matrixRotation[0]);
+	const AkF32 fRoll = 0.0f; //  DirectX::XMConvertToRadians(matrixRotation[2]);
+
+	wprintf_s(L"%f %f %f \n", fYaw, fPitch, fRoll);
+
 	_pTransform->SetScale((Vector3*)matrixScale);
-	_pTransform->SetRotation(DirectX::XMConvertToRadians(matrixRotation[1]), DirectX::XMConvertToRadians(matrixRotation[0]), 0.0f);
+	_pTransform->SetRotation(fYaw, fPitch, fRoll);
 	_pTransform->SetPosition((Vector3*)matrixTranslation);
 
 	_pTransform->Update();

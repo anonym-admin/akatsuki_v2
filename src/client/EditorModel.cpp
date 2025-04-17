@@ -995,6 +995,12 @@ void EditorModel::LoadTextures(const std::wstring& wcBasePath, const std::wstrin
 
 	_mapTextures[pPickedModel].resize(8); // Texture Count ¸¸Å­
 
+	if (!pPickedModel)
+	{
+		wprintf_s(L"Please pick the model.");
+		return;
+	}
+
 	switch (_iTextureType)
 	{
 	case 0: // Albedo
