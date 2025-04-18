@@ -9,6 +9,8 @@ akatsuki/bin/Release/akatsuki_client_x64.exe
 
 F5 버튼을 누르면 에디터를 선택할 수 있는 화면으로 전환되고 console 창에 진입하고 싶은 에디터의 번호를 입력하면 됩니다.
 
+hmk_demo: https://github.com/anonym-admin/hmk_demo
+
 ## Controls
 - F1:		NONE
 - F2:		Debug Mode (Render Collider, wire frame)
