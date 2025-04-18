@@ -400,15 +400,15 @@ void AssetManager::ReadClip(const wchar_t* wcModel, const wchar_t* wcAnim)
 	{
 		_mapAnimation[wcModel] = AllocAnimationContainer();
 		_mapAnimation[wcModel]->pAnim = new Animation(GetMeshData(wcModelName), wcAnim, _mapAnimation[wcModel]->MAX_CLIP_NAME_COUNT);
-		_mapAnimation[wcModel]->wcClipName[0] = wcAnim;
+		wcscpy_s(_mapAnimation[wcModel]->wcClipName[0], MAX_PATH, wcAnim);
 	}
 	else
 	{
 		for (AkU32 i = 0; i < _mapAnimation[wcModel]->MAX_CLIP_NAME_COUNT; i++)
 		{
-			if (!_mapAnimation[wcModel]->wcClipName[i])
+			if (!wcslen(_mapAnimation[wcModel]->wcClipName[i]))
 			{
-				_mapAnimation[wcModel]->wcClipName[i] = wcAnim;
+				wcscpy_s(_mapAnimation[wcModel]->wcClipName[i], MAX_PATH, wcAnim);
 				break;
 			}
 		}

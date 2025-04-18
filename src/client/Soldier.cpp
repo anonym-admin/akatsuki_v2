@@ -125,7 +125,8 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 	// Bind Animation.
 	AssetAnimationContainer_t* pAnimContainer = GAssetManager->GetAnimation(L"soldier");
 	BindAnimation(pAnimContainer->pAnim);
-	memcpy(ANIM_CLIP, pAnimContainer->wcClipName, sizeof(wchar_t*) * COUNT);
+	for(AkI32 i = 0; i < COUNT; i++)
+		memcpy(ANIM_CLIP[i], pAnimContainer->wcClipName[i], sizeof(wchar_t) * MAX_PATH);
 	SetAnimation(IDLE);
 
 	// 02. 위의 1번에서 얻은 파일 경로로 부터 무기 정보 파일을 로드한다.
@@ -339,7 +340,7 @@ void Soldier::SetNextFire()
 
 void Soldier::UpdateMove()
 {
-	if (Jumping || Attack)
+	if (Jumping || Attack || Fire)
 		return;
 
 	Vector3 vVelocity = _pRigidBody->GetVelocity();
@@ -453,33 +454,44 @@ void Soldier::UpdateWeapon()
 	std::wstring wcAnimName = ANIM_CLIP[AnimState];
 	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];
 
+	if (AnimState == FIRE_STOP)
+	{
+		AkI32  i = 3;
+	}
+
 	// TODO:
 	// 모델 에디터의 회전 변환 점검이 필요!!
+	// 오른손을 바인딩할 경우 트랜스폼이 맞는 않는 현상 발생.
 	_pWeapon->GetTransform()->SetScale(&Info.vScale);
 	_pWeapon->GetTransform()->SetRotation(-Info.vYawPitchRoll.x, -Info.vYawPitchRoll.y, Info.vYawPitchRoll.z);
 	_pWeapon->GetTransform()->SetPosition(&Info.vPosition);
+
+	if (Fire)
+	{
+		((BRS_74*)_pWeapon)->Fire();
+	}
 }
 
 void Soldier::UpdateFire()
 {
-	static AkBool PrevFire = AK_FALSE;
+	//static AkBool PrevFire = AK_FALSE;
 
-	if (!Fire)
-	{
-		if (PrevFire)
-		{
-			SetWeaponRelativePosition();
-		}
+	//if (!Fire)
+	//{
+	//	if (PrevFire)
+	//	{
+	//		SetWeaponRelativePosition();
+	//	}
 
-		// IDLE 상태 전환으로 인한 Fire 애니메이션의 부자연스러운 현상 방지.
-		PrevFire = Fire;
+	//	// IDLE 상태 전환으로 인한 Fire 애니메이션의 부자연스러운 현상 방지.
+	//	PrevFire = Fire;
 
-		return;
-	}
+	//	return;
+	//}
 
-	SetWeaponRelativePosition();
+	//SetWeaponRelativePosition();
 
-	PrevFire = Fire;
+	//PrevFire = Fire;
 }
 
 void Soldier::FinalUpdateWeapon()
@@ -490,6 +502,14 @@ void Soldier::FinalUpdateWeapon()
 	}
 
 	std::wstring wcAnimName = ANIM_CLIP[AnimState];
+	
+	wprintf_s(L"%s\n", wcAnimName.c_str());
+
+	if (AnimState == FIRE_STOP)
+	{
+		AkI32 a = 0;
+	}
+	
 	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];
 	AkI32 iBoneId = Info.iBoneID;
 	_mHandAnimTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetBoneTrnasformAtID(iBoneId); // ID 검색 기능 추가.

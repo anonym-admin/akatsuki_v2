@@ -66,12 +66,12 @@ AkBool BRS_74::Initialize(const wchar_t* wcScript)
 		return AK_FALSE;
 	}
 
-	//// Create Muzzle Effect.
-	//Vector2 vMaxFrame = Vector2(4.0f, 5.0f);
-	//_pMuzzleEffect = new Sprite(L"../../assets/particle/MuzzleFlash_4x5.dds", &vMaxFrame);
+	// Create Muzzle Effect.
+	Vector2 vMaxFrame = Vector2(4.0f, 5.0f);
+	_pMuzzleEffect = new Sprite(L"../../assets/particle/MuzzleFlash_4x5.dds", &vMaxFrame);
 
-	//// Create Fire Sound.
-	//_pFireSound = GSoundManager->LoadSound("../../assets/audio/AKS74U_Fire0.wav");
+	// Create Fire Sound.
+	_pFireSound = GSoundManager->LoadSound("../../assets/audio/AKS74U_Fire0.wav");
 
 	return AK_TRUE;
 }
@@ -156,7 +156,7 @@ void BRS_74::Fire()
 
 	_pMuzzleEffect->Play(&vPos);
 
-	_pFireSound->PlayOnce();
+	// _pFireSound->PlayOnce();
 }
 
 void BRS_74::Release()

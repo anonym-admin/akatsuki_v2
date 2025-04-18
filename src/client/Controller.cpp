@@ -38,8 +38,8 @@ void Controller::Mouse()
 {
 	static Soldier::ANIM_STATE PrevAnimState = Soldier::IDLE;
 
-	Soldier* pSwat = (Soldier*)_pOwner;
-	Soldier::ANIM_STATE AnimState = pSwat->AnimState;
+	Soldier* pSoldier = (Soldier*)_pOwner;
+	Soldier::ANIM_STATE AnimState = pSoldier->AnimState;
 
 	if (LBTN_DOWN)
 	{
@@ -58,6 +58,17 @@ void Controller::Mouse()
 		//		PrevAnimState = Soldier::IDLE; // Return Idle.
 		//	}
 		//}
+
+
+
+
+		if (pSoldier->BindWeapon)
+		{
+			pSoldier->SetAnimation(Soldier::FIRE_STOP, 5.0f);
+			pSoldier->Fire = AK_TRUE;
+		}
+		
+
 	}
 	if (LBTN_HOLD)
 	{
@@ -69,6 +80,14 @@ void Controller::Mouse()
 
 		//	pSwat->SetAnimation(Soldier::RIFLE_FIRE);
 		//}
+	}
+	if (LBTN_UP)
+	{
+		if (pSoldier->BindWeapon)
+		{
+			pSoldier->SetAnimation(Soldier::RIFLE_IDLE);
+			pSoldier->Fire = AK_FALSE;
+		}
 	}
 }
 

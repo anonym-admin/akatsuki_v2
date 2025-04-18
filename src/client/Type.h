@@ -25,7 +25,7 @@ struct AssetAnimationContainer_t
 	static const AkU32 MAX_CLIP_NAME_COUNT = 32;
 
 	class Animation* pAnim = nullptr;
-	const wchar_t* wcClipName[MAX_CLIP_NAME_COUNT] = {};
+	wchar_t wcClipName[MAX_CLIP_NAME_COUNT][MAX_PATH] = {};
 };
 
 /*

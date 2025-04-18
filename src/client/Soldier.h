@@ -21,10 +21,11 @@ public:
 		RIFLE_IDLE,
 		WALK,
 		RIFLE_WALK,
+		FIRE_STOP,
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
 	} AnimState;
 
-	const wchar_t* ANIM_CLIP[(AkU32)ANIM_STATE::COUNT] = {};
+	wchar_t ANIM_CLIP[(AkU32)ANIM_STATE::COUNT][MAX_PATH] = {};
 
 public:
 	Soldier();
