@@ -454,7 +454,7 @@ void Soldier::UpdateWeapon()
 
 	_pWeapon->GetTransform()->SetScale(&Info.vScale);
 	// _pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-20.171f), DirectX::XMConvertToRadians(-100.593f), DirectX::XMConvertToRadians(63.1356f));
-	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(0.807f), DirectX::XMConvertToRadians(-2.340f), DirectX::XMConvertToRadians(142.585f));
+	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(20.0f), DirectX::XMConvertToRadians(-0), DirectX::XMConvertToRadians(151.109f));
 	// _pWeapon->GetTransform()->SetRotation(&Info.vYawPitchRoll);
 	_pWeapon->GetTransform()->SetPosition(0.433f, 0.283f, 0.047f);
 	// _pWeapon->GetTransform()->SetPosition(&Info.vPosition);

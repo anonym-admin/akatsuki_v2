@@ -1207,8 +1207,6 @@ void EditorModel::AttachBone()
 	Matrix mTargetTransform = Matrix();
 	mTargetTransform *= Matrix::CreateTranslation(pTargetBone->vStart);
 
-	wprintf_s(L"%f %f %f\n", pTargetBone->vStart.x, pTargetBone->vStart.y, pTargetBone->vStart.z);
-
 	pTargetModel->UpdateWorldRow(&mTargetTransform);
 
 	_mAttachMatrix = mTargetTransform;
