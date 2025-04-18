@@ -138,32 +138,37 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 		wchar_t wcWeapon[MAX_PATH] = {};
 		wchar_t wcClip[MAX_PATH] = {};
 		AkBool bIsNone = AK_TRUE;
+		AkI32 iClipNum = 0;
 		fwscanf_s(fp, L"%s", wcWeapon, MAX_PATH);
-		fwscanf_s(fp, L"%s", wcClip, MAX_PATH);
-
-		for (AkI32 i = 0; i < COUNT; i++)
+		fwscanf_s(fp, L"%d", &iClipNum);
+		for(AkI32 i = 0; i < iClipNum; i++)
 		{
-			if (ANIM_CLIP[i] && !wcscmp(ANIM_CLIP[i], wcClip))
+			fwscanf_s(fp, L"%s", wcClip, MAX_PATH);
+
+			for (AkI32 i = 0; i < COUNT; i++)
 			{
-				bIsNone = AK_FALSE;
-				break;
+				if (ANIM_CLIP[i] && !wcscmp(ANIM_CLIP[i], wcClip))
+				{
+					bIsNone = AK_FALSE;
+					break;
+				}
 			}
-		}
 
-		if (!bIsNone)
-		{
-			fwscanf_s(fp, L"%d", (int*)&TempInfo.iBoneID);
-			fwscanf_s(fp, L"%f %f %f", &TempInfo.vScale.x, &TempInfo.vScale.y, &TempInfo.vScale.z);
-			fwscanf_s(fp, L"%f %f %f", &TempInfo.vYawPitchRoll.x, &TempInfo.vYawPitchRoll.y, &TempInfo.vYawPitchRoll.z);
-			fwscanf_s(fp, L"%f %f %f", &TempInfo.vPosition.x, &TempInfo.vPosition.y, &TempInfo.vPosition.z);
+			if (!bIsNone)
+			{
+				fwscanf_s(fp, L"%d", (int*)&TempInfo.iBoneID);
+				fwscanf_s(fp, L"%f %f %f", &TempInfo.vScale.x, &TempInfo.vScale.y, &TempInfo.vScale.z);
+				fwscanf_s(fp, L"%f %f %f", &TempInfo.vYawPitchRoll.x, &TempInfo.vYawPitchRoll.y, &TempInfo.vYawPitchRoll.z);
+				fwscanf_s(fp, L"%f %f %f", &TempInfo.vPosition.x, &TempInfo.vPosition.y, &TempInfo.vPosition.z);
 
-			_mapWeaponInfo[wcWeapon][wcClip] = TempInfo;
-		}
-		else
-		{
-			// Weapon 파일 내부에 저장된 이름의
-			// 애니메이션 클립이 존재하지 않는 상태.
-			AkI32 a = 3;
+				_mapWeaponInfo[wcWeapon][wcClip] = TempInfo;
+			}
+			else
+			{
+				// Weapon 파일 내부에 저장된 이름의
+				// 애니메이션 클립이 존재하지 않는 상태.
+				AkI32 a = 3;
+			}
 		}
 
 		if (fp) { fclose(fp); fp = nullptr; }
@@ -182,7 +187,7 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 
 	// Create Rigidbody
 	_pRigidBody = CreateRigidBody();
-	_pRigidBody->SetFrictionCoef(2.5f);
+	_pRigidBody->SetFrictionCoef(5.0f);
 	_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 
 	return AK_TRUE;
@@ -339,9 +344,9 @@ void Soldier::UpdateMove()
 
 	Vector3 vVelocity = _pRigidBody->GetVelocity();
 
+	// Walk
 	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 2.8f)
 	{
-		// Walk.
 		Vector3 vDir = vVelocity;
 		vDir.Normalize();
 
@@ -384,19 +389,22 @@ void Soldier::UpdateMove()
 		{
 		}
 
-		SetAnimation(WALK);
+		if (BindWeapon)
+			SetAnimation(RIFLE_WALK);
+		else
+			SetAnimation(WALK);
 
 		// Return Walk Speed.
 		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 	}
+	// Run
 	else if (vVelocity.Length() > 3.0f)
 	{
-		//// Run.
 		//BindWeapon ? SetAnimation(RIFLE_RUN) : SetAnimation(F_RUN);
 	}
+	// Idle
 	else if (0.0f >= vVelocity.Length())
 	{
-		// Idle.
 		//if (F_WALK <= AnimState && AnimState <= RIFLE_F_WALK)
 		//	BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
 
@@ -442,10 +450,6 @@ void Soldier::UpdateWeapon()
 	//LeftHand = AK_TRUE;
 	//RightHand = AK_FALSE;
 
-	// temp
-	if (AnimState != RIFLE_IDLE)
-		return;
-
 	std::wstring wcAnimName = ANIM_CLIP[AnimState];
 	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];
 
@@ -484,10 +488,6 @@ void Soldier::FinalUpdateWeapon()
 	{
 		return;
 	}
-
-	// temp
-	if (AnimState != RIFLE_IDLE)
-		return;
 
 	std::wstring wcAnimName = ANIM_CLIP[AnimState];
 	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];

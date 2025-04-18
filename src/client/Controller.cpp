@@ -89,12 +89,12 @@ void Controller::KeyBoard()
 	{
 		vVelocity += pSwat->GetTransform()->Front();
 
-		Vector3 vFront = pSwat->GetTransform()->Front();
-		if (KEY_HOLD(KEY_INPUT_LSHIFT))
-		{
-			vVelocity *= pSwat->GetRunSpeed();
-			pRigidBody->SetMaxVeleocity(pSwat->GetRunSpeed());
-		}
+		//Vector3 vFront = pSwat->GetTransform()->Front();
+		//if (KEY_HOLD(KEY_INPUT_LSHIFT))
+		//{
+		//	vVelocity *= pSwat->GetRunSpeed();
+		//	pRigidBody->SetMaxVeleocity(pSwat->GetRunSpeed());
+		//}
 	}
 	if (KEY_HOLD(KEY_INPUT_S))
 	{
@@ -102,6 +102,7 @@ void Controller::KeyBoard()
 	}
 	if (KEY_HOLD(KEY_INPUT_D))
 	{
+		// 게임 오브젝트를 90도 만큼 회전시킨다.
 		vVelocity += pSwat->GetTransform()->Right();
 	}
 	if (KEY_HOLD(KEY_INPUT_A))

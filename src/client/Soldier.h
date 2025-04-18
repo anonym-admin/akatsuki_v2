@@ -20,6 +20,7 @@ public:
 		IDLE,
 		RIFLE_IDLE,
 		WALK,
+		RIFLE_WALK,
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
 	} AnimState;
 
