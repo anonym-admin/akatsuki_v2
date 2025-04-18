@@ -74,16 +74,16 @@ DWORD FRenderTransparent::Process(DWORD uThreadIndex, FCommandListPool* pCmdList
 			{
 				FParticle* pParticle = (FParticle*)pItem->pObjHandle;
 				
-				if(pItem->tParticleParam.uParticleNum)
-				{
+				//if(pItem->tParticleParam.uParticleNum)
+				//{
 					// Draw Spark
 					pParticle->Draw(uThreadIndex, pCmdList, &pItem->tParticleParam.mWorld, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.uParticleNum, pItem->tParticleParam.fTime, pItem->tParticleParam.fDuration, pItem->tParticleParam.pStartSize, pItem->tParticleParam.pStartDirection, pItem->tParticleParam.fSizeOverLifeTime, pItem->tParticleParam.pRotOverLifeTime, pItem->tParticleParam.pTotalColor, pItem->tParticleParam.pColorOverLifeTime);
-				}
-				else
-				{
-					// Draw Sprite
-					pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.pMaxFrame, pItem->tParticleParam.pCurFrame);
-				}
+				//}
+				//else
+				//{
+				//	// Draw Sprite
+				//	pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.pMaxFrame, pItem->tParticleParam.pCurFrame);
+				//}
 			}
 			break;
 			case RENDER_ITEM_TYPE::RENDER_ITEM_TYPE_CLOUD:

@@ -14,7 +14,7 @@ Actor::~Actor()
 	CleanUp();
 }
 
-AkBool Actor::Initialize(const wchar_t* wcScriptFile)
+AkBool Actor::Initialize(const wchar_t* wcScriptFile, AkI32* pOutFileSize)
 {
 	FILE* fp = nullptr;
 	_wfopen_s(&fp, wcScriptFile, L"rt");
@@ -127,6 +127,11 @@ AkBool Actor::Initialize(const wchar_t* wcScriptFile)
 		{
 			_pEventCollider[i - 1] = pCollider;
 		}
+	}
+
+	if (pOutFileSize)
+	{
+		*pOutFileSize = ftell(fp);
 	}
 
 	if (fp) { fclose(fp); }

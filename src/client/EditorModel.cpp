@@ -58,7 +58,7 @@ AkBool EditorModel::Initialize()
 	Vector3 vEmissvie = Vector3(0.0f);
 	_pGround = new Model(pSquare, uMeshDataNum, &vAlbedo, 0.0f, 1.0f, &vEmissvie);
 
-	Matrix mWorldRow = Matrix::CreateRotationX(DirectX::XM_PIDIV2);
+	Matrix mWorldRow = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, -0.5f, 0.0f));
 	_pGround->UpdateWorldRow(&mWorldRow);
 
 	GeometryGenerator::DestroyGeometry(pSquare, uMeshDataNum);
@@ -156,21 +156,21 @@ void EditorModel::RenderGUI()
 
 	// File Import & Export
 	IGFD::FileDialogConfig tConfig = {};
-	tConfig.filePathName = "../../assets/model_new/origin/";
+	tConfig.filePathName = "../../assets/model/origin/";
 	const char* pItems0[] = { "Model", "Animation" };
 	if (ImGui::Combo("Export Data Type", &_iExportType, pItems0, IM_ARRAYSIZE(pItems0)))
 	{
 		ImGuiFileDialog::Instance()->OpenDialog("ExportKey", "Choose File", ".fbx,.gltf,.obj", tConfig);
 	}
 
-	tConfig.filePathName = "../../assets/model_new/";
+	tConfig.filePathName = "../../assets/model/";
 	const char* pItems1[] = { "Model", "Animation" };
 	if (ImGui::Combo("Modify Data Type", &_iModifyType, pItems1, IM_ARRAYSIZE(pItems1)))
 	{
 		ImGuiFileDialog::Instance()->OpenDialog("ModifyKey", "Choose File", ".anim,.mesh", tConfig);
 	}
 
-	tConfig.filePathName = "../../assets/model_new/";
+	tConfig.filePathName = "../../assets/model/";
 	const char* pItems2[] = { "Model", "SkinnedModel", "Animation" };
 	if (ImGui::Combo("Import Data Type", &_iImportType, pItems2, IM_ARRAYSIZE(pItems2)))
 	{
@@ -182,7 +182,7 @@ void EditorModel::RenderGUI()
 		ImGuiFileDialog::Instance()->OpenDialog("DDSKey", "Choose File", ".jpg,.png,.dds", tConfig);
 	}
 
-	tConfig.filePathName = "../../assets/model_new/textures/";
+	tConfig.filePathName = "../../assets/model/textures/";
 	const char* pItems3[] = { "Albedo", "Emissive", "Height", "Normal", "Metallic", "Roughness", "AO" };
 	if (ImGui::Combo("Import Texture Type", &_iTextureType, pItems3, IM_ARRAYSIZE(pItems3)))
 	{
@@ -214,7 +214,7 @@ void EditorModel::RenderGUI()
 		GeometryGenerator::DestroyGeometry(pMeshData, uMeshDataNum);
 	}
 
-	tConfig.filePathName = "../../assets/model_new/mesh/";
+	tConfig.filePathName = "../../assets/model/mesh/";
 	const char* pItems4[] = { "Sphere", "Cube" };
 	if (ImGui::Combo("Save Geometry Model Type", &_iGeometryType, pItems4, IM_ARRAYSIZE(pItems4)))
 	{
@@ -619,6 +619,8 @@ void EditorModel::Save(const std::wstring& wcFilePath)
 {
 	std::wstring wcPath = GetFilePath(wcFilePath);
 	std::wstring wcPicked = L"";
+	std::wstring wcWeapon = L"";
+	AkBool bIsSkinned = AK_FALSE;
 
 	CreateFolders(ToString(wcPath));
 
@@ -629,11 +631,25 @@ void EditorModel::Save(const std::wstring& wcFilePath)
 	// 스킨드 모델일 경우
 	if (!_CurCharacter.empty() && _mapSkinnedModel.count(_CurCharacter))
 	{
-		if(_mapSkinnedModel[_CurCharacter]->IsPick())
+		if (_mapSkinnedModel[_CurCharacter]->IsPick())
 		{
 			wcPicked = _CurCharacter;
 
 			fwprintf_s(fp, L"%d\n", 0);
+
+			bIsSkinned = AK_TRUE; // 무기 Transform 정보를 저장하기 위한 플래그.
+
+			// 햔제 징칙된 무기가 있는지 확인.
+			for (auto& e : _mapBasicModel)
+			{
+				if (e.second->IsPick())
+				{
+					if (e.first == L"brs-74")
+						wcWeapon = e.first;
+
+					// TODO : 다른 무기도 추가 필요.
+				}
+			}
 		}
 	}
 	// 일반 모델일 경우
@@ -684,19 +700,112 @@ void EditorModel::Save(const std::wstring& wcFilePath)
 		fwprintf_s(fp, L"%lf %lf %lf\n", vPosition.x, vPosition.y, vPosition.z);
 	}
 
-	if (fp) { fclose(fp); }
+	if (!_bAttachBone)
+	{
+		if (fp) { fclose(fp); }
+		return;
+	}
+
+	if (_bBindAnim)
+	{
+		// 애니메이션이 바인딩중이면 무기의 Transform 정보가 제대로 출력되지 않음.
+		// Bone Transform 이 매 프래임 적용되기 때문에
+		if (fp) { fclose(fp); }
+		return;
+	}
+
+	std::wstring wcWeaponFilePath = L"../../assets/data/weapon/";
+	wcWeaponFilePath += _CurCharacter;
+	wcWeaponFilePath += L"_weapon.wpn";
+
+	fwprintf_s(fp, L"%s\n", wcWeaponFilePath.c_str());
+
+	if (fp) { fclose(fp); fp = nullptr; }
+
+	// 무기 정보 파일에 데이터 저장.
+	_wfopen_s(&fp, wcWeaponFilePath.c_str(), L"wt");
+	if (!fp) { __debugbreak(); }
+
+	// 무기와 애니메이션 정보 저장.
+	if (bIsSkinned)
+	{
+		fwprintf_s(fp, L"%s\n", wcWeapon.c_str());
+		fwprintf_s(fp, L"%s\n", _CurClip.c_str());
+		fwprintf_s(fp, L"%d\n", _iCurSelectedBoneID);
+
+		Matrix mWorldRow = _mapBasicModel[wcWeapon]->GetWorldRow();
+
+		Vector3 vScale = Vector3(0.0f);
+		Quaternion qQuat = Quaternion();
+		Vector3 vPosition = Vector3(0.0f);
+		Vector4 vAxis = Vector4(0.0f);
+		AkF32 fAngle = 0.0f;
+
+		mWorldRow.Decompose(vScale, qQuat, vPosition);
+
+		DirectX::XMQuaternionToAxisAngle((DirectX::XMVECTOR*)&vAxis, &fAngle, qQuat);
+
+		AkF32 fYaw = 0.0f;
+		AkF32 fPitch = 0.0f;
+		AkF32 fRoll = 0.0f;
+
+		// 축과 각도 => 오일러 각도 변환
+		auto Func = [&]() {
+			vAxis.w = 0.0f;
+			vAxis.Normalize();
+			AkF32 c = cos(fAngle);
+			AkF32 s = sin(fAngle);
+			AkF32 t = 1 - c;
+
+			AkF32 r11 = t * vAxis.x * vAxis.x + c;
+			AkF32 r12 = t * vAxis.x * vAxis.y - s * vAxis.z;
+			AkF32 r13 = t * vAxis.x * vAxis.z + s * vAxis.y;
+			AkF32 r21 = t * vAxis.x * vAxis.y + s * vAxis.z;
+			AkF32 r22 = t * vAxis.y * vAxis.y + c;
+			AkF32 r23 = t * vAxis.y * vAxis.z - s * vAxis.x;
+			AkF32 r31 = t * vAxis.x * vAxis.z - s * vAxis.y;
+			AkF32 r32 = t * vAxis.y * vAxis.z + s * vAxis.x;
+			AkF32 r33 = t * vAxis.z * vAxis.z + c;
+
+			//fRoll = atan2(r21, r11);
+			//fYaw = asin(-r31);
+			//fPitch = atan2(r32, r33);
+
+			fYaw = atan2(r21, r11); // z => roll
+			fPitch = asin(-r31); 
+			fRoll = atan2(r32, r33);
+
+			//AkF32 x = DirectX::XMConvertToDegrees(fPitch);
+			//AkF32 y = DirectX::XMConvertToDegrees(fYaw);
+			//AkF32 z = DirectX::XMConvertToDegrees(fRoll);
+
+			//wprintf_s(L"%f %f %f", x, y, z);
+
+			//// Debugging
+			//Matrix mMat0 = Matrix::CreateRotationX(x) * Matrix::CreateRotationY(y) * Matrix::CreateRotationZ(z);
+			//Matrix mMat1 = Matrix::CreateFromYawPitchRoll(fYaw, fPitch, fRoll);
+			};
+
+		Func();
+
+		fwprintf_s(fp, L"%f %f %f\n", vScale.x, vScale.y, vScale.z);
+		fwprintf_s(fp, L"%f %f %f\n", fYaw, fPitch, fRoll);
+		fwprintf_s(fp, L"%f %f %f\n", vPosition.x, vPosition.y, vPosition.z);
+	}
+
+	if (fp) { fclose(fp); fp = nullptr; }
 }
 
 void EditorModel::ExportMesh(const std::wstring& wcName, const std::wstring& wcExt)
 {
-	_pExporter = new ModelExporter(ToString(L"../../assets/model_new/origin/models/" + wcName + L"." + wcExt));
+	_pExporter = new ModelExporter(ToString(L"../../assets/model/origin/models/" + wcName + L"." + wcExt));
 	_pExporter->ExportMesh();
 	delete _pExporter;
 }
 
 void EditorModel::ExportAnimation(const std::wstring& wcName, const std::wstring& wcClip)
 {
-	_pExporter = new ModelExporter(ToString(L"../../assets/model_new/origin/animations/" + wcName + L"/" + wcClip + L".fbx"));
+	_pExporter = new ModelExporter(ToString(L"../../assets/model/origin/animations/" + wcName + L"/" + wcClip + L".fbx"));
 	_pExporter->ExportClip();
 	delete _pExporter;
 }
@@ -745,7 +854,7 @@ void EditorModel::ModifyAnimation(const std::wstring& wcName, const std::wstring
 	wprintf_s(L"\n[Modify Clips Start]\n");
 #endif
 
-	wstring wcPath = L"../../assets/model_new/animation/" + wcName + L"/" + wcClip + L".anim";
+	wstring wcPath = L"../../assets/model/animation/" + wcName + L"/" + wcClip + L".anim";
 
 	ofstream fout;
 	fout.open(ToString(wcPath).c_str());
@@ -836,8 +945,8 @@ Model* EditorModel::CreateModel(const std::wstring& wcBasePath, const std::wstri
 	}
 
 	wcscpy_s(pModel->Name, GetFileNmaeExcludeExt(wcFilename).c_str());
-	Matrix mWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
-	pModel->UpdateWorldRow(&mWorldRow);
+	// Matrix mWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
+	// pModel->UpdateWorldRow(&mWorldRow);
 
 	_vecModel.push_back(pModel);
 
@@ -939,7 +1048,7 @@ void EditorModel::CreateCollider(COLLIDER_TYPE eType)
 			vMin = _mapAABB[pPickedModel->Name].first;
 			vMax = _mapAABB[pPickedModel->Name].second;
 		}
-		
+
 		pCollider = new BoxCollider(nullptr, &vMin, &vMax);
 
 		_mapColliders[pPickedModel->Name].push_back(pCollider);
@@ -1097,6 +1206,9 @@ void EditorModel::AttachBone()
 
 	Matrix mTargetTransform = Matrix();
 	mTargetTransform *= Matrix::CreateTranslation(pTargetBone->vStart);
+
+	wprintf_s(L"%f %f %f\n", pTargetBone->vStart.x, pTargetBone->vStart.y, pTargetBone->vStart.z);
+
 	pTargetModel->UpdateWorldRow(&mTargetTransform);
 
 	_mAttachMatrix = mTargetTransform;
@@ -1360,31 +1472,38 @@ void EditorModel::SaveMesh(const std::wstring& wcName, MeshData_t* pMeshData, Ak
 void EditorModel::DeleteProcess()
 {
 	AkU32 uIndex = 0;
-	for (auto& e : _vecModel)
+	// for (auto& e : _vecModel)
+	for (auto iter = _vecModel.begin(); iter != _vecModel.end();)
 	{
-		if (e->IsPick())
+		if ((*iter)->IsPick())
 		{
 			if (KEY_DOWN(KEY_INPUT_DELETE))
 			{
-				if (_mapBasicModel[e->Name])
+				if (_mapBasicModel.count((*iter)->Name))
 				{
-					_mapBasicModel.erase(e->Name);
+					_mapBasicModel.erase((*iter)->Name);
 				}
-				if (_mapSkinnedModel[e->Name])
+				if (_mapSkinnedModel.count((*iter)->Name))
 				{
-					_mapSkinnedModel.erase(e->Name);
+					_mapSkinnedModel.erase((*iter)->Name);
 				}
 
-				_vecModel.erase(_vecModel.begin() + uIndex);
-
-				if (e)
+				if (*iter)
 				{
-					delete e;
-					e = nullptr;
+					delete (*iter);
+					(*iter) = nullptr;
 				}
+
+				iter = _vecModel.erase(iter);
 			}
-
-			uIndex++;
+			else
+			{
+				iter++;
+			}
+		}
+		else
+		{
+			iter++;
 		}
 	}
 
@@ -1477,6 +1596,12 @@ void EditorModel::UpdateWeapon()
 
 	if (_bBindAnim)
 	{
+		if (_bModifyWeaponTransform)
+		{
+			Matrix mTemp = pTargetModel->GetWorldRow() * _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(pTargetBone->iID).Transpose().Invert();
+			_mAttachMatrix = mTemp;
+		}
+
 		mTransform = _mAttachMatrix * _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(pTargetBone->iID).Transpose();
 
 		pTargetModel->UpdateWorldRow(&mTransform);

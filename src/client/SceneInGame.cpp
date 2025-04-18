@@ -101,6 +101,7 @@ AkBool SceneInGame::BeginScene()
 
 	// Collision check.
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::MAP);
+	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::WEAPON);
 	GCollisionManager->CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE::PLAYER, GAME_OBJECT_GROUP_TYPE::TERRAIN);
 
 	// Create Frustum Culling Class.
@@ -274,6 +275,11 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 				pActor = new Soldier(wcTempName.c_str());
 				eGameObjType = GAME_OBJECT_GROUP_TYPE::PLAYER;
 			}
+			else if (GetFileNmaeExcludeExt(GetFileName(wcTempName)) == L"brs-74")
+			{
+				pActor = new BRS_74(wcTempName.c_str());
+				eGameObjType = GAME_OBJECT_GROUP_TYPE::WEAPON;
+			}
 			else if (wcTempName.find(L"Ocean") != std::wstring::npos)
 			{
 				pActor = new Ocean;
@@ -334,7 +340,6 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 		pActor->GetTransform()->SetScale(&vScale);
 		pActor->GetTransform()->SetRotation(&vYawPitchRoll);
 		pActor->GetTransform()->SetPosition(&vPos);
-
 		pActor->GetTransform()->Update();
 
 		pActor->tLink.pData = pActor;

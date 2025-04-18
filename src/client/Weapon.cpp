@@ -28,13 +28,13 @@ Weapon::~Weapon()
 AkBool Weapon::Initialize()
 {
 	// Create Transform.
-	_pTransform = CreateTransform();
+	// _pTransform = CreateTransform();
 
 	// Create Gravity.
-	_pGravity = CreateGravity();
+	// _pGravity = CreateGravity();
 
 	// Create Rigidbody.
-	_pRigidBody = CreateRigidBody();
+	// _pRigidBody = CreateRigidBody();
 
 	return AK_TRUE;
 }

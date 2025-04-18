@@ -18,6 +18,15 @@ BRS_74::BRS_74()
 	}
 }
 
+BRS_74::BRS_74(const wchar_t* wcScript)
+	: Weapon()
+{
+	if (!Initialize(wcScript))
+	{
+		__debugbreak();
+	}
+}
+
 BRS_74::~BRS_74()
 {
 	CleanUp();
@@ -49,6 +58,24 @@ AkBool BRS_74::Initialize()
 	return AK_TRUE;
 }
 
+AkBool BRS_74::Initialize(const wchar_t* wcScript)
+{
+	if (!Actor::Initialize(wcScript))
+	{
+		__debugbreak();
+		return AK_FALSE;
+	}
+
+	//// Create Muzzle Effect.
+	//Vector2 vMaxFrame = Vector2(4.0f, 5.0f);
+	//_pMuzzleEffect = new Sprite(L"../../assets/particle/MuzzleFlash_4x5.dds", &vMaxFrame);
+
+	//// Create Fire Sound.
+	//_pFireSound = GSoundManager->LoadSound("../../assets/audio/AKS74U_Fire0.wav");
+
+	return AK_TRUE;
+}
+
 void BRS_74::Update()
 {
 	if (_bFire)
@@ -65,6 +92,8 @@ void BRS_74::FinalUpdate()
 	{
 		_pCollider->Update();
 	}
+
+	_pCullingCollider->Update();
 
 	_pModel->UpdateWorldRow(&_pTransform->GetWorldTransform());
 }
@@ -97,7 +126,7 @@ void BRS_74::RenderDepthMap()
 void BRS_74::OnCollisionEnter(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();
-	if (!wcscmp(pOtherOwner->Name, L"Swat"))
+	if (!wcscmp(pOtherOwner->Name, L"soldier"))
 	{
 		pOtherOwner->BindWeapon = AK_TRUE;
 	}
@@ -106,7 +135,7 @@ void BRS_74::OnCollisionEnter(Collider* pOther)
 void BRS_74::OnCollision(Collider* pOther)
 {
 	Actor* pOtherOwner = pOther->GetOwner();
-	if (!wcscmp(pOtherOwner->Name, L"Swat"))
+	if (!wcscmp(pOtherOwner->Name, L"soldier"))
 	{
 		pOtherOwner->BindWeapon = AK_TRUE;
 	}

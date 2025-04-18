@@ -289,7 +289,7 @@ void ModelExporter::ReadAnimation(const aiScene* scene)
 
 std::string ModelExporter::ReadTextureFilename(const aiScene* scene, aiMaterial* material, aiTextureType type)
 {
-	const std::string strTexturePath = "../../assets/model_new/textures/";
+	const std::string strTexturePath = "../../assets/model/textures/";
 
 	CreateFolders(strTexturePath);
 
@@ -419,7 +419,7 @@ void ModelExporter::ExportMesh()
 	wprintf_s(L"\n[Load Meshes]\n");
 #endif
 
-	std::wstring wcPath = L"../../assets/model_new/mesh/" + _wcFilename + L".mesh";
+	std::wstring wcPath = L"../../assets/model/mesh/" + _wcFilename + L".mesh";
 	SaveMesh(wcPath);
 
 #ifdef _DEBUG
@@ -433,7 +433,7 @@ void ModelExporter::ExportClip()
 	wprintf_s(L"\n[Load Clips]\n");
 #endif
 
-	std::wstring wcPath = L"../../assets/model_new/animation/" + _wcFolder + L"/" + _wcFilename + L".anim";
+	std::wstring wcPath = L"../../assets/model/animation/" + _wcFolder + L"/" + _wcFilename + L".anim";
 	SaveClip(wcPath);
 
 #ifdef _DEBUG

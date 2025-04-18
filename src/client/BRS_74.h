@@ -16,9 +16,11 @@ class BRS_74 : public Weapon
 {
 public:
 	BRS_74();
+	BRS_74(const wchar_t* wcScript);
 	~BRS_74();
 
 	AkBool Initialize();
+	AkBool Initialize(const wchar_t* wcScript);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
 	virtual void RenderShadowMaps() override;

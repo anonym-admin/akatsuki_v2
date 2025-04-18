@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spawn.h"
+#include "ModelObject.h"
 
 /*
 ==========
@@ -11,7 +11,7 @@ Weapon
 class Actor;
 class Bullet;
 
-class Weapon : public Spawn
+class Weapon : public ModelObject
 {
 public:
 	Weapon();

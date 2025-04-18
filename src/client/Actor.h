@@ -22,7 +22,7 @@ public:
 
 	virtual ~Actor();
 
-	AkBool Initialize(const wchar_t* wcScriptFile);
+	AkBool Initialize(const wchar_t* wcScriptFile, AkI32* pOutFileSize = nullptr);
 	virtual void Update() = 0;
 	virtual void FinalUpdate() = 0;
 	virtual void RenderDepthMap() = 0;

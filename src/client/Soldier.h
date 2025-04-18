@@ -6,13 +6,21 @@ class Weapon;
 
 class Soldier : public Player
 {
+	struct WeaponInfo
+	{
+		AkI32 iBoneID;
+		Vector3 vScale;
+		Vector3 vYawPitchRoll;
+		Vector3 vPosition;
+	};
+
 public:
-	enum ANIM_STATE
+	enum ANIM_STATE // Scene Loading 의 Animation clip 추가 순서와 동일해야한다.
 	{
 		IDLE,
+		RIFLE_IDLE,
 		WALK,
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
-
 	} AnimState;
 
 	const wchar_t* ANIM_CLIP[(AkU32)ANIM_STATE::COUNT] = {};
@@ -62,6 +70,9 @@ private:
 	AkF32 _fRunSpeed = 3.5f;
 	
 	class Sprite* _pSprite = nullptr;
+
+	// WeaponInfo pWeaponInfoList[COUNT] = {};
+	std::unordered_map<std::wstring, std::unordered_map<std::wstring, WeaponInfo>> _mapWeaponInfo = {};
 
 public:
 	AkBool Attack = AK_FALSE;
