@@ -11,6 +11,8 @@ F5 버튼을 누르면 에디터를 선택할 수 있는 화면으로 전환되고 console 창에 진입하고
 
 hmk_demo: https://github.com/anonym-admin/hmk_demo
 
+기술데모영상: https://www.youtube.com/@%ED%99%8D%EB%AA%85%EA%B5%AD-n8e/videos 
+
 ## Controls
 - F1:		NONE
 - F2:		Debug Mode (Render Collider, wire frame)
