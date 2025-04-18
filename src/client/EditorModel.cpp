@@ -431,7 +431,7 @@ void EditorModel::Render()
 	{
 		for (AkU32 i = 0; i < _uBoneNum; i++)
 		{
-			Matrix mTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(_pCurBoneAnimation[i].iID).Transpose() * _mapSkinnedModel[_CurCharacter]->GetWorldRow();
+			Matrix mTransform = _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(_pCurBoneAnimation[i].iID + 1).Transpose() * _mapSkinnedModel[_CurCharacter]->GetWorldRow();
 
 			_pCurBoneAnimation[i].mWorldRow = mTransform;
 
@@ -767,19 +767,23 @@ void EditorModel::Save(const std::wstring& wcFilePath)
 			AkF32 r32 = t * vAxis.y * vAxis.z + s * vAxis.x;
 			AkF32 r33 = t * vAxis.z * vAxis.z + c;
 
-			//fRoll = atan2(r21, r11);
-			//fYaw = asin(-r31);
-			//fPitch = atan2(r32, r33);
+			fRoll = atan2(r21, r11);
+			fYaw = asin(-r31);
+			fPitch = atan2(r32, r33);
 
-			fYaw = atan2(r21, r11); // z => roll
-			fPitch = asin(-r31); 
-			fRoll = atan2(r32, r33);
+			// fYaw = atan2(r21, r11); // z => roll
+			// fPitch = asin(-r31); 
+			// fRoll = atan2(r32, r33);
 
-			//AkF32 x = DirectX::XMConvertToDegrees(fPitch);
-			//AkF32 y = DirectX::XMConvertToDegrees(fYaw);
-			//AkF32 z = DirectX::XMConvertToDegrees(fRoll);
+			AkF32 x = DirectX::XMConvertToDegrees(fPitch);
+			AkF32 y = DirectX::XMConvertToDegrees(fYaw);
+			AkF32 z = DirectX::XMConvertToDegrees(fRoll);
 
-			//wprintf_s(L"%f %f %f", x, y, z);
+			wprintf_s(L"%f %f %f", x, y, z);
+
+			AkF32 fTestYaw = DirectX::XMConvertToRadians(-y);
+			AkF32 fTestPitch = DirectX::XMConvertToRadians(-x);
+			AkF32 fTestRoll = DirectX::XMConvertToRadians(z);
 
 			//// Debugging
 			//Matrix mMat0 = Matrix::CreateRotationX(x) * Matrix::CreateRotationY(y) * Matrix::CreateRotationZ(z);
@@ -1596,11 +1600,13 @@ void EditorModel::UpdateWeapon()
 	{
 		if (_bModifyWeaponTransform)
 		{
-			Matrix mTemp = pTargetModel->GetWorldRow() * _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(pTargetBone->iID).Transpose().Invert();
+			Matrix mTemp = pTargetModel->GetWorldRow() * _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(pTargetBone->iID + 1).Transpose().Invert();
 			_mAttachMatrix = mTemp;
 		}
 
-		mTransform = _mAttachMatrix * _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(pTargetBone->iID).Transpose();
+		wprintf_s(L"%d\n", pTargetBone->iID + 1);
+
+		mTransform = _mAttachMatrix * _mapAnim[_CurCharacter]->GetBoneTrnasformAtID(pTargetBone->iID + 1).Transpose();
 
 		pTargetModel->UpdateWorldRow(&mTransform);
 	}

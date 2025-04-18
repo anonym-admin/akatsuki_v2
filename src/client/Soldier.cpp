@@ -451,13 +451,9 @@ void Soldier::UpdateWeapon()
 
 	// TODO:
 	// 모델 에디터의 회전 변환 점검이 필요!!
-
 	_pWeapon->GetTransform()->SetScale(&Info.vScale);
-	// _pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-20.171f), DirectX::XMConvertToRadians(-100.593f), DirectX::XMConvertToRadians(63.1356f));
-	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(20.0f), DirectX::XMConvertToRadians(-0), DirectX::XMConvertToRadians(151.109f));
-	// _pWeapon->GetTransform()->SetRotation(&Info.vYawPitchRoll);
-	_pWeapon->GetTransform()->SetPosition(0.433f, 0.283f, 0.047f);
-	// _pWeapon->GetTransform()->SetPosition(&Info.vPosition);
+	_pWeapon->GetTransform()->SetRotation(-Info.vYawPitchRoll.x, -Info.vYawPitchRoll.y, Info.vYawPitchRoll.z);
+	_pWeapon->GetTransform()->SetPosition(&Info.vPosition);
 }
 
 void Soldier::UpdateFire()
@@ -496,7 +492,8 @@ void Soldier::FinalUpdateWeapon()
 	std::wstring wcAnimName = ANIM_CLIP[AnimState];
 	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];
 	AkI32 iBoneId = Info.iBoneID;
-	_mHandAnimTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetBoneTrnasformAtID(14).Transpose(); // ID 검색 기능 추가.
+	_mHandAnimTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetBoneTrnasformAtID(iBoneId); // ID 검색 기능 추가.
+	_mHandAnimTransform = _mHandAnimTransform.Transpose();
 	_mHandAnimTransform *= _pTransform->GetWorldTransform();
 
 	_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
