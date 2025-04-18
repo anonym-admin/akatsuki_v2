@@ -51,10 +51,10 @@ public:
 
 	AkF32 GetWalkSpeed() { return _fWalkSpeed; }
 	AkF32 GetRunSpeed() { return _fRunSpeed; }
-
 	Weapon* GetWeapon() { return _pWeapon; }
 
 	void ActionReaction(Collider* pOther);
+	void ChangeCamera();
 
 private:
 	void CleanUp();
@@ -70,6 +70,9 @@ private:
 	Matrix _mHandAnimTransform = Matrix();
 	AkF32 _fWalkSpeed = 2.65f;
 	AkF32 _fRunSpeed = 3.5f;
+
+	Camera* _pCameraAtAimMode = nullptr;
+	Camera* _pPendingCam = nullptr;
 	
 	class Sprite* _pSprite = nullptr;
 
@@ -78,6 +81,7 @@ private:
 
 public:
 	AkBool Attack = AK_FALSE;
+	AkBool Aim = AK_FALSE;
 };
 
 void SetIdle(Actor* pSwat);

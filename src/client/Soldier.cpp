@@ -54,11 +54,11 @@ AkBool Soldier::Initialize()
 	AssetAnimationContainer_t* pAnimContainer = GAssetManager->GetAnimation(L"soldier");
 	BindAnimation(pAnimContainer->pAnim);
 	memcpy(ANIM_CLIP, pAnimContainer->wcClipName, sizeof(wchar_t*) * COUNT);
-	// _pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetIdle);
-	// _pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
-	// _pAnimation->SetEndCallBack(ANIM_CLIP[RIFLE_FIRE], this, ::SetNextFire);
-	// _pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
-	// _pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
+	//_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetIdle);
+	//_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
+	//_pAnimation->SetEndCallBack(ANIM_CLIP[RIFLE_FIRE], this, ::SetNextFire);
+	//_pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
+	//_pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
 	SetAnimation(IDLE);
 
 	// Delete MeshData Resource.
@@ -125,7 +125,7 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 	// Bind Animation.
 	AssetAnimationContainer_t* pAnimContainer = GAssetManager->GetAnimation(L"soldier");
 	BindAnimation(pAnimContainer->pAnim);
-	for(AkI32 i = 0; i < COUNT; i++)
+	for (AkI32 i = 0; i < COUNT; i++)
 		memcpy(ANIM_CLIP[i], pAnimContainer->wcClipName[i], sizeof(wchar_t) * MAX_PATH);
 	SetAnimation(IDLE);
 
@@ -142,7 +142,7 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 		AkI32 iClipNum = 0;
 		fwscanf_s(fp, L"%s", wcWeapon, MAX_PATH);
 		fwscanf_s(fp, L"%d", &iClipNum);
-		for(AkI32 i = 0; i < iClipNum; i++)
+		for (AkI32 i = 0; i < iClipNum; i++)
 		{
 			fwscanf_s(fp, L"%s", wcClip, MAX_PATH);
 
@@ -180,8 +180,12 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 	_pTransform->SetRight(-1.0f, 0.0f, 0.0f);
 
 	// Create Camera.
-	_pCamera = CreateCamera(2.0f, 0.5f);
+	_pCamera = CreateCamera(2.5f, 0.25f);
 	_pCamera->SetOwner(this);
+	_pCameraAtAimMode = new Camera;
+	_pCameraAtAimMode->Mode = CAMERA_MODE::FREE;
+	_pCameraAtAimMode->SetOwner(this);
+	_pPendingCam = _pCameraAtAimMode;
 
 	// Create Gravity
 	_pGravity = CreateGravity();
@@ -198,7 +202,7 @@ void Soldier::Update()
 {
 	// _pSprite->Update();
 
-	if(KEY_DOWN(KEY_INPUT_P))
+	if (KEY_DOWN(KEY_INPUT_P))
 	{
 		Vector3 vPos = Vector3(3.0f, 1.5f, 1025.0f);
 		_pSprite->Play(&vPos);
@@ -299,9 +303,27 @@ void Soldier::ActionReaction(Collider* pOther)
 	_pTransform->SetPosition(&vPos);
 }
 
+void Soldier::ChangeCamera()
+{
+	Camera* pTemp = _pPendingCam;
+	_pPendingCam = _pCamera;
+	_pCamera = pTemp;
+}
+
 void Soldier::CleanUp()
 {
 	UnBindAnimation();
+
+	if (_pCameraAtAimMode)
+	{
+		delete _pCameraAtAimMode;
+		_pCameraAtAimMode = nullptr;
+
+		if (Aim)
+		{
+			_pCamera = _pPendingCam;
+		}
+	}
 }
 
 void Soldier::SetIdle()
@@ -334,7 +356,7 @@ void Soldier::SetNextFire()
 		fTime += DT;
 		//SetAnimation(RIFLE_FIRE);
 	}
-	
+
 	SetIdle();
 }
 
@@ -356,7 +378,7 @@ void Soldier::UpdateMove()
 		// [] > 60
 		if (0.866025f < fCosValue0)
 		{
-			 //BindWeapon ? SetAnimation(RIFLE_F_WALK) : SetAnimation(F_WALK);
+			//BindWeapon ? SetAnimation(RIFLE_F_WALK) : SetAnimation(F_WALK);
 		}
 		// 30 <= [] <= 60
 		else if (0.5f <= fCosValue0 && fCosValue0 <= 0.866025f)
@@ -427,41 +449,11 @@ void Soldier::UpdateWeapon()
 	if (!BindWeapon)
 		return;
 
-	//Vector3 vVelocity = _pRigidBody->GetVelocity();
-
-	//if (0.2f < vVelocity.Length() && vVelocity.Length() <= 2.8f)
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(0.807f), DirectX::XMConvertToRadians(-2.340f), DirectX::XMConvertToRadians(142.585f));
-	//	_pWeapon->GetTransform()->SetPosition(0.46f, 0.289f, 0.068f);
-	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
-	//}
-	//else if (vVelocity.Length() > 3.0f)
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-10.821f), DirectX::XMConvertToRadians(17.809f), DirectX::XMConvertToRadians(155.865f));
-	//	_pWeapon->GetTransform()->SetPosition(0.437f, 0.293f, 0.053f);
-	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
-	//}
-	//else if (0.0f >= vVelocity.Length())
-	//{
-	//	_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(0.807f), DirectX::XMConvertToRadians(-2.340f), DirectX::XMConvertToRadians(142.585f));
-	//	_pWeapon->GetTransform()->SetPosition(0.433f, 0.283f, 0.047f);
-	//	_pWeapon->GetTransform()->SetScale(0.56f, 0.56f, 0.56f);
-	//}
-
-	//LeftHand = AK_TRUE;
-	//RightHand = AK_FALSE;
-
-	std::wstring wcAnimName = ANIM_CLIP[AnimState];
-	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];
-
-	if (AnimState == FIRE_STOP)
-	{
-		AkI32  i = 3;
-	}
-
-	// TODO:
+	// [주의!!]
 	// 모델 에디터의 회전 변환 점검이 필요!!
 	// 오른손을 바인딩할 경우 트랜스폼이 맞는 않는 현상 발생.
+	std::wstring wcAnimName = ANIM_CLIP[AnimState];
+	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];
 	_pWeapon->GetTransform()->SetScale(&Info.vScale);
 	_pWeapon->GetTransform()->SetRotation(-Info.vYawPitchRoll.x, -Info.vYawPitchRoll.y, Info.vYawPitchRoll.z);
 	_pWeapon->GetTransform()->SetPosition(&Info.vPosition);
@@ -469,6 +461,10 @@ void Soldier::UpdateWeapon()
 	if (Fire)
 	{
 		((BRS_74*)_pWeapon)->Fire();
+	}
+	else
+	{
+		((BRS_74*)_pWeapon)->Release();
 	}
 }
 
@@ -502,14 +498,14 @@ void Soldier::FinalUpdateWeapon()
 	}
 
 	std::wstring wcAnimName = ANIM_CLIP[AnimState];
-	
+
 	wprintf_s(L"%s\n", wcAnimName.c_str());
 
 	if (AnimState == FIRE_STOP)
 	{
 		AkI32 a = 0;
 	}
-	
+
 	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];
 	AkI32 iBoneId = Info.iBoneID;
 	_mHandAnimTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetBoneTrnasformAtID(iBoneId); // ID 검색 기능 추가.

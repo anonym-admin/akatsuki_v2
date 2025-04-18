@@ -67,8 +67,6 @@ void Controller::Mouse()
 			pSoldier->SetAnimation(Soldier::FIRE_STOP, 5.0f);
 			pSoldier->Fire = AK_TRUE;
 		}
-		
-
 	}
 	if (LBTN_HOLD)
 	{
@@ -87,6 +85,15 @@ void Controller::Mouse()
 		{
 			pSoldier->SetAnimation(Soldier::RIFLE_IDLE);
 			pSoldier->Fire = AK_FALSE;
+		}
+	}
+
+	if (RBTN_DOWN)
+	{
+		if(pSoldier->BindWeapon)
+		{
+			pSoldier->ChangeCamera();
+			pSoldier->Aim = !pSoldier->Aim;
 		}
 	}
 }

@@ -16,6 +16,11 @@ Camera base class
 
 AkBool Camera::UPDATE_CAMERA = AK_TRUE;
 
+Camera::Camera()
+{
+	_pTransform = new Transform;
+}
+
 Camera::Camera(const Vector3* pPos, const Vector3* pYawPirchRoll)
 {
 	if (!Initialize(pPos, pYawPirchRoll))
@@ -111,6 +116,39 @@ void Camera::CleanUp()
 
 void Camera::MoveFreeMode()
 {
+	// 01. 회전
+	Vector3 vTargetRot = _pOwner->GetTransform()->GetRotation();
+	Vector3 vYawPitchRoll = Vector3(0.0f);
+
+	vYawPitchRoll.x = NDC_ACC_X * DirectX::XM_PIDIV2; // Yaw
+	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 도달 시 Up Vector에 의한 회전 방지.
+
+	Vector3 vCurOwnerRot = vYawPitchRoll + Vector3(DirectX::XM_PI, 0.0f, 0.0f); // DirectX::XMVectorLerp(vTargetRot, vYawPitchRoll + Vector3(DirectX::XM_PI, 0.0f, 0.0f), _fRotDamping * DT); // 해당 코드는 카메라가 따라오는 느낌을 주기위해 Lerp 를 진행
+	// 게임 오브젝트는 yaw 로만 회적 적용
+	vCurOwnerRot.y = 0.0f;
+	vCurOwnerRot.z = 0.0f;
+
+	// 카메라의 회전 적용
+	_pTransform->SetRotation(&vYawPitchRoll);
+
+	// 게임오브젝트도 카메라의 방향으로 회전
+	_pOwner->GetTransform()->SetRotation(&vCurOwnerRot);
+
+	// Renderer 에 전달
+	GRenderer->RotateYawPitchRollCamera(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z);
+
+	// 02. 이동
+	Vector3 vFront = Vector3::Transform(Vector3(0.0f, 0.0f, 1.0f), Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
+	Vector3 vRight = Vector3::Transform(Vector3(1.0f, 0.0f, 0.0f), Matrix::CreateFromYawPitchRoll(vYawPitchRoll.x, vYawPitchRoll.y, vYawPitchRoll.z));
+
+	Vector3 vTargetPos = _pOwner->GetTransform()->GetGlobalPosition();
+	Vector3 vDestPos = -vFront * 1.5f + vRight * 0.25f;
+	vDestPos += vTargetPos;
+	vDestPos.y += 0.5f;
+
+	Vector3 vCurPos = vDestPos; // DirectX::XMVectorLerp(_pTransform->GetPosition(), vDestPos, _fMoveDamping * DT); // 해당 코드는 카메라가 따라오는 느낌을 주기위해 Lerp 를 진행
+	_pTransform->SetPosition(&vCurPos);
+	GRenderer->SetCameraPosition(vCurPos.x, vCurPos.y, vCurPos.z);
 }
 
 void Camera::MoveEditorMode()

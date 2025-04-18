@@ -14,6 +14,7 @@ class Camera
 public:
 	static AkBool UPDATE_CAMERA;
 
+	Camera();
 	Camera(const Vector3* pPos, const Vector3* pYawPirchRoll);
 	Camera(AkF32 fDistance, AkF32 fHeight);
 	~Camera();

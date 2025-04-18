@@ -32,6 +32,7 @@ public:
 	virtual void OnCollisionExit(Collider* pOther) override;
 
 	virtual BRS_74* Clone() override;
+
 	void Fire();
 	void Release();
 
@@ -45,5 +46,6 @@ private:
 	Sound* _pFireSound = nullptr;
 
 	AkBool _bFire = AK_FALSE;
+	AkBool _bFirst = AK_TRUE;
 };
 
