@@ -124,7 +124,7 @@ void Camera::MoveFreeMode()
 	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 도달 시 Up Vector에 의한 회전 방지.
 
 	Vector3 vCurOwnerRot = vYawPitchRoll + Vector3(DirectX::XM_PI, 0.0f, 0.0f); // DirectX::XMVectorLerp(vTargetRot, vYawPitchRoll + Vector3(DirectX::XM_PI, 0.0f, 0.0f), _fRotDamping * DT); // 해당 코드는 카메라가 따라오는 느낌을 주기위해 Lerp 를 진행
-	// 게임 오브젝트는 yaw 로만 회적 적용
+	// 게임 오브젝트는 yaw 로만 회적 적용  
 	vCurOwnerRot.y = 0.0f;
 	vCurOwnerRot.z = 0.0f;
 
