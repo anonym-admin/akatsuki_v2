@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "SoundManager.h"
+#include "Sound.h"
 
 /*
 ===================

@@ -311,6 +311,12 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 			{
 				pActor = new ModelObject(wcTempName.c_str());
 				eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
+
+				if (wcTempName.find(L"wall") != std::wstring::npos)
+				{
+					pActor->GetModel()->DrawShadow(AK_FALSE); // self shadow 발생으로 인해 어색한 느낌이 생김. shaodw off
+				}
+
 			}
 		}
 

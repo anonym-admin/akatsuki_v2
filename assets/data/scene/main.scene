@@ -1,5 +1,13 @@
 ../../assets/map/main.map
-21
+22
+C:\Users\skdfw\My\akatsuki\assets\data\act\wall3.act 
+2.999896 3.000000 2.999896
+1.536904 0.000002 0.000000
+29.367670 1.497093 -1.359137
+C:\Users\skdfw\My\akatsuki\assets\data\act\brs-74.act 
+0.560000 0.560000 0.560000
+-0.000000 0.000000 0.000000
+17.854351 0.689924 0.000000
 C:\Users\skdfw\My\akatsuki\assets\data\act\concrete_01.act 
 10.000000 0.250000 10.000000
 -0.000000 0.000000 0.000000
@@ -56,10 +64,6 @@ C:\Users\skdfw\My\akatsuki\assets\data\act\stone_grey_01.act
 -0.000000 0.000000 0.000000
 40.912727 1.023718 -0.062900
 0.256000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\brs-74.act 
-0.560000 0.560000 0.560000
--0.000000 0.000000 0.000000
-17.854351 0.689924 0.000000
 C:\Users\skdfw\My\akatsuki\assets\data\act\soldier.act 
 0.999993 1.000000 0.999993
 0.000000 0.000000 0.000000
