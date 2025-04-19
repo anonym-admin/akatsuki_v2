@@ -9,6 +9,8 @@ https://github.com/anonym-admin/binary/tree/master
 
 실행파일 경로: bin/Release/akatsuki_client_x64.exe
 
+최상단 경로에 해당 데모의 assets 폴더와 shader 폴더를 복사해서 사용하시면 됩니다.
+
 F5 버튼을 누르면 에디터를 선택할 수 있는 화면으로 전환되고 console 창에 진입하고 싶은 에디터의 번호를 입력하면 됩니다.
 
 0. 모델 에디터
