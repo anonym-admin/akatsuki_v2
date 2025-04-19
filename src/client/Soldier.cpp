@@ -30,20 +30,11 @@ Soldier::Soldier(const wchar_t* wcFile)
 
 Soldier::~Soldier()
 {
-	if (_pSprite)
-	{
-		delete _pSprite;
-		_pSprite = nullptr;
-	}
-
 	CleanUp();
 }
 
 AkBool Soldier::Initialize()
 {
-	Vector2 vMaxFrame = Vector2(4, 5);
-	_pSprite = new Sprite(L"../../assets/particle/MuzzleFlash_4x5.dds", &vMaxFrame);
-
 	// Create Model.
 	AssetMeshDataContainer_t* pMeshDataContainer = GAssetManager->GetMeshData(L"soldier.mesh");
 	Vector3 vAlbedo = Vector3(1.0f);
@@ -54,11 +45,8 @@ AkBool Soldier::Initialize()
 	AssetAnimationContainer_t* pAnimContainer = GAssetManager->GetAnimation(L"soldier");
 	BindAnimation(pAnimContainer->pAnim);
 	memcpy(ANIM_CLIP, pAnimContainer->wcClipName, sizeof(wchar_t*) * COUNT);
-	//_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_01], this, ::SetIdle);
-	//_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCHING_02], this, ::SetIdle);
-	//_pAnimation->SetEndCallBack(ANIM_CLIP[RIFLE_FIRE], this, ::SetNextFire);
-	//_pAnimation->SetEndCallBack(ANIM_CLIP[RUN_JUMP], this, ::SetIdle);
-	//_pAnimation->SetEndCallBack(ANIM_CLIP[IDLE_JUMP], this, ::SetIdle);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[FIRE_STOP], this, ::SetIdle);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCH_STOP], this, ::SetIdle);
 	SetAnimation(IDLE);
 
 	// Delete MeshData Resource.
@@ -82,8 +70,12 @@ AkBool Soldier::Initialize()
 	_pCullingCollider = CreateBoxCollider(&vMin, &vMax);
 
 	// Create Camera.
-	_pCamera = CreateCamera(2.0f, 0.5f);
+	_pCamera = CreateCamera(2.5f, 0.25f);
 	_pCamera->SetOwner(this);
+	_pCameraAtAimMode = new Camera;
+	_pCameraAtAimMode->Mode = CAMERA_MODE::FREE;
+	_pCameraAtAimMode->SetOwner(this);
+	_pPendingCam = _pCameraAtAimMode;
 
 	// Create Gravity
 	_pGravity = CreateGravity();
@@ -197,29 +189,31 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 	_pRigidBody->SetFrictionCoef(5.0f);
 	_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 
+	// Create Aim Sprite.
+	_pAimSprite = GRenderer->CreateSpriteObjectWidthTex(L"../../assets/colors/light_green.dds", 0, 0, 8, 8);
+	_pAimSprite->SetDrawBackground(AK_TRUE);
+	RECT Rect;
+	GetClientRect(GhWnd, &Rect);
+	AkI32 iScreenSizeX = (Rect.right - Rect.left);
+	AkI32 iScreenSizeY = (Rect.bottom - Rect.top);
+	_iAimRenderPosX = (AkI32)(iScreenSizeX * 0.5f);
+	_iAimRenderPosY = (AkI32)(iScreenSizeY * 0.5f);
+
 	return AK_TRUE;
 }
 
 void Soldier::Update()
 {
-	// _pSprite->Update();
-
-	if (KEY_DOWN(KEY_INPUT_P))
-	{
-		Vector3 vPos = Vector3(3.0f, 1.5f, 1025.0f);
-		_pSprite->Play(&vPos);
-	}
-
 	UpdateMove();
 	UpdateWeapon();
-	UpdateFire();
 
 	_pController->Update();
 }
 
 void Soldier::FinalUpdate()
 {
-	// _pGravity->Update();
+	if(Jumping)
+		_pGravity->Update();
 
 	_pRigidBody->Update();
 
@@ -245,13 +239,15 @@ void Soldier::RenderDepthMap()
 
 void Soldier::Render()
 {
-	// _pSprite->Render();
-
 	// Render model.
 	_pModel->Render();
 
 	// Render collider.
 	_pCollider->Render();
+
+	// Render Aim Sprite.
+	if(Aim)
+		GRenderer->RenderSprite(_pAimSprite, _iAimRenderPosX, _iAimRenderPosY, 1.0f, 1.0f, 0.0f, AK_FALSE);
 }
 
 void Soldier::RenderShadowMaps()
@@ -326,6 +322,12 @@ void Soldier::CleanUp()
 			_pCamera = _pPendingCam;
 		}
 	}
+
+	if (_pAimSprite)
+	{
+		_pAimSprite->Release();
+		_pAimSprite = nullptr;
+	}
 }
 
 void Soldier::SetIdle()
@@ -357,18 +359,6 @@ void Soldier::SetIdle()
 void Soldier::SetNextPunching()
 {
 	//SetAnimation(PUNCHING_02);
-}
-
-void Soldier::SetNextFire()
-{
-	AkF32 fTime = 0.0f;
-	while (fTime <= 1000.0f)
-	{
-		fTime += DT;
-		//SetAnimation(RIFLE_FIRE);
-	}
-
-	SetIdle();
 }
 
 void Soldier::UpdateMove()
@@ -475,28 +465,6 @@ void Soldier::UpdateWeapon()
 	}
 }
 
-void Soldier::UpdateFire()
-{
-	//static AkBool PrevFire = AK_FALSE;
-
-	//if (!Fire)
-	//{
-	//	if (PrevFire)
-	//	{
-	//		SetWeaponRelativePosition();
-	//	}
-
-	//	// IDLE 상태 전환으로 인한 Fire 애니메이션의 부자연스러운 현상 방지.
-	//	PrevFire = Fire;
-
-	//	return;
-	//}
-
-	//SetWeaponRelativePosition();
-
-	//PrevFire = Fire;
-}
-
 void Soldier::FinalUpdateWeapon()
 {
 	if (!BindWeapon)
@@ -560,9 +528,4 @@ void SetIdle(Actor* pSwat)
 void SetNextPunching(Actor* pSwat)
 {
 	((Soldier*)pSwat)->SetNextPunching();
-}
-
-void SetNextFire(Actor* pSwat)
-{
-	((Soldier*)pSwat)->SetNextFire();
 }

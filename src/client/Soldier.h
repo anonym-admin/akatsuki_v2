@@ -47,7 +47,6 @@ public:
 
 	void SetIdle();
 	void SetNextPunching();
-	void SetNextFire();
 	void SetAnimation(ANIM_STATE eState, AkF32 fSpeed = 1.5f);
 
 	AkF32 GetWalkSpeed() { return _fWalkSpeed; }
@@ -62,7 +61,6 @@ private:
 
 	void UpdateMove();
 	void UpdateWeapon();
-	void UpdateFire();
 	void FinalUpdateWeapon();
 
 	void SetWeaponRelativePosition();
@@ -74,19 +72,18 @@ private:
 
 	Camera* _pCameraAtAimMode = nullptr;
 	Camera* _pPendingCam = nullptr;
-	
-	class Sprite* _pSprite = nullptr;
 
-	// WeaponInfo pWeaponInfoList[COUNT] = {};
+	ISprite* _pAimSprite = nullptr;
+	AkI32 _iAimRenderPosX = 0;
+	AkI32 _iAimRenderPosY = 0;
+
 	std::unordered_map<std::wstring, std::unordered_map<std::wstring, WeaponInfo>> _mapWeaponInfo = {};
 
 public:
 	AkBool Attack = AK_FALSE;
 	AkBool Aim = AK_FALSE;
-
 	AkBool LBtnUp = AK_FALSE;
 };
 
 void SetIdle(Actor* pSwat);
 void SetNextPunching(Actor* pSwat);
-void SetNextFire(Actor* pSwat);

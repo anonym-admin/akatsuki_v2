@@ -445,14 +445,14 @@ void Terrain::UpdateHeight(Actor* pActor)
 		{
 			vHitPos0 = vRayPos + vRayDir * fDist0;
 
-			Vector3 vPos = Vector3(vObjPos.x, vHitPos0.y + 0.5f, vObjPos.z);
+			Vector3 vPos = Vector3(vObjPos.x, vHitPos0.y + 0.485f, vObjPos.z);
 			pActor->GetTransform()->SetPosition(&vPos);
 		}
 		else
 		{
 			vHitPos1 = vRayPos + vRayDir * fDist1;
 
-			Vector3 vPos = Vector3(vObjPos.x, vHitPos1.y + 0.5f, vObjPos.z);
+			Vector3 vPos = Vector3(vObjPos.x, vHitPos1.y + 0.485f, vObjPos.z);
 			pActor->GetTransform()->SetPosition(&vPos);
 		}
 	}

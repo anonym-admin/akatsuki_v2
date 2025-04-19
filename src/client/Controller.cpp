@@ -86,44 +86,36 @@ void Controller::Mouse()
 
 void Controller::KeyBoard()
 {
-	Soldier* pSwat = (Soldier*)_pOwner;
+	Soldier* pSoldier = (Soldier*)_pOwner;
 
-	if (pSwat->Attack || pSwat->Jumping || pSwat->Fire)
+	if (pSoldier->Attack || pSoldier->Jumping || pSoldier->Fire)
 		return;
 
-	Soldier::ANIM_STATE AnimState = pSwat->AnimState;
-	RigidBody* pRigidBody = pSwat->GetRigidBody();
+	Soldier::ANIM_STATE AnimState = pSoldier->AnimState;
+	RigidBody* pRigidBody = pSoldier->GetRigidBody();
 
 	Vector3 vVelocity = Vector3(0.0f);
-	AkF32 fMoveSpeed = 0.15f;
+	AkF32 fMoveSpeed = 0.25f;
 
 	if (KEY_HOLD(KEY_INPUT_W))
 	{
-		vVelocity += pSwat->GetTransform()->Front();
-
-		//Vector3 vFront = pSwat->GetTransform()->Front();
-		//if (KEY_HOLD(KEY_INPUT_LSHIFT))
-		//{
-		//	vVelocity *= pSwat->GetRunSpeed();
-		//	pRigidBody->SetMaxVeleocity(pSwat->GetRunSpeed());
-		//}
+		vVelocity += pSoldier->GetTransform()->Front();
 	}
 	if (KEY_HOLD(KEY_INPUT_S))
 	{
-		vVelocity -= pSwat->GetTransform()->Front();
+		vVelocity -= pSoldier->GetTransform()->Front();
 	}
 	if (KEY_HOLD(KEY_INPUT_D))
 	{
-		// 게임 오브젝트를 90도 만큼 회전시킨다.
-		vVelocity += pSwat->GetTransform()->Right();
+		vVelocity += pSoldier->GetTransform()->Right();
 	}
 	if (KEY_HOLD(KEY_INPUT_A))
 	{
-		vVelocity -= pSwat->GetTransform()->Right();
+		vVelocity -= pSoldier->GetTransform()->Right();
 	}
 	if (KEY_DOWN(KEY_INPUT_V))
 	{
-		// TODO...
+
 	}
 	if (KEY_DOWN(KEY_INPUT_SPACE))
 	{

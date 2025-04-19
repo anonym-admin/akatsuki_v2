@@ -121,7 +121,7 @@ void Camera::MoveFreeMode()
 	Vector3 vYawPitchRoll = Vector3(0.0f);
 
 	vYawPitchRoll.x = NDC_ACC_X * DirectX::XM_PIDIV2; // Yaw
-	vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 도달 시 Up Vector에 의한 회전 방지.
+	// vYawPitchRoll.y = -NDC_Y * 1.5f; // Pitch => 1.5f => 90 degree 도달 시 Up Vector에 의한 회전 방지.
 
 	Vector3 vCurOwnerRot = vYawPitchRoll + Vector3(DirectX::XM_PI, 0.0f, 0.0f); // DirectX::XMVectorLerp(vTargetRot, vYawPitchRoll + Vector3(DirectX::XM_PI, 0.0f, 0.0f), _fRotDamping * DT); // 해당 코드는 카메라가 따라오는 느낌을 주기위해 Lerp 를 진행
 	// 게임 오브젝트는 yaw 로만 회적 적용  
@@ -144,7 +144,7 @@ void Camera::MoveFreeMode()
 	Vector3 vTargetPos = _pOwner->GetTransform()->GetGlobalPosition();
 	Vector3 vDestPos = -vFront * 1.5f + vRight * 0.25f;
 	vDestPos += vTargetPos;
-	vDestPos.y += 0.5f;
+	vDestPos.y += 0.375f;
 
 	Vector3 vCurPos = vDestPos; // DirectX::XMVectorLerp(_pTransform->GetPosition(), vDestPos, _fMoveDamping * DT); // 해당 코드는 카메라가 따라오는 느낌을 주기위해 Lerp 를 진행
 	_pTransform->SetPosition(&vCurPos);
