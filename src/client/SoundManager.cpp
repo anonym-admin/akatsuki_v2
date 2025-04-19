@@ -71,18 +71,20 @@ Sound* SoundManager::LoadSound(const char* pFilename)
 		return pSound;
 	}
 
-	_pSound = pSound;
+	_mapSound[ToWString(pFilename)] = pSound;
 
 	return pSound;
 }
 
 void SoundManager::CleanUp()
 {
-	if (_pSound)
+	for (auto& e : _mapSound)
 	{
-		delete _pSound;
-		_pSound = nullptr;
+		delete e.second;
+		e.second = nullptr;
 	}
+	_mapSound.clear();
+
 	if (_pSystem)
 	{
 		_pSystem->close();

@@ -85,12 +85,15 @@ void Controller::Mouse()
 		{
 			pSoldier->SetAnimation(Soldier::RIFLE_IDLE);
 			pSoldier->Fire = AK_FALSE;
+
+			BRS_74* pBRS_74 = (BRS_74*)pSoldier->GetWeapon();
+			pBRS_74->Release();
 		}
 	}
 
 	if (RBTN_DOWN)
 	{
-		if(pSoldier->BindWeapon)
+		if (pSoldier->BindWeapon)
 		{
 			pSoldier->ChangeCamera();
 			pSoldier->Aim = !pSoldier->Aim;

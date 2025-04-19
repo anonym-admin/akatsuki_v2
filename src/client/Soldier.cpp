@@ -335,7 +335,7 @@ void Soldier::SetIdle()
 	if (BindWeapon)
 	{
 		// SetAnimation(RIFLE_IDLE);
-		((BRS_74*)_pWeapon)->Release();
+		// ((BRS_74*)_pWeapon)->Release();
 	}
 	else
 	{
@@ -461,10 +461,6 @@ void Soldier::UpdateWeapon()
 	if (Fire)
 	{
 		((BRS_74*)_pWeapon)->Fire();
-	}
-	else
-	{
-		((BRS_74*)_pWeapon)->Release();
 	}
 }
 

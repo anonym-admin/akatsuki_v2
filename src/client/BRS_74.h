@@ -45,6 +45,9 @@ private:
 	Sprite* _pMuzzleEffect = nullptr;
 	Sound* _pFireSound = nullptr;
 
+	// 이후에 Casing 오브젝트로 이동
+	Sound* _pCasingBounceSound = nullptr;
+
 	AkBool _bFire = AK_FALSE;
 	AkBool _bFirst = AK_TRUE;
 };

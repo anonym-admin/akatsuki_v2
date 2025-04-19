@@ -73,6 +73,9 @@ AkBool BRS_74::Initialize(const wchar_t* wcScript)
 	// Create Fire Sound.
 	_pFireSound = GSoundManager->LoadSound("../../assets/audio/AKS74U_Fire0.wav");
 
+	// Create Casing Bounce Sound.
+	_pCasingBounceSound = GSoundManager->LoadSound("../../assets/audio/BulletCasingBounce.wav");
+
 	return AK_TRUE;
 }
 
@@ -178,6 +181,8 @@ void BRS_74::Release()
 {
 	_bFire = AK_FALSE;
 	_bFirst = AK_TRUE;
+
+	_pCasingBounceSound->PlayOnce();
 }
 
 void BRS_74::CleanUp()

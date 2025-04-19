@@ -25,8 +25,5 @@ private:
 
 private:
 	FMOD::System* _pSystem = nullptr;
-
-	// юс╫ц...
-	Sound* _pSound = nullptr;
-
+	std::unordered_map<std::wstring, Sound*> _mapSound = {};
 };
