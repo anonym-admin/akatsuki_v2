@@ -26,6 +26,8 @@ public:
 
 	Transform* GetTransform() { return _pTransform; }
 
+	AkBool IsPlaying() { return _bIsPlay; }
+
 private:
 	void CleanUp();
 

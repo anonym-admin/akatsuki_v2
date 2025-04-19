@@ -212,6 +212,7 @@ void Soldier::Update()
 	UpdateMove();
 	UpdateWeapon();
 
+	_pSpark->Update();
 	_pController->Update();
 }
 
@@ -254,7 +255,7 @@ void Soldier::Render()
 	if(Aim)
 		GRenderer->RenderSprite(_pAimSprite, _iAimRenderPosX, _iAimRenderPosY, 1.0f, 1.0f, 0.0f, AK_FALSE);
 
-	if (Fire)
+	if (_bDrawSpark)
 		_pSpark->Render();
 }
 
@@ -473,12 +474,12 @@ void Soldier::UpdateWeapon()
 	_pWeapon->GetTransform()->SetRotation(-Info.vYawPitchRoll.x, -Info.vYawPitchRoll.y, Info.vYawPitchRoll.z);
 	_pWeapon->GetTransform()->SetPosition(&Info.vPosition);
 
+	// Sprak 플래그 초기화
+	_bDrawSpark = AK_FALSE;
+
 	if (Fire)
 	{
 		((BRS_74*)_pWeapon)->Fire();
-		
-		// Ammo Spark 업데이트
-		_pSpark->Update();
 
 		// 모든 GameObj 를 Attach.
 		GameObjContainer_t** ppGameObj = GSceneManager->GetCurrentScene()->GetAllGameObject();
@@ -516,8 +517,10 @@ void Soldier::UpdateWeapon()
 						{
 							// 가장 최소값의 거리에 있는 오브젝트가 최종 충돌.
 							// TODO:
-							
-							_pSpark->Play(&vHitPos);
+							if(!_pSpark->IsPlaying())
+								_pSpark->Play(&vHitPos);
+
+							_bDrawSpark = AK_TRUE;
 						}
 					}
 
@@ -536,14 +539,6 @@ void Soldier::FinalUpdateWeapon()
 	}
 
 	std::wstring wcAnimName = ANIM_CLIP[AnimState];
-
-	wprintf_s(L"%s\n", wcAnimName.c_str());
-
-	if (AnimState == FIRE_STOP)
-	{
-		AkI32 a = 0;
-	}
-
 	WeaponInfo Info = _mapWeaponInfo[L"brs-74"][wcAnimName];
 	AkI32 iBoneId = Info.iBoneID;
 	_mHandAnimTransform = ((SkinnedModel*)_pModel)->GetAnimation()->GetBoneTrnasformAtID(iBoneId); // ID 검색 기능 추가.

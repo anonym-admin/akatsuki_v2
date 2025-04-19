@@ -70,6 +70,7 @@ private:
 	Matrix _mHandAnimTransform = Matrix();
 	AkF32 _fWalkSpeed = 2.65f;
 	AkF32 _fRunSpeed = 3.5f;
+	AkBool _bDrawSpark = AK_FALSE;
 
 	Camera* _pCameraAtAimMode = nullptr;
 	Camera* _pPendingCam = nullptr;
