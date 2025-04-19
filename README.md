@@ -9,6 +9,10 @@ akatsuki/bin/Release/akatsuki_client_x64.exe
 
 F5 버튼을 누르면 에디터를 선택할 수 있는 화면으로 전환되고 console 창에 진입하고 싶은 에디터의 번호를 입력하면 됩니다.
 
+1. 모델 에디터
+2. 레벨 에디터
+3. 파티클 에디터
+
 hmk_demo: https://github.com/anonym-admin/hmk_demo
 
 기술데모영상: https://www.youtube.com/@%ED%99%8D%EB%AA%85%EA%B5%AD-n8e/videos 
