@@ -16,5 +16,5 @@ private:
 	void Mouse();
 
 private:
-	Player* _pOwner = nullptr;  
+	Player* _pOwner = nullptr;    
 };
