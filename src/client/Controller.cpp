@@ -43,52 +43,35 @@ void Controller::Mouse()
 
 	if (LBTN_DOWN)
 	{
-		//if (Soldier::IDLE == AnimState)
-		//{
-		//	pSwat->Attack = AK_TRUE;
-		//	if (Soldier::IDLE == PrevAnimState)
-		//	{
-		//		pSwat->SetAnimation(Soldier::PUNCHING_01);
-		//		PrevAnimState = Soldier::PUNCHING_01;
-
-		//	}
-		//	else if (Soldier::PUNCHING_01 == PrevAnimState)
-		//	{
-		//		pSwat->SetAnimation(Soldier::PUNCHING_02);
-		//		PrevAnimState = Soldier::IDLE; // Return Idle.
-		//	}
-		//}
-
-
-
-
 		if (pSoldier->BindWeapon)
 		{
 			pSoldier->SetAnimation(Soldier::FIRE_STOP, 5.0f);
 			pSoldier->Fire = AK_TRUE;
 		}
+		else
+		{
+			pSoldier->SetAnimation(Soldier::PUNCH_STOP);
+			pSoldier->Attack = AK_TRUE;
+		}
 	}
+
 	if (LBTN_HOLD)
-	{
-		//if (Soldier::RIFLE_IDLE == AnimState)
-		//{
-		//	pSwat->Fire = AK_TRUE;
-
-		//	((BRS_74*)pSwat->GetWeapon())->Fire();
-
-		//	pSwat->SetAnimation(Soldier::RIFLE_FIRE);
-		//}
-	}
-	if (LBTN_UP)
 	{
 		if (pSoldier->BindWeapon)
 		{
-			pSoldier->SetAnimation(Soldier::RIFLE_IDLE);
-			pSoldier->Fire = AK_FALSE;
-
-			BRS_74* pBRS_74 = (BRS_74*)pSoldier->GetWeapon();
-			pBRS_74->Release();
+			pSoldier->SetAnimation(Soldier::FIRE_STOP, 5.0f);
+			pSoldier->Fire = AK_TRUE;
 		}
+		else
+		{
+			pSoldier->SetAnimation(Soldier::PUNCH_STOP);
+			pSoldier->Attack = AK_TRUE;
+		}
+	}
+
+	if (LBTN_UP)
+	{
+		pSoldier->LBtnUp = AK_TRUE;
 	}
 
 	if (RBTN_DOWN)
@@ -105,7 +88,7 @@ void Controller::KeyBoard()
 {
 	Soldier* pSwat = (Soldier*)_pOwner;
 
-	if (pSwat->Attack || pSwat->Jumping)
+	if (pSwat->Attack || pSwat->Jumping || pSwat->Fire)
 		return;
 
 	Soldier::ANIM_STATE AnimState = pSwat->AnimState;

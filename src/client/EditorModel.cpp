@@ -1266,16 +1266,33 @@ void EditorModel::UpdateFileDialog()
 		{
 			std::string FileName = ImGuiFileDialog::Instance()->GetFilePathName();
 			std::string FilePath = ImGuiFileDialog::Instance()->GetCurrentPath() + '\\';
-
+			
+			// Import Type 과 파일의 확장자가 다를 경우 이후에 코드를 실행하지 않고 return 한다.
+			std::string ext = GetFileExtension(FileName);
 			switch (_iImportType)
 			{
 			case 0:
+				if ("mesh" != ext)
+				{
+					wprintf_s(L"Select .mesh File.\n");
+					return;
+				}
 				CreateModel(ToWString(FilePath), ToWString(GetFileName(FileName)));
 				break;
 			case 1:
+				if ("mesh" != ext)
+				{
+					wprintf_s(L"Select .mesh File.\n");
+					return;
+				}
 				CreateModel(ToWString(FilePath), ToWString(GetFileName(FileName)));
 				break;
 			case 2:
+				if ("anim" != ext)
+				{
+					wprintf_s(L"Select .anim FIle.\n");
+					return;
+				}
 				CreateClip(ToWString(FilePath), ToWString(GetFileName(FileName)));
 				break;
 			}

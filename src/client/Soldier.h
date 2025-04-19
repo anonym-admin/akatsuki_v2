@@ -22,6 +22,7 @@ public:
 		WALK,
 		RIFLE_WALK,
 		FIRE_STOP,
+		PUNCH_STOP,
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
 	} AnimState;
 
@@ -82,6 +83,8 @@ private:
 public:
 	AkBool Attack = AK_FALSE;
 	AkBool Aim = AK_FALSE;
+
+	AkBool LBtnUp = AK_FALSE;
 };
 
 void SetIdle(Actor* pSwat);

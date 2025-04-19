@@ -946,8 +946,10 @@ AkBool FBasicMeshObject::CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDat
 					}
 				}
 
-				// Write AlbedoOpacityImage	
-				SaveDDS(wcFileName, pAlbedoImage, uWidth0, uHeight0, Format);
+				DWORD dwAttr = GetFileAttributes(wcFileName);
+				// Write AlbedoOpacityImage	파일이 없는 경우만 dds 로 저장.
+				if (INVALID_FILE_ATTRIBUTES == dwAttr)
+					SaveDDS(wcFileName, pAlbedoImage, uWidth0, uHeight0, Format);
 
 				if (pAlbedoImage)
 				{

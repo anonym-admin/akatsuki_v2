@@ -127,6 +127,8 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 	BindAnimation(pAnimContainer->pAnim);
 	for (AkI32 i = 0; i < COUNT; i++)
 		memcpy(ANIM_CLIP[i], pAnimContainer->wcClipName[i], sizeof(wchar_t) * MAX_PATH);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[FIRE_STOP], this, ::SetIdle);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCH_STOP], this, ::SetIdle);
 	SetAnimation(IDLE);
 
 	// 02. 위의 1번에서 얻은 파일 경로로 부터 무기 정보 파일을 로드한다.
@@ -329,17 +331,26 @@ void Soldier::CleanUp()
 void Soldier::SetIdle()
 {
 	Jumping = AK_FALSE;
-	Attack = AK_FALSE;
-	Fire = AK_FALSE;
 
-	if (BindWeapon)
+	// 마우스 왼쪽 버튼이 떼어졌을때 IDLE 애니메이션 상태로 변경.
+	// 해당 코드가 없다면 무조건 IDLE 애니메이션이 재생돼, 부자연스러운 애니메이션 동작 발생.
+	// 현재 프레임에 왼쪽 버튼이 올라간 플래그 체크가 어렵다.
+	if (LBtnUp)
 	{
-		// SetAnimation(RIFLE_IDLE);
-		// ((BRS_74*)_pWeapon)->Release();
-	}
-	else
-	{
-		SetAnimation(IDLE);
+		if (BindWeapon)
+		{
+			Fire = AK_FALSE;
+			SetAnimation(Soldier::RIFLE_IDLE);
+			BRS_74* pBRS_74 = (BRS_74*)_pWeapon;
+			pBRS_74->Release();
+		}
+		else
+		{
+			Attack = AK_FALSE;
+			SetAnimation(Soldier::IDLE);
+		}
+
+		LBtnUp = AK_FALSE;
 	}
 }
 
