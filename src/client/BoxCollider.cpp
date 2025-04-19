@@ -25,6 +25,8 @@ BoxCollider::BoxCollider(Actor* pOwner, const Vector3* pMin, const Vector3* pMax
 
 BoxCollider::~BoxCollider()
 {
+	if(_pCubeData)
+		GeometryGenerator::DestroyGeometry(_pCubeData);
 }
 
 AkBool BoxCollider::Initialize(const Vector3* pMin, const Vector3* pMax, const Vector3* pColor)
@@ -37,10 +39,9 @@ AkBool BoxCollider::Initialize(const Vector3* pMin, const Vector3* pMax, const V
 	_eType = COLLIDER_TYPE::BOX;
 
 	// Create the render obj.
-	LineData_t* pLineBox = GeometryGenerator::MakeCube(pMin, pMax, &vColor);
+	_pCubeData = GeometryGenerator::MakeCube(pMin, pMax, &vColor);
 	_pLineObj = GRenderer->CreateLineObject();
-	_pLineObj->CreateLineBuffers(pLineBox);
-	GeometryGenerator::DestroyGeometry(pLineBox);
+	_pLineObj->CreateLineBuffers(_pCubeData);
 
 	_vMin = *pMin;
 	_vMax = *pMax;
@@ -50,7 +51,62 @@ AkBool BoxCollider::Initialize(const Vector3* pMin, const Vector3* pMax, const V
 
 AkBool BoxCollider::RayIntersect(DirectX::SimpleMath::Ray tRay, Vector3* pOutHitPos, AkF32* pOutDist)
 {
-	return AkBool();
+	if (0.0f == tRay.direction.Length())
+		return AK_FALSE;
+
+	AkF32 distance = AK_MAX_F32;
+	Vector3 hitPos = Vector3(0.0f);
+
+	// 육면체의 각면의 삼격형에 대해서 Ray 와 충돌을 검사한다.
+	for (AkU32 i = 0; i < 6; i++)
+	{
+		Matrix worldRow = _pTransform->GetWorldTransform();
+
+		AkU32 index[4] =
+		{
+			_pCubeData->pIndices[i * 4 + 0],
+			_pCubeData->pIndices[i * 4 + 1],
+			_pCubeData->pIndices[i * 4 + 2],
+			_pCubeData->pIndices[i * 4 + 3],
+		};
+
+		Vector3 v[4] = {};
+		v[0] = Vector3::Transform(_pCubeData->pVertices[index[0]].vPosition, worldRow);
+		v[1] = Vector3::Transform(_pCubeData->pVertices[index[1]].vPosition, worldRow);
+		v[2] = Vector3::Transform(_pCubeData->pVertices[index[2]].vPosition, worldRow);
+		v[3] = Vector3::Transform(_pCubeData->pVertices[index[3]].vPosition, worldRow);
+
+		AkF32 tempDistance = 0.0f;
+		AkBool intersect = AK_FALSE;
+		if (intersect = tRay.Intersects(v[0], v[1], v[2], tempDistance))
+		{
+			if (tempDistance < distance)
+			{
+				distance = tempDistance;
+				hitPos = tRay.position + tRay.direction * tempDistance;
+			}
+		}
+
+		if (intersect = tRay.Intersects(v[0], v[3], v[2], tempDistance))
+		{
+			if (tempDistance < distance)
+			{
+				distance = tempDistance;
+				hitPos = tRay.position + tRay.direction * tempDistance;
+			}
+		}
+	}
+
+	if (distance == AK_MAX_F32)
+		return AK_FALSE;
+
+	if (pOutHitPos && pOutDist)
+	{
+		*pOutDist = distance;
+		*pOutHitPos = hitPos;
+	}
+
+	return AK_TRUE;
 }
 
 AkBool BoxCollider::BoxIntersect(BoxCollider* pCollider)

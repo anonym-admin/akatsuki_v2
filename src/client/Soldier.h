@@ -3,6 +3,7 @@
 #include "Player.h"
 
 class Weapon;
+class Spark;
 
 class Soldier : public Player
 {
@@ -76,6 +77,8 @@ private:
 	ISprite* _pAimSprite = nullptr;
 	AkI32 _iAimRenderPosX = 0;
 	AkI32 _iAimRenderPosY = 0;
+
+	Spark* _pSpark = nullptr;
 
 	std::unordered_map<std::wstring, std::unordered_map<std::wstring, WeaponInfo>> _mapWeaponInfo = {};
 

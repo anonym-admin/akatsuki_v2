@@ -1136,6 +1136,7 @@ void FRenderer::RenderParticleSpark(IParticle* pParticle, const Matrix* pWorldRo
 	tItem.tParticleParam.pRotOverLifeTime = pRotOverLifeTime;
 	tItem.tParticleParam.pTotalColor = pTotalColor;
 	tItem.tParticleParam.pColorOverLifeTime = pColorOverLifeTime;
+	tItem.tParticleParam.iType = 0;
 
 	if (!_pRenderTransparent->Add(&tItem))
 	{
@@ -1151,6 +1152,7 @@ void FRenderer::RenderParticleSprite(IParticle* pParticle, void* pDBHandle, cons
 	tItem.tParticleParam.pDBHandle = (DynamicDefaultBufferHandle_t*)pDBHandle;
 	tItem.tParticleParam.pMaxFrame = pMaxFrame;
 	tItem.tParticleParam.pCurFrame = pCurFrame;
+	tItem.tParticleParam.iType = 1;
 
 	if (!_pRenderTransparent->Add(&tItem))
 	{

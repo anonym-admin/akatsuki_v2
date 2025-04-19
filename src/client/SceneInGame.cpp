@@ -32,6 +32,8 @@ SceneInGame::~SceneInGame()
 
 AkBool SceneInGame::BeginScene()
 {
+	ShowCursor(AK_FALSE);
+
 	Collider::DRAW_COLLIDER = AK_FALSE;
 
 	// Set IBL Strength
@@ -141,6 +143,8 @@ AkBool SceneInGame::EndScene()
 	}
 
 	DeleteAllGameObject();
+
+	ShowCursor(AK_TRUE);
 
 	return AK_TRUE;
 }

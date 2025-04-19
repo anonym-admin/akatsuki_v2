@@ -95,6 +95,7 @@ struct ParticleParam_t
 	const Vector4* pColorOverLifeTime = nullptr;
 	const Vector2* pMaxFrame = nullptr;
 	const Vector2* pCurFrame = nullptr;
+	AkI32 iType = -1;
 };
 
 struct RenderOceanParam_t

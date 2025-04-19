@@ -74,12 +74,12 @@ DWORD FRenderTransparent::Process(DWORD uThreadIndex, FCommandListPool* pCmdList
 			{
 				FParticle* pParticle = (FParticle*)pItem->pObjHandle;
 				
-				if(pItem->tParticleParam.uParticleNum)
+				if(0 == pItem->tParticleParam.iType)
 				{
 					// Draw Spark
 					pParticle->Draw(uThreadIndex, pCmdList, &pItem->tParticleParam.mWorld, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.uParticleNum, pItem->tParticleParam.fTime, pItem->tParticleParam.fDuration, pItem->tParticleParam.pStartSize, pItem->tParticleParam.pStartDirection, pItem->tParticleParam.fSizeOverLifeTime, pItem->tParticleParam.pRotOverLifeTime, pItem->tParticleParam.pTotalColor, pItem->tParticleParam.pColorOverLifeTime);
 				}
-				else
+				else if(1 == pItem->tParticleParam.iType)
 				{
 					// Draw Sprite
 					pParticle->Draw(uThreadIndex, pCmdList, pItem->tParticleParam.pDBHandle, pItem->tParticleParam.pMaxFrame, pItem->tParticleParam.pCurFrame);

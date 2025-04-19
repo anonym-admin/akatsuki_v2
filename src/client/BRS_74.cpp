@@ -151,7 +151,7 @@ void BRS_74::OnCollisionExit(Collider* pOther)
 void BRS_74::Fire()
 {
 	static AkF32 fAccTime = 0.0f;
-	
+
 	_bFire = AK_TRUE;
 
 	Vector3 vPos = _pTransform->GetGlobalPosition();
@@ -159,16 +159,12 @@ void BRS_74::Fire()
 
 	vPos += vOffset;
 
-	// if (!_bFirst)
-	// {
-		_pMuzzleEffect->Play(&vPos);
-	// }
+	_pMuzzleEffect->Play(&vPos);
 
 	fAccTime += DT;
 
 	if (fAccTime < 0.1f)
 	{
-		// _bFirst = AK_FALSE;
 		return;
 	}
 

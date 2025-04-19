@@ -11,6 +11,8 @@
 #include "Weapon.h"
 #include "Sprite.h"
 #include "BRS_74.h"
+#include "Scene.h"
+#include "Spark.h"
 
 Soldier::Soldier()
 {
@@ -199,6 +201,9 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 	_iAimRenderPosX = (AkI32)(iScreenSizeX * 0.5f);
 	_iAimRenderPosY = (AkI32)(iScreenSizeY * 0.5f);
 
+	// Create Ammo Spark.
+	_pSpark = new Spark(L"../../assets/particle/spark.fx");
+
 	return AK_TRUE;
 }
 
@@ -248,6 +253,9 @@ void Soldier::Render()
 	// Render Aim Sprite.
 	if(Aim)
 		GRenderer->RenderSprite(_pAimSprite, _iAimRenderPosX, _iAimRenderPosY, 1.0f, 1.0f, 0.0f, AK_FALSE);
+
+	if (Fire)
+		_pSpark->Render();
 }
 
 void Soldier::RenderShadowMaps()
@@ -327,6 +335,12 @@ void Soldier::CleanUp()
 	{
 		_pAimSprite->Release();
 		_pAimSprite = nullptr;
+	}
+
+	if (_pSpark)
+	{
+		delete _pSpark;
+		_pSpark = nullptr;
 	}
 }
 
@@ -462,6 +476,55 @@ void Soldier::UpdateWeapon()
 	if (Fire)
 	{
 		((BRS_74*)_pWeapon)->Fire();
+		
+		// Ammo Spark 업데이트
+		_pSpark->Update();
+
+		// 모든 GameObj 를 Attach.
+		GameObjContainer_t** ppGameObj = GSceneManager->GetCurrentScene()->GetAllGameObject();
+
+		// Ray 를 쏜다.
+		Vector3 rayStartPos = _pCamera->GetTransform()->GetGlobalPosition();
+		Vector3 rayDirection = _pCamera->GetTransform()->Front();
+		DirectX::SimpleMath::Ray ray(rayStartPos, rayDirection);
+
+		Vector3 vHitPos = Vector3(0.0f);
+		AkF32 fDist = 0.0f;
+		for (AkU32 i = 0; i < (AkU32)GAME_OBJECT_GROUP_TYPE::COUNT; i++)
+		{
+			if (ppGameObj[i])
+			{
+				List_t* pCur = ppGameObj[i]->pGameObjHead;
+				while (pCur != nullptr)
+				{
+					Actor* pObj = (Actor*)pCur->pData;
+
+					if (pObj->Cull)
+					{
+						pCur = pCur->pNext;
+						continue;
+					}
+					
+					std::wstring wcTempName = pObj->Name;
+					
+					// Container 에 대해 ray cast 시도.
+					if (wcTempName.find(L"container") != std::wstring::npos)
+					{
+						Collider* pCollider = pObj->GetCollider();
+						AkBool bIntersect = pCollider->RayIntersect(ray, &vHitPos, &fDist);
+						if (bIntersect)
+						{
+							// 가장 최소값의 거리에 있는 오브젝트가 최종 충돌.
+							// TODO:
+							
+							_pSpark->Play(&vHitPos);
+						}
+					}
+
+					pCur = pCur->pNext;
+				}
+			}
+		}
 	}
 }
 

@@ -36,4 +36,6 @@ public:
 private:
 	Vector3 _vMin = Vector3(0.0f);
 	Vector3 _vMax = Vector3(0.0f);
+
+	LineData_t* _pCubeData = nullptr;
 };
