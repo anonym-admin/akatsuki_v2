@@ -3,9 +3,11 @@
 
 그림자 랜더링의 경우 Cascade Shadow Map 기술을 활용해 전역조명이 비추는것 처럼 그림자 랜더링이 가능합니다. 그림자의 경우 카메라의 이동에 따른 특정 시야각에서 짤리는 현상이 발생합니다. 뷰프러스텀에 의한 현상으로 추측되는데, 이는 현재 오류를 잡기위해 노력중입니다.
 
-실행파일의 위치는 아래와 같습니다.
+실행파일의 링크는 아래에 따로 공유합니다.
 
-akatsuki/bin/Release/akatsuki_client_x64.exe
+https://github.com/anonym-admin/binary/tree/master
+
+실행파일 경로: bin/Release/akatsuki_client_x64.exe
 
 F5 버튼을 누르면 에디터를 선택할 수 있는 화면으로 전환되고 console 창에 진입하고 싶은 에디터의 번호를 입력하면 됩니다.
 
