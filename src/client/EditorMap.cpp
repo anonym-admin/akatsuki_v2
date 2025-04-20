@@ -46,18 +46,18 @@ AkBool EditorMap::Initialize()
 	GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSky8KEnvHDR.dds", L"PureSky8KDiffuseHDR.dds", L"PureSky8KSpecularHDR.dds", L"PureSky8KBrdf.dds");
 	// GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
 
-	//// CSG Clipper.
-	//_pCSGCube = GRenderer->CreateBasicMeshObject();
-	//_pCube = GeometryGenerator::MakeCube(&vMin, &vMax);
-	//_pCSGDBHandle = _pCSGCube->CreateDynamicMeshBuffers(_pCube->pVertices, _pCube->uVerticeNum, _pCube->pIndices, _pCube->uIndicesNum);
+	// Create Grass Model.
+	AkU32 uMeshDataNum = 0;
+	MeshData_t* pGrassMeshData = GeometryGenerator::MakeGrass(&uMeshDataNum);
+	_pGrass = GRenderer->CreateBasicMeshObject();
+	_pGrass->CreateMeshBuffers(pGrassMeshData, uMeshDataNum);
+	GeometryGenerator::DestroyGeometry(pGrassMeshData, uMeshDataNum);
 
 	return AK_TRUE;
 }
 
 AkBool EditorMap::BeginEditor()
 {
-	// Scene 또는 다른 Editor 에서 전환된 카메라 위치 방향 조정.
-	// TODO!!
 	_pCamera->GetTransform()->SetPosition(100.0f, 100.0f, -150.0f);
 	_pCamera->GetTransform()->SetRotation(-0.6f, 0.5f, 0.0f);
 	_bFPV = AK_FALSE;
@@ -123,9 +123,6 @@ void EditorMap::Update()
 
 	// Delete Process.
 	UpdateObjectDeleteState();
-
-	//// Update CSG
-	// GRenderer->UpdateDynamicVertexBuffer(_pCSGDBHandle, _pCube->pVertices);
 }
 
 void EditorMap::Render()
@@ -157,10 +154,9 @@ void EditorMap::Render()
 		}
 	}
 
-	//// CSG
-	//Matrix world = Matrix::CreateRotationX(DirectX::XM_PIDIV2) * Matrix::CreateTranslation(Vector3(0.0f, 0.5f, 0.0f));
-	// _mCSGWorldRow = Matrix::CreateTranslation(Vector3(0.0f, 1.0f, 0.0f));
-	// GRenderer->RenderBasicMeshObject(_pCSGCube, &_mCSGWorldRow);
+	// Render Grass.
+	Matrix mWorldRow = Matrix();
+	GRenderer->RenderBasicMeshObject(_pGrass, &mWorldRow);
 }
 
 void EditorMap::RenderShadowMaps()
@@ -305,13 +301,6 @@ void EditorMap::Load(const std::wstring& wcFilePath)
 		delete _pTerrainEdit;
 		_pTerrainEdit = nullptr;
 	}
-
-	//// TODO!!
-	//for (auto& e : _vecGameObj)
-	//{
-	//	delete e;
-	//	e = nullptr;
-	//}
 
 	// 01. map files.
 	wchar_t wcName[_MAX_PATH] = {};
@@ -545,21 +534,11 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 
 void EditorMap::CleanUp()
 {
-	//if (_pCSGDBHandle)
-	//{
-	//	_pCSGCube->DestoryDynamicVertexBuferHandle(_pCSGDBHandle);
-	//	_pCSGDBHandle = nullptr;
-	//}
-	//if (_pCube)
-	//{
-	//	GeometryGenerator::DestroyGeometry(_pCube, 1);
-	//	_pCube = nullptr;
-	//}
-	//if (_pCSGCube)
-	//{
-	//	_pCSGCube->Release();
-	//	_pCSGCube = nullptr;
-	//}
+	if (_pGrass)
+	{
+		_pGrass->Release();
+		_pGrass = nullptr;
+	}
 
 	for (auto& e : _vecLights)
 	{
@@ -615,7 +594,6 @@ Ocean* EditorMap::CreateOcean()
 	wchar_t wcBuf[32] = {};
 	_itow_s(id, wcBuf, 10);
 	wcscat_s(pOcean->Name, wcBuf);
-	// _vecActFileNameList.push_back(pOcean->Name);
 	id++;
 	return pOcean;
 }
@@ -629,7 +607,6 @@ Cloud* EditorMap::CreateCloud()
 	wchar_t wcBuf[32] = {};
 	_itow_s(id, wcBuf, 10);
 	wcscat_s(pCloud->Name, wcBuf);
-	// _vecActFileNameList.push_back(pCloud->Name);
 	id++;
 	return pCloud;
 }

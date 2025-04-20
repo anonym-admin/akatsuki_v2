@@ -1023,6 +1023,43 @@ LineData_t* GeometryGenerator::MakeCapsule(const AkF32 fRadius, const AkF32 fHei
 	return pLineData;
 }
 
+MeshData_t* GeometryGenerator::MakeGrass(AkU32* pOutMeshDataNum)
+{
+	AkU32 uMeshDataNum = 0;
+	MeshData_t* pGrid = GeometryGenerator::MakeGrid(&uMeshDataNum, 1.0f, 1, 4);
+
+	std::vector<Vertex_t> vertices(pGrid->uVerticeNum);
+	std::vector<AkU32> indices(pGrid->uIndicesNum);
+
+	memcpy(vertices.data(), pGrid->pVertices, sizeof(Vertex_t) * vertices.size());
+	memcpy(indices.data(), pGrid->pIndices, sizeof(AkU32) * indices.size());
+
+	for (auto& v : vertices)
+	{
+		v.vPosition.x *= 0.02f;
+		v.vPosition.y = v.vPosition.y * 0.5f + 0.5f;
+	}
+
+	indices.erase(indices.end() - 4, indices.end() - 1);
+	vertices.erase(vertices.end() - 1);
+	vertices[0].vPosition.x = 0.0f;
+	vertices[0].vTexCoord.x = 0.5f;
+
+	GeometryGenerator::DestroyGeometry(pGrid, uMeshDataNum);
+
+	MeshData_t* pGrass = new MeshData_t;
+	pGrass->pVertices = new Vertex_t[vertices.size()];
+	pGrass->pIndices = new AkU32[indices.size()];
+	pGrass->uVerticeNum = (AkU32)vertices.size();
+	pGrass->uIndicesNum = (AkU32)indices.size();
+	memcpy(pGrass->pVertices, vertices.data(), sizeof(Vertex_t) * pGrass->uVerticeNum);
+	memcpy(pGrass->pIndices, indices.data(), sizeof(AkU32) * pGrass->uIndicesNum);
+
+	*pOutMeshDataNum = uMeshDataNum;
+
+	return pGrass;
+}
+
 // 비동기 처리 필요!!
 MeshData_t* GeometryGenerator::ReadFromFile(AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bIsAnim, Matrix* pDefaultMat, Matrix const** pBoneOffsetMat, AkI32 const** pBoneHierarchy, AkU32* pBoneNum, char*** pppBoneName)
 {

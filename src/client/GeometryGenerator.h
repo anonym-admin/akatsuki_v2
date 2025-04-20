@@ -25,6 +25,7 @@ public:
 	static MeshData_t* MakeWireSphere(AkU32* pMeshDataNum, const AkF32 fScale = 1.0f);
 	static MeshData_t* MakeGrid(AkU32* pMeshDataNum, const AkF32 fScale, const AkU32 uNumSlices, const AkU32 uNumStacks, const Vector2* pTexScale = nullptr);
 	static LineData_t* MakeCapsule(const AkF32 fRadius, const AkF32 fHeight, AkU32 uStack, AkU32 uSlice, const Vector3* pColor);
+	static MeshData_t* MakeGrass(AkU32* pOutMeshDataNum);
 	static MeshData_t* ReadFromFile(AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bIsAnim = false, Matrix* pDefaultMat = nullptr, Matrix const** pBoneOffsetMat = nullptr, AkI32 const** pBoneHierarchy = nullptr, AkU32* pBoneNum = nullptr, char*** ppBoneName = nullptr);
 	static void NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum, AkF32 fScaleLength);
 	static void NormalizeMeshData(MeshData_t* pMeshData, AkU32 uMeshDataNum, const AkF32 fScaleLength, AkBool bIsAnim , Matrix* pDefaultMatrix);
