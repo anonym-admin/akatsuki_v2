@@ -193,6 +193,8 @@
     <ClInclude Include="CloudModel.h" />
     <ClInclude Include="CollisionManager.h" />
     <ClInclude Include="FrustumCulling.h" />
+    <ClInclude Include="Grass.h" />
+    <ClInclude Include="GrassModel.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="ModelExporter.h" />
     <ClInclude Include="ModelObject.h" />
@@ -287,6 +289,8 @@
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
     <ClCompile Include="FrustumCulling.cpp" />
+    <ClCompile Include="Grass.cpp" />
+    <ClCompile Include="GrassModel.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="ModelExporter.cpp" />
     <ClCompile Include="ModelObject.cpp" />

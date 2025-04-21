@@ -13,6 +13,7 @@ class Billboard;
 class Light;
 class Ocean;
 class Cloud;
+class Grass;
 
 class EditorMap : public Editor
 {
@@ -38,6 +39,7 @@ private:
 	Billboard* CreateBillboards(const std::wstring& wcFilePath, VertexSize_t* pVertices, AkU32 uNum);
 	Ocean* CreateOcean();
 	Cloud* CreateCloud();
+	Grass* CreateGrass();
 	Light* CreateLight();
 
 	void ImportMap(const std::wstring& wcFilePath);
@@ -97,8 +99,5 @@ private:
 
 	// Light
 	std::vector<Light*> _vecLights = {};
-
-	// Grass
-	IMeshObject* _pGrass = nullptr;
 };
 

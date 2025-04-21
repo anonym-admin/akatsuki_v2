@@ -12,8 +12,7 @@
 #include "Tree.h"
 #include "StoneModel.h"
 #include "Stone.h"
-
-#include <random>
+#include "Grass.h"
 
 /*
 =============
@@ -47,42 +46,6 @@ AkBool EditorMap::Initialize()
 	// Add Cube Map Texture.
 	GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSky8KEnvHDR.dds", L"PureSky8KDiffuseHDR.dds", L"PureSky8KSpecularHDR.dds", L"PureSky8KBrdf.dds");
 	// GAssetManager->AddCubeMapTexture(IBL_FILE_PATH, L"PureSkyEnvHDR.dds", L"PureSkyDiffuseHDR.dds", L"PureSkySpecularHDR.dds", L"PureSkyBrdf.dds");
-
-	// Create Grass Model.
-	AkU32 uMeshDataNum = 0;
-	MeshData_t* pGrassMeshData = GeometryGenerator::MakeGrass(&uMeshDataNum);
-	_pGrass = GRenderer->CreateBasicMeshObject();
-	_pGrass->CreateMeshBuffers(pGrassMeshData, uMeshDataNum);
-	GeometryGenerator::DestroyGeometry(pGrassMeshData, uMeshDataNum);
-
-	// Instance »ý¼º
-	std::mt19937 gen(0);
-	std::uniform_real_distribution<float> dist(0.0f, 1.0f);
-
-	AkU32 uInstanceCount = 2'500;
-	VertexInstance_t* pInstance = new VertexInstance_t[uInstanceCount];
-	for (AkU32 i = 0; i < uInstanceCount; i++)
-	{
-		const AkF32 fLengthScale = dist(gen) * 0.7f + 0.3f;
-		const AkF32 fWidthScale = dist(gen) * 0.5f + 0.5f;
-		const Vector3 vPosition = Vector3(dist(gen) * 2.0f - 1.0f, 0.0f, dist(gen) * 2.0f - 1.0f) * 0.5f;
-		const AkF32 fAngle = dist(gen) * DirectX::XM_PI;
-		const AkF32 fSlope = (dist(gen) - 0.5f) * 2.0f * DirectX::XM_PI * 0.2f;
-
-		VertexInstance_t Inst;
-		Inst.mInstanceWorld = Matrix::CreateRotationX(fSlope) * Matrix::CreateRotationY(fAngle) *
-							  Matrix::CreateScale(fWidthScale, fLengthScale, 1.0f) * Matrix::CreateTranslation(vPosition);
-		Inst.mInstanceWorld = Inst.mInstanceWorld.Transpose();
-		Inst.fWindStrength = 0.5f;
-
-		pInstance[i] = Inst;
-	}
-
-	_pGrass->CreateInstanceBuffers(pInstance, uInstanceCount);
-	_pGrass->SetIBLStrength(0.15f);
-
-	delete[] pInstance;
-	pInstance = nullptr;
 
 	return AK_TRUE;
 }
@@ -184,10 +147,6 @@ void EditorMap::Render()
 			e.second->Render();
 		}
 	}
-
-	// Render Grass.
-	Matrix mWorldRow = Matrix();
-	GRenderer->RenderBasicMeshObject(_pGrass, &mWorldRow);
 }
 
 void EditorMap::RenderShadowMaps()
@@ -304,6 +263,12 @@ void EditorMap::RenderGUI()
 		{
 			Cloud* pCloud = CreateCloud();
 			_mapGameObj[pCloud->Name].push_back(std::make_pair(pCloud, false));
+		}
+		// Create Grass.
+		if (ImGui::Button("Create Grass"))
+		{
+			Grass* pGrass = CreateGrass();
+			_mapGameObj[pGrass->Name].push_back(std::make_pair(pGrass, false));
 		}
 	}
 	ImGui::End();
@@ -565,12 +530,6 @@ void EditorMap::Save(const std::wstring& wcFilePath)
 
 void EditorMap::CleanUp()
 {
-	if (_pGrass)
-	{
-		_pGrass->Release();
-		_pGrass = nullptr;
-	}
-
 	for (auto& e : _vecLights)
 	{
 		delete e;
@@ -640,6 +599,19 @@ Cloud* EditorMap::CreateCloud()
 	wcscat_s(pCloud->Name, wcBuf);
 	id++;
 	return pCloud;
+}
+
+Grass* EditorMap::CreateGrass()
+{
+	static AkI32 id = 0;
+	Grass* pGrass = new Grass;
+	pGrass->SetEditMode(AK_TRUE);
+	wcscpy_s(pGrass->Name, L"Grass_");
+	wchar_t wcBuf[32] = {};
+	_itow_s(id, wcBuf, 10);
+	wcscat_s(pGrass->Name, wcBuf);
+	id++;
+	return pGrass;
 }
 
 Light* EditorMap::CreateLight()

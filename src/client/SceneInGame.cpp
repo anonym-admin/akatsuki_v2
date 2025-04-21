@@ -16,6 +16,7 @@
 #include "Tree.h"
 #include "TreeModel.h"
 #include "Stone.h"
+#include "Grass.h"
 #include "StoneModel.h"
 #include "FrustumCulling.h"
 
@@ -292,6 +293,11 @@ void SceneInGame::Load(const wchar_t* wcSceneFile)
 			else if (wcTempName.find(L"Cloud") != std::wstring::npos)
 			{
 				pActor = new Cloud;
+				eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
+			}
+			else if (wcTempName.find(L"Grass") != std::wstring::npos)
+			{
+				pActor = new Grass;
 				eGameObjType = GAME_OBJECT_GROUP_TYPE::MAP;
 			}
 			else if (wcTempName.find(L"tree") != std::wstring::npos)
