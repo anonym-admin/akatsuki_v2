@@ -98,6 +98,7 @@ void Terrain::OnCollision(Collider* pOther)
 	Actor* pOtherActor = pOther->GetOwner();
 	if (!wcscmp(pOtherActor->Name, L"soldier"))
 	{
+		// if(!pOtherActor->Jumping)
 		UpdateHeight(pOtherActor);
 	}
 }
@@ -107,6 +108,7 @@ void Terrain::OnCollisionEnter(Collider* pOther)
 	Actor* pOtherActor = pOther->GetOwner();
 	if (!wcscmp(pOtherActor->Name, L"soldier"))
 	{
+		// if (!pOtherActor->Jumping)
 		UpdateHeight(pOtherActor);
 	}
 }

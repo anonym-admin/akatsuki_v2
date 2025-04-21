@@ -15,7 +15,7 @@ class FPostProcess
 public:
 	static const AkU32 DESCRIPTOR_COUNT_PER_BLOOM = 2; // t0, b0
 	static const AkU32 MAX_BLOOM_LEVEL = 4;
-	static const AkU32 DESCCIPTOR_COUNT_COMBINE = 3; // t0, t1, b0
+	static const AkU32 DESCCIPTOR_COUNT_COMBINE = 4; // t0, t1, t2, b0
 	static const AkU32 MAX_DESCRIPTOR_COUNT = DESCRIPTOR_COUNT_PER_BLOOM * MAX_BLOOM_LEVEL + DESCCIPTOR_COUNT_COMBINE;
 
 	FPostProcess();

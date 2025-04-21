@@ -65,6 +65,7 @@ void FImageFilter::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList,
     pPostProcessConstantBuffer->fExposure = 1.0f;
     pPostProcessConstantBuffer->fGamma = 2.2f;
     pPostProcessConstantBuffer->uOption0 = (AkU32)_pRenderer->GetToneMappingType(); // Default : Linear
+    pPostProcessConstantBuffer->fOption1 = _pRenderer->GetMotionBlurScale(); // Motion blur scale
 
     // b0
     CD3DX12_CPU_DESCRIPTOR_HANDLE hDest(*pCPU, 0, uDecriptorSize);

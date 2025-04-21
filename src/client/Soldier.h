@@ -2,6 +2,12 @@
 
 #include "Player.h"
 
+/*
+==========
+Soldier
+==========
+*/
+
 class Weapon;
 class Spark;
 
@@ -46,6 +52,8 @@ public:
 		RIFLE_RUN_LEFT_BDIAG,
 		FIRE_STOP,
 		PUNCH_STOP,
+		WALK_JUMP,
+		RIFLE_JUMP,
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
 	} AnimState;
 	

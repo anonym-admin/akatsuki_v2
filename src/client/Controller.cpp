@@ -86,6 +86,9 @@ void Controller::Mouse()
 
 void Controller::KeyBoard()
 {
+	// Motion Blur Test.
+	GRenderer->SetMotionBlurScale(0.0f);
+
 	Soldier* pSoldier = (Soldier*)_pOwner;
 
 	if (pSoldier->Attack || pSoldier->Jumping || pSoldier->Fire)
@@ -123,27 +126,27 @@ void Controller::KeyBoard()
 		if (KEY_HOLD(KEY_INPUT_LSHIFT))
 			bSpeedUp = AK_TRUE;
 	}
-	if (KEY_DOWN(KEY_INPUT_V))
-	{
-
-	}
 	if (KEY_DOWN(KEY_INPUT_SPACE))
 	{
-		//if (Soldier::F_RUN == AnimState || Soldier::F_WALK == AnimState)
-		//{
-		//	pSwat->Jumping = AK_TRUE;
-		//	pSwat->SetAnimation(Soldier::RUN_JUMP);
-		//}
-		//if (Soldier::IDLE == AnimState || Soldier::RIFLE_IDLE == AnimState)
-		//{
-		//	pSwat->Jumping = AK_TRUE;
-		//	pSwat->SetAnimation(Soldier::IDLE_JUMP);
-		//}
+		if (Soldier::WALK <= AnimState && AnimState <= Soldier::WALK_LEFT_BDIAG)
+		{
+			pSoldier->Jumping = AK_TRUE;
+			pSoldier->SetAnimation(Soldier::WALK_JUMP);
+		}
+		if (Soldier::RIFLE_IDLE == AnimState || AnimState == Soldier::FIRE_STOP)
+		{
+			pSoldier->Jumping = AK_TRUE;
+			pSoldier->SetAnimation(Soldier::RIFLE_JUMP);
+		}
 	}
 
 	vVelocity.Normalize();
 	vVelocity *= fMoveSpeed;
 	if (bSpeedUp)
+	{
 		pRigidBody->SetMaxVeleocity(pSoldier->GetRunSpeed());
+
+		GRenderer->SetMotionBlurScale(0.8f);
+	}
 	pRigidBody->AddVelocity(&vVelocity);
 }

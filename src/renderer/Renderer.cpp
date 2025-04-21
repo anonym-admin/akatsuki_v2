@@ -543,6 +543,11 @@ AkBool FRenderer::UpdateWindowSize(AkU32 uScreenWidth, AkU32 uScreenHeight)
 		_ppBackBuffer[i]->Release();
 		_ppBackBuffer[i] = nullptr;
 	}
+	if (_pPrevBuffer)
+	{
+		_pPrevBuffer->Release();
+		_pPrevBuffer = nullptr;
+	}
 	if (_pFloatBuffer)
 	{
 		_pFloatBuffer->Release();
@@ -1959,7 +1964,7 @@ AkBool FRenderer::CreateCmdQueue()
 AkBool FRenderer::CreateDescriptorForRTV()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC tRtvHeapDesc = {};
-	tRtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT + MAX_FRAME_BUFFER_COUNT + _uBloomLevels; // Float Rtv + Resolved Rtv + Post Effect Rtv.
+	tRtvHeapDesc.NumDescriptors = SWAP_CHAIN_FRAME_COUNT + MAX_FRAME_BUFFER_COUNT + _uBloomLevels + 1; // Float Rtv + Resolved Rtv + Post Effect Rtv + Prev Rtv.
 	tRtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	tRtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	if (FAILED(_pDevice->CreateDescriptorHeap(&tRtvHeapDesc, IID_PPV_ARGS(&_pRTVHeap))))
@@ -2026,13 +2031,45 @@ AkBool FRenderer::CreateSwapChain(IDXGIFactory4* pFactory, AkU32 uScreenWidth, A
 
 AkBool FRenderer::CreateRTVs()
 {
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart());
-
-	for (AkU32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
+	// Create back buffer render target view.
 	{
-		_pSwapChain->GetBuffer(i, IID_PPV_ARGS(&_ppBackBuffer[i]));
-		_pDevice->CreateRenderTargetView(_ppBackBuffer[i], nullptr, hRtvCpu);
-		hRtvCpu.Offset(1, _uRTVDesciptorSize);
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart());
+
+		for (AkU32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
+		{
+			_pSwapChain->GetBuffer(i, IID_PPV_ARGS(&_ppBackBuffer[i]));
+			_pDevice->CreateRenderTargetView(_ppBackBuffer[i], nullptr, hRtvCpu);
+			hRtvCpu.Offset(1, _uRTVDesciptorSize);
+		}
+
+		// 이전 프레임 저장 버퍼
+		D3D12_RESOURCE_DESC tRtvDesc = {};
+		tRtvDesc = _ppBackBuffer[0]->GetDesc();
+
+		D3D12_CLEAR_VALUE tClearValue = {};
+		memcpy(tClearValue.Color, _pRTVClearColor, sizeof(_pRTVClearColor));
+		tClearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+		if (FAILED(_pDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE, &tRtvDesc, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, &tClearValue, IID_PPV_ARGS(&_pPrevBuffer))))
+		{
+			__debugbreak();
+			return AK_FALSE;
+		}
+	}
+
+	// Create prev buffer render target view and shader resource view.
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hRtvCpu(_pRTVHeap->GetCPUDescriptorHandleForHeapStart(), SWAP_CHAIN_FRAME_COUNT + FLOAT16_BUFFER_COUNT + RESOLVED_BUFFER_COUNT + 1, _uRTVDesciptorSize);
+
+		_pDevice->CreateRenderTargetView(_pPrevBuffer, nullptr, hRtvCpu);
+
+		CD3DX12_CPU_DESCRIPTOR_HANDLE hSrvCpu = {};
+		if (_pDescriptorAllocator->AllocDescriptorHandle(&hSrvCpu))
+		{
+			_pDevice->CreateShaderResourceView(_pPrevBuffer, nullptr, hSrvCpu);
+		}
+
+		_hPrevSrvCpu = hSrvCpu;
 	}
 
 	return AK_TRUE;
@@ -2641,6 +2678,12 @@ void FRenderer::DestroyDescriptorForDSV()
 
 void FRenderer::DestroyRTVs()
 {
+	if (_pPrevBuffer)
+	{
+		_pPrevBuffer->Release();
+		_pPrevBuffer = nullptr;
+	}
+
 	for (AkU32 i = 0; i < SWAP_CHAIN_FRAME_COUNT; i++)
 	{
 		if (_ppBackBuffer[i])

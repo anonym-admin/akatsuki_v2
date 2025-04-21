@@ -14,6 +14,12 @@
 #include "Scene.h"
 #include "Spark.h"
 
+/*
+==========
+Soldier
+==========
+*/
+
 Soldier::Soldier()
 {
 	if (!Initialize())
@@ -123,6 +129,8 @@ AkBool Soldier::Initialize(const wchar_t* wcFile)
 		memcpy(ANIM_CLIP[i], pAnimContainer->wcClipName[i], sizeof(wchar_t) * MAX_PATH);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[FIRE_STOP], this, ::SetIdle);
 	_pAnimation->SetEndCallBack(ANIM_CLIP[PUNCH_STOP], this, ::SetIdle);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[WALK_JUMP], this, ::SetIdle);
+	_pAnimation->SetEndCallBack(ANIM_CLIP[RIFLE_JUMP], this, ::SetIdle);
 	SetAnimation(IDLE);
 
 	// 02. 위의 1번에서 얻은 파일 경로로 부터 무기 정보 파일을 로드한다.

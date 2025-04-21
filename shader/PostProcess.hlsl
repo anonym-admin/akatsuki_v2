@@ -1,5 +1,6 @@
 Texture2D tex0 : register(t0);
 Texture2D tex1 : register(t1);
+Texture2D prev : register(t2);
 SamplerState linearClampSS : register(s0);
 
 cbuffer Const : register(b0)
@@ -76,7 +77,8 @@ float4 PSMain(PostProcessPSInput input) : SV_TARGET
     float3 color1 = tex1.Sample(linearClampSS, input.texCoord).rgb;
     
     float3 combined = (1.0 - strength) * color0 + strength * color1;
-
+    
+    // Tone Mapping
     [flatten]
     if (0 == option0)
         combined = LinearToneMapping(combined);
@@ -84,6 +86,8 @@ float4 PSMain(PostProcessPSInput input) : SV_TARGET
         combined = Uncharted2ToneMapping(combined);
     else if (2 == option0)
         combined = FilmicToneMapping(combined);
+    
+    combined = lerp(combined, prev.Sample(linearClampSS, input.texCoord).rgb, option1);
     
     return float4(combined, 1.0);
 }

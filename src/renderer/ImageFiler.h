@@ -11,7 +11,7 @@ class FRenderer;
 class FImageFilter
 {
 public:
-	static const AkU32 MAX_CPU_HANDLE_COUNT = 2;
+	static const AkU32 MAX_CPU_HANDLE_COUNT = 3;
 
 	FImageFilter();
 	~FImageFilter();

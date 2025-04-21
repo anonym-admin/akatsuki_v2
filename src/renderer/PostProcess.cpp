@@ -112,6 +112,28 @@ void FPostProcess::Process(AkU32 uThreadIndex, FCommandListPool* pCmdListPool, I
 
 	pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetPostEffectBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
+	// 모션 블러 관련 코드.
+	{
+		D3D12_RESOURCE_BARRIER pBarriersBegin[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_SOURCE),
+			CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetPrevBuffer(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST),
+		};
+
+		pCmdList->ResourceBarrier(_countof(pBarriersBegin), pBarriersBegin);
+
+		// 이전 프레임의 결과를 저장한다.
+		pCmdList->CopyResource(_pRenderer->GetPrevBuffer(), _pRenderer->GetBackBuffer());
+
+		D3D12_RESOURCE_BARRIER pBarriersEnd[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetBackBuffer(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET),
+			CD3DX12_RESOURCE_BARRIER::Transition(_pRenderer->GetPrevBuffer(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE),
+		};
+
+		pCmdList->ResourceBarrier(_countof(pBarriersEnd), pBarriersEnd);
+	}
+
 	pCmdListPool->Close();
 	pCmdQueue->ExecuteCommandLists(1, (ID3D12CommandList**)&pCmdList);
 }
@@ -224,7 +246,7 @@ AkBool FPostProcess::CreateRootSignature()
 	{
 		CD3DX12_DESCRIPTOR_RANGE tRanges[2] = {};
 		tRanges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0
-		tRanges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 0); // t0, t1
+		tRanges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0); // t0, t1, t2
 
 		CD3DX12_ROOT_PARAMETER tRootParameters[1] = {};
 		tRootParameters[0].InitAsDescriptorTable(_countof(tRanges), tRanges, D3D12_SHADER_VISIBILITY_ALL);
@@ -468,6 +490,7 @@ AkBool FPostProcess::CreateImageFilters(AkU32 uWidth, AkU32 uHeight)
 	{
 		_pRenderer->GetPostEffectBufferrSrvCpu(),
 		_hSrvCpu[0],
+		_pRenderer->GetPrevBufferSrcCpu(),
 	};
 	_pCombineFilter = new FImageFilter;
 	_pCombineFilter->Initialize(_pRenderer, uWidth, uHeight, _pCombineRootSignature, _pCombinePSO);

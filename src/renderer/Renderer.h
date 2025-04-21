@@ -125,6 +125,7 @@ public:
 	virtual void SetBloomStrength(AkF32 uStrength) override { _fBloomStrength = uStrength; }
 	virtual void SetFullScreen(AkBool bIsFullScreen) override;
 	virtual void SetTotalTime(AkF32 fTime) override;
+	virtual void SetMotionBlurScale(AkF32 fMotionBlurScale) override { _fMotionBlurScale = fMotionBlurScale; }
 	virtual void GetCameraPosition(AkF32* pX, AkF32* pY, AkF32* pZ) override;
 	virtual Vector3 GetWorldNearPosition(AkF32 fNdcX, AkF32 fNdcY) override;
 	virtual Vector3 GetWorldFarPosition(AkF32 fNdcX, AkF32 fNdcY) override;
@@ -164,10 +165,12 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetFloatBufferSrvCpu() { return _hFloatBufferSrvCpu; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetResolvedBufferSrvCpu() { return _hResolvedBufferSrvCpu; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetPostEffectBufferrSrvCpu() { return _hPostEffectBufferSrvCpu; }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetPrevBufferSrcCpu() { return _hPrevSrvCpu; }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetDepthMapBufferSrvCpu() { return _hDepthMapSrvCpu; }
 	ID3D12Resource* GetResolvedBuffer() { return _pResolvedBuffer; }
 	ID3D12Resource* GetPostEffectBuffer() { return _pPostEffectBuffer; }
 	ID3D12Resource* GetBackBuffer() { return _ppBackBuffer[_uRTIndex]; }
+	ID3D12Resource* GetPrevBuffer() { return _pPrevBuffer; }
 	ID3D12Resource* GetDepthMapBuffer() { return _pDepthOnlyDS; }
 	ID3D12DescriptorHeap* GetRtvHeap() { return _pRTVHeap; }
 	AkU32 GetRtvDescriptorSize() { return _uRTVDesciptorSize; }
@@ -177,6 +180,7 @@ public:
 	AkU32 GetNumQualityLevel() { return _uNumQualityLevels; }
 	AkU32 GetBloomLevel() { return _uBloomLevels; }
 	AkI32 GetToneMappingType() { return _iToneMappingType; }
+	AkF32 GetMotionBlurScale() { return _fMotionBlurScale; }
 	AkF32 GetBloomStrength() { return _fBloomStrength; }
 	AkF32 GetToltalTime() { return _fTotalTime; }
 
@@ -287,6 +291,7 @@ private:
 	AkF32 _fNear = 0.1f;
 	AkF32 _fFar = 1000.0f;
 	AkBool _bFullScreen = AK_FALSE;
+	AkF32 _fMotionBlurScale = 0.0f;
 	AkF32 _pRTVClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	volatile AkU32 _uActiveThreadCount = 0;
 	TextureHandle_t* _pIrradianceIBLTexHandle = nullptr;
@@ -310,9 +315,11 @@ private:
 	ID3D12Resource* _pFloatBuffer = nullptr;
 	ID3D12Resource* _pResolvedBuffer = nullptr;
 	ID3D12Resource* _pPostEffectBuffer = nullptr;
+	ID3D12Resource* _pPrevBuffer = nullptr;
 	D3D12_CPU_DESCRIPTOR_HANDLE _hFloatBufferSrvCpu = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE _hResolvedBufferSrvCpu = {};
 	D3D12_CPU_DESCRIPTOR_HANDLE _hPostEffectBufferSrvCpu = {};
+	D3D12_CPU_DESCRIPTOR_HANDLE _hPrevSrvCpu = {};
 	DXGI_FORMAT _tBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	DXGI_FORMAT _tFloatBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	AkF32 _fIBLStrength = 1.0f;
