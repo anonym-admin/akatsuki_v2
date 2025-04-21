@@ -377,5 +377,8 @@
     <CustomBuild Include="..\..\shader\CloudLight.hlsl">
       <Filter>shader</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\shader\Grass.hlsl">
+      <Filter>shader</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

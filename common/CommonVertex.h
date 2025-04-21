@@ -18,6 +18,12 @@ struct Vertex_t
 	Vector3 vTangentModel = Vector3(0.0f);
 };
 
+struct VertexInstance_t
+{
+	Matrix mInstanceWorld = Matrix();
+	AkF32 fWindStrength = 0.0f;
+};
+
 struct SkinnedVertex_t
 {
 	Vector3 vPosition = Vector3(0.0f);

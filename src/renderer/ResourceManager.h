@@ -17,6 +17,7 @@ public:
 	AkBool CreateDynamicDefaultBuffer(AkU64 u64BytesSize, ID3D12Resource** ppOutUploadBuffer);
 	AkBool CreateVertexBuffer(AkU32 uSizePerVertex, AkU32 uVertexNum, D3D12_VERTEX_BUFFER_VIEW* pOutVertexBufferView, ID3D12Resource** ppOutBuffer, void* pInitData);
 	AkBool CreateDynamicVertexBuffer(AkU32 uSizePerVertex, AkU32 uVertexNum, D3D12_VERTEX_BUFFER_VIEW* pOutVertexBufferView, ID3D12Resource** ppOutUploadBuffer);
+	AkBool CreateInstanceBuffer(AkU32 uSizePerInst, AkU32 uInstNum, D3D12_VERTEX_BUFFER_VIEW* pOutInstBufferView, ID3D12Resource** ppOutBuffer, void* pInitData);
 	AkBool CreateIndexBuffer(AkU32 uIndexNum, D3D12_INDEX_BUFFER_VIEW* pOutIndexBufferView, ID3D12Resource** ppOutBuffer, void* pInitData);
 	AkBool CreateTextureFromFile(ID3D12Resource** ppTexResource, D3D12_RESOURCE_DESC* pResourceDesc, const wchar_t* wcFilename, AkBool bUseSRGB);
 	AkBool CreateCubeMapTexture(ID3D12Resource** ppTexResource, D3D12_RESOURCE_DESC* pResourceDesc, const wchar_t* wcFilename);

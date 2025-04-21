@@ -21,6 +21,8 @@ ID3D12PipelineState* FBasicMeshObject::sm_pBasicWirePSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pDrawMaskedSolidPSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pNormalPSO;
 ID3D12PipelineState* FBasicMeshObject::sm_pDepthOnlyPSO;
+ID3D12PipelineState* FBasicMeshObject::sm_pInstanceSolidPSO;
+ID3D12PipelineState* FBasicMeshObject::sm_pInstanceWirePSO;
 
 FBasicMeshObject::FBasicMeshObject()
 {
@@ -282,7 +284,10 @@ void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdL
 	// Set RootSignature.
 	pCmdList->SetGraphicsRootSignature(sm_pBasicRS);
 	pCmdList->SetDescriptorHeaps(1, &pDescriptorHeap);
-	pCmdList->SetPipelineState(_bIsWire ? sm_pBasicWirePSO : sm_pBasicSolidPSO); // Wire Frame.
+	if (_bUseInstance)
+		pCmdList->SetPipelineState(_bIsWire ? sm_pInstanceWirePSO : sm_pInstanceSolidPSO);
+	else
+		pCmdList->SetPipelineState(_bIsWire ? sm_pBasicWirePSO : sm_pBasicSolidPSO); 
 
 	// Obj (root param 0)
 	pCmdList->SetGraphicsRootDescriptorTable(0, hGPU);
@@ -297,10 +302,23 @@ void FBasicMeshObject::Draw(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdL
 		// Draw Mesh(root param 1)
 		pCmdList->SetGraphicsRootDescriptorTable(1, hGPUforMeshes);
 		hGPUforMeshes.Offset(DESCRIPTOR_COUNT_PER_MESH, uDescriptorSize);
-
-		pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
+		
 		pCmdList->IASetIndexBuffer(&_pMeshes[i].tIBView);
-		pCmdList->DrawIndexedInstanced(_pMeshes[i].uIndexCountPerInstance, 1, 0, 0, 0);
+		if (_bUseInstance)
+		{
+			D3D12_VERTEX_BUFFER_VIEW pBuffers[] =
+			{
+				_pMeshes[i].tVBView,
+				_tInstVBView,
+			};
+			pCmdList->IASetVertexBuffers(0, 2, pBuffers);
+			pCmdList->DrawIndexedInstanced(_pMeshes[i].uIndexCountPerInstance, _uInstanceCount, 0, 0, 0);
+		}
+		else
+		{
+			pCmdList->IASetVertexBuffers(0, 1, &_pMeshes[i].tVBView);
+			pCmdList->DrawIndexedInstanced(_pMeshes[i].uIndexCountPerInstance, 1, 0, 0, 0);
+		}
 
 		if (_pMeshes[i].pHeightTextureHandle->pTextureResource)
 			pCmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(_pMeshes[i].pHeightTextureHandle->pTextureResource, D3D12_RESOURCE_STATE_ALL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
@@ -1033,6 +1051,24 @@ AkBool FBasicMeshObject::CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDat
 	return AK_TRUE;
 }
 
+AkBool FBasicMeshObject::CreateInstanceBuffers(VertexInstance_t* pInstData, AkU32 uInstDataNum)
+{
+	FResourceManager* pResourceManager = _pRenderer->GetResourceManager();
+	D3D12_VERTEX_BUFFER_VIEW tVBView = {};
+	ID3D12Resource* pInstBuffer = nullptr;
+
+	if (pResourceManager->CreateInstanceBuffer(sizeof(VertexInstance_t), uInstDataNum, &tVBView, &pInstBuffer, pInstData))
+	{
+		_pInstBuffer = pInstBuffer;
+		_tInstVBView = tVBView;
+	}
+
+	_bUseInstance = AK_TRUE;
+	_uInstanceCount = uInstDataNum;
+
+	return AK_TRUE;
+}
+
 void* FBasicMeshObject::CreateDynamicMeshBuffers(Vertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum)
 {
 	FTextureManager* pTextureManager = _pRenderer->GetTextureManager();
@@ -1192,6 +1228,15 @@ ULONG __stdcall FBasicMeshObject::Release(void)
 void FBasicMeshObject::CleanUp()
 {
 	_pRenderer->EnsureCompleted();
+
+	if (_bUseInstance)
+	{
+		if (_pInstBuffer)
+		{
+			_pInstBuffer->Release();
+			_pInstBuffer = nullptr;
+		}
+	}
 
 	if (_pMeshes)
 	{
@@ -1471,6 +1516,8 @@ AkBool FBasicMeshObject::CreatePipelineState()
 	ID3DBlob* pNormalPS = nullptr;
 	ID3DBlob* pDepthOnlyVS = nullptr;
 	ID3DBlob* pDepthOnlyPS = nullptr;
+	ID3DBlob* pGrassVS = nullptr;
+	ID3DBlob* pGrassPS = nullptr;
 
 #if defined(_DEBUG)
 	// Enable better shader debugging with the graphics debugging tools.
@@ -1543,9 +1590,27 @@ AkBool FBasicMeshObject::CreatePipelineState()
 		}
 		__debugbreak();
 	}
+	if (FAILED(D3DCompileFromFile(L"../../shader/Grass.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", uCompileFlags, 0, &pGrassVS, &pErrorBlob)))
+	{
+		if (pErrorBlob != nullptr)
+		{
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
+		__debugbreak();
+	}
+	if (FAILED(D3DCompileFromFile(L"../../shader/Grass.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0", uCompileFlags, 0, &pGrassPS, &pErrorBlob)))
+	{
+		if (pErrorBlob != nullptr)
+		{
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
+		__debugbreak();
+	}
 
 	// Define the vertex input layout.
-	D3D12_INPUT_ELEMENT_DESC tInputElementDescs[] =
+	D3D12_INPUT_ELEMENT_DESC tBasicInputElementDescs[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -1553,9 +1618,23 @@ AkBool FBasicMeshObject::CreatePipelineState()
 		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 	};
 
+	// Define the vertex input layout.
+	D3D12_INPUT_ELEMENT_DESC tGrassInputElementDescs[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		// 행렬 하나는 4x4라서 Element 4개 사용 (쉐이더에서는 행렬 하나)
+		{ "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 }, // 마지막 1은 instance step
+		{ "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 },
+		{ "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 },
+		{ "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 },
+		{ "COLOR", 0, DXGI_FORMAT_R32_FLOAT, 1, 64, D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA, 1 }
+	};
+
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC tPsoDesc = {};
-	tPsoDesc.InputLayout = { tInputElementDescs, _countof(tInputElementDescs) };
+	tPsoDesc.InputLayout = { tBasicInputElementDescs, _countof(tBasicInputElementDescs) };
 	tPsoDesc.pRootSignature = sm_pBasicRS;
 	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pBasicVS->GetBufferPointer(), pBasicVS->GetBufferSize());
 	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pBasicPS->GetBufferPointer(), pBasicPS->GetBufferSize());
@@ -1564,7 +1643,6 @@ AkBool FBasicMeshObject::CreatePipelineState()
 	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
-	//psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
 	tPsoDesc.SampleMask = UINT_MAX;
 	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
@@ -1635,6 +1713,45 @@ AkBool FBasicMeshObject::CreatePipelineState()
 		__debugbreak();
 	}
 
+	// Create the grass pso.
+	tPsoDesc.InputLayout = { tGrassInputElementDescs, _countof(tGrassInputElementDescs) };
+	tPsoDesc.pRootSignature = sm_pBasicRS;
+	tPsoDesc.VS = CD3DX12_SHADER_BYTECODE(pGrassVS->GetBufferPointer(), pGrassVS->GetBufferSize());
+	tPsoDesc.PS = CD3DX12_SHADER_BYTECODE(pGrassPS->GetBufferPointer(), pGrassPS->GetBufferSize());
+	tPsoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	tPsoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	tPsoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	tPsoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	tPsoDesc.DepthStencilState.StencilEnable = FALSE;
+	tPsoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+	tPsoDesc.SampleMask = UINT_MAX;
+	tPsoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	tPsoDesc.NumRenderTargets = 1;
+	tPsoDesc.RTVFormats[0] = _pRenderer->GetFloatRTVFormat();
+	tPsoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	tPsoDesc.SampleDesc.Count = _pRenderer->UseMSAA() ? 4 : 1;
+	tPsoDesc.SampleDesc.Quality = _pRenderer->UseMSAA() ? _pRenderer->GetNumQualityLevel() - 1 : 0;
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pInstanceSolidPSO))))
+	{
+		__debugbreak();
+	}
+
+	tPsoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	if (FAILED(pDevice->CreateGraphicsPipelineState(&tPsoDesc, IID_PPV_ARGS(&sm_pInstanceWirePSO))))
+	{
+		__debugbreak();
+	}
+
+	if (pGrassPS)
+	{
+		pGrassPS->Release();
+		pGrassPS = nullptr;
+	}
+	if (pGrassVS)
+	{
+		pGrassVS->Release();
+		pGrassVS = nullptr;
+	}
 	if (pDepthOnlyPS)
 	{
 		pDepthOnlyPS->Release();
@@ -1705,6 +1822,16 @@ void FBasicMeshObject::DestroyRootSignature()
 
 void FBasicMeshObject::DestroyPipelineState()
 {
+	if (sm_pInstanceSolidPSO)
+	{
+		sm_pInstanceSolidPSO->Release();
+		sm_pInstanceSolidPSO = nullptr;
+	}
+	if (sm_pInstanceWirePSO)
+	{
+		sm_pInstanceWirePSO->Release();
+		sm_pInstanceWirePSO = nullptr;
+	}
 	if (sm_pDrawMaskedSolidPSO)
 	{
 		sm_pDrawMaskedSolidPSO->Release();

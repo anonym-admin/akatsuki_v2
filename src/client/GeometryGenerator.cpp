@@ -1060,6 +1060,7 @@ MeshData_t* GeometryGenerator::MakeGrass(AkU32* pOutMeshDataNum)
 	return pGrass;
 }
 
+// TODO:
 // 비동기 처리 필요!!
 MeshData_t* GeometryGenerator::ReadFromFile(AkU32* pMeshDataNum, const wchar_t* wcBasePath, const wchar_t* wcFilename, AkBool bIsAnim, Matrix* pDefaultMat, Matrix const** pBoneOffsetMat, AkI32 const** pBoneHierarchy, AkU32* pBoneNum, char*** pppBoneName)
 {

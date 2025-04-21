@@ -27,6 +27,7 @@ public:
 	void DrawDepthMap(AkU32 uThreadIndex, ID3D12GraphicsCommandList* pCmdList, const Matrix* pWorldMat);
 
 	virtual AkBool CreateMeshBuffers(MeshData_t* pMeshData, AkU32 uMeshDataNum) override;
+	virtual AkBool CreateInstanceBuffers(VertexInstance_t* pInstData, AkU32 uInstDataNum) override;
 	virtual void* CreateDynamicMeshBuffers(Vertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) override;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) override;
 	virtual void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO) override;
@@ -60,6 +61,8 @@ private:
 	static ID3D12PipelineState* sm_pNormalPSO;
 	static ID3D12PipelineState* sm_pDepthOnlyPSO;
 	static ID3D12PipelineState* sm_pDrawMaskedSolidPSO;
+	static ID3D12PipelineState* sm_pInstanceSolidPSO;
+	static ID3D12PipelineState* sm_pInstanceWirePSO;
 
 protected:
 	static AkU32 sm_uInitRefCount;
@@ -78,8 +81,14 @@ protected:
 	AkF32 _fHeightScale = 0.0f;
 	AkF32 _fIBLStrength = 0.0f;
 
-	// For tree render.
+	// For tree rendering.
 	AkF32 _fWindTrunk = 0.0f; 
 	AkF32 _fWindLeaves = 0.0f;
+
+	// For grass rendering.
+	AkBool _bUseInstance = AK_FALSE;
+	D3D12_VERTEX_BUFFER_VIEW _tInstVBView = {};
+	ID3D12Resource* _pInstBuffer = nullptr;
+	AkU32 _uInstanceCount = 0;
 };
 

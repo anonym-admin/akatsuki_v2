@@ -9,6 +9,7 @@ interface IMeshObject : public IUnknown
 {
 	virtual AkBool CreateMeshBuffers(MeshData_t * pMeshData, AkU32 uMeshDataNum) = 0;
 	virtual void* CreateDynamicMeshBuffers(Vertex_t* pVertices, AkU32 uVerticeNum, AkU32* pIndices, AkU32 uIndiceNum) = 0;
+	virtual AkBool CreateInstanceBuffers(VertexInstance_t* pInstData, AkU32 uInstDataNum) = 0;
 	virtual AkBool UpdateMaterialBuffers(const Vector3* pAlbedoFactor, AkF32 fMetallicFactor, AkF32 fRoughnessFactor, const Vector3* pEmisiionFactor) = 0;
 	virtual void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO) = 0;
 	virtual void SetWindTrunk(AkF32 fWindTrunk) = 0; // For tree render.

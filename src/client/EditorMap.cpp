@@ -13,6 +13,8 @@
 #include "StoneModel.h"
 #include "Stone.h"
 
+#include <random>
+
 /*
 =============
 Editor Map
@@ -52,6 +54,35 @@ AkBool EditorMap::Initialize()
 	_pGrass = GRenderer->CreateBasicMeshObject();
 	_pGrass->CreateMeshBuffers(pGrassMeshData, uMeshDataNum);
 	GeometryGenerator::DestroyGeometry(pGrassMeshData, uMeshDataNum);
+
+	// Instance »ý¼º
+	std::mt19937 gen(0);
+	std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+
+	AkU32 uInstanceCount = 2'500;
+	VertexInstance_t* pInstance = new VertexInstance_t[uInstanceCount];
+	for (AkU32 i = 0; i < uInstanceCount; i++)
+	{
+		const AkF32 fLengthScale = dist(gen) * 0.7f + 0.3f;
+		const AkF32 fWidthScale = dist(gen) * 0.5f + 0.5f;
+		const Vector3 vPosition = Vector3(dist(gen) * 2.0f - 1.0f, 0.0f, dist(gen) * 2.0f - 1.0f) * 0.5f;
+		const AkF32 fAngle = dist(gen) * DirectX::XM_PI;
+		const AkF32 fSlope = (dist(gen) - 0.5f) * 2.0f * DirectX::XM_PI * 0.2f;
+
+		VertexInstance_t Inst;
+		Inst.mInstanceWorld = Matrix::CreateRotationX(fSlope) * Matrix::CreateRotationY(fAngle) *
+							  Matrix::CreateScale(fWidthScale, fLengthScale, 1.0f) * Matrix::CreateTranslation(vPosition);
+		Inst.mInstanceWorld = Inst.mInstanceWorld.Transpose();
+		Inst.fWindStrength = 0.5f;
+
+		pInstance[i] = Inst;
+	}
+
+	_pGrass->CreateInstanceBuffers(pInstance, uInstanceCount);
+	_pGrass->SetIBLStrength(0.15f);
+
+	delete[] pInstance;
+	pInstance = nullptr;
 
 	return AK_TRUE;
 }
