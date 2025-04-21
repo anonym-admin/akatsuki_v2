@@ -14,19 +14,6 @@ ModelImporter
 ==================
 */
 
-//wchar_t* ConvertWideChar(char* str)
-//{
-//	size_t convertedChar = 0;
-//	size_t len = strlen(str) + 1;
-//
-//	wchar_t* wc = new wchar_t[len];
-//
-//	setlocale(LC_ALL, "");
-//	mbstowcs_s(&convertedChar, wc, len, str, _TRUNCATE);
-//
-//	return wc;
-//}
-
 static void GetFileNameExtension(const wchar_t* wcFilename, wchar_t* wcOutFileExt)
 {
 	AkU32 uNameLength = (AkU32)wcslen(wcFilename);

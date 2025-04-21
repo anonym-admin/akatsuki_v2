@@ -29,13 +29,26 @@ public:
 		WALK_LEFT_FDIAG,
 		WALK_LEFT_BDIAG,
 		RIFLE_WALK,
+		RIFLE_WALK_BACK,
 		RIFLE_WALK_RIGHT,
+		RIFLE_WALK_RIGHT_FDIAG,
+		RIFLE_WALK_RIGHT_BDIAG,
 		RIFLE_WALK_LEFT,
+		RIFLE_WALK_LEFT_FDIAG,
+		RIFLE_WALK_LEFT_BDIAG,
+		RIFLE_RUN,
+		RIFLE_RUN_BACK,
+		RIFLE_RUN_RIGHT,
+		RIFLE_RUN_RIGHT_FDIAG,
+		RIFLE_RUN_RIGHT_BDIAG,
+		RIFLE_RUN_LEFT,
+		RIFLE_RUN_LEFT_FDIAG,
+		RIFLE_RUN_LEFT_BDIAG,
 		FIRE_STOP,
 		PUNCH_STOP,
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
 	} AnimState;
-
+	
 	wchar_t ANIM_CLIP[(AkU32)ANIM_STATE::COUNT][MAX_PATH] = {};
 
 public:
@@ -63,7 +76,7 @@ public:
 	AkF32 GetRunSpeed() { return _fRunSpeed; }
 	Weapon* GetWeapon() { return _pWeapon; }
 
-	void ActionReaction(Collider* pOther);
+	void AddForce(Collider* pOther);
 	void ChangeCamera();
 
 private:
@@ -78,6 +91,7 @@ private:
 	AkF32 _fWalkSpeed = 2.65f;
 	AkF32 _fRunSpeed = 3.5f;
 	AkBool _bDrawSpark = AK_FALSE;
+	AkF32 _fAnimSpeed = 1.5f;
 
 	Camera* _pCameraAtAimMode = nullptr;
 	Camera* _pPendingCam = nullptr;

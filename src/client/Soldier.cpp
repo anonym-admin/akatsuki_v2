@@ -289,8 +289,11 @@ void Soldier::OnCollisionExit(Collider* pOther)
 
 }
 
-void Soldier::ActionReaction(Collider* pOther)
+void Soldier::AddForce(Collider* pOther)
 {
+	// 물리를 사용하는 방식으로  Rigid Body 로 이동할 수도 있음.
+	// 현재는 간단하게 구현.
+
 	// 대상 충돌체가 육면체일 경우 대각선과 가로 세로의 반지름이 달라 진동하는 현상이 발생한다.
 	Vector3 vOtherPos = pOther->GetTransform()->GetGlobalPosition();
 	Vector3 vMyPos = _pCollider->GetTransform()->GetGlobalPosition();
@@ -306,7 +309,7 @@ void Soldier::ActionReaction(Collider* pOther)
 	AkF32 fOverlapped = (fRa + fRb) - fDist;
 
 	Vector3 vPos = _pTransform->GetPosition();
-	vPos -= (vDir * fOverlapped) * 0.5f; // 진동현상을 줄이기 위해 0.5f 스케일 적용...
+	vPos -= (vDir * fOverlapped) * DT; // 진동현상을 줄이기 위해 0.5f 스케일 적용...
 	_pTransform->SetPosition(&vPos);
 }
 
@@ -383,6 +386,10 @@ void Soldier::UpdateMove()
 
 	Vector3 vVelocity = _pRigidBody->GetVelocity();
 
+	// For Debugging
+	AkF32 fSpeed = vVelocity.Length();
+	wprintf_s(L"Soldier Speed: %lf \n", fSpeed);
+
 	// Walk
 	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 2.8f)
 	{
@@ -404,9 +411,19 @@ void Soldier::UpdateMove()
 		{
 			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
 			if (fCosValue1 >= 0.0f)
-				SetAnimation(WALK_RIGHT_FDIAG);
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_WALK_RIGHT_FDIAG);
+				else
+					SetAnimation(WALK_RIGHT_FDIAG);
+			}
 			else
-				SetAnimation(WALK_LEFT_FDIAG);
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_WALK_LEFT_FDIAG);
+				else
+					SetAnimation(WALK_LEFT_FDIAG);
+			}
 		}
 		// -60 < [] < 60
 		else if (-0.5f < fCosValue0 && fCosValue0 < 0.5f)
@@ -432,40 +449,118 @@ void Soldier::UpdateMove()
 		{
 			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
 			if (fCosValue1 >= 0.0f)
-				SetAnimation(WALK_RIGHT_BDIAG);
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_WALK_RIGHT_BDIAG);
+				else
+					SetAnimation(WALK_RIGHT_BDIAG);
+			}
 			else
-				SetAnimation(WALK_LEFT_BDIAG);
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_WALK_LEFT_BDIAG);
+				else
+					SetAnimation(WALK_LEFT_BDIAG);
+			}
 		}
 		// [] < -60
 		else
 		{
-			SetAnimation(WALK_BACK);
+			if (BindWeapon)
+				SetAnimation(RIFLE_WALK_BACK);
+			else
+				SetAnimation(WALK_BACK);
 		}
-
-		// Return Walk Speed.
-		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 	}
 	// Run
 	else if (vVelocity.Length() > 3.0f)
 	{
-		//BindWeapon ? SetAnimation(RIFLE_RUN) : SetAnimation(F_RUN);
+		Vector3 vDir = vVelocity;
+		vDir.Normalize();
+
+		AkF32 fCosValue0 = vDir.Dot(_pTransform->Front());
+
+		// [] > 60
+		if (0.866025f < fCosValue0)
+		{
+			if (BindWeapon)
+				SetAnimation(RIFLE_RUN, 5.0f);
+			else
+				SetAnimation(WALK, 20.0f);
+		}
+		// 30 <= [] <= 60
+		else if (0.5f <= fCosValue0 && fCosValue0 <= 0.866025f)
+		{
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_RUN_RIGHT_FDIAG);
+				else
+					SetAnimation(WALK_RIGHT_FDIAG, 20.0f);
+			}
+			else
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_RUN_LEFT_FDIAG);
+				else
+					SetAnimation(WALK_LEFT_FDIAG, 20.0f);
+			}
+		}
+		// -60 < [] < 60
+		else if (-0.5f < fCosValue0 && fCosValue0 < 0.5f)
+		{
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_RUN_RIGHT);
+				else
+					SetAnimation(WALK_RIGHT, 20.0f);
+			}
+			else
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_RUN_LEFT);
+				else
+					SetAnimation(WALK_LEFT, 20.0f);
+			}
+		}
+		// -60 <= [] <= -30
+		else if (-0.866025f <= fCosValue0 && fCosValue0 <= -0.5f)
+		{
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_RUN_RIGHT_BDIAG);
+				else
+					SetAnimation(WALK_RIGHT_BDIAG, 20.0f);
+			}
+			else
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_RUN_LEFT_BDIAG);
+				else
+					SetAnimation(WALK_LEFT_BDIAG, 20.0f);
+			}
+		}
+		// [] < -60
+		else
+		{
+			if (BindWeapon)
+				SetAnimation(RIFLE_RUN_BACK);
+			else
+				SetAnimation(WALK_BACK, 20.0f);
+		}
 	}
 	// Idle
 	else if (0.0f >= vVelocity.Length())
 	{
-		//if (F_WALK <= AnimState && AnimState <= RIFLE_F_WALK)
-		//	BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
-
-		//if (F_RUN == AnimState || RIFLE_RUN == AnimState)
-		//	BindWeapon ? SetAnimation(RIFLE_IDLE) : SetAnimation(IDLE);
-
 		if (BindWeapon)
 			SetAnimation(ANIM_STATE::RIFLE_IDLE);
 		else
 			SetAnimation(ANIM_STATE::IDLE);
-
-		// Return Walk Speed.
-		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
 	}
 }
 
@@ -559,10 +654,11 @@ void Soldier::FinalUpdateWeapon()
 
 void Soldier::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)
 {
-	if (eState != AnimState)
+	if (eState != AnimState || _fAnimSpeed != fSpeed)
 	{
 		AnimState = eState;
-		_pAnimation->PlayClip(ANIM_CLIP[eState], ANIM_CLIP_STATE::LOOP, fSpeed, 0.2f);
+		_fAnimSpeed = fSpeed;
+		_pAnimation->PlayClip(ANIM_CLIP[eState], ANIM_CLIP_STATE::LOOP, _fAnimSpeed, 0.2f);
 	}
 }
 

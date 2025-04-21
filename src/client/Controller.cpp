@@ -93,25 +93,35 @@ void Controller::KeyBoard()
 
 	Soldier::ANIM_STATE AnimState = pSoldier->AnimState;
 	RigidBody* pRigidBody = pSoldier->GetRigidBody();
+	pRigidBody->SetMaxVeleocity(pSoldier->GetWalkSpeed());
 
 	Vector3 vVelocity = Vector3(0.0f);
 	AkF32 fMoveSpeed = 0.25f;
+	AkBool bSpeedUp = AK_FALSE;
 
 	if (KEY_HOLD(KEY_INPUT_W))
 	{
 		vVelocity += pSoldier->GetTransform()->Front();
+		if (KEY_HOLD(KEY_INPUT_LSHIFT))
+			bSpeedUp = AK_TRUE;
 	}
 	if (KEY_HOLD(KEY_INPUT_S))
 	{
 		vVelocity -= pSoldier->GetTransform()->Front();
+		if (KEY_HOLD(KEY_INPUT_LSHIFT))
+			bSpeedUp = AK_TRUE;
 	}
 	if (KEY_HOLD(KEY_INPUT_D))
 	{
 		vVelocity += pSoldier->GetTransform()->Right();
+		if (KEY_HOLD(KEY_INPUT_LSHIFT))
+			bSpeedUp = AK_TRUE;
 	}
 	if (KEY_HOLD(KEY_INPUT_A))
 	{
 		vVelocity -= pSoldier->GetTransform()->Right();
+		if (KEY_HOLD(KEY_INPUT_LSHIFT))
+			bSpeedUp = AK_TRUE;
 	}
 	if (KEY_DOWN(KEY_INPUT_V))
 	{
@@ -133,5 +143,7 @@ void Controller::KeyBoard()
 
 	vVelocity.Normalize();
 	vVelocity *= fMoveSpeed;
+	if (bSpeedUp)
+		pRigidBody->SetMaxVeleocity(pSoldier->GetRunSpeed());
 	pRigidBody->AddVelocity(&vVelocity);
 }

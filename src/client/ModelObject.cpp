@@ -333,7 +333,7 @@ void ModelObject::OnCollisionEnter(Collider* pOther)
 	Actor* pOtherOwner = pOther->GetOwner();
 	if (!wcscmp(pOtherOwner->Name, L"soldier"))
 	{
-		((Soldier*)pOtherOwner)->ActionReaction(_pCollider);
+		((Soldier*)pOtherOwner)->AddForce(_pCollider);
 	}
 }
 
@@ -342,7 +342,7 @@ void ModelObject::OnCollision(Collider* pOther)
 	Actor* pOtherOwner = pOther->GetOwner();
 	if (!wcscmp(pOtherOwner->Name, L"soldier"))
 	{
-		((Soldier*)pOtherOwner)->ActionReaction(_pCollider);
+		((Soldier*)pOtherOwner)->AddForce(_pCollider);
 	}
 }
 
