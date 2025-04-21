@@ -262,24 +262,6 @@ void ModelImporter::LoadMaterialFileName(FILE* pFp)
 		fwscanf_s(pFp, L"%s %s\n", wcBuf, _MAX_PATH, wcAoTextureFilename, _MAX_PATH);
 		fwscanf_s(pFp, L"%s %s\n", wcBuf, _MAX_PATH, wcOpacityTextureFilename, _MAX_PATH);
 
-		//GetFileNameFromFullPath(wcAlbedoTextureFilename);
-		//GetFileNameFromFullPath(wcEmissiveTextureFilename);
-		//GetFileNameFromFullPath(wcHeightTextureFilename);
-		//GetFileNameFromFullPath(wcNormalTextureFilename);
-		//GetFileNameFromFullPath(wcMetallicTextureFilename);
-		//GetFileNameFromFullPath(wcRoughnessTextureFilename);
-		//GetFileNameFromFullPath(wcAoTextureFilename);
-		//GetFileNameFromFullPath(wcOpacityTextureFilename);
-
-		//ConvertFileExtensionToDDS(wcAlbedoTextureFilename);
-		//ConvertFileExtensionToDDS(wcEmissiveTextureFilename);
-		//ConvertFileExtensionToDDS(wcHeightTextureFilename);
-		//ConvertFileExtensionToDDS(wcNormalTextureFilename);
-		//ConvertFileExtensionToDDS(wcMetallicTextureFilename);
-		//ConvertFileExtensionToDDS(wcRoughnessTextureFilename);
-		//ConvertFileExtensionToDDS(wcAoTextureFilename);
-		//ConvertFileExtensionToDDS(wcOpacityTextureFilename);
-
 		// copy and cat.
 		// wcscpy_s(_pMeshData[i].wcAlbedoTextureFilename, _wcBasePath);
 		if (!wcscmp(wcAlbedoTextureFilename, L"Empty"))

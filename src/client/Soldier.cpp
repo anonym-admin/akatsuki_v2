@@ -394,44 +394,53 @@ void Soldier::UpdateMove()
 		// [] > 60
 		if (0.866025f < fCosValue0)
 		{
-			//BindWeapon ? SetAnimation(RIFLE_F_WALK) : SetAnimation(F_WALK);
+			if (BindWeapon)
+				SetAnimation(RIFLE_WALK, 5.0f);
+			else
+				SetAnimation(WALK);
 		}
 		// 30 <= [] <= 60
 		else if (0.5f <= fCosValue0 && fCosValue0 <= 0.866025f)
 		{
-			//AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
-			//if (fCosValue1 >= 0.0f)
-			//	SetAnimation(FR_WALK);
-			//else
-			//	SetAnimation(FL_WALK);
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+				SetAnimation(WALK_RIGHT_FDIAG);
+			else
+				SetAnimation(WALK_LEFT_FDIAG);
 		}
 		// -60 < [] < 60
 		else if (-0.5f < fCosValue0 && fCosValue0 < 0.5f)
 		{
-			//AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
-			//if (fCosValue1 >= 0.0f)
-			//	SetAnimation(R_WALK);
-			//else
-			//	SetAnimation(L_WALK);
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_WALK_RIGHT);
+				else
+					SetAnimation(WALK_RIGHT);
+			}
+			else
+			{
+				if (BindWeapon)
+					SetAnimation(RIFLE_WALK_LEFT);
+				else
+					SetAnimation(WALK_LEFT);
+			}
 		}
 		// -60 <= [] <= -30
 		else if (-0.866025f <= fCosValue0 && fCosValue0 <= -0.5f)
 		{
-			//AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
-			//if (fCosValue1 >= 0.0f)
-			//	SetAnimation(BR_WALK);
-			//else
-			//	SetAnimation(BL_WALK);
+			AkF32 fCosValue1 = vDir.Dot(_pTransform->Right());
+			if (fCosValue1 >= 0.0f)
+				SetAnimation(WALK_RIGHT_BDIAG);
+			else
+				SetAnimation(WALK_LEFT_BDIAG);
 		}
 		// [] < -60
 		else
 		{
+			SetAnimation(WALK_BACK);
 		}
-
-		if (BindWeapon)
-			SetAnimation(RIFLE_WALK);
-		else
-			SetAnimation(WALK);
 
 		// Return Walk Speed.
 		_pRigidBody->SetMaxVeleocity(_fWalkSpeed);
@@ -546,27 +555,6 @@ void Soldier::FinalUpdateWeapon()
 	_mHandAnimTransform *= _pTransform->GetWorldTransform();
 
 	_pWeapon->GetTransform()->SetParent(&_mHandAnimTransform);
-}
-
-void Soldier::SetWeaponRelativePosition()
-{
-	Vector3 vVelocity = _pRigidBody->GetVelocity();
-
-	if (0.2f < vVelocity.Length() && vVelocity.Length() <= 2.8f)
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(16.092f), DirectX::XMConvertToRadians(-21.279f), DirectX::XMConvertToRadians(-166.074f));
-		_pWeapon->GetTransform()->SetPosition(0.410f, 0.301f, 0.014f);
-	}
-	else if (vVelocity.Length() > 3.0f)
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(-23.338f), DirectX::XMConvertToRadians(-20.093f), DirectX::XMConvertToRadians(-167.379f));
-		_pWeapon->GetTransform()->SetPosition(0.410f, 0.309f, 0.014f);
-	}
-	else if (0.0f >= vVelocity.Length())
-	{
-		_pWeapon->GetTransform()->SetRotation(DirectX::XMConvertToRadians(6.16f), DirectX::XMConvertToRadians(-2.817f), DirectX::XMConvertToRadians(178.809f));
-		_pWeapon->GetTransform()->SetPosition(0.426f, 0.297f, 0.058f);
-	}
 }
 
 void Soldier::SetAnimation(ANIM_STATE eState, AkF32 fSpeed)

@@ -42,7 +42,16 @@ AkBool SceneLoading::BeginScene()
 		GAssetManager->ReadClip(L"soldier", L"soldier_idle.anim");
 		GAssetManager->ReadClip(L"soldier", L"soldier_rifle_idle.anim");
 		GAssetManager->ReadClip(L"soldier", L"soldier_walk.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_walk_back.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_walk_right.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_walk_right_diag.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_walk_right_bdiag.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_walk_left.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_walk_left_diag.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_walk_left_bdiag.anim");
 		GAssetManager->ReadClip(L"soldier", L"soldier_rifle_walk.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_rifle_walk_right.anim");
+		GAssetManager->ReadClip(L"soldier", L"soldier_rifle_walk_left.anim");
 		GAssetManager->ReadClip(L"soldier", L"soldier_rifle_fire_stop.anim");
 		GAssetManager->ReadClip(L"soldier", L"soldier_punch.anim");
 	}

@@ -21,7 +21,16 @@ public:
 		IDLE,
 		RIFLE_IDLE,
 		WALK,
+		WALK_BACK,
+		WALK_RIGHT,
+		WALK_RIGHT_FDIAG,
+		WALK_RIGHT_BDIAG,
+		WALK_LEFT,
+		WALK_LEFT_FDIAG,
+		WALK_LEFT_BDIAG,
 		RIFLE_WALK,
+		RIFLE_WALK_RIGHT,
+		RIFLE_WALK_LEFT,
 		FIRE_STOP,
 		PUNCH_STOP,
 		COUNT = AssetAnimationContainer_t::MAX_CLIP_NAME_COUNT,
@@ -63,8 +72,6 @@ private:
 	void UpdateMove();
 	void UpdateWeapon();
 	void FinalUpdateWeapon();
-
-	void SetWeaponRelativePosition();
 
 private:
 	Matrix _mHandAnimTransform = Matrix();
