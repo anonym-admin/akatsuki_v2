@@ -9,7 +9,7 @@ binary 파일 링크: https://github.com/anonym-admin/binary
 
 실행파일 경로: bin/Release/akatsuki_client_x64.exe
 
-최상단 user/binary-main/binary-main/ 경로에 아래 드라이브 링크에 공유된 asset 폴더와 shader 폴더를 넣어서 사용하시면 됩니다.
+./binary-main/binary-main/ 경로에 아래 드라이브 링크에 공유된 asset 폴더와 shader 폴더를 넣어서 사용하시면 됩니다.
 
 에셋과 쉐이더 파일 링크: https://drive.google.com/drive/folders/1QgTWX35QcKyK2Pt71QIrIGiePa74fpGP
 
