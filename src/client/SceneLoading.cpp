@@ -35,6 +35,7 @@ AkBool SceneLoading::BeginScene()
 		GAssetManager->AddMeshData(MESH_FILE_PATH, L"container.mesh", 1.0f, AK_FALSE);
 		GAssetManager->AddMeshData(MESH_FILE_PATH, L"brs-74.mesh", 1.0f, AK_FALSE);
 		GAssetManager->AddMeshData(MESH_FILE_PATH, L"stone_grey_01.mesh", 1.0f, AK_FALSE);
+		GAssetManager->AddMeshData(MESH_FILE_PATH, L"casing.mesh", 1.0f, AK_FALSE);
 	}
 
 	// Load Animation.

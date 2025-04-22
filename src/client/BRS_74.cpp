@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Bullet.h"
 #include "Sprite.h"
+#include "Casing.h"
 
 /*
 =============
@@ -45,8 +46,6 @@ AkBool BRS_74::Initialize()
 	Vector3 vMax = Vector3(0.0f);
 	CalcColliderMinMax(pMeshDataContainer->pMeshData, pMeshDataContainer->uMeshDataNum, &vMin, &vMax);
 	_pCollider = CreateBoxCollider(&vMin, &vMax);
-
-	// GAssetManager->DeleteMeshData(ASSET_MESH_DATA_TYPE::BRS_74);
 
 	// Create Muzzle Effect.
 	Vector2 vMaxFrame = Vector2(4.0f, 5.0f);
@@ -99,6 +98,12 @@ void BRS_74::FinalUpdate()
 	_pCullingCollider->Update();
 
 	_pModel->UpdateWorldRow(&_pTransform->GetWorldTransform());
+
+	// Final Update Casing.
+	for (AkU32 i = 0; i < _uCasingCount; i++)
+	{
+		_pCasings[i]->FinalUpdate();
+	}
 }
 
 void BRS_74::Render()
@@ -113,6 +118,12 @@ void BRS_74::Render()
 	if (_bFire)
 	{
 		_pMuzzleEffect->Render();
+	}
+
+	// Render Update Casing.
+	for (AkU32 i = 0; i < _uCasingCount; i++)
+	{
+		_pCasings[i]->Render();
 	}
 }
 
@@ -163,9 +174,17 @@ void BRS_74::Fire()
 
 	fAccTime += DT;
 
+	// 해당 시간이 지날때까지 사운드는 플레이 되지 않는다.
 	if (fAccTime < 0.1f)
 	{
 		return;
+	}
+
+	// Casing 생성.
+	if (_uCasingCount < MAX_CASING_COUNT)
+	{
+		_pCasings[_uCasingCount] = CreateCasing();
+		_uCasingCount++;
 	}
 
 	fAccTime = 0.0f;
@@ -188,6 +207,40 @@ void BRS_74::CleanUp()
 		delete _pMuzzleEffect;
 		_pMuzzleEffect = nullptr;
 	}
+
+	DestroyAllCasing();
+}
+
+Casing* BRS_74::CreateCasing()
+{
+	Casing* pCasing = new Casing;
+	Quaternion qQuat = _pTransform->GetGlobalRotation();
+	Vector3 vYPR = Vector3(0.0f);
+	QuternionToEuler(qQuat, vYPR);
+	Vector3 vPos = _pTransform->GetGlobalPosition();
+	Vector3 vRight = -_pTransform->Right();
+	vRight *= Random(1.0f, 2.0f);
+	vRight.y += 2.0f;
+	pCasing->GetTransform()->SetRotation(&vYPR);
+	pCasing->GetTransform()->SetPosition(&vPos);
+	pCasing->GetRigidBody()->SetVelocity(&vRight);
+	return pCasing;
+}
+
+void BRS_74::DestroyCasing(Casing* pCasing)
+{
+	if (pCasing)
+		delete pCasing;
+}
+
+void BRS_74::DestroyAllCasing()
+{
+	for (AkU32 i = 0; i < _uCasingCount; i++)
+	{
+		delete _pCasings[i];
+		_pCasings[i] = nullptr;
+	}
+	_uCasingCount = 0;
 }
 
 BRS_74* BRS_74::Clone()

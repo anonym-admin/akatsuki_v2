@@ -224,3 +224,69 @@ void CalcColliderMinMax(MeshData_t* pMeshData, AkU32 uMeshDataNum, Vector3* pOut
 	*pOutMin = vMin;
 	*pOutMax = vMax;
 }
+
+void QuternionToEuler(Quaternion q, AkF32& yaw, AkF32& pitch, AkF32& roll)
+{
+	Vector4 vAxis = Vector4(0.0f);
+	AkF32 fAngle = 0.0f;
+
+	DirectX::XMQuaternionToAxisAngle((DirectX::XMVECTOR*)&vAxis, &fAngle, q);
+
+	AkF32 fYaw = 0.0f;
+	AkF32 fPitch = 0.0f;
+	AkF32 fRoll = 0.0f;
+
+	// 축과 각도 => 오일러 각도 변환
+	auto Func = [&]() {
+		vAxis.w = 0.0f;
+		vAxis.Normalize();
+		AkF32 c = cos(fAngle);
+		AkF32 s = sin(fAngle);
+		AkF32 t = 1 - c;
+
+		AkF32 r11 = t * vAxis.x * vAxis.x + c;
+		AkF32 r12 = t * vAxis.x * vAxis.y - s * vAxis.z;
+		AkF32 r13 = t * vAxis.x * vAxis.z + s * vAxis.y;
+		AkF32 r21 = t * vAxis.x * vAxis.y + s * vAxis.z;
+		AkF32 r22 = t * vAxis.y * vAxis.y + c;
+		AkF32 r23 = t * vAxis.y * vAxis.z - s * vAxis.x;
+		AkF32 r31 = t * vAxis.x * vAxis.z - s * vAxis.y;
+		AkF32 r32 = t * vAxis.y * vAxis.z + s * vAxis.x;
+		AkF32 r33 = t * vAxis.z * vAxis.z + c;
+
+		fRoll = atan2(r21, r11);
+		fYaw = asin(-r31);
+		fPitch = atan2(r32, r33);
+
+		// fYaw = atan2(r21, r11); // z => roll
+		// fPitch = asin(-r31); 
+		// fRoll = atan2(r32, r33);
+
+		AkF32 x = DirectX::XMConvertToDegrees(fPitch);
+		AkF32 y = DirectX::XMConvertToDegrees(fYaw);
+		AkF32 z = DirectX::XMConvertToDegrees(fRoll);
+
+		wprintf_s(L"%f %f %f", x, y, z);
+
+		AkF32 fTestYaw = DirectX::XMConvertToRadians(-y);
+		AkF32 fTestPitch = DirectX::XMConvertToRadians(-x);
+		AkF32 fTestRoll = DirectX::XMConvertToRadians(z);
+
+		//// Debugging
+		//Matrix mMat0 = Matrix::CreateRotationX(x) * Matrix::CreateRotationY(y) * Matrix::CreateRotationZ(z);
+		//Matrix mMat1 = Matrix::CreateFromYawPitchRoll(fYaw, fPitch, fRoll);
+		};
+
+	Func();
+
+	yaw = fYaw;
+	pitch = fPitch;
+	roll = fRoll;
+}
+
+void QuternionToEuler(Quaternion q, Vector3& ypr)
+{
+	AkF32 yaw, pitch, roll;
+	QuternionToEuler(q, yaw, pitch, roll);
+	ypr = Vector3(yaw, pitch, roll);
+}

@@ -10,3 +10,5 @@ void SaveDDS(const wchar_t* pFilename, AkBool bGenerateMipMap);
 void SaveDDS(const wchar_t* pFilename, AkU8* pImage, AkU32 uWidth, AkU32 uHeight, DXGI_FORMAT Format);
 void ImageToPixel(AkU8* pImage, Vector4* pPixels, AkU32 UPixelSize);
 void CalcColliderMinMax(MeshData_t* pMeshData, AkU32 uMeshDataNum, Vector3* pOutMin, Vector3* pOutMax);
+void QuternionToEuler(Quaternion q, AkF32& yaw, AkF32& pitch, AkF32& roll);
+void QuternionToEuler(Quaternion q, Vector3& ypr);

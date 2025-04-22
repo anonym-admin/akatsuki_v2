@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Spawn.h"
+#include "ModelObject.h"
 
 /*
 =========
@@ -8,13 +8,15 @@ Casing
 =========
 */
 
-class Casing : public Spawn
+class Casing : public ModelObject
 {
 public:
 	Casing();
+	Casing(const wchar_t* wcScript);
 	virtual ~Casing();
 
-	AkBool Initailize();
+	AkBool Initialize();
+	AkBool Initialize(const wchar_t* wcScript);
 	virtual void Update() override;
 	virtual void FinalUpdate() override;
 	virtual void Render() override;
