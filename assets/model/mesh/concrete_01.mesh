@@ -8,58 +8,58 @@ VertexCount: 4	IndexCount: 6
 VertexCount: 4	IndexCount: 6
 
 ========Material========
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Albedo: ..\..\assets\model\textures\Concrete_basecolor.dds
 Emissive: Empty
-Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
-Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
-Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
-Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Height: ..\..\assets\model\textures\Concrete_height.dds
+Normal: ..\..\assets\model\textures\Concrete_normal.dds
+Metallic: ..\..\assets\model\textures\Concrete_metallic.dds
+Roughness: ..\..\assets\model\textures\Concrete_roughness.dds
+Ao: ..\..\assets\model\textures\Concrete_ambientOcclusion.dds
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Albedo: ..\..\assets\model\textures\Concrete_basecolor.dds
 Emissive: Empty
-Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
-Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
-Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
-Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Height: ..\..\assets\model\textures\Concrete_height.dds
+Normal: ..\..\assets\model\textures\Concrete_normal.dds
+Metallic: ..\..\assets\model\textures\Concrete_metallic.dds
+Roughness: ..\..\assets\model\textures\Concrete_roughness.dds
+Ao: ..\..\assets\model\textures\Concrete_ambientOcclusion.dds
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Albedo: ..\..\assets\model\textures\Concrete_basecolor.dds
 Emissive: Empty
-Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
-Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
-Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
-Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Height: ..\..\assets\model\textures\Concrete_height.dds
+Normal: ..\..\assets\model\textures\Concrete_normal.dds
+Metallic: ..\..\assets\model\textures\Concrete_metallic.dds
+Roughness: ..\..\assets\model\textures\Concrete_roughness.dds
+Ao: ..\..\assets\model\textures\Concrete_ambientOcclusion.dds
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Albedo: ..\..\assets\model\textures\Concrete_basecolor.dds
 Emissive: Empty
-Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
-Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
-Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
-Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Height: ..\..\assets\model\textures\Concrete_height.dds
+Normal: ..\..\assets\model\textures\Concrete_normal.dds
+Metallic: ..\..\assets\model\textures\Concrete_metallic.dds
+Roughness: ..\..\assets\model\textures\Concrete_roughness.dds
+Ao: ..\..\assets\model\textures\Concrete_ambientOcclusion.dds
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Albedo: ..\..\assets\model\textures\Concrete_basecolor.dds
 Emissive: Empty
-Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
-Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
-Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
-Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Height: ..\..\assets\model\textures\Concrete_height.dds
+Normal: ..\..\assets\model\textures\Concrete_normal.dds
+Metallic: ..\..\assets\model\textures\Concrete_metallic.dds
+Roughness: ..\..\assets\model\textures\Concrete_roughness.dds
+Ao: ..\..\assets\model\textures\Concrete_ambientOcclusion.dds
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_basecolor.dds
+Albedo: ..\..\assets\model\textures\Concrete_basecolor.dds
 Emissive: Empty
-Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_height.dds
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_normal.dds
-Metallic: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_metallic.dds
-Roughness: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_roughness.dds
-Ao: C:\Users\skdfw\My\akatsuki\assets\model\textures\Concrete_ambientOcclusion.dds
+Height: ..\..\assets\model\textures\Concrete_height.dds
+Normal: ..\..\assets\model\textures\Concrete_normal.dds
+Metallic: ..\..\assets\model\textures\Concrete_metallic.dds
+Roughness: ..\..\assets\model\textures\Concrete_roughness.dds
+Ao: ..\..\assets\model\textures\Concrete_ambientOcclusion.dds
 Opacity: Empty
 
 ========Vertices========

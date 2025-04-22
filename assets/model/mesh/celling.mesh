@@ -8,34 +8,34 @@ VertexCount: 4	IndexCount: 6
 VertexCount: 4	IndexCount: 6
 
 ========Material========
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_albedo.dds
+Albedo: ..\..\assets\model\textures\celling_albedo.dds
 Emissive: Empty
 Height: Empty
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_normal.dds
+Normal: ..\..\assets\model\textures\celling_normal.dds
 Metallic: Empty
 Roughness: Empty
 Ao: Empty
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_albedo.dds
+Albedo: ..\..\assets\model\textures\celling_albedo.dds
 Emissive: Empty
 Height: Empty
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_normal.dds
+Normal: ..\..\assets\model\textures\celling_normal.dds
 Metallic: Empty
 Roughness: Empty
 Ao: Empty
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_albedo.dds
+Albedo: ..\..\assets\model\textures\celling_albedo.dds
 Emissive: Empty
 Height: Empty
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_normal.dds
+Normal: ..\..\assets\model\textures\celling_normal.dds
 Metallic: Empty
 Roughness: Empty
 Ao: Empty
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_albedo.dds
+Albedo: ..\..\assets\model\textures\celling_albedo.dds
 Emissive: Empty
 Height: Empty
 Normal: Empty
@@ -44,19 +44,19 @@ Roughness: Empty
 Ao: Empty
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_albedo.dds
+Albedo: ..\..\assets\model\textures\celling_albedo.dds
 Emissive: Empty
 Height: Empty
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_normal.dds
+Normal: ..\..\assets\model\textures\celling_normal.dds
 Metallic: Empty
 Roughness: Empty
 Ao: Empty
 Opacity: Empty
 
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_albedo.dds
+Albedo: ..\..\assets\model\textures\celling_albedo.dds
 Emissive: Empty
 Height: Empty
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\celling_normal.dds
+Normal: ..\..\assets\model\textures\celling_normal.dds
 Metallic: Empty
 Roughness: Empty
 Ao: Empty

@@ -1,6 +1,6 @@
 ../../assets/map/main.map
 23
-C:\Users\skdfw\My\akatsuki\assets\data\act\soldier.act 
+..\..\assets\data\act\soldier.act 
 0.999993 1.000000 0.999993
 0.000000 0.000000 0.000000
 23.886551 0.447158 0.000000
@@ -8,47 +8,47 @@ Cloud_0
 4.640000 4.640000 4.640000
 -0.000000 0.000000 0.000000
 31.446815 54.617409 0.000000
-C:\Users\skdfw\My\akatsuki\assets\data\act\brs-74.act 
+..\..\assets\data\act\brs-74.act 
 0.560000 0.560000 0.560000
 -0.000000 0.000000 0.000000
 17.854351 0.689924 0.000000
-C:\Users\skdfw\My\akatsuki\assets\data\act\wall3.act 
+..\..\assets\data\act\wall3.act 
 2.999896 3.000000 2.999896
 1.536904 0.000002 0.000000
 29.367670 1.497093 -1.359137
-C:\Users\skdfw\My\akatsuki\assets\data\act\concrete_01.act 
+..\..\assets\data\act\concrete_01.act 
 10.000000 0.250000 10.000000
 -0.000000 0.000000 0.000000
 15.517459 0.125000 5.301940
-C:\Users\skdfw\My\akatsuki\assets\data\act\tree_01.act 
+..\..\assets\data\act\tree_01.act 
 3.000000 3.000000 3.000000
 -0.000000 0.000000 0.000000
 0.000000 1.500000 30.000000
 -42201683186052843888412332559599403008.000000 
 0.000000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\tree_01.act 
+..\..\assets\data\act\tree_01.act 
 3.000000 3.000000 3.000000
 -0.000000 0.000000 0.000000
 0.000000 1.500000 25.293474
 -42201683186052843888412332559599403008.000000 
 0.000000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\tree_01.act 
+..\..\assets\data\act\tree_01.act 
 3.000000 3.000000 3.000000
 -0.000000 0.000000 0.000000
 23.621986 1.472784 -10.543360
 -42201683186052843888412332559599403008.000000 
 0.000000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\stone_grey_02.act 
+..\..\assets\data\act\stone_grey_02.act 
 3.010000 3.010000 3.010000
 -0.000000 0.000000 0.000000
 -31.305969 1.404861 1.319693
 0.256000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\stone_grey_02.act 
+..\..\assets\data\act\stone_grey_02.act 
 6.000000 6.000000 6.000000
 -0.000000 0.000000 0.000000
 23.000000 1.115375 -36.000000
 0.256000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\stone_grey_02.act 
+..\..\assets\data\act\stone_grey_02.act 
 5.994753 5.999879 5.999931
 1.566323 0.973723 0.000000
 -29.263102 2.000000 27.000000
@@ -57,38 +57,38 @@ Cloud_1
 7.490000 7.490000 7.490000
 -0.000000 0.000000 0.000000
 -49.056568 31.701706 -27.364479
-C:\Users\skdfw\My\akatsuki\assets\data\act\stone_grey_01.act 
+..\..\assets\data\act\stone_grey_01.act 
 6.290900 6.290900 6.290900
 -0.000000 0.000000 0.000000
 0.000000 2.069076 -38.857258
 0.256000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\stone_grey_01.act 
+..\..\assets\data\act\stone_grey_01.act 
 14.577065 18.499178 11.284444
 -0.000000 0.000000 0.000000
 41.303429 0.605932 6.865391
 0.256000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\stone_grey_01.act 
+..\..\assets\data\act\stone_grey_01.act 
 9.061964 10.000000 4.495000
 -0.000000 0.000000 0.000000
 40.912727 1.023718 -0.062900
 0.256000 
-C:\Users\skdfw\My\akatsuki\assets\data\act\yellow_container.act 
+..\..\assets\data\act\yellow_container.act 
 3.000000 3.000000 3.000000
 -0.000000 0.000000 0.000000
 10.990000 0.886000 1.860000
-C:\Users\skdfw\My\akatsuki\assets\data\act\yellow_container.act 
+..\..\assets\data\act\yellow_container.act 
 3.000000 3.000000 3.000000
 -0.000000 0.000000 0.000000
 14.711866 0.886000 1.860000
-C:\Users\skdfw\My\akatsuki\assets\data\act\yellow_container.act 
+..\..\assets\data\act\yellow_container.act 
 3.000000 3.000000 3.000000
 -0.000000 0.000000 0.000000
 19.874502 0.886317 1.860362
-C:\Users\skdfw\My\akatsuki\assets\data\act\yellow_container.act 
+..\..\assets\data\act\yellow_container.act 
 6.000000 6.000000 6.000000
 -0.000000 0.000000 0.000000
 0.000000 1.275106 20.116653
-C:\Users\skdfw\My\akatsuki\assets\data\act\yellow_container.act 
+..\..\assets\data\act\yellow_container.act 
 9.372800 9.372800 9.372800
 -0.000000 0.000000 0.000000
 16.905607 2.074717 -14.936754

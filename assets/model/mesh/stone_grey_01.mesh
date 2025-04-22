@@ -3,10 +3,10 @@ MeshCount: 1
 VertexCount: 1089	IndexCount: 6144
 
 ========Material========
-Albedo: C:\Users\skdfw\My\akatsuki\assets\model\textures\grey_porous_rock_40_56_diffuse.dds
+Albedo: ..\..\assets\model\textures\grey_porous_rock_40_56_diffuse.dds
 Emissive: Empty
-Height: C:\Users\skdfw\My\akatsuki\assets\model\textures\grey_porous_rock_40_56_height.dds
-Normal: C:\Users\skdfw\My\akatsuki\assets\model\textures\grey_porous_rock_40_56_normal.dds
+Height: ..\..\assets\model\textures\grey_porous_rock_40_56_height.dds
+Normal: ..\..\assets\model\textures\grey_porous_rock_40_56_normal.dds
 Metallic: Empty
 Roughness: Empty
 Ao: Empty

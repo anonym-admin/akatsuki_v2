@@ -9,13 +9,9 @@ binary 파일 링크: https://github.com/anonym-admin/binary
 
 실행파일 경로: bin/Release/akatsuki_client_x64.exe
 
-최상단 경로에 해당 데모의 assets 폴더와 shader 폴더를 복사해서 사용하시면 됩니다.
+최상단 user/binary-main/bin/ 경로에 아래 드라이브 링크에 공유된 asset 폴더와 shader 폴더를 넣어서 사용하시면 됩니다.
 
-Gledista_Triacanthos.mesh 파일 관련해 git lfs 오류가 발생할 수 있습니다.
-
-해당 파일은 구글 드라이브 링크를 공유드립니다. assets/model/mesh/ 폴더에 추가하시면 됩니다.
-
-모델파일 링크: https://drive.google.com/drive/folders/1QgTWX35QcKyK2Pt71QIrIGiePa74fpGP
+에셋과 쉐이더 파일 링크: https://drive.google.com/drive/folders/1QgTWX35QcKyK2Pt71QIrIGiePa74fpGP
 
 F5 버튼을 누르면 에디터를 선택할 수 있는 화면으로 전환되고 console 창에 진입하고 싶은 에디터의 번호를 입력하면 됩니다.
 
