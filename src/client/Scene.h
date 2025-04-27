@@ -34,6 +34,7 @@ public:
 	GameObjContainer_t* GetGroupObject(GAME_OBJECT_GROUP_TYPE eGameObjType) { return _pGameObjContainerList[(AkU32)eGameObjType]; }
 	GameObjContainer_t** GetAllGameObject() { return _pGameObjContainerList; }
 	AkU32 GetGameObjectNum() { return _uGameObjNum; }
+	AkU32 GetRenderObjNum();
 	FrustumCulling* GetFrustumCulling() { return _pFrustumCulling; }
 	void DeleteGameObject(GAME_OBJECT_GROUP_TYPE eGameObjType, Actor* pGameObj);
 	void DeleteAllGameObject();
@@ -51,6 +52,7 @@ private:
 
 protected:
 	FrustumCulling* _pFrustumCulling = nullptr;
+	AkU32 _uCullObjNum = 0;
 
 public:
 	const wchar_t* Name = nullptr;

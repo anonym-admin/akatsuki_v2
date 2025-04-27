@@ -37,10 +37,21 @@
     <Filter Include="src\particle">
       <UniqueIdentifier>{9d2fef40-00b3-43a8-bb67-499660c72b35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\cmdlistpool">
+      <UniqueIdentifier>{2f8714fd-c045-4c2c-9803-b15402d456f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\cbpool">
+      <UniqueIdentifier>{017f3ced-554a-4cac-b0dd-d2774e196ad2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\descallocator">
+      <UniqueIdentifier>{12fc40bb-7747-4d1e-8f9b-c96f5426e3b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\descpool">
+      <UniqueIdentifier>{d031b848-b2d2-4ad3-8f35-baec287ea223}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Renderer.def" />
     <None Include="..\..\shader\Common.hlsli">
       <Filter>shader</Filter>
     </None>
@@ -59,22 +70,13 @@
     <None Include="..\..\shader\TileableNoise.hlsli">
       <Filter>shader</Filter>
     </None>
+    <None Include="Renderer.def">
+      <Filter>src\entry</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ConstantBufferPool.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="CommandListPool.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="D3DUtils.cpp">
       <Filter>src\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorPool.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorAllocator.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\utils\HashTable.cpp">
       <Filter>src\utils</Filter>
@@ -181,37 +183,28 @@
     <ClCompile Include="OceanObject.cpp">
       <Filter>src\obj</Filter>
     </ClCompile>
+    <ClCompile Include="CommandListPool.cpp">
+      <Filter>src\cmdlistpool</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferPool.cpp">
+      <Filter>src\cbpool</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorAllocator.cpp">
+      <Filter>src\descallocator</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorPool.cpp">
+      <Filter>src\descpool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\Math.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\interface\IRenderer.h">
       <Filter>interface</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantBufferPool.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="CommandListPool.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="D3DUtils.h">
       <Filter>src\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\AkMacro.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\AkType.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\AkVertex.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\common\AkMeshData.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorPool.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorAllocator.h">
-      <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\utils\HashTable.h">
       <Filter>src\utils</Filter>
@@ -317,6 +310,36 @@
     </ClInclude>
     <ClInclude Include="CloudObject.h">
       <Filter>src\obj</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandListPool.h">
+      <Filter>src\cmdlistpool</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferPool.h">
+      <Filter>src\cbpool</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorAllocator.h">
+      <Filter>src\descallocator</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorPool.h">
+      <Filter>src\descpool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\CommonEnum.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\CommonMacro.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\CommonMeshData.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\CommonType.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\CommonVertex.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\Math.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

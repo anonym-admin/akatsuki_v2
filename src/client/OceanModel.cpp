@@ -18,6 +18,10 @@ AkBool OceanModel::Initialize()
 {
 	_pOceanObj = GRenderer->CreateOceanObject();
 
+	// Renderer 에서 설정된 Ocean Object Square 의 크기.
+	_vMin = Vector3(-20.0f, -20.0f, 0.0f);
+	_vMax = Vector3(20.0f, 20.0f, 0.0f);
+
 	return AK_TRUE;
 }
 

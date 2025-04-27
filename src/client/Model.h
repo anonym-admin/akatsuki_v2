@@ -32,6 +32,7 @@ public:
 
 	Matrix GetWorldRow() { return _mWorldRow; }
 	AkF32 GetIBLStrength() { return _fIBLStrength; }
+	void GetMinMax(Vector3* pOutMin, Vector3* pOutMax);
 	void UpdateWorldRow(Matrix* pWorldRow);
 	void SetWireFrame(AkBool bDrawWire);
 	void SetTextures(void* pAlbedo, void* pEmissve, void* pHeight, void* pNormal, void* pMetallic, void* pRoughness, void* pAO);
@@ -60,6 +61,8 @@ protected:
 	AkBool _bUseGizmo = AK_FALSE;
 	AkF32 _fIBLStrength = 0.0f;
 	AkBool _bDrawShadow = AK_TRUE;
+	Vector3 _vMin = Vector3(0.0f);
+	Vector3 _vMax = Vector3(0.0f);
 
 public:
 	wchar_t Name[_MAX_PATH] = {};

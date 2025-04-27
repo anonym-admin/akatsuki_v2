@@ -124,6 +124,13 @@ void CollisionManager::CollisionDynamicObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft
 			continue;
 		}
 
+		// 컬링이 된 오브젝트라면 충돌처리 체크 X
+		if (pLeftObj->Cull)
+		{
+			pCurLeft = pCurLeft->pNext;
+			continue;
+		}
+
 		List_t* pCurRight = pRightGameObjContainer->pGameObjHead;
 		while (pCurRight != nullptr)
 		{
@@ -136,6 +143,13 @@ void CollisionManager::CollisionDynamicObjectUpdate(GAME_OBJECT_GROUP_TYPE eLeft
 			}
 
 			if (pLeftCollider == pRightCollider)
+			{
+				pCurRight = pCurRight->pNext;
+				continue;
+			}
+
+			// 컬링이 된 오브젝트라면 충돌처리 체크 X
+			if (pRightObj->Cull)
 			{
 				pCurRight = pCurRight->pNext;
 				continue;

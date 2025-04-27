@@ -505,7 +505,7 @@ void Application::UpdateText()
 		Actor* pPlayer = nullptr;
 		Vector3 vPlayerPos = Vector3(0.0f);
 		AkU32 uRenderObj = 0;
-		AkU32 uTotalObj = 0;
+		AkU32 uTotalObjNum = 0;
 
 		if (pSceneInGame)
 		{
@@ -519,15 +519,15 @@ void Application::UpdateText()
 			FrustumCulling* pFrustumCulling = pSceneInGame->GetFrustumCulling();
 			if (pFrustumCulling)
 			{
-				uTotalObj = pFrustumCulling->GetTotalRenderObjCount();
-				uRenderObj = uTotalObj - pFrustumCulling->GetCullObjCount();
+				uTotalObjNum = pSceneInGame->GetGameObjectNum();
+				uRenderObj = pSceneInGame->GetRenderObjNum();
 			}
 		}
 
 		AkI32 iTextWidth = 0;
 		AkI32 iTextHeight = 0;
 		wchar_t wcText[256] = {};
-		AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf vsync:%s\npos:%lf %lf %lf\nrender:%u/%u\n", GFps, _bUseVSync ? L"on" : L"off", vPlayerPos.x, vPlayerPos.y, vPlayerPos.z, uRenderObj, uTotalObj);
+		AkU32 uTxtLen = swprintf_s(wcText, L"fps:%.2lf vsync:%s\npos:%lf %lf %lf\nrender:%u/%u\n", GFps, _bUseVSync ? L"on" : L"off", vPlayerPos.x, vPlayerPos.y, vPlayerPos.z, uRenderObj, uTotalObjNum);
 
 		if (wcscmp(_wcText, wcText))
 		{

@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Actor.h"
 #include "Application.h"
-#include "LandScape.h"
+#include "FrustumCulling.h"
 
 /*
 ==================
@@ -143,6 +143,11 @@ void Scene::AddGameObject(GAME_OBJECT_GROUP_TYPE eGameObjType, Actor* pGameObj)
 	}
 
 	_uGameObjNum++;
+}
+
+AkU32 Scene::GetRenderObjNum()
+{
+	return _uGameObjNum - _uCullObjNum;
 }
 
 void Scene::DeleteGameObject(GAME_OBJECT_GROUP_TYPE eGameObjType, Actor* pGameObj)

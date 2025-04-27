@@ -174,7 +174,7 @@ void SceneInGame::FinalUpdate()
 	Scene::FinalUpdate();
 
 	// Game Object 의 모든 연산이 종료된 후 컬링 시도.
-	_pFrustumCulling->Process();
+	_uCullObjNum = _pFrustumCulling->Process();
 }
 
 void SceneInGame::RenderDepthMap()

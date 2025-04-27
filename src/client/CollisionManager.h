@@ -42,10 +42,8 @@ public:
 
 	AkBool Initialize();
 	void CollisionGroupCheck(GAME_OBJECT_GROUP_TYPE eLeft, GAME_OBJECT_GROUP_TYPE eRight);
-	void AttachMap(MapObjects* pMap) { _pMap = pMap; }
 
 	void Update();
-
 	void Reset();
 
 private:
@@ -58,20 +56,6 @@ private:
 private:
 	Application* _pApp = nullptr;
 	AkU32 _pCollisionCheckBitsTable[(AkU32)GAME_OBJECT_GROUP_TYPE::COUNT] = {};
-
-
-
-
-
-
-
-
-
 	RbTreeNode_t* _pRBTree = nullptr;
-
-	// LandScape
-	LandScape* _pLandScape = nullptr;
-	// Map.
-	MapObjects* _pMap = nullptr;
 };
 

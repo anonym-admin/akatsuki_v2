@@ -183,6 +183,12 @@ void Model::RenderGUI()
 	ImGui::End();
 }
 
+void Model::GetMinMax(Vector3* pOutMin, Vector3* pOutMax)
+{
+	*pOutMin = Vector3::Transform(_vMin, _mWorldRow);
+	*pOutMax = Vector3::Transform(_vMax, _mWorldRow);
+}
+
 void Model::UpdateWorldRow(Matrix* pWorldRow)
 {
 	_mWorldRow = *pWorldRow;

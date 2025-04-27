@@ -58,12 +58,6 @@ void CloudModel::RenderGUI()
 	ImGui::End();
 }
 
-void CloudModel::GetMinMax(Vector3* pOutMin, Vector3* pOutMax)
-{
-	*pOutMin = Vector3::Transform(_vMin, _mWorldRow);
-	*pOutMax = Vector3::Transform(_vMax, _mWorldRow);
-}
-
 void CloudModel::CleanUp()
 {
 	if (_pCloudObj)

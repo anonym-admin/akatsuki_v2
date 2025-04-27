@@ -183,6 +183,7 @@
     <None Include="Renderer.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\common\Math.cpp" />
     <ClCompile Include="..\..\utils\HashTable.cpp" />
     <ClCompile Include="..\..\utils\IndexGenerator.cpp" />
     <ClCompile Include="..\..\utils\LinkedList.cpp" />
@@ -230,10 +231,12 @@
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\common\AkMacro.h" />
-    <ClInclude Include="..\..\common\AkMeshData.h" />
-    <ClInclude Include="..\..\common\AkType.h" />
-    <ClInclude Include="..\..\common\AkVertex.h" />
+    <ClInclude Include="..\..\common\CommonEnum.h" />
+    <ClInclude Include="..\..\common\CommonMacro.h" />
+    <ClInclude Include="..\..\common\CommonMeshData.h" />
+    <ClInclude Include="..\..\common\CommonType.h" />
+    <ClInclude Include="..\..\common\CommonVertex.h" />
+    <ClInclude Include="..\..\common\Math.h" />
     <ClInclude Include="..\..\interface\IRenderer.h" />
     <ClInclude Include="..\..\utils\HashTable.h" />
     <ClInclude Include="..\..\utils\IndexGenerator.h" />

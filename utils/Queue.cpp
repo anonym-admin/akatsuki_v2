@@ -13,7 +13,7 @@ void CQ_CreateQueue(Queue_t** ppOutQueue, int iCapacity, int iDataTypeSize)
 {
     *ppOutQueue = (Queue_t*)malloc(sizeof(Queue_t));
 
-    (*ppOutQueue)->pDataList = (unsigned char**)malloc(iDataTypeSize * (iCapacity + 1));
+    (*ppOutQueue)->ppDataList = (unsigned char**)malloc(iDataTypeSize * (iCapacity + 1));
 
     (*ppOutQueue)->iCapacity = iCapacity;
     (*ppOutQueue)->iFront = 0;
@@ -24,7 +24,7 @@ void CQ_DestroyQueue(Queue_t* pQueue)
 {
     if (pQueue)
     {
-        free(pQueue->pDataList);
+        free(pQueue->ppDataList);
         free(pQueue);
     }
 }
@@ -43,7 +43,7 @@ void CQ_Enqueue(Queue_t* pQueue, void* pData)
         iPos = pQueue->iRear++;
     }
 
-    pQueue->pDataList[iPos] = (unsigned char*)pData;
+    pQueue->ppDataList[iPos] = (unsigned char*)pData;
 }
 
 void* CQ_Dequeue(Queue_t* pQueue)
@@ -59,7 +59,7 @@ void* CQ_Dequeue(Queue_t* pQueue)
         pQueue->iFront++;
     }
 
-    return pQueue->pDataList[iPos];
+    return pQueue->ppDataList[iPos];
 }
 
 int CQ_GetSize(Queue_t* pQueue)

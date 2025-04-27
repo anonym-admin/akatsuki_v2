@@ -27,8 +27,7 @@ AkU32 FrustumCulling::Process()
     // 매 프레임 마다 _pPlane attach.
     GRenderer->GetFrustum(_pPlane);
 
-    AkU32 uTotalRenderObj = 0;
-    AkU32 uRenderObj = 0;
+    AkU32 uCullObjCnt = 0;
 
     Scene* pScene = GSceneManager->GetCurrentScene();
     GameObjContainer_t** ppGameObjContainer = pScene->GetAllGameObject();
@@ -56,23 +55,19 @@ AkU32 FrustumCulling::Process()
                 if (!(bIntersect = CheckCube(vCenter.x, vCenter.y, vCenter.z, fRadiusX, fRadiusY, fRadiusZ)))
                 {
                     pObj->Cull = AK_TRUE; // Rendering 되지 않는 Object
+                    uCullObjCnt++;
                 }
                 else
                 {
                     pObj->Cull = AK_FALSE;
-                    uRenderObj++;
                 }
 
 				pCur = pCur->pNext;
-                uTotalRenderObj++;
 			}
         }
     }
 
-    _uCullingCount = uTotalRenderObj - uRenderObj;
-    _uTotalRenderObj = uTotalRenderObj;
-    
-    return uRenderObj;
+    return uCullObjCnt;
 }
 
 void FrustumCulling::Render()

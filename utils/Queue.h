@@ -13,7 +13,7 @@ struct Queue_t
 	int iCapacity;
 	int iFront;
 	int iRear;
-	unsigned char** pDataList;
+	unsigned char** ppDataList;
 };
 
 void CQ_CreateQueue(Queue_t** ppOutQueue, int iCapacity, int iDataTypeSize);
